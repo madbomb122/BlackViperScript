@@ -13,7 +13,7 @@ Select what you want <br />
 2. Safe <br />
 3. Tweaked <br />*
 
-you can run the script with
+you can run the script with <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
 
 ## FAQ
