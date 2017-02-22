@@ -12,6 +12,8 @@
 # Release Type: Test
 ##########
 
+$ErrorActionPreference= 'silentlycontinue'
+
 # Ask for elevated permissions if required
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
      Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
@@ -83,12 +85,12 @@ function Black_Viper_Input {
         }
         $Black_Viper_Input = Read-Host "`nChoice"
         switch ($Black_Viper_Input.ToLower()) {
-            1 {Black_Viper_Set 1}
-            2 {Black_Viper_Set 2}
-            3 {Black_Viper_Set 3}
+            1 {Black_Viper_Set 1; $Black_Viper_Input = "Out"}
+            2 {Black_Viper_Set 2; $Black_Viper_Input = "Out"}
+            3 {Black_Viper_Set 3; $Black_Viper_Input = "Out"}
             M {OpenWebsite "https://github.com/madbomb122/Win10Script/"}
             B {OpenWebsite "http://www.blackviper.com/"}
-            Q {Break}
+            Q {Exit}
             default {$Invalid = 1}
         }
     }
@@ -190,25 +192,30 @@ $ServiceLen = $ServicesList.Count
 
 $ServicesType = @(
      '',          #0 -None
-     'Disabled',  #1 -Disable
-     'Manual',    #2 -Manual
-     'Automatic', #3 -Auto Normal
-     'Automatic'  #4 -Atuo Delay
+     'disabled',  #1 -Disable
+     'manual',    #2 -Manual
+     'automatic', #3 -Auto Normal
+     'automatic'  #4 -Atuo Delay
 )
 
 Function ServiceSet([Int]$ServiceVal){
+	Write-Host "Changing Service Please wait..."
     for ($i=0; $i -ne $ServiceLen; $i++) {
         $ServiceT = $ServicesList[$i][$ServiceVal]
         $ServiceName = $ServicesList[$i][0]
         $ServiceNameFull = GetServiceNameFull $ServiceName
+		$Type = $ServicesType[$ServiceT]
         If($ServiceT -In 1..3){
-            Set-Service –Name $ServiceNameFull –StartupType ($ServicesType[$ServiceT])
+		    Write-Host $ServiceNameFull " " $Type
+		    Set-Service -Name $ServiceNameFull -StartupType $Type
         } ElseIf($ServiceT -eq 4){
-            Set-Service –Name $ServiceNameFull –StartupType ($ServicesType[$ServiceT])
+		    Write-Host $ServiceNameFull " " $Type" (Delayed Start)"
+		    Set-Service -Name $ServiceNameFull -StartupType $Type
             $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
             Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Value 1 -Type DWORD
         }
     }
+    Exit
 }
 
 Function GetServiceNameFull([String]$ServiceN){
@@ -247,3 +254,4 @@ If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Wi
     Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
     $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
 }
+
