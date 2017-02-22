@@ -20,7 +20,7 @@ you can run the script with
 **Q:** Can I run the script safely? <br />
 **A:** The script is safe, but service changes may not be
 
-**Q:**: I've run the script and it did *BLAH*, can I undo it? <br />
+**Q:** I've run the script and it did *BLAH*, can I undo it? <br />
 **A:** Yes, run the script again and select again. <br />
 
 **Q:** The script messed up my computer. <br />
