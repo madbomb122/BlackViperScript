@@ -1,17 +1,17 @@
 ## Description
-Easy to use Script that can set windows 10 services based on Black Viper's Settings. 
-** Script will ONLY work on windows 10 Home or Pro, All others will not let you run the script
+Easy to use Script that can set windows 10 services based on Black Viper's Settings.  <br />
+**Note: Script will ONLY work on windows 10 Home or Pro, All others will not let you run the script**
 
-Black Viper's Windows 10 Services Settings
+Black Viper's Windows 10 Services Settings  <br />
 http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
 
 # [](#header-1)Basic Usage
 Run the Script <br />
 Use the Menu <br />
-Set what you want <br />
-1. Default
-2. Safe
-3. Tweaked
+Select what you want <br />
+*1. Default <br />
+2. Safe <br />
+3. Tweaked <br />*
 
 you can run the script with
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
