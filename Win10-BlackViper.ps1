@@ -6,7 +6,7 @@
 #
 # Script + Menu By
 # Author: Madbomb122
-# Website: https://github.com/madbomb122/Win10Script/
+# Website: https://github.com/madbomb122/BlackViperScript/
 # Version: 1.0, 02-22-2017
 #
 # Release Type: Stable
