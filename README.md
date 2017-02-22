@@ -18,7 +18,7 @@ you can run the script with <br />
 
 ## FAQ
 **Q:** Can I run the script safely? <br />
-**A:** The script is safe, but service changes may not be
+**A:** The script itself is safe, but changes to services may cause problems
 
 **Q:** I've run the script and it did *BLAH*, can I undo it? <br />
 **A:** Yes, run the script again and select again. <br />
