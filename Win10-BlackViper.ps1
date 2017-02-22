@@ -7,7 +7,7 @@
 # Script + Menu By
 # Author: Madbomb122
 # Website: https://github.com/madbomb122/Win10Script/
-# Version: 1.0, 02-21-2017
+# Version: 1.0, 02-22-2017
 #
 # Release Type: Test
 ##########
@@ -65,7 +65,6 @@ function TitleBottom ([String]$TitleA,[Int]$TitleB) {
     }
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
 }
-
 
 function OpenWebsite ([String]$Website){
     $IE=new-object -com internetexplorer.application
@@ -138,22 +137,35 @@ $WinEdition = gwmi win32_operatingsystem | % caption
 
 $ServicesList = @(
  #(Service Name, Def-Home, Def-Pro , Safe, Tweaked)
+('AJRouter',2,2,2,1),
 ('ALG',2,2,2,1),
+('AppMgmt',0,2,2,2),
+('AppVClient',0,1,1,1),
+('BthHFSrv',2,2,2,1),
+('bthserv',2,2,2,1),
 ('CDPUserSvc_',3,3,2,2),
 ('CertPropSvc',2,2,2,1),
-('CscService',0,2,2,1),
-('diagnosticshub.standardcollector.service',2,2,2,1),
-('DiagTrack',3,3,1,1),
+('CscService',0,2,1,1),
+('diagnosticshub.standardcollector.service',2,2,1,1),
 ('dmwappushsvc',2,2,1,1),
+('DusmSvc',3,3,3,1),
 ('EntAppSvc',2,2,1,1),
+('Fax',2,2,1,1),
+('FrameServer',2,2,1,1),
 ('hkmsvc',0,2,2,1),
 ('HvHost',2,2,1,1),
 ('icssvc',2,2,1,1),
 ('iphlpsvc',3,3,3,1),
+('IpxlatCfgSvc',2,2,2,1),
+('irmon',2,2,1,1),
 ('lfsvc',2,2,1,1),
 ('MapsBroker',4,4,1,1),
 ('MSiSCSI',2,2,1,1),
+('NaturalAuthentication',2,2,2,1),
+('NcbService',2,2,2,1),
+('NcdAutoSetup',2,2,2,1),
 ('Netlogon',2,2,2,1),
+('NetTcpPortSharing',2,2,1,1),
 ('PeerDistSvc',0,2,1,1),
 ('PhoneSvc',2,2,1,1),
 ('PimIndexMaintenanceSvc_',2,2,1,1),
@@ -162,15 +174,23 @@ $ServicesList = @(
 ('RpcLocator',2,2,1,1),
 ('ScDeviceEnum',2,2,1,1),
 ('SCPolicySvc',2,2,1,1),
+('SEMgrSvc',2,2,1,1),
+('Sense',0,2,2,2),
 ('SensorDataService',2,2,1,1),
 ('SensorService',2,2,1,1),
 ('SensrSvc',2,2,1,1),
+('SessionEnv',2,2,2,1),
 ('SharedAccess',2,2,1,1),
 ('SmsRouter',2,2,1,1),
 ('SNMPTRAP',2,2,1,1),
+('spectrum',2,2,2,1),
 ('StorSvc',2,2,2,1),
 ('TabletInputService',2,2,1,1),
+('TermService',2,2,2,1),
+('tiledatamodelsvc',3,3,3,1),
 ('TrkWks',3,3,3,1),
+('UevAgentService',0,1,1,1),
+('UmRdpService',2,2,2,1),
 ('vmicguestinterface',2,2,1,1),
 ('vmicheartbeat',2,2,1,1),
 ('vmickvpexchange',2,2,1,1),
@@ -181,14 +201,21 @@ $ServicesList = @(
 ('vmicvss',2,2,1,1),
 ('WbioSrvc',2,2,2,1),
 ('wcncsvc',2,2,2,1),
+('WebClient',2,2,2,1),
+('WFDSConSvc',2,2,1,1),
 ('WinRM',2,2,1,1),
+('wisvc',2,2,1,1),
+('wlpasvc',2,2,2,1),
 ('WMPNetworkSvc',2,2,1,1),
+('Wms',0,3,1,1),
+('WmsRepair',0,3,1,1),
 ('workfolderssvc',2,2,1,1),
+('WwanSvc',2,2,1,1),
 ('XblAuthManager',2,2,1,1),
 ('XblGameSave',2,2,1,1),
 ('XboxNetApiSvc',2,2,1,1)
 )
-$ServiceLen = $ServicesList.Count
+$ServiceLen = $ServicesList.length
 
 $ServicesType = @(
      '',          #0 -None
@@ -199,42 +226,63 @@ $ServicesType = @(
 )
 
 Function ServiceSet([Int]$ServiceVal){
-	Write-Host "Changing Service Please wait..."
+    Clear-Host
+    Write-Host "Changing Service Please wait..."
     for ($i=0; $i -ne $ServiceLen; $i++) {
         $ServiceT = $ServicesList[$i][$ServiceVal]
         $ServiceName = $ServicesList[$i][0]
         $ServiceNameFull = GetServiceNameFull $ServiceName
-		$Type = $ServicesType[$ServiceT]
-        If($ServiceT -In 1..3){
-		    Write-Host $ServiceNameFull " " $Type
-		    Set-Service -Name $ServiceNameFull -StartupType $Type
-        } ElseIf($ServiceT -eq 4){
-		    Write-Host $ServiceNameFull " " $Type" (Delayed Start)"
-		    Set-Service -Name $ServiceNameFull -StartupType $Type
-            $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
-            Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Value 1 -Type DWORD
+        $Type = $ServicesType[$ServiceT]
+        If ((ServiceCheck $ServiceNameFull $Type) -eq $True){
+            If($ServiceT -In 1..3){
+                Write-Host $ServiceNameFull "-" $Type
+                Set-Service $ServiceNameFull -StartupType $Type
+            } ElseIf($ServiceT -eq 4){
+                Write-Host $ServiceNameFull "-" $Type" (Delayed Start)"
+                Set-Service $ServiceNameFull -StartupType $Type
+                $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
+                Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
+            } Else {
+                Write-Host $ServiceNameFull "-" $Type " -None" 
+            }
         }
     }
+    Write-Host "Service Changed..."
+    Write-Host "Press any key to close..."
+    $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
     Exit
 }
 
 Function GetServiceNameFull([String]$ServiceN){
+    $ServiceR = $ServiceN
     If($ServiceN -eq 'CDPUserSvc_'){
         $ServiceR = Get-Service | Where-Object {$_.Name -like "CDPUserSvc_*"}
     } ElseIf($ServiceN -eq 'PimIndexMaintenanceSvc_'){
         $ServiceR = Get-Service | Where-Object {$_.Name -like "PimIndexMaintenanceSvc_*"}
-    } Else {
-        $ServiceR = $ServiceN
     }
     Return $ServiceR
+}
+
+Function ServiceCheck([string] $S_Name, [string]$S_Type) {
+    [bool] $ReturnV = $False
+    If ( Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
+        $ServType = (Get-Service $S_Name).StartType
+        If($S_Type -ne $ServType){
+            $ReturnV = $True
+            If($S_Name -eq 'lfsvc'){
+                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3"  -recurse  -Force
+            }
+        }
+    }
+    Return $ReturnV
 }
 
 function Black_Viper_Set ([Int]$Back_Viper){
     If ($Back_Viper -eq 1){
         If($WinEdition -eq "Microsoft Windows 10 Home"){
-            ServiceSet $Back_Viper        
+            ServiceSet $Back_Viper
         } ElseIf($WinEdition -eq "Microsoft Windows 10 Pro"){
-            ServiceSet ($Back_Viper+1)    
+            ServiceSet ($Back_Viper+1) 
         }
     } ElseIf ($Back_Viper -In 2..3){
         ServiceSet ($Back_Viper+1)
@@ -254,4 +302,3 @@ If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Wi
     Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
     $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
 }
-
