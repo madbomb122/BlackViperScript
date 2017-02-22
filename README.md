@@ -15,6 +15,7 @@ Select what you want <br />
 
 you can run the script with <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
+or you can use the bat file provided (needs to be in same directory) <br />
 
 ## FAQ
 **Q:** Can I run the script safely? <br />
