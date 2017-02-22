@@ -9,7 +9,7 @@
 # Website: https://github.com/madbomb122/Win10Script/
 # Version: 1.0, 02-22-2017
 #
-# Release Type: Test
+# Release Type: Stable
 ##########
 
 $ErrorActionPreference= 'silentlycontinue'
@@ -139,8 +139,6 @@ $ServicesList = @(
  #(Service Name, Def-Home, Def-Pro , Safe, Tweaked)
 ('AJRouter',2,2,2,1),
 ('ALG',2,2,2,1),
-('AppMgmt',0,2,2,2),
-('AppVClient',0,1,1,1),
 ('BthHFSrv',2,2,2,1),
 ('bthserv',2,2,2,1),
 ('CDPUserSvc_',3,3,2,2),
@@ -149,7 +147,7 @@ $ServicesList = @(
 ('diagnosticshub.standardcollector.service',2,2,1,1),
 ('dmwappushsvc',2,2,1,1),
 ('DusmSvc',3,3,3,1),
-('EntAppSvc',2,2,1,1),
+#('EntAppSvc',2,2,1,1), -Cant change Setting
 ('Fax',2,2,1,1),
 ('FrameServer',2,2,1,1),
 ('hkmsvc',0,2,2,1),
@@ -175,7 +173,6 @@ $ServicesList = @(
 ('ScDeviceEnum',2,2,1,1),
 ('SCPolicySvc',2,2,1,1),
 ('SEMgrSvc',2,2,1,1),
-('Sense',0,2,2,2),
 ('SensorDataService',2,2,1,1),
 ('SensorService',2,2,1,1),
 ('SensrSvc',2,2,1,1),
@@ -187,9 +184,8 @@ $ServicesList = @(
 ('StorSvc',2,2,2,1),
 ('TabletInputService',2,2,1,1),
 ('TermService',2,2,2,1),
-('tiledatamodelsvc',3,3,3,1),
+#('tiledatamodelsvc',3,3,3,1), -Cant change Setting
 ('TrkWks',3,3,3,1),
-('UevAgentService',0,1,1,1),
 ('UmRdpService',2,2,2,1),
 ('vmicguestinterface',2,2,1,1),
 ('vmicheartbeat',2,2,1,1),
@@ -217,7 +213,7 @@ $ServicesList = @(
 )
 $ServiceLen = $ServicesList.length
 
-$ServicesType = @(
+$ServicesTypeList = @(
      '',          #0 -None
      'disabled',  #1 -Disable
      'manual',    #2 -Manual
@@ -232,18 +228,16 @@ Function ServiceSet([Int]$ServiceVal){
         $ServiceT = $ServicesList[$i][$ServiceVal]
         $ServiceName = $ServicesList[$i][0]
         $ServiceNameFull = GetServiceNameFull $ServiceName
-        $Type = $ServicesType[$ServiceT]
-        If ((ServiceCheck $ServiceNameFull $Type) -eq $True){
+        $ServiceType = $ServicesTypeList[$ServiceT]
+        If ((ServiceCheck $ServiceNameFull $ServiceType) -eq $True){
             If($ServiceT -In 1..3){
-                Write-Host $ServiceNameFull "-" $Type
-                Set-Service $ServiceNameFull -StartupType $Type
+                Write-Host $ServiceNameFull "-" $ServiceType
+                Set-Service $ServiceNameFull -StartupType $ServiceType
             } ElseIf($ServiceT -eq 4){
-                Write-Host $ServiceNameFull "-" $Type" (Delayed Start)"
-                Set-Service $ServiceNameFull -StartupType $Type
+                Write-Host $ServiceNameFull "-" $ServiceType" (Delayed Start)"
+                Set-Service $ServiceNameFull -StartupType $ServiceType
                 $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
                 Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
-            } Else {
-                Write-Host $ServiceNameFull "-" $Type " -None" 
             }
         }
     }
@@ -270,6 +264,8 @@ Function ServiceCheck([string] $S_Name, [string]$S_Type) {
         If($S_Type -ne $ServType){
             $ReturnV = $True
             If($S_Name -eq 'lfsvc'){
+			 #Has to be removed or cant change service 
+		      # from disabled to anything else (Known Bug)
                 Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3"  -recurse  -Force
             }
         }
