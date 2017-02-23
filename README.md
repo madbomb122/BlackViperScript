@@ -27,6 +27,9 @@ or you can use the bat file provided (needs to be in same directory) <br />
 **Q:** Can I run the script repeatedly? <br />
 **A:** Yes, with same or different settings. (same setting will do nothing but do some display)
 
+**Q:** Can I use the script or modify it for my / my company's needs? <br />
+**A:** Sure. Just don't forget to include copyright notice as per the license requirements, and leave any Copyright in script too.
+
 **Q:** I've run the script and it did *BLAH*, can I undo it? <br />
 **A:** Yes, run the script again and select again. <br />
 
