@@ -18,8 +18,14 @@ you can run the script with <br />
 or you can use the bat file provided (needs to be in same directory) <br />
 
 ## FAQ
+**Q:** The script file looks all messy in notepad, How do i view it? <br />
+**A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
+
 **Q:** Can I run the script safely? <br />
 **A:** The script itself is safe, but changes to services may cause problems
+
+**Q:** Can I run the script repeatedly? <br />
+**A:** Yes, with same or different settings. (same setting will do nothing but do some display)
 
 **Q:** I've run the script and it did *BLAH*, can I undo it? <br />
 **A:** Yes, run the script again and select again. <br />
