@@ -38,6 +38,40 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
      Exit
 }
 
+Function TOSDisplay {
+    Write-Host "                 Terms of Use                  " -ForegroundColor Green -BackgroundColor Black
+    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+    Write-Host "This program comes with ABSOLUTELY NO WARRANTY." -ForegroundColor Black -BackgroundColor White
+    Write-Host "This is free software, and you are welcome to  " -ForegroundColor Black -BackgroundColor White
+    Write-Host "redistribute it under certain conditions.      " -ForegroundColor Black -BackgroundColor White
+    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+    Write-Host "Read License file for full Terms.              " -ForegroundColor Black -BackgroundColor White
+    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+    Write-Host "Do you Accept the Terms of Use? (Y)es/(N)o     " -ForegroundColor White -BackgroundColor Black    
+}
+
+function TOS {
+    $TOS = 'X'
+    while($TOS -ne "Out"){
+        Clear-Host
+        TOSDisplay
+        If($Invalid -eq 1){
+            Write-host ""
+            Write-host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            $Invalid = 0
+        }
+        $TOS = Read-Host "`nAccept? (Y)es/(N)o"
+        switch ($TOS.ToLower()) {
+            n {Exit}
+            no {Exit}
+            y {Black_Viper_Input }
+            yes {Black_Viper_Input }
+            default {$Invalid = 1}
+        }
+    }
+    Return
+}
+
 Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine){
     If ($NewLine -eq 0){
         Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
@@ -304,7 +338,7 @@ function Black_Viper_Set ([Int]$Back_Viper){
 }
 
 If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
-    Black_Viper_Input    
+    TOS    
 } Else {
     Write-Host "Websites:"
     Write-Host "https://github.com/madbomb122/Win10Script/"
