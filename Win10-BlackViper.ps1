@@ -321,8 +321,8 @@ Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
         If($S_Type -ne $C_Type){
             $ReturnV = $True
             If($S_Name -eq 'lfsvc'){
-			    #Has to be removed or cant change service 
-		        # from disabled to anything else (Known Bug)
+                #Has to be removed or cant change service 
+                # from disabled to anything else (Known Bug)
                 Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3"  -recurse  -Force
             }
         }
@@ -350,11 +350,11 @@ If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Wi
             Black_Viper_Set $SettingImp
         } ElseIf($SettingImp.ToLower() -eq "default"){
             Black_Viper_Set 1
-		} ElseIf($SettingImp.ToLower() -eq "safe"){
+	} ElseIf($SettingImp.ToLower() -eq "safe"){
             Black_Viper_Set 2
-		} ElseIf($SettingImp.ToLower() -eq "tweaked"){
+	} ElseIf($SettingImp.ToLower() -eq "tweaked"){
             Black_Viper_Set 3
-		} Else{
+	} Else{
             Write-Host "Invalid Selection"  -ForegroundColor Blue -BackgroundColor Black
             Write-Host ""			
             Write-Host "Valid Selections are:"  -ForegroundColor Blue -BackgroundColor Black
