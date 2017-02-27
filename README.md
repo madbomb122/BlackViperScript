@@ -18,7 +18,7 @@ Use one of the following Methods
 (Bat file provided can run script, look in bat file for insructions)
 
 Run script with changing Services to Default Settings (Only ones changed by Black viper's settings): <br />
-   -Set 1
+   -Set 1 <br />
    -Set Default
 
 Examples: <br />
@@ -28,7 +28,7 @@ or <br />
 ******
 
 Run script with changing Services to Black Viper's Safe Setting: <br />
-   -Set 2
+   -Set 2 <br />
    -Set Safe
 
 Examples: <br />
@@ -38,7 +38,7 @@ or <br />
 ******
 
 Run script with changing Services to Black Viper's Tweaked Setting: <br />
-   -Set 3
+   -Set 3 <br />
    -Set Tweaked
 
 Examples: <br />
