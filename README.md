@@ -13,9 +13,39 @@ Select what you want <br />
 2. Safe <br />
 3. Tweaked <br />*
 
-you can run the script with <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
-or you can use the bat file provided (needs to be in same directory) <br />
+## [](#header-2)Advanced Usage
+Use one of the following Methods 
+(Bat file provided can run script, look in bat file for insructions)
+
+Run script with changing Services to Default Settings (Only ones changed by Black viper's settings): <br />
+   -Set 1
+   -Set Default
+
+Examples: <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 1` <br />
+or <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File Win10-Menu.ps1 -Set Default` <br />
+******
+
+Run script with changing Services to Black Viper's Safe Setting: <br />
+   -Set 2
+   -Set Safe
+
+Examples: <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 2` <br />
+or <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File Win10-Menu.ps1 -Set Safe` <br />
+******
+
+Run script with changing Services to Black Viper's Tweaked Setting: <br />
+   -Set 3
+   -Set Tweaked
+
+Examples: <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 3` <br />
+or <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File Win10-Menu.ps1 -Set Tweaked` <br />
+******
 
 ## FAQ
 **Q:** The script file looks all messy in notepad, How do i view it? <br />
