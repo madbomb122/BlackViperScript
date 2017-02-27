@@ -14,7 +14,7 @@ Select what you want <br />
 3. Tweaked <br />*
 
 ## [](#header-2)Advanced Usage
-Use one of the following Methods 
+Use one of the following Methods or use the at Bat file provided
 (Bat file provided can run script, look in bat file for insructions)
 
 Run script with changing Services to Default Settings (Only ones changed by Black viper's settings): <br />
