@@ -7,7 +7,7 @@
 # Script + Menu By
 # Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
-# Version: 1.0, 02-22-2017
+# Version: 1.1, 02-26-2017
 #
 # Release Type: Stable
 ##########
@@ -30,12 +30,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #>
 
+Param([alias("Set")] [string] $SettingImp)
+
 $ErrorActionPreference= 'silentlycontinue'
 
 # Ask for elevated permissions if required
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
-     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
-     Exit
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
+    Exit
 }
 
 Function TOSDisplay {
@@ -64,8 +66,8 @@ function TOS {
         switch ($TOS.ToLower()) {
             n {Exit}
             no {Exit}
-            y {Black_Viper_Input }
-            yes {Black_Viper_Input }
+            y {Black_Viper_Input}
+            yes {Black_Viper_Input}
             default {$Invalid = 1}
         }
     }
@@ -160,25 +162,26 @@ $BlackViperDisItems = @(
 )
 
 $colors = @(
-     "black",        #0
-     "blue",         #1
-     "cyan",         #2
-     "darkblue",     #3
-     "darkcyan",     #4
-     "darkgray",     #5
-     "darkgreen",    #6
-     "darkmagenta",  #7
-     "darkred",      #8
-     "darkyellow",   #9
-     "gray",         #10
-     "green",        #11
-     "magenta",      #12
-     "red",          #13
-     "white",        #14
-     "yellow"        #15
+"black",        #0
+"blue",         #1
+"cyan",         #2
+"darkblue",     #3
+"darkcyan",     #4
+"darkgray",     #5
+"darkgreen",    #6
+"darkmagenta",  #7
+"darkred",      #8
+"darkyellow",   #9
+"gray",         #10
+"green",        #11
+"magenta",      #12
+"red",          #13
+"white",        #14
+"yellow"        #15
 )
 
 $Script:Back_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
+$Script:Automated = $false
 # Back Viper's Website
 # http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
 
@@ -281,12 +284,13 @@ Function ServiceSet([Int]$ServiceVal){
         $ServiceName = $ServicesList[$i][0]
         $ServiceNameFull = GetServiceNameFull $ServiceName
         $ServiceType = $ServicesTypeList[$ServiceT]
-        If ((ServiceCheck $ServiceNameFull $ServiceType) -eq $True){
+        $ServiceCurrType = (Get-Service $S_Name).StartType
+        If ((ServiceCheck $ServiceNameFull $ServiceType $ServiceCurrType) -eq $True){
             If($ServiceT -In 1..3){
-                Write-Host $ServiceNameFull "-" $ServiceType
+                Write-Host $ServiceNameFull "-" $ServiceCurrType "->" $ServiceType
                 Set-Service $ServiceNameFull -StartupType $ServiceType
             } ElseIf($ServiceT -eq 4){
-                Write-Host $ServiceNameFull "-" $ServiceType" (Delayed Start)"
+                Write-Host $ServiceNameFull "-" $ServiceCurrType "->" $ServiceType" (Delayed Start)"
                 Set-Service $ServiceNameFull -StartupType $ServiceType
                 $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
                 Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
@@ -294,8 +298,10 @@ Function ServiceSet([Int]$ServiceVal){
         }
     }
     Write-Host "Service Changed..."
-    Write-Host "Press any key to close..."
-    $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+	If($Automated -ne $true){
+        Write-Host "Press any key to close..."
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+	}
     Exit
 }
 
@@ -309,15 +315,14 @@ Function GetServiceNameFull([String]$ServiceN){
     Return $ServiceR
 }
 
-Function ServiceCheck([string] $S_Name, [string]$S_Type) {
+Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
     [bool] $ReturnV = $False
-    If ( Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
-        $ServType = (Get-Service $S_Name).StartType
-        If($S_Type -ne $ServType){
+    If (Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
+        If($S_Type -ne $C_Type){
             $ReturnV = $True
             If($S_Name -eq 'lfsvc'){
-			 #Has to be removed or cant change service 
-		      # from disabled to anything else (Known Bug)
+			    #Has to be removed or cant change service 
+		        # from disabled to anything else (Known Bug)
                 Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3"  -recurse  -Force
             }
         }
@@ -337,14 +342,38 @@ function Black_Viper_Set ([Int]$Back_Viper){
     }
 }
 
+
 If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
-    TOS    
+    If ($SettingImp -ne $null -and $SettingImp){
+	    $Automated = $true
+        If($SettingImp -In 1..3){
+            Black_Viper_Set $SettingImp
+        } ElseIf($SettingImp.ToLower() -eq "default"){
+            Black_Viper_Set 1
+		} ElseIf($SettingImp.ToLower() -eq "safe"){
+            Black_Viper_Set 2
+		} ElseIf($SettingImp.ToLower() -eq "tweaked"){
+            Black_Viper_Set 3
+		} Else{
+            Write-Host "Invalid Selection"  -ForegroundColor Blue -BackgroundColor Black
+            Write-Host ""			
+            Write-Host "Valid Selections are:"  -ForegroundColor Blue -BackgroundColor Black
+            Write-Host "1 or Default"  -ForegroundColor Green -BackgroundColor Black
+            Write-Host "2 or Safe"  -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "3 or Tweaked"  -ForegroundColor Red -BackgroundColor Black
+            Write-Host ""
+            Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+            $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+        }
+    } Else{
+        TOS
+    }
 } Else {
     Write-Host "Websites:"
     Write-Host "https://github.com/madbomb122/Win10Script/"
     Write-Host "http://www.blackviper.com/"
     Write-Host ""
-    Write-Host "Not a Valid OS for this Script."  -ForegroundColor Red -BackgroundColor 
+    Write-Host "Not a Valid OS for this Script."  -ForegroundColor Red -BackgroundColor Black
     Write-Host "Win 10 Home and Pro Only"
     Write-Host ""
     Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
