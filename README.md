@@ -24,7 +24,7 @@ Run script with changing Services to Default Settings (Only ones changed by Blac
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 1` <br />
 or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File Win10-Menu.ps1 -Set Default` <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
 ******
 
 Run script with changing Services to Black Viper's Safe Setting: <br />
@@ -34,7 +34,7 @@ Run script with changing Services to Black Viper's Safe Setting: <br />
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 2` <br />
 or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File Win10-Menu.ps1 -Set Safe` <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Safe` <br />
 ******
 
 Run script with changing Services to Black Viper's Tweaked Setting: <br />
@@ -44,7 +44,7 @@ Run script with changing Services to Black Viper's Tweaked Setting: <br />
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 3` <br />
 or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File Win10-Menu.ps1 -Set Tweaked` <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Tweaked` <br />
 ******
 
 ## FAQ
@@ -52,7 +52,7 @@ or <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
 **Q:** Can I run the script safely? <br />
-**A:** The script itself is safe, but changes to services may cause problems
+**A:** The script itself is safe, but changes to services may cause problems.
 
 **Q:** Can I run the script repeatedly? <br />
 **A:** Yes, with same or different settings. (same setting will do nothing but do some display)
