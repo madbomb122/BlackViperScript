@@ -284,7 +284,7 @@ Function ServiceSet([Int]$ServiceVal){
         $ServiceName = $ServicesList[$i][0]
         $ServiceNameFull = GetServiceNameFull $ServiceName
         $ServiceType = $ServicesTypeList[$ServiceT]
-        $ServiceCurrType = (Get-Service $S_Name).StartType
+        $ServiceCurrType = (Get-Service $ServiceNameFull).StartType
         If ((ServiceCheck $ServiceNameFull $ServiceType $ServiceCurrType) -eq $True){
             If($ServiceT -In 1..3){
                 Write-Host $ServiceNameFull "-" $ServiceCurrType "->" $ServiceType
@@ -298,10 +298,10 @@ Function ServiceSet([Int]$ServiceVal){
         }
     }
     Write-Host "Service Changed..."
-	If($Automated -ne $true){
+    If($Automated -ne $true){
         Write-Host "Press any key to close..."
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
-	}
+    }
     Exit
 }
 
@@ -345,18 +345,18 @@ function Black_Viper_Set ([Int]$Back_Viper){
 
 If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
     If ($SettingImp -ne $null -and $SettingImp){
-	    $Automated = $true
+        $Automated = $true
         If($SettingImp -In 1..3){
             Black_Viper_Set $SettingImp
         } ElseIf($SettingImp.ToLower() -eq "default"){
             Black_Viper_Set 1
-	} ElseIf($SettingImp.ToLower() -eq "safe"){
+        } ElseIf($SettingImp.ToLower() -eq "safe"){
             Black_Viper_Set 2
-	} ElseIf($SettingImp.ToLower() -eq "tweaked"){
+        } ElseIf($SettingImp.ToLower() -eq "tweaked"){
             Black_Viper_Set 3
-	} Else{
+        } Else{
             Write-Host "Invalid Selection"  -ForegroundColor Blue -BackgroundColor Black
-            Write-Host ""			
+            Write-Host ""            
             Write-Host "Valid Selections are:"  -ForegroundColor Blue -BackgroundColor Black
             Write-Host "1 or Default"  -ForegroundColor Green -BackgroundColor Black
             Write-Host "2 or Safe"  -ForegroundColor Yellow -BackgroundColor Black
