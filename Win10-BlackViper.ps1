@@ -7,7 +7,7 @@
 # Script + Menu By
 # Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
-# Version: 1.1, 02-26-2017
+# Version: 1.2, 03-04-2017
 #
 # Release Type: Stable
 ##########
