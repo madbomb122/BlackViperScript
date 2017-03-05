@@ -1,9 +1,16 @@
 @ECHO OFF
 
-:: Remove the 2 Colons infront of the command you want to run
+::----------------------------------------------------------------------
 
-:: First Line Description of Command
-:: Second Line Command
+:: Instructions
+:: Remove the 2 Colons infront of "The Command" you want to run
+:: Bat file MUST be in same directory as script
+
+:: Format of File
+:: Description of "The Command"
+:: "The Command"
+
+::----------------------------------------------------------------------
 
 ::Run script with Menu Selection
 ::PowerShell.exe -NoProfile -Command "& {Start-Process PowerShell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File %~dp0BlackViper-Win10.ps1' -Verb RunAs}"
