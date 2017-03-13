@@ -9,7 +9,7 @@
 # Website: https://github.com/madbomb122/
 # Version: 1.3, 03-13-2017
 #
-# Release Type: Stable
+# Release Type: Beta
 ##########
 
 <#
@@ -50,12 +50,19 @@ Function TOSDisplay {
     Write-Host "Read License file for full Terms.              " -ForegroundColor Black -BackgroundColor White
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     If ($OSType -ne 64){
-    Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
-    Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
-    Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
-    Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
-    Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
-    } 
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+    }
+    If ($RelType -ne "Stable"){
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "                 Caution!!!                    " -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host " Service Configuration are based on Creator's  " -ForegroundColor Red -BackgroundColor Black
+        Write-Host " Update and is still being changed.            " -ForegroundColor Red -BackgroundColor Black
+        Write-Host " Use AT YOUR OWN RISK.                         " -ForegroundColor Red -BackgroundColor Black
+    }
 }
 
 function TOS {
