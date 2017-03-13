@@ -152,17 +152,21 @@ function Black_Viper_Input {
     }
 }
 
-$BlackViperDisItems = @(
-"       Black Viper's Service Configurations      ",
-' Will change the services based on your choice.  ',
-" Settings based on Black Viper's Configurations. ",
-'1. Default                                       ',
-'2. Safe                                          ',
-'3. Tweaked                                       ',
-'Q. Quit (No changes)                             ',
-"M. Go to Madbomb122's Github                     ",
-"B. Go to Black Viper's Website                   "
-)
+$BlackViperDisItems = @(" ") * 9
+$BlackViperDisItems[0] = "       Black Viper's Service Configurations      "
+If ($OSType -ne 64){
+    $BlackViperDisItems[1] = "Settings based on Black Viper's Configurations.  "
+    $BlackViperDisItems[2] = "Ment for x64, Use on x32 AT YOUR OWN RISK.       "
+} Else {
+    $BlackViperDisItems[1] = "                                                 "
+    $BlackViperDisItems[2] = "Settings based on Black Viper's Configurations.  "
+}
+$BlackViperDisItems[3] = '1. Default                                       '
+$BlackViperDisItems[4] = '2. Safe                                          '
+$BlackViperDisItems[5] = '3. Tweaked                                       '
+$BlackViperDisItems[6] = 'Q. Quit (No changes)                             '
+$BlackViperDisItems[7] = "M. Go to Madbomb122's Github                     "
+$BlackViperDisItems[8] = "B. Go to Black Viper's Website                   "
 
 $colors = @(
 "black",        #0
