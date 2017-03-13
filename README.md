@@ -1,9 +1,9 @@
 ## Description
-Easy to use Script that can set windows 10 services based on Black Viper's Service Configurations.  <br />
-**Note: Script will ONLY work on windows 10 Home or Pro, All others will not let you run the script**
+Easy to use Script that can set Windows 10 services based on Black Viper's Service Configurations.  <br />
+**Note: Script will ONLY work on Windows 10 Home or Pro, All others will not let you run the script**  <br />
+**Note: These Service Configurations are ment for x64 Bit, Use on x32 Bit AT YOUR OWN RISK.**
 
-Black Viper's Windows 10 Service Configurations  <br />
-http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
+Black Viper's Service Configurations from http://www.blackviper.com/
 
 # [](#header-1)Basic Usage
 Run the Script <br />
@@ -51,6 +51,12 @@ or <br />
 **Q:** The script file looks all messy in notepad, How do i view it? <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
+**Q:** Who do I contact about the Service Configurations or an issue with the configuration? <br />
+**A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper.
+
+**Q:** I have an issue with the script, what do I do? <br />
+**A:** Post it as an issue using github's issues tab up top.
+
 **Q:** Can I run the script safely? <br />
 **A:** The script itself is safe, but changes to services may cause problems.
 
@@ -64,7 +70,7 @@ or <br />
 **A:** Yes, run the script again and select again. <br />
 
 **Q:** The script messed up my computer. <br />
-**A:** The script is as is, any problems you have/had is not my problem.
+**A:** The script is as is, any problems you have/had is not My problem.
 
 **Q:** How long are you going to maintain the script? <br />
-**A:** No Clue, but will update service changes when i see any changes
+**A:** No Clue, but will update service changes when I see any changes or get notified of any changes.
