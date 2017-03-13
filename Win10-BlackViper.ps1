@@ -1,5 +1,5 @@
 ##########
-# Win10 Black Viper Service Configurations
+# Win10 Black Viper Service Settings
 # 
 # Black Viper's Settings from
 # Website: http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
@@ -7,13 +7,13 @@
 # Script + Menu By
 # Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
-# Version: 1.2, 03-04-2017
+# Version: 1.3, 03-13-2017
 #
 # Release Type: Stable
 ##########
 
 <#
-    Copyright (c) 2017 Madbomb122 - Black Viper's Service Configurations Script
+    Copyright (c) 2017 Madbomb122 - Black Viper Service Script
     Copyright (c) 1999-2017 by Charles "Black Viper" Sparks - Actual settings for the Services
     
     This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,13 @@ Function TOSDisplay {
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     Write-Host "Read License file for full Terms.              " -ForegroundColor Black -BackgroundColor White
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-    Write-Host "Do you Accept the Terms of Use? (Y)es/(N)o     " -ForegroundColor White -BackgroundColor Black    
+    If ($OSType -ne 64){
+    Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+    Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
+    Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
+    Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
+    Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+    } 
 }
 
 function TOS {
@@ -83,15 +89,21 @@ Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]
 }
 
 function ChoicesDisplay ([Array]$ChToDisplay) {
-    TitleBottom $ChToDisplay[0] 11
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu "|" 14 0 1
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
+    If ($OSType -ne 64){
+    DisplayOutMenu "|                                                   |" 14 0 1
+    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
+    }
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
     for ($i=3; $i -le 5; $i++) {
-        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i] 2 0 0 ;DisplayOutMenu "|" 14 0 1
+        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;DisplayOutMenu "|" 14 0 1
     }
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[6] 13 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
@@ -99,24 +111,8 @@ function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "     https://github.com/madbomb122/Win10Script/    " 15 0 0 ;DisplayOutMenu "|" 14 0 1
-    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "            http://www.blackviper.com/             " 15 0 0 ;DisplayOutMenu "|" 14 0 1    
-    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-}
-
-function TitleBottom ([String]$TitleA,[Int]$TitleB) {
-    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    If($TitleB -eq 16) {
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Current Version: " 15 0 0 ;DisplayOutMenu $CurrVer 15 0 0 ;DisplayOutMenu " |" 14 0 0
-        If($RelType -eq "Stable "){
-            DisplayOutMenu " Release:" 11 0 0 ;DisplayOutMenu $RelType 11 0 0 ;
-        } Else {
-            DisplayOutMenu " Release:" 15 0 0 ;DisplayOutMenu $RelType 15 0 0 ;
-        }
-        DisplayOutMenu "|" 14 0 1
-    } Else {
-        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $TitleA $TitleB 0 0 ;DisplayOutMenu "|" 14 0 1
-    }
+    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "          https://github.com/madbomb122/           " 15 0 0 ;DisplayOutMenu "|" 14 0 1
+    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "            http://www.blackviper.com/             " 15 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
 }
 
@@ -150,33 +146,34 @@ function Black_Viper_Input {
 }
 
 $BlackViperDisItems = @(
-'       Black Viper Service Configurations        ',
+"       Black Viper's Service Configurations      ",
 ' Will change the services based on your choice.  ',
-" Settings based on Black Viper's Settings        ",
+" Settings based on Black Viper's Configurations. ",
 '1. Default                                       ',
 '2. Safe                                          ',
 '3. Tweaked                                       ',
 'Q. Quit (No changes)                             ',
 "M. Go to Madbomb122's Github                     ",
-"B. Go to Black Viper's Website                   ")
+"B. Go to Black Viper's Website                   "
+)
 
 $colors = @(
-    "black",        #0
-    "blue",         #1
-    "cyan",         #2
-    "darkblue",     #3
-    "darkcyan",     #4
-    "darkgray",     #5
-    "darkgreen",    #6
-    "darkmagenta",  #7
-    "darkred",      #8
-    "darkyellow",   #9
-    "gray",         #10
-    "green",        #11
-    "magenta",      #12
-    "red",          #13
-    "white",        #14
-    "yellow"        #15
+"black",        #0
+"blue",         #1
+"cyan",         #2
+"darkblue",     #3
+"darkcyan",     #4
+"darkgray",     #5
+"darkgreen",    #6
+"darkmagenta",  #7
+"darkred",      #8
+"darkyellow",   #9
+"gray",         #10
+"green",        #11
+"magenta",      #12
+"red",          #13
+"white",        #14
+"yellow"        #15
 )
 
 $Script:Back_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
@@ -263,7 +260,8 @@ $ServicesList = @(
 ('WwanSvc',2,2,1,1),
 ('XblAuthManager',2,2,1,1),
 ('XblGameSave',2,2,1,1),
-('XboxNetApiSvc',2,2,1,1))
+('XboxNetApiSvc',2,2,1,1)
+)
 $ServiceLen = $ServicesList.length
 
 $ServicesTypeList = @(
@@ -293,6 +291,8 @@ Function ServiceSet([Int]$ServiceVal){
                 $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
                 Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
             }
+        } Else {
+            Write-Host $ServiceNameFull "is already" $ServiceCurrType
         }
     }
     Write-Host "Service Changed..."
@@ -340,6 +340,9 @@ function Black_Viper_Set ([Int]$Back_Viper){
     }
 }
 
+If ([System.Environment]::Is64BitProcess) {
+    $OSType = 64
+}
 
 If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
     If ($SettingImp -ne $null -and $SettingImp){
