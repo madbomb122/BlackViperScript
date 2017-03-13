@@ -152,6 +152,10 @@ function Black_Viper_Input {
     }
 }
 
+If ([System.Environment]::Is64BitProcess) {
+    $OSType = 64
+}
+
 $BlackViperDisItems = @(" ") * 9
 $BlackViperDisItems[0] = "       Black Viper's Service Configurations      "
 If ($OSType -ne 64){
@@ -353,10 +357,6 @@ function Black_Viper_Set ([Int]$Back_Viper){
     } ElseIf ($Back_Viper -In 2..3){
         ServiceSet ($Back_Viper+1)
     }
-}
-
-If ([System.Environment]::Is64BitProcess) {
-    $OSType = 64
 }
 
 If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
