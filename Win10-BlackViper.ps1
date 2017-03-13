@@ -1,5 +1,5 @@
 ##########
-# Win10 Black Viper Service Settings
+# Win10 Black Viper Service Configurations
 # 
 # Black Viper's Settings from
 # Website: http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
@@ -13,7 +13,7 @@
 ##########
 
 <#
-    Copyright (c) 2017 Madbomb122 - Black Viper Service Script
+    Copyright (c) 2017 Madbomb122 - Black Viper's Service Configurations Script
     Copyright (c) 1999-2017 by Charles "Black Viper" Sparks - Actual settings for the Services
     
     This program is free software: you can redistribute it and/or modify
@@ -150,7 +150,7 @@ function Black_Viper_Input {
 }
 
 $BlackViperDisItems = @(
-'               Black Viper Services              ',
+'       Black Viper Service Configurations        ',
 ' Will change the services based on your choice.  ',
 " Settings based on Black Viper's Settings        ",
 '1. Default                                       ',
@@ -158,26 +158,25 @@ $BlackViperDisItems = @(
 '3. Tweaked                                       ',
 'Q. Quit (No changes)                             ',
 "M. Go to Madbomb122's Github                     ",
-"B. Go to Black Viper's Website                   "
-)
+"B. Go to Black Viper's Website                   ")
 
 $colors = @(
-"black",        #0
-"blue",         #1
-"cyan",         #2
-"darkblue",     #3
-"darkcyan",     #4
-"darkgray",     #5
-"darkgreen",    #6
-"darkmagenta",  #7
-"darkred",      #8
-"darkyellow",   #9
-"gray",         #10
-"green",        #11
-"magenta",      #12
-"red",          #13
-"white",        #14
-"yellow"        #15
+    "black",        #0
+    "blue",         #1
+    "cyan",         #2
+    "darkblue",     #3
+    "darkcyan",     #4
+    "darkgray",     #5
+    "darkgreen",    #6
+    "darkmagenta",  #7
+    "darkred",      #8
+    "darkyellow",   #9
+    "gray",         #10
+    "green",        #11
+    "magenta",      #12
+    "red",          #13
+    "white",        #14
+    "yellow"        #15
 )
 
 $Script:Back_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
@@ -264,16 +263,15 @@ $ServicesList = @(
 ('WwanSvc',2,2,1,1),
 ('XblAuthManager',2,2,1,1),
 ('XblGameSave',2,2,1,1),
-('XboxNetApiSvc',2,2,1,1)
-)
+('XboxNetApiSvc',2,2,1,1))
 $ServiceLen = $ServicesList.length
 
 $ServicesTypeList = @(
-     '',          #0 -None
-     'disabled',  #1 -Disable
-     'manual',    #2 -Manual
-     'automatic', #3 -Auto Normal
-     'automatic'  #4 -Atuo Delay
+    '',          #0 -None
+    'disabled',  #1 -Disable
+    'manual',    #2 -Manual
+    'automatic', #3 -Auto Normal
+    'automatic'  #4 -Atuo Delay
 )
 
 Function ServiceSet([Int]$ServiceVal){
