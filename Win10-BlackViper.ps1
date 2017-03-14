@@ -7,7 +7,7 @@
 # Script + Menu By
 # Author: Madbomb122
 # Website: https://github.com/madbomb122/
-# Version: 1.3, 03-13-2017
+# Version: 0.3, 03-14-2017
 #
 # Release Type: Beta
 ##########
@@ -33,6 +33,9 @@
 Param([alias("Set")] [string] $SettingImp)
 
 $ErrorActionPreference= 'silentlycontinue'
+$RelType = "Beta"
+#$RelType = "Testing"
+#$RelType = "Stable"
 
 # Ask for elevated permissions if required
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
@@ -100,12 +103,14 @@ function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
-    DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;DisplayOutMenu "|" 14 0 1
-    DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
     If ($OSType -ne 64){
-    DisplayOutMenu "|                                                   |" 14 0 1
-    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
-    }
+        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
+        DisplayOutMenu "|                                                   |" 14 0 1
+        DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
+    } Else {
+        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;DisplayOutMenu "|" 14 0 1
+        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
+	}
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
@@ -156,39 +161,34 @@ If ([System.Environment]::Is64BitProcess) {
     $OSType = 64
 }
 
-$BlackViperDisItems = @(" ") * 9
-$BlackViperDisItems[0] = "       Black Viper's Service Configurations      "
-If ($OSType -ne 64){
-    $BlackViperDisItems[1] = "Settings based on Black Viper's Configurations.  "
-    $BlackViperDisItems[2] = "Ment for x64, Use on x32 AT YOUR OWN RISK.       "
-} Else {
-    $BlackViperDisItems[1] = "                                                 "
-    $BlackViperDisItems[2] = "Settings based on Black Viper's Configurations.  "
-}
-$BlackViperDisItems[3] = '1. Default                                       '
-$BlackViperDisItems[4] = '2. Safe                                          '
-$BlackViperDisItems[5] = '3. Tweaked                                       '
-$BlackViperDisItems[6] = 'Q. Quit (No changes)                             '
-$BlackViperDisItems[7] = "M. Go to Madbomb122's Github                     "
-$BlackViperDisItems[8] = "B. Go to Black Viper's Website                   "
+$BlackViperDisItems = @(
+"       Black Viper's Service Configurations      ",
+"                                                 ",
+"Settings based on Black Viper's Configurations.  ",
+'1. Default                                       ',
+'2. Safe                                          ',
+'3. Tweaked                                       ',
+'Q. Quit (No changes)                             ',
+"M. Go to Madbomb122's Github                     ",
+"B. Go to Black Viper's Website                   ")
 
 $colors = @(
-"black",        #0
-"blue",         #1
-"cyan",         #2
-"darkblue",     #3
-"darkcyan",     #4
-"darkgray",     #5
-"darkgreen",    #6
-"darkmagenta",  #7
-"darkred",      #8
-"darkyellow",   #9
-"gray",         #10
-"green",        #11
-"magenta",      #12
-"red",          #13
-"white",        #14
-"yellow"        #15
+    "black",        #0
+    "blue",         #1
+    "cyan",         #2
+    "darkblue",     #3
+    "darkcyan",     #4
+    "darkgray",     #5
+    "darkgreen",    #6
+    "darkmagenta",  #7
+    "darkred",      #8
+    "darkyellow",   #9
+    "gray",         #10
+    "green",        #11
+    "magenta",      #12
+    "red",          #13
+    "white",        #14
+    "yellow"        #15
 )
 
 $Script:Back_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
@@ -206,89 +206,89 @@ $BuildVer = [environment]::OSVersion.Version.build
 # 10240 = first release
 
 $ServicesList = @(
- #(Service Name, Def-Home, Def-Pro , Safe, Tweaked)
-('AJRouter',2,2,2,1),
-('ALG',2,2,2,1),
-('BthHFSrv',2,2,2,1),
-('bthserv',2,2,2,1),
-('CDPUserSvc_',3,3,2,2),
-('CertPropSvc',2,2,2,1),
-('CscService',0,2,1,1),
-('diagnosticshub.standardcollector.service',2,2,1,1),
-('dmwappushsvc',2,2,1,1),
-('DusmSvc',3,3,3,1),
-#('EntAppSvc',2,2,1,1), -Cant change Setting
-('Fax',2,2,1,1),
-('FrameServer',2,2,1,1),
-('hkmsvc',0,2,2,1),
-('HvHost',2,2,1,1),
-('icssvc',2,2,1,1),
-('iphlpsvc',3,3,3,1),
-('IpxlatCfgSvc',2,2,2,1),
-('irmon',2,2,1,1),
-('lfsvc',2,2,1,1),
-('MapsBroker',4,4,1,1),
-('MSiSCSI',2,2,1,1),
-('NaturalAuthentication',2,2,2,1),
-('NcbService',2,2,2,1),
-('NcdAutoSetup',2,2,2,1),
-('Netlogon',2,2,2,1),
-('NetTcpPortSharing',2,2,1,1),
-('PeerDistSvc',0,2,1,1),
-('PhoneSvc',2,2,1,1),
-('PimIndexMaintenanceSvc_',2,2,1,1),
-('RetailDemo',2,2,1,1),
-('RmSvc',2,2,1,1),
-('RpcLocator',2,2,1,1),
-('ScDeviceEnum',2,2,1,1),
-('SCPolicySvc',2,2,1,1),
-('SEMgrSvc',2,2,1,1),
-('SensorDataService',2,2,1,1),
-('SensorService',2,2,1,1),
-('SensrSvc',2,2,1,1),
-('SessionEnv',2,2,2,1),
-('SharedAccess',2,2,1,1),
-('SmsRouter',2,2,1,1),
-('SNMPTRAP',2,2,1,1),
-('spectrum',2,2,2,1),
-('StorSvc',2,2,2,1),
-('TabletInputService',2,2,1,1),
-('TermService',2,2,2,1),
-#('tiledatamodelsvc',3,3,3,1), -Cant change Setting
-('TrkWks',3,3,3,1),
-('UmRdpService',2,2,2,1),
-('vmicguestinterface',2,2,1,1),
-('vmicheartbeat',2,2,1,1),
-('vmickvpexchange',2,2,1,1),
-('vmicrdv',2,2,1,1),
-('vmicshutdown',2,2,1,1),
-('vmictimesync',2,2,1,1),
-('vmicvmsession',2,2,1,1),
-('vmicvss',2,2,1,1),
-('WbioSrvc',2,2,2,1),
-('wcncsvc',2,2,2,1),
-('WebClient',2,2,2,1),
-('WFDSConSvc',2,2,1,1),
-('WinRM',2,2,1,1),
-('wisvc',2,2,1,1),
-('wlpasvc',2,2,2,1),
-('WMPNetworkSvc',2,2,1,1),
-('Wms',0,3,1,1),
-('WmsRepair',0,3,1,1),
-('workfolderssvc',2,2,1,1),
-('WwanSvc',2,2,1,1),
-('XblAuthManager',2,2,1,1),
-('XblGameSave',2,2,1,1),
-('XboxNetApiSvc',2,2,1,1)
-)
+# Layout of Array (Numbers in = Service Type)
+#(Service Name, Def-Home, Def-Pro , Safe, Tweaked)
+('AJRouter',2,2,2,1),                                #AllJoyn Router Service
+('ALG',2,2,2,1),                                     #Application Layer Gateway Service
+('BthHFSrv',2,2,2,1),                                #Bluetooth Handsfree Service
+('bthserv',2,2,2,1),                                 #Bluetooth Support Service
+('PeerDistSvc',0,2,1,1),                             #BranchCache
+('CertPropSvc',2,2,2,1),                             #Certificate Propagation
+('NfsClnt',0,0,1,1),                                 #Client for NFS
+('CDPUserSvc_',3,3,2,2),                             #Connected Devices Platform User Service_
+('PimIndexMaintenanceSvc_',2,2,1,1),                 #Contact Data_
+('TrkWks',3,3,3,1),                                  #Distributed Link Tracking Client
+('dmwappushsvc',2,2,1,1),                            #Diagnostics Tracking Service (DiagTrack) or dmwappushsvc
+('MapsBroker',4,4,1,1),                              #Downloaded Maps Manager
+('DusmSvc',3,3,3,1),                                 #DusmSvc
+('Fax',2,2,1,1),                                     #Fax
+('lfsvc',2,2,1,1),                                   #Geolocation Service
+('hkmsvc',0,2,2,1),                                  #Health Key and Certificate Management Removed in Creators Update
+('HvHost',2,2,1,1),                                  #HV Host Service
+('vmickvpexchange',2,2,1,1),                         #Hyper-V Data Exchange Service
+('vmicguestinterface',2,2,1,1),                      #Hyper-V Guest Service Interface
+('vmicshutdown',2,2,1,1),                            #Hyper-V Guest Shutdown Service
+('vmicheartbeat',2,2,1,1),                           #Hyper-V Heartbeat Service
+('vmicvmsession',2,2,1,1),                           #Hyper-V PowerShell Direct Service
+('vmicrdv',2,2,1,1),                                 #Hyper-V Remote Desktop Virtualization Service
+('vmictimesync',2,2,1,1),                            #Hyper-V Time Synchronization Service
+('vmicvss',2,2,1,1),                                 #Hyper-V Volume Shadow Copy Requestor
+('irmon',2,2,1,1),                                   #Infrared monitor service
+('SharedAccess',2,2,1,1),                            #Internet Connection Sharing (ICS)
+('iphlpsvc',3,3,3,1),                                #IP Helper
+('IpxlatCfgSvc',2,2,2,1),                            #IP Translation Configuration Service
+('wlpasvc',2,2,2,1),                                 #LPA Service
+('diagnosticshub.standardcollector.service',2,2,1,1),#Microsoft (R) Diagnostics Hub Standard Collector Service
+('MSiSCSI',2,2,1,1),                                 #Microsoft iSCSI Initiator Service
+('SmsRouter',2,2,1,1),                               #Microsoft Windows SMS Router Service
+('NaturalAuthentication',2,2,2,1),                   #Natural Authentication
+('NetTcpPortSharing',2,2,1,1),                       #Net.Tcp Port Sharing Service
+('Netlogon',2,2,2,1),                                #Netlogon
+('NcdAutoSetup',2,2,2,1),                            #Network Connected Devices Auto-Setup
+('NcbService',2,2,2,1),                              #Network Connection Broker
+('CscService',0,2,1,1),                              #Offline Files
+('SEMgrSvc',2,2,1,1),                                #Payments and NFC/SE Manager
+('PhoneSvc',2,2,1,1),                                #Phone Service
+('RmSvc',2,2,1,1),                                   #Radio Management Service
+('SessionEnv',2,2,2,1),                              #Remote Desktop Configuration
+('TermService',2,2,2,1),                             #Remote Desktop Services
+('UmRdpService',2,2,2,1),                            #Remote Desktop Services UserMode Port Redirector
+('RpcLocator',2,2,1,1),                              #Remote Procedure Call (RPC) Locator
+('RetailDemo',2,2,1,1),                              #Retail Demo Service
+('SensorDataService',2,2,1,1),                       #Sensor Data Service
+('SensrSvc',2,2,1,1),                                #Sensor Monitoring Service
+('SensorService',2,2,1,1),                           #Sensor Service
+('ScDeviceEnum',2,2,1,1),                            #Smart Card Device Enumeration Service
+('SCPolicySvc',2,2,1,1),                             #Smart Card Removal Policy
+('SNMPTRAP',2,2,1,1),                                #SNMP Trap
+('StorSvc',2,2,2,1),                                 #Storage Service
+('TabletInputService',2,2,1,1),                      #Touch Keyboard and Handwriting Panel Service
+('WebClient',2,2,2,1),                               #WebClient
+('WFDSConSvc',2,2,1,1),                              #WFDSConMgrSvc
+('WbioSrvc',2,2,2,1),                                #Windows Biometric Service
+('FrameServer',2,2,1,1),                             #Windows Camera Frame Server
+('wcncsvc',2,2,2,1),                                 #Windows Connect Now - Config Registrar
+('wisvc',2,2,1,1),                                   #Windows Insider Service
+('WMPNetworkSvc',2,2,1,1),                           #Windows Media Player Network Sharing Service
+('icssvc',2,2,1,1),                                  #Windows Mobile Hotspot Service
+('Wms',0,3,1,1),                                     #Windows MultiPoint Server Host Service
+('WmsRepair',0,3,1,1),                               #Windows MultiPoint Server Repair Service
+('WinRM',2,2,1,1),                                   #Windows Remote Management (WS-Management)
+('spectrum',2,2,2,1),                                #Windows Spectrum
+('workfolderssvc',2,2,1,1),                          #Work Folders
+('WwanSvc',2,2,1,1),                                 #WWAN AutoConfig
+('XblAuthManager',2,2,1,1),                          #Xbox Live Auth Manager
+('XblGameSave',2,2,1,1),                             #Xbox Live Game Save
+('XboxNetApiSvc',2,2,1,1))                           #XboxNetApiSvc
+
 $ServiceLen = $ServicesList.length
 
 $ServicesTypeList = @(
-    '',          #0 -None
+    '',          #0 -None (Not Installed, Default Only)
     'disabled',  #1 -Disable
     'manual',    #2 -Manual
     'automatic', #3 -Auto Normal
-    'automatic'  #4 -Atuo Delay
+    'automatic'  #4 -Auto Delay
 )
 
 Function ServiceSet([Int]$ServiceVal){
