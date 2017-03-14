@@ -1,7 +1,10 @@
 ## Description
 Easy to use Script that can set Windows 10 services based on Black Viper's Service Configurations.  <br />
-**Note: Script will ONLY work on Windows 10 Home or Pro, All others will not let you run the script**  <br />
-**Note: These Service Configurations are ment for x64 Bit, Use on x32 Bit AT YOUR OWN RISK.**
+**Note 1: Script will ONLY work on Windows 10 Home or Pro, All others will not let you run the script**  <br />
+
+**Note 2: These Service Configurations are ment for x64 Bit, Use on x32 Bit AT YOUR OWN RISK.**  <br />
+
+**Note 3: Current Service Configurations ment for Creator's Update, since it it not out script will be in beta till atleast then.**  <br />
 
 Black Viper's Service Configurations from http://www.blackviper.com/
 
