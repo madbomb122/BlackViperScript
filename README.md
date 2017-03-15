@@ -77,5 +77,12 @@ or <br />
 **Q:** The script messed up my computer. <br />
 **A:** The script is as is, any problems you have/had is not My problem.
 
+**Q:** Can I stop a service from being changed?. <br />
+**A:** Yes, edit the CSV file that is imported and do the change in there.
+
+**Q:** Can I add a service to be changed?. <br />
+**A:** Yes, edit the CSV file that is imported and put it in the proper format, <br />
+  Number meaning 0 -Not installed, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay <br />
+
 **Q:** How long are you going to maintain the script? <br />
 **A:** No Clue, but will update service changes when I see any changes or get notified of any changes.
