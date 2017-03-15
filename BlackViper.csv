@@ -1,5 +1,9 @@
 #Number after Service Name
-#0 -Not installed, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay 
+#0 -Not installed 
+#1 -Disable
+#2 -Manual
+#3 -Auto Normal
+#4 -Auto Delay 
 ServiceName,Def-Home,Def-Pro,Safe,Tweaked
 AJRouter,2,2,2,1
 ALG,2,2,2,1
