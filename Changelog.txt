@@ -1,5 +1,14 @@
 -----------------------------------------------------------------------------------
-0.3 (03-14-2017)
+0.4 (03-14-2017)
+
+Added Color to Script output
+Fixed bug that showed "Service is already" if service doesnt exist
+
+Changed script to load services from file BlackViper.csv
+^If it isnt with script it will give you an option to download the file
+
+-----------------------------------------------------------------------------------
+0.3 (03-13-2017)
 
 Added x64 and will be adding a check for Creators Update per Black Viper's Request
 
