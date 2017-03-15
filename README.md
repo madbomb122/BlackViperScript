@@ -7,7 +7,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 **Note 2: These Service Configurations are ment for x64 Bit, Use on x32 Bit AT YOUR OWN RISK.**  <br />
 
-**Note 3: Current Service Configurations ment for Creator's Update, since it it not out script will be in beta till atleast then.**  <br />
+**Note 3: Current Service Configurations ment for Creator's Update.**  <br />
 
 
 # [](#header-1)Basic Usage
