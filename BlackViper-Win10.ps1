@@ -70,7 +70,7 @@ Function TOSDisplay {
     }
 }
 
-function TOS {
+Function TOS {
     $TOS = 'X'
     while($TOS -ne "Out"){
         Clear-Host
@@ -92,6 +92,29 @@ function TOS {
     Return
 }
 
+Function LoadWebCSV {
+    $LoadWebCSV = 'X'
+    while($LoadWebCSV -ne "Out"){
+        Clear-Host
+        Write-Host "Missing File 'BlackViper.csv'" -ForegroundColor Red -BackgroundColor Black
+        Write-host "Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
+        If($Invalid -eq 1){
+            Write-host ""
+            Write-host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            $Invalid = 0
+        }
+        $LoadWebCSV = Read-Host "`n(Y)es/(N)o"
+        switch ($LoadWebCSV.ToLower()) {
+            n {Exit}
+            no {Exit}
+            y {$LoadWebCSV = "Out"}
+            yes {$LoadWebCSV = "Out"}
+            default {$Invalid = 1}
+        }
+    }
+    Return
+}
+
 Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine){
     If ($NewLine -eq 0){
         Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
@@ -100,7 +123,7 @@ Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]
     }
 }
 
-function DisplayOut([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor){
+Function DisplayOut([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor){
     If($TxtColor -le 15){
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
@@ -108,7 +131,7 @@ function DisplayOut([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor){
     }    
 }
 
-function ChoicesDisplay ([Array]$ChToDisplay) {
+Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
@@ -138,13 +161,13 @@ function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
 }
 
-function OpenWebsite ([String]$Website){
+Function OpenWebsite ([String]$Website){
     $IE=new-object -com internetexplorer.application
     $IE.navigate2($Website)
     $IE.visible=$true
 }
 
-function Black_Viper_Input {
+Function Black_Viper_Input {
     $Black_Viper_Input = 'X'
     while($Black_Viper_Input -ne "Out"){
         Clear-Host
@@ -215,30 +238,6 @@ $BuildVer = [environment]::OSVersion.Version.build
 # 10586 = first major update
 # 10240 = first release
 
-
-Function LoadWebCSV {
-    $LoadWebCSV = 'X'
-    while($LoadWebCSV -ne "Out"){
-        Clear-Host
-        Write-Host "Missing File 'BlackViper.csv'"
-        Write-host "Download File from Madbomb122's Github?"
-        If($Invalid -eq 1){
-            Write-host ""
-            Write-host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
-            $Invalid = 0
-        }
-        $LoadWebCSV = Read-Host "`n(Y)es/(N)o"
-        switch ($LoadWebCSV.ToLower()) {
-            n {Exit}
-            no {Exit}
-            y {$LoadWebCSV = "Out"}
-            yes {$LoadWebCSV = "Out"}
-            default {$Invalid = 1}
-        }
-    }
-    Return
-}
-
 $ServicesTypeList = @(
     '',          #0 -None (Not Installed, Default Only)
     'disabled',  #1 -Disable
@@ -247,16 +246,27 @@ $ServicesTypeList = @(
     'automatic'  #4 -Auto Delay
 )
 
+$BlackViperList = @(
+    '',
+    'Def-Home',
+    'Def-Pro',
+    'Safe',
+    'Tweaked'
+)
+
 Function ServiceSet([Int]$ServiceVal){
     Clear-Host
+    $BVService = $BlackViperList[$ServiceVal]
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
     Write-host "-------------------------------"
     Foreach($item in $csv) {
-    
-        $ServiceT = $($item.$ServiceVal)
         $ServiceName = $($item.ServiceName)
-        $ServiceNameFull = GetServiceNameFull $ServiceName
-        $ServiceType = $ServicesTypeList[$ServiceT]
+        $ServiceTypeNum = $($item.$BVService)
+        
+        If($ServiceName -like "*_*"){
+            $ServiceNameFull = (Get-Service | where {$_.Name -like (-join($ServiceName.replace('?',''),"*"))}).Name
+        }
+        $ServiceType = $ServicesTypeList[$ServiceTypeNum]
         $ServiceCurrType = (Get-Service $ServiceNameFull).StartType
         $SrvCheck = ServiceCheck $ServiceNameFull $ServiceType $ServiceCurrType
         If ($SrvCheck -eq $True){
@@ -284,22 +294,12 @@ Function ServiceSet([Int]$ServiceVal){
     Exit
 }
 
-Function GetServiceNameFull([String]$ServiceN){
-    [String] $ServiceR = $ServiceN
-    If($ServiceN -like "*_*"){
-        $ServiceR = -join($ServiceN.replace('?',''),"*")
-        $ServiceR = (Get-Service | where {$_.Name -like $ServiceR}).Name
-    }
-    Return $ServiceR
-}
-
 Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
     If (Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
         If($S_Type -ne $C_Type){
             $ReturnV = $True
-            If($S_Name -eq 'lfsvc'){
-                #Has to be removed or cant change service 
-                # from disabled to anything else (Known Bug)
+            If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled'){
+                # Has to be removed or cant change service from disabled to anything else (Known Bug)
                 Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3"  -recurse  -Force
             }
         } Else {
@@ -309,12 +309,12 @@ Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
     Return $ReturnV
 }
 
-function Black_Viper_Set ([Int]$Back_Viper){
+Function Black_Viper_Set ([Int]$Back_Viper){
     If ($Back_Viper -eq 1){
         If($WinEdition -eq "Microsoft Windows 10 Home"){
             ServiceSet $Back_Viper
         } ElseIf($WinEdition -eq "Microsoft Windows 10 Pro"){
-            ServiceSet ($Back_Viper+1) 
+            ServiceSet ($Back_Viper+1)
         }
     } ElseIf ($Back_Viper -In 2..3){
         ServiceSet ($Back_Viper+1)
@@ -327,8 +327,8 @@ If (Test-Path $FilePath -PathType Leaf){
     $csv = Import-Csv $FilePath
 } Else {
     LoadWebCSV
-	$url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
-    Invoke-WebRequest -Uri $url -OutFile $FilePath
+    $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
+    (New-Object System.Net.WebClient).DownloadFile($url, $FilePath)
     $csv = Import-Csv $FilePath
 }
 
