@@ -220,7 +220,7 @@ Function LoadWebCSV {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out"){
         Clear-Host
-        Write-Host "Missing File 'BV.csv'"
+        Write-Host "Missing File 'BlackViper.csv'"
         Write-host "Download File from Madbomb122's Github?"
         If($Invalid -eq 1){
             Write-host ""
@@ -321,13 +321,13 @@ function Black_Viper_Set ([Int]$Back_Viper){
     }
 }
 
-$FilePath = $CurrDir + "\BV.csv"
+$FilePath = $CurrDir + "\BlackViper.csv"
 
 If (Test-Path $FilePath -PathType Leaf){
     $csv = Import-Csv $FilePath
 } Else {
     LoadWebCSV
-	$url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BV.csv"
+	$url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
     Invoke-WebRequest -Uri $url -OutFile $FilePath
     $csv = Import-Csv $FilePath
 }
