@@ -336,7 +336,8 @@ Function ScriptPreStart {
     # 10586 = First Major Update
     # 10240 = First Release
     $ForBuild = 14393
-
+	
+<#
     If($Skip_Build_Check -eq 1 -and $BuildVer -lt $ForBuild){
         $BuildVer = $ForBuild
     }
@@ -348,7 +349,8 @@ Function ScriptPreStart {
         Write-Host "To skip this change 'Skip_Build_Check' to 1 in script file"
         Write-Host ""
         $DoNotRun = "Yes"
-    } 
+    }
+#>
     If(!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")){
         Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
         Write-Host "Win 10 Home and Pro Only"
