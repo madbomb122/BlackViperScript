@@ -21,7 +21,8 @@ Changed script to load services from file BlackViper.csv
 -----------------------------------------------------------------------------------
 0.3 (03-13-2017)
 
-Added x64 and will be adding a check for Creators Update per Black Viper's Request
+Added perBlack Viper's Request
+Check for x64 bit (still runs on x32 but gives a warning) 
 
 -----------------------------------------------------------------------------------
 0.2 (03-04-2017)
