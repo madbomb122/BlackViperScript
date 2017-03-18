@@ -1,3 +1,6 @@
+Work in Progress:
+Ability to check for update to Script and Service File (Skips by default)
+
 -----------------------------------------------------------------------------------
 0.5 (03-18-2017)
 
