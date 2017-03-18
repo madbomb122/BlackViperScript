@@ -1,9 +1,10 @@
 -----------------------------------------------------------------------------------
 0.5 (03-18-2017)
 
-Added ability to Skip edition and build check (USE AT YOUR OWN RISK)
+Added ability to Skip Edition check (USE AT YOUR OWN RISK)
+Added ability to Skip Build check, once it is implemented (USE AT YOUR OWN RISK)
 Added ability to Skip TOS (If you accept it)
-Added ability to have script close at end (before it paused so you can see results)
+Added ability to have Script close at end (before it paused so you can see results)
 
 -----------------------------------------------------------------------------------
 0.4 (03-14-2017)
