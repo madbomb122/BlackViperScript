@@ -1,3 +1,4 @@
+Param([alias("Set")] [string] $SettingImp)
 ##########
 # Win10 Black Viper Service Configuration Script
 #
@@ -29,8 +30,6 @@ $Release_Type = "Beta"
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #>
-
-Param([alias("Set")] [string] $SettingImp)
 
 #$Release_Type = "Beta"
 #$Release_Type = "Testing"
