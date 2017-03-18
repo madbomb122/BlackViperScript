@@ -7,7 +7,7 @@
 # Script + Menu By
 # Author: Madbomb122
 # Website: https://github.com/madbomb122/
-# Version: 0.4, 03-14-2017
+# Version: 0.5, 03-18-2017
 #
 # Release Type: Beta
 ##########
@@ -32,12 +32,13 @@
 
 Param([alias("Set")] [string] $SettingImp)
 
-$ErrorActionPreference= 'silentlycontinue'
 $RelType = "Beta"
 #$RelType = "Testing"
 #$RelType = "Stable"
 
-$CurrDir = (Get-Item -Path ".\" -Verbose).FullName
+#$filebase = (Get-Item -Path ".\" -Verbose).FullName
+$Global:filebase = $PSScriptRoot
+$ErrorActionPreference= 'silentlycontinue'
 
 # Ask for elevated permissions if required
 If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
@@ -46,6 +47,20 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 
 Function TOSDisplay {
+    If ($RelType -ne "Stable"){
+        Write-Host "                 Caution!!!                    " -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host " Service Configuration are based on Creator's  " -ForegroundColor Red -BackgroundColor Black
+        Write-Host " Update and is still being changed.            " -ForegroundColor Red -BackgroundColor Black
+        Write-Host " Use AT YOUR OWN RISK.                         " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+    }
+    If ($OSType -ne 64){
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+    }
     Write-Host "                 Terms of Use                  " -ForegroundColor Green -BackgroundColor Black
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     Write-Host "This program comes with ABSOLUTELY NO WARRANTY." -ForegroundColor Black -BackgroundColor White
@@ -54,20 +69,6 @@ Function TOSDisplay {
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     Write-Host "Read License file for full Terms.              " -ForegroundColor Black -BackgroundColor White
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-    If ($OSType -ne 64){
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
-        Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
-    }
-    If ($RelType -ne "Stable"){
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "                 Caution!!!                    " -ForegroundColor Yellow -BackgroundColor Black
-        Write-Host " Service Configuration are based on Creator's  " -ForegroundColor Red -BackgroundColor Black
-        Write-Host " Update and is still being changed.            " -ForegroundColor Red -BackgroundColor Black
-        Write-Host " Use AT YOUR OWN RISK.                         " -ForegroundColor Red -BackgroundColor Black
-    }
 }
 
 Function TOS {
@@ -182,7 +183,7 @@ Function Black_Viper_Input {
             1 {Black_Viper_Set 1; $Black_Viper_Input = "Out"}
             2 {Black_Viper_Set 2; $Black_Viper_Input = "Out"}
             3 {Black_Viper_Set 3; $Black_Viper_Input = "Out"}
-            M {OpenWebsite "https://github.com/madbomb122/Win10Script/"}
+            M {OpenWebsite "https://github.com/madbomb122/"}
             B {OpenWebsite "http://www.blackviper.com/"}
             Q {Exit}
             default {$Invalid = 1}
@@ -224,26 +225,15 @@ $colors = @(
     "yellow"        #15
 )
 
-$Script:Back_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
+$Script:Black_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
 $Script:Automated = $false
-# Back Viper's Website
-# http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
-
-$WinEdition = gwmi win32_operatingsystem | % caption
-#Pro = Microsoft Windows 10 Pro
-#Home = Microsoft Windows 10 Home 
-
-$BuildVer = [environment]::OSVersion.Version.build
-# 14393 = anniversary update
-# 10586 = first major update
-# 10240 = first release
 
 $ServicesTypeList = @(
     '',          #0 -None (Not Installed, Default Only)
     'disabled',  #1 -Disable
     'manual',    #2 -Manual
-    'automatic', #3 -Auto Normal
-    'automatic'  #4 -Auto Delay
+    'automatic', #3 -Automatic
+    'automatic'  #4 -Automatic (Delayed Start)
 )
 
 $BlackViperList = @(
@@ -287,7 +277,7 @@ Function ServiceSet([Int]$ServiceVal){
         }
     }
     Write-Host "Service Changed..."
-    If($Automated -ne $true){
+    If($Automated -ne 1){
         Write-Host "Press any key to close..."
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
     }
@@ -321,50 +311,94 @@ Function Black_Viper_Set ([Int]$Back_Viper){
     }
 }
 
-$FilePath = $CurrDir + "\BlackViper.csv"
+Function ScriptPreStart {
+    $FilePath = $filebase + "\BlackViper.csv"
 
-If (Test-Path $FilePath -PathType Leaf){
-    $csv = Import-Csv $FilePath
-} Else {
-    LoadWebCSV
-    $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
-    (New-Object System.Net.WebClient).DownloadFile($url, $FilePath)
-    $csv = Import-Csv $FilePath
-}
-
-If($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
-    If ($SettingImp -ne $null -and $SettingImp){
-        $Automated = $true
-        If($SettingImp -In 1..3){
-            Black_Viper_Set $SettingImp
-        } ElseIf($SettingImp.ToLower() -eq "default"){
-            Black_Viper_Set 1
-        } ElseIf($SettingImp.ToLower() -eq "safe"){
-            Black_Viper_Set 2
-        } ElseIf($SettingImp.ToLower() -eq "tweaked"){
-            Black_Viper_Set 3
-        } Else{
-            Write-Host "Invalid Selection" -ForegroundColor Blue -BackgroundColor Black
-            Write-Host ""
-            Write-Host "Valid Selections are:" -ForegroundColor Blue -BackgroundColor Black
-            Write-Host "1 or Default" -ForegroundColor Green -BackgroundColor Black
-            Write-Host "2 or Safe" -ForegroundColor Yellow -BackgroundColor Black
-            Write-Host "3 or Tweaked" -ForegroundColor Red -BackgroundColor Black
-            Write-Host ""
-            Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
-            $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
-        }
-    } Else{
-        TOS
+    If (Test-Path $FilePath -PathType Leaf){
+        $csv = Import-Csv $FilePath
+    } Else {
+        LoadWebCSV
+        $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
+        (New-Object System.Net.WebClient).DownloadFile($url, $FilePath)
+        $csv = Import-Csv $FilePath
     }
-} Else {
-    Write-Host "Websites:"
-    Write-Host "https://github.com/madbomb122/"
-    Write-Host "http://www.blackviper.com/"
-    Write-Host ""
-    Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
-    Write-Host "Win 10 Home and Pro Only"
-    Write-Host ""
-    Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
-    $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+
+#Pro = Microsoft Windows 10 Pro
+#Home = Microsoft Windows 10 Home
+    If ($Skip_Edition_Check -eq 1){
+        $WinEdition = "Microsoft Windows 10 Pro"
+    } Else {
+        $WinEdition = gwmi win32_operatingsystem | % caption
+    }
+
+# 14393 = anniversary update
+# 10586 = first major update
+# 10240 = first release
+    If ($Skip_Build_Check -eq 1){
+        $BuildVer = 14393
+    } Else {
+        $BuildVer = [environment]::OSVersion.Version.build
+    }
+    
+    If ($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
+        If ($SettingImp -ne $null -and $SettingImp){
+            $Automated = 1
+            If($SettingImp -In 1..3){
+                Black_Viper_Set $SettingImp
+            } ElseIf($SettingImp.ToLower() -eq "default"){
+                Black_Viper_Set 1
+            } ElseIf($SettingImp.ToLower() -eq "safe"){
+                Black_Viper_Set 2
+            } ElseIf($SettingImp.ToLower() -eq "tweaked"){
+                Black_Viper_Set 3
+            } Else{
+                Write-Host "Invalid Selection" -ForegroundColor Blue -BackgroundColor Black
+                Write-Host ""
+                Write-Host "Valid Selections are:" -ForegroundColor Blue -BackgroundColor Black
+                Write-Host "1 or Default" -ForegroundColor Green -BackgroundColor Black
+                Write-Host "2 or Safe" -ForegroundColor Yellow -BackgroundColor Black
+                Write-Host "3 or Tweaked" -ForegroundColor Red -BackgroundColor Black
+                Write-Host ""
+                Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+                $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+            }
+        } ElseIf ($Accept_TOS -eq 0){
+            TOS
+        } Else {
+            Black_Viper_Input
+        }
+    } Else {
+        Write-Host "Websites:"
+        Write-Host "https://github.com/madbomb122/"
+        Write-Host "http://www.blackviper.com/"
+        Write-Host ""
+        Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
+        Write-Host "Win 10 Home and Pro Only"
+        Write-Host ""
+        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+    }
 }
+
+# --------------------------------------------------------------------------
+
+#---Safe to change Variables---
+$Script:Accept_TOS = 0          #0 = See TOS
+                                #Anything else = Accept TOS
+
+$Script:Automated = 0           #0 = Pause at end of Script
+                                #1 = Close powershell at end of Script
+#------------------------------
+
+#---CHANGE AT YOUR OWN RISK!---
+$Script:Skip_Edition_Check = 0  #0 = Check if Home or Pro Edition
+                                #1 = Allows you to run on non Home/Pro
+
+$Script:Skip_Build_Check = 0    #0 = Check if Creator's Update
+                                #1 = Allows you to run on non Home/Pro Creator's Update
+#------------------------------
+
+# --------------------------------------------------------------------------
+
+#Starts the script (Do not change)
+ScriptPreStart
