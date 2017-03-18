@@ -128,7 +128,7 @@ Function DisplayOut([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor){
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
         Write-Host $TxtToDisplay
-    }    
+    }
 }
 
 Function ChoicesDisplay ([Array]$ChToDisplay) {
@@ -251,7 +251,7 @@ Function ServiceSet([Int]$ServiceVal){
     Foreach($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
-        
+
         If($ServiceName -like "*_*"){
             $ServiceNameFull = (Get-Service | where {$_.Name -like (-join($ServiceName.replace('?',''),"*"))}).Name
         }
@@ -322,24 +322,36 @@ Function ScriptPreStart {
         $csv = Import-Csv $FilePath
     }
 
-$WinEdition = gwmi win32_operatingsystem | % caption
-#Pro = Microsoft Windows 10 Pro
-#Home = Microsoft Windows 10 Home
+    $WinEdition = gwmi win32_operatingsystem | % caption
+    #Pro = Microsoft Windows 10 Pro
+    #Home = Microsoft Windows 10 Home
 
     If ($Skip_Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home"){
         $WinEdition = "Microsoft Windows 10 Pro"
     }
 
-$BuildVer = [environment]::OSVersion.Version.build
-# 14393 = Anniversary Update
-# 10586 = First Major Update
-# 10240 = First Release
+    $BuildVer = [environment]::OSVersion.Version.build
+    # 14393 = Anniversary Update
+    # 10586 = First Major Update
+    # 10240 = First Release
 
     If ($Skip_Build_Check -eq 1 -and $BuildVer -lt 14393){
         $BuildVer = 14393
     }
 
-    If ($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
+    If ($$BuildVer -ne 14393){
+        Write-Host "Websites:"
+        Write-Host "https://github.com/madbomb122/"
+        Write-Host "http://www.blackviper.com/"
+        Write-Host ""
+        Write-Host "Not a Valid Build for this Script." -ForegroundColor Red -BackgroundColor Black
+        Write-Host "Creator's Update Only"
+        Write-Host ""
+        Write-Host "To skip this change 'Skip_Build_Check' to 1 in script file"
+        Write-Host ""
+        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+	} ElseIf ($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
         If ($SettingImp -ne $null -and $SettingImp){
             $Automated = 1
             If($SettingImp -In 1..3){
@@ -373,6 +385,8 @@ $BuildVer = [environment]::OSVersion.Version.build
         Write-Host ""
         Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
         Write-Host "Win 10 Home and Pro Only"
+        Write-Host ""
+        Write-Host "To skip this change 'Skip_Edition_Check' to 1 in script file"
         Write-Host ""
         Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
