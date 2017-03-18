@@ -248,35 +248,39 @@ $BlackViperList = @(
 Function ServiceSet ([Int]$ServiceVal) {
     Clear-Host
     $BVService = $BlackViperList[$ServiceVal]
+	$CurrServices = Get-Service
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
     Write-host "-------------------------------"
     Foreach ($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
-
-        $ServiceNameFull = GetServiceNameFull $ServiceName
+        $ServiceNameFull = $ServiceName
+		
+        If($ServiceName -like "*_*"){
+            $ServiceNameFull = $CurrServices -like (-join($ServiceName.replace('?',''),"*"))
+        }
 
         $ServiceType = $ServicesTypeList[$ServiceTypeNum]
         $ServiceCurrType = (Get-Service $ServiceNameFull).StartType
         $SrvCheck = ServiceCheck $ServiceNameFull $ServiceType $ServiceCurrType
         If ($SrvCheck -eq $True) {
              $DispTemp = "$ServiceNameFull - $ServiceCurrType -> $ServiceType"
-            If ($ServiceT -In 1..3) {
+            If ($ServiceTypeNum -In 1..3) {
                 DisplayOut $DispTemp  11 0
-                Set-Service $ServiceNameFull -StartupType $ServiceType
-            } ElseIf ($ServiceT -eq 4) {
+               # Set-Service $ServiceNameFull -StartupType $ServiceType
+            } ElseIf ($ServiceTypeNum -eq 4) {
                 $DispTemp = "$DispTemp (Delayed Start)"
                 DisplayOut $DispTemp  11 0
-                Set-Service $ServiceNameFull -StartupType $ServiceType
-                $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
-                Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
+               # Set-Service $ServiceNameFull -StartupType $ServiceType
+               # $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
+               # Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
             }
         } ElseIf ($SrvCheck -eq $False) {
             $DispTemp = "$ServiceNameFull is already $ServiceType"
             DisplayOut $DispTemp  15 0
-        } ElseIf ($Release_Type -ne "Stable") {
+        } ElseIf ($RelType -ne "Stable"){
             $DispTemp = "No service with name $ServiceName"
-            DisplayOut $DispTemp  15 0  
+            DisplayOut $DispTemp  13 0
         }
     }
     Write-Host "Service Changed..."
@@ -286,16 +290,6 @@ Function ServiceSet ([Int]$ServiceVal) {
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
     }
     Exit
-}
-
-Function GetServiceNameFull([String]$ServiceN){
-    $ServiceR = $ServiceN
-    If($ServiceN -eq 'CDPUserSvc_'){
-        $ServiceR = Get-Service | Where-Object {$_.Name -like "CDPUserSvc_*"}
-    } ElseIf($ServiceN -eq 'PimIndexMaintenanceSvc_'){
-        $ServiceR = Get-Service | Where-Object {$_.Name -like "PimIndexMaintenanceSvc_*"}
-    }
-    Return $ServiceR
 }
 
 Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
