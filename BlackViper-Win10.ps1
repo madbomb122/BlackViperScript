@@ -1,6 +1,6 @@
 ##########
 # Win10 Black Viper Service Configuration Script
-# 
+#
 # Black Viper's Service Configurations From
 # Website: http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
 #
@@ -55,7 +55,6 @@ Function TOSDisplay {
         Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
     }
     If ($OSType -ne 64){
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
         Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
         Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
         Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
@@ -323,23 +322,23 @@ Function ScriptPreStart {
         $csv = Import-Csv $FilePath
     }
 
+$WinEdition = gwmi win32_operatingsystem | % caption
 #Pro = Microsoft Windows 10 Pro
 #Home = Microsoft Windows 10 Home
-    If ($Skip_Edition_Check -eq 1){
+
+    If ($Skip_Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home"){
         $WinEdition = "Microsoft Windows 10 Pro"
-    } Else {
-        $WinEdition = gwmi win32_operatingsystem | % caption
     }
 
-# 14393 = anniversary update
-# 10586 = first major update
-# 10240 = first release
-    If ($Skip_Build_Check -eq 1){
+$BuildVer = [environment]::OSVersion.Version.build
+# 14393 = Anniversary Update
+# 10586 = First Major Update
+# 10240 = First Release
+
+    If ($Skip_Build_Check -eq 1 -and $BuildVer -lt 14393){
         $BuildVer = 14393
-    } Else {
-        $BuildVer = [environment]::OSVersion.Version.build
     }
-    
+
     If ($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
         If ($SettingImp -ne $null -and $SettingImp){
             $Automated = 1
