@@ -263,13 +263,13 @@ Function ServiceSet ([Int]$ServiceVal) {
              $DispTemp = "$ServiceNameFull - $ServiceCurrType -> $ServiceType"
             If ($ServiceT -In 1..3) {
                 DisplayOut $DispTemp  11 0
-                #Set-Service $ServiceNameFull -StartupType $ServiceType
+                Set-Service $ServiceNameFull -StartupType $ServiceType
             } ElseIf ($ServiceT -eq 4) {
                 $DispTemp = "$DispTemp (Delayed Start)"
                 DisplayOut $DispTemp  11 0
-               # Set-Service $ServiceNameFull -StartupType $ServiceType
-               # $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
-               # Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
+                Set-Service $ServiceNameFull -StartupType $ServiceType
+                $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
+                Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
             }
         } ElseIf ($SrvCheck -eq $False) {
             $DispTemp = "$ServiceNameFull is already $ServiceType"
