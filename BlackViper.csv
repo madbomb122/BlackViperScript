@@ -6,8 +6,8 @@ bthserv,2,2,2,1
 PeerDistSvc,0,2,1,1
 CertPropSvc,2,2,2,1
 NfsClnt,0,0,1,1
-CDPUserSvc_,3,3,2,2
-PimIndexMaintenanceSvc_,2,2,1,1
+CDPUserSvc_?????,3,3,2,2
+PimIndexMaintenanceSvc_?????,2,2,1,1
 TrkWks,3,3,3,1
 dmwappushsvc,2,2,1,1
 MapsBroker,4,4,1,1
