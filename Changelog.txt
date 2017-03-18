@@ -15,13 +15,13 @@ Build Check (For creator's update) -Disabled till creator's update is released
 Added Color to Script output
 Fixed bug that showed "Service is already" if service doesnt exist
 
-Changed script to load services from file BlackViper.csv
+Changed script to load services from file 'BlackViper.csv' instead of from within script
 ^If it isnt with script it will give you an option to download the file
 
 -----------------------------------------------------------------------------------
 0.3 (03-13-2017)
 
-Added perBlack Viper's Request
+Added per Black Viper's Request
 Check for x64 bit (still runs on x32 but gives a warning) 
 
 -----------------------------------------------------------------------------------
