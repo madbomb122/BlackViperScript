@@ -231,10 +231,10 @@ $Script:Automated = $false
 
 $ServicesTypeList = @(
     '',          #0 -None (Not Installed, Default Only)
-    'disabled',  #1 -Disable
-    'manual',    #2 -Manual
-    'automatic', #3 -Automatic
-    'automatic'  #4 -Automatic (Delayed Start)
+    'Disabled',  #1 -Disable
+    'Manual',    #2 -Manual
+    'Automatic', #3 -Automatic
+    'Automatic'  #4 -Automatic (Delayed Start)
 )
 
 $BlackViperList = @(
@@ -248,37 +248,38 @@ $BlackViperList = @(
 Function ServiceSet ([Int]$ServiceVal) {
     Clear-Host
     $BVService = $BlackViperList[$ServiceVal]
-	$CurrServices = Get-Service
+    $CurrServices = Get-Service
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
     Write-host "-------------------------------"
     Foreach ($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
-        $ServiceNameFull = $ServiceName
-		
+        
         If($ServiceName -like "*_*"){
-            $ServiceNameFull = $CurrServices -like (-join($ServiceName.replace('?',''),"*"))
+            $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*"))
         }
 
         $ServiceType = $ServicesTypeList[$ServiceTypeNum]
-        $ServiceCurrType = (Get-Service $ServiceNameFull).StartType
-        $SrvCheck = ServiceCheck $ServiceNameFull $ServiceType $ServiceCurrType
+        $ServiceCurrType = (Get-Service $ServiceName).StartType
+        $SrvCheck = ServiceCheck $ServiceName $ServiceType $ServiceCurrType
+        
         If ($SrvCheck -eq $True) {
-             $DispTemp = "$ServiceNameFull - $ServiceCurrType -> $ServiceType"
+             $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
             If ($ServiceTypeNum -In 1..3) {
-                DisplayOut $DispTemp  11 0
-                Set-Service $ServiceNameFull -StartupType $ServiceType
+                Set-Service $ServiceName -StartupType $ServiceType
             } ElseIf ($ServiceTypeNum -eq 4) {
                 $DispTemp = "$DispTemp (Delayed Start)"
-                DisplayOut $DispTemp  11 0
-                Set-Service $ServiceNameFull -StartupType $ServiceType
-                $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceNameFull)
+                Set-Service $ServiceName -StartupType $ServiceType
+                $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceName)
                 Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
             }
-        } ElseIf ($SrvCheck -eq $False) {
-            $DispTemp = "$ServiceNameFull is already $ServiceType"
+            If ($Show_Changed -eq 1){
+                DisplayOut $DispTemp  11 0
+            }
+        } ElseIf ($SrvCheck -eq $False -and $Show_Already_Set -eq 1) {
+            $DispTemp = "$ServiceName is already $ServiceType"
             DisplayOut $DispTemp  15 0
-        } ElseIf ($RelType -ne "Stable"){
+        } ElseIf ($Show_Non_Installed -eq 1){
             $DispTemp = "No service with name $ServiceName"
             DisplayOut $DispTemp  13 0
         }
@@ -337,7 +338,7 @@ Function ScriptPreStart {
         LoadWebCSV
         $Service_Ver_Check = 0
     }
-	
+    
     $Script:csv = Import-Csv $ServiceFilePath
     
     If ($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
@@ -346,10 +347,10 @@ Function ScriptPreStart {
         (New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
         $CSV_Ver = Import-Csv $ServiceFilePath
         If ($Service_Ver_Check -eq 1 -and $CSV_Ver[1] -lt $csv[1]) {
-		    DownloadServiceFile
+            DownloadServiceFile
         }
         If ($Script_Ver_Check -eq 1 -and $CSV_Ver[1] -lt $Script_Version) {
-		    DownloadScriptFile
+            DownloadScriptFile
         }
     }
 
@@ -419,7 +420,7 @@ Function ScriptPreStart {
             TOS
         } Else {
             Black_Viper_Input
-        }
+        }        
     }
 }
 
@@ -431,7 +432,16 @@ $Script:Accept_TOS = 0          #0 = See TOS
 
 $Script:Automated = 0           #0 = Pause at end of Script
                                 #1 = Close powershell at end of Script
-							
+
+$Script:Show_Changed = 1        #0 = Dont Show Changed Services
+                                #1 = Show Changed Services
+                                
+$Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
+                                #1 = Show Already set Services
+
+$Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
+                                #1 = Show Services not present
+                            
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File (Will AUTO download)
 
