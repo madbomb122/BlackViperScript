@@ -1,12 +1,13 @@
 -----------------------------------------------------------------------------------
 0.5 (03-18-2017)
 
-Added Build Check (Service Configurations made for creator's update) -Disabled till creator's update is released
-
 Added ability to Skip Edition check (USE AT YOUR OWN RISK)
 Added ability to Skip Build check (USE AT YOUR OWN RISK)
 Added ability to Skip TOS (If you accept it)
 Added ability to have Script close at end (before it paused so you can see results)
+
+Added per Black Viper's Request
+Build Check (For creator's update) -Disabled till creator's update is released
 
 -----------------------------------------------------------------------------------
 0.4 (03-14-2017)
