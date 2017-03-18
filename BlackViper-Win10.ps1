@@ -41,25 +41,26 @@ $Global:filebase = $PSScriptRoot
 $ErrorActionPreference= 'silentlycontinue'
 
 # Ask for elevated permissions if required
-If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
+If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
     Exit
 }
 
 Function TOSDisplay {
-    If ($RelType -ne "Stable"){
+    If($RelType -ne "Stable"){
         Write-Host "                 Caution!!!                    " -ForegroundColor Yellow -BackgroundColor Black
         Write-Host " Service Configuration are based on Creator's  " -ForegroundColor Red -BackgroundColor Black
         Write-Host " Update and is still being changed.            " -ForegroundColor Red -BackgroundColor Black
         Write-Host " Use AT YOUR OWN RISK.                         " -ForegroundColor Red -BackgroundColor Black
         Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
     }
-    If ($OSType -ne 64){
+    If($OSType -ne 64){
         Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
         Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
         Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
         Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
     }
+    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     Write-Host "                 Terms of Use                  " -ForegroundColor Green -BackgroundColor Black
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     Write-Host "This program comes with ABSOLUTELY NO WARRANTY." -ForegroundColor Black -BackgroundColor White
@@ -116,7 +117,7 @@ Function LoadWebCSV {
 }
 
 Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine){
-    If ($NewLine -eq 0){
+    If($NewLine -eq 0){
         Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
@@ -136,7 +137,7 @@ Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
-    If ($OSType -ne 64){
+    If($OSType -ne 64){
         DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
         DisplayOutMenu "|                                                   |" 14 0 1
         DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
@@ -190,7 +191,7 @@ Function Black_Viper_Input {
     }
 }
 
-If ([System.Environment]::Is64BitProcess) {
+If([System.Environment]::Is64BitProcess) {
     $OSType = 64
 }
 
@@ -258,7 +259,7 @@ Function ServiceSet([Int]$ServiceVal){
         $ServiceType = $ServicesTypeList[$ServiceTypeNum]
         $ServiceCurrType = (Get-Service $ServiceNameFull).StartType
         $SrvCheck = ServiceCheck $ServiceNameFull $ServiceType $ServiceCurrType
-        If ($SrvCheck -eq $True){
+        If($SrvCheck -eq $True){
              $DispTemp = "$ServiceNameFull - $ServiceCurrType -> $ServiceType"
             If($ServiceT -In 1..3){
                 DisplayOut $DispTemp  11 0
@@ -284,7 +285,7 @@ Function ServiceSet([Int]$ServiceVal){
 }
 
 Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
-    If (Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
+    If(Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
         If($S_Type -ne $C_Type){
             $ReturnV = $True
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled'){
@@ -299,13 +300,13 @@ Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
 }
 
 Function Black_Viper_Set ([Int]$Back_Viper){
-    If ($Back_Viper -eq 1){
+    If($Back_Viper -eq 1){
         If($WinEdition -eq "Microsoft Windows 10 Home"){
             ServiceSet $Back_Viper
         } ElseIf($WinEdition -eq "Microsoft Windows 10 Pro"){
             ServiceSet ($Back_Viper+1)
         }
-    } ElseIf ($Back_Viper -In 2..3){
+    } ElseIf($Back_Viper -In 2..3){
         ServiceSet ($Back_Viper+1)
     }
 }
@@ -313,7 +314,7 @@ Function Black_Viper_Set ([Int]$Back_Viper){
 Function ScriptPreStart {
     $FilePath = $filebase + "\BlackViper.csv"
 
-    If (Test-Path $FilePath -PathType Leaf){
+    If(Test-Path $FilePath -PathType Leaf){
         $csv = Import-Csv $FilePath
     } Else {
         LoadWebCSV
@@ -326,7 +327,7 @@ Function ScriptPreStart {
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
 
-    If ($Skip_Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home"){
+    If($Skip_Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home"){
         $WinEdition = "Microsoft Windows 10 Pro"
     }
 
@@ -334,25 +335,34 @@ Function ScriptPreStart {
     # 14393 = Anniversary Update
     # 10586 = First Major Update
     # 10240 = First Release
+    $ForBuild = 14393
 
-    If ($Skip_Build_Check -eq 1 -and $BuildVer -lt 14393){
-        $BuildVer = 14393
+    If($Skip_Build_Check -eq 1 -and $BuildVer -lt $ForBuild){
+        $BuildVer = $ForBuild
     }
-
-    If ($$BuildVer -ne 14393){
-        Write-Host "Websites:"
-        Write-Host "https://github.com/madbomb122/"
-        Write-Host "http://www.blackviper.com/"
-        Write-Host ""
+    
+    If($BuildVer -ne 14393){
         Write-Host "Not a Valid Build for this Script." -ForegroundColor Red -BackgroundColor Black
         Write-Host "Creator's Update Only"
         Write-Host ""
         Write-Host "To skip this change 'Skip_Build_Check' to 1 in script file"
         Write-Host ""
+        $DoNotRun = "Yes"
+    } 
+    If(!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")){
+        Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
+        Write-Host "Win 10 Home and Pro Only"
+        Write-Host ""
+        Write-Host "To skip this change 'Skip_Edition_Check' to 1 in script file"
+        Write-Host ""
+        $DoNotRun = "Yes"
+    }
+    If($DoNotRun -eq "Yes"){
         Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
-	} ElseIf ($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro"){
-        If ($SettingImp -ne $null -and $SettingImp){
+        Exit
+    } Else{
+        If($SettingImp -ne $null -and $SettingImp){
             $Automated = 1
             If($SettingImp -In 1..3){
                 Black_Viper_Set $SettingImp
@@ -373,23 +383,11 @@ Function ScriptPreStart {
                 Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
                 $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
             }
-        } ElseIf ($Accept_TOS -eq 0){
+        } ElseIf($Accept_TOS -eq 0){
             TOS
         } Else {
             Black_Viper_Input
         }
-    } Else {
-        Write-Host "Websites:"
-        Write-Host "https://github.com/madbomb122/"
-        Write-Host "http://www.blackviper.com/"
-        Write-Host ""
-        Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
-        Write-Host "Win 10 Home and Pro Only"
-        Write-Host ""
-        Write-Host "To skip this change 'Skip_Edition_Check' to 1 in script file"
-        Write-Host ""
-        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
-        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
     }
 }
 
