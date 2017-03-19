@@ -328,10 +328,9 @@ Function DownloadServiceFile {
     (New-Object System.Net.WebClient).DownloadFile($url, $ServiceFilePath)
 }
 
-Function DownloadScriptFile {
-    $ScriptFilePath = $filebase + "\Win10-BlackViper.ps1"
-    $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Win10-BlackViper.ps1"
-    (New-Object System.Net.WebClient).DownloadFile($url, $ScriptFilePath)
+Function DownloadScriptFile ([String]$FilePath) {
+    $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+    (New-Object System.Net.WebClient).DownloadFile($url, $FilePath)
 }
 
 Function ScriptPreStart {
@@ -347,16 +346,22 @@ Function ScriptPreStart {
     If ($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
         $VerFile = $TempFolder + "\Temp.csv"
         $SerVerURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
-        #(New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
+        (New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
         $CSV_Ver = Import-Csv $VerFile
+	    $ScriptFilePath = $filebase + "\Win10-BlackViper-Ver." + $($CSV_Ver[0].Version) + ".ps1"
+		$WebScriptVer = $($CSV_Ver[0].Version)
 
-        If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0].Def-Home)) {
-		write-host "Downloading service file v.$($CSV_Ver[1].Version"
-            #DownloadServiceFile
+        If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
+		write-host "Downloading service file v." $($CSV_Ver[1].Version)
+            DownloadServiceFile
         }
-        If ($Script_Ver_Check -eq 1 -and $($CSV_Ver[0].Version) -gt $Script_Version) {
-	    write-host "Downloading script file v.$($CSV_Ver[0].Version)"
-            #DownloadScriptFile
+        If ($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
+	    write-host "Downloading script file v." $WebScriptVer
+		write-host "Script Path = " $ScriptFilePath
+            DownloadScriptFile $ScriptFilePath
+			Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptFilePath`" $args" -Verb RunAs
+			Read-Host "`nPause"
+			Exit
         }
     }
 
@@ -448,10 +453,10 @@ $Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
 $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
                             
-$Script:Script_Ver_Check = 1    #0 = Skip Check for update of Script File
+$Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File (Will AUTO download)
 
-$Script:Service_Ver_Check = 1   #0 = Skip Check for update of Service File
+$Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File (Will AUTO download)
 #--------------------------------
 
