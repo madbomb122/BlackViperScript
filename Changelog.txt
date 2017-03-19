@@ -1,20 +1,21 @@
 -----------------------------------------------------------------------------------
 0.6 (03-19-2017)
 
-Ability to check for update to Script File (Skips by default)
+Added variable with ability to check for update to Script File (Skips by default)
 Note: If found will Auto download and runs that (file name will be "BlackViper-Win10-Ver.(version-here).ps1")
 
-Ability to check for update to Service File (Skips by default)
+Added variable with ability to check for update to Service File (Skips by default)
 Note: If found will Auto download and uses that for the configuration
 
 -----------------------------------------------------------------------------------
 0.5 (03-18-2017)
 
-Added ability to Skip Edition check (USE AT YOUR OWN RISK)
-Added ability to Skip Build check (USE AT YOUR OWN RISK)
-Added ability to Skip TOS (If you accept it)
-Added ability to have Script close at end (before it paused so you can see results)
-Added ability to show/hide display of Services change, already set, and not present
+Added variable with ability to:
+Skip Edition check (USE AT YOUR OWN RISK)
+Skip Build check (USE AT YOUR OWN RISK)
+Skip TOS (If you accept it)
+have Script close at end (before it paused so you can see results)
+show/hide display of Services change, already set, and not present
 
 Added per Black Viper's Request
 Build Check (For creator's update) -Disabled till creator's update is released
