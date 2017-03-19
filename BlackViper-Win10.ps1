@@ -9,24 +9,24 @@ Param([alias("Set")] [string] $SettingImp)
 # Author: Madbomb122
 # Website: https://github.com/madbomb122/
 #
-$Script_Version = 0.6 #(03-18-2017)
+$Script_Version = 0.6 #(03-19-2017)
 $Release_Type = "Beta"
 ##########
 
 <#
     Copyright (c) 2017 Madbomb122 - Black Viper Service Script
     Copyright (c) 1999-2017 by Charles "Black Viper" Sparks - Actual settings for the Services
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #>
@@ -40,7 +40,7 @@ $Global:filebase = $PSScriptRoot
 $ErrorActionPreference= 'silentlycontinue'
 
 # Ask for elevated permissions if required
-If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
+If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
     Exit
 }
@@ -48,14 +48,14 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 $TempFolder = $env:Temp
 
 Function TOSDisplay {
-    If ($Release_Type -ne "Stable") {
+    If($Release_Type -ne "Stable") {
         Write-Host "                 Caution!!!                    " -ForegroundColor Yellow -BackgroundColor Black
         Write-Host " Service Configuration are based on Creator's  " -ForegroundColor Red -BackgroundColor Black
         Write-Host " Update and is still being changed.            " -ForegroundColor Red -BackgroundColor Black
         Write-Host " Use AT YOUR OWN RISK.                         " -ForegroundColor Red -BackgroundColor Black
         Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
     }
-    If ($OSType -ne 64) {
+    If($OSType -ne 64) {
         Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
         Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
         Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
@@ -77,7 +77,7 @@ Function TOS {
     while($TOS -ne "Out") {
         Clear-Host
         TOSDisplay
-        If ($Invalid -eq 1) {
+        If($Invalid -eq 1) {
             Write-Host ""
             Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
@@ -100,7 +100,7 @@ Function LoadWebCSV {
         Clear-Host
         Write-Host "Missing File 'BlackViper.csv'" -ForegroundColor Red -BackgroundColor Black
         Write-Host "Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
-        If ($Invalid -eq 1) {
+        If($Invalid -eq 1) {
             Write-Host ""
             Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
@@ -118,7 +118,7 @@ Function LoadWebCSV {
 }
 
 Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine) {
-    If ($NewLine -eq 0) {
+    If($NewLine -eq 0) {
         Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
@@ -126,7 +126,7 @@ Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]
 }
 
 Function DisplayOut([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
-    If ($TxtColor -le 15) {
+    If($TxtColor -le 15) {
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
         Write-Host $TxtToDisplay
@@ -138,7 +138,7 @@ Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
-    If ($OSType -ne 64) {
+    If($OSType -ne 64) {
         DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
         DisplayOutMenu "|                                                   |" 14 0 1
         DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
@@ -174,13 +174,13 @@ Function Black_Viper_Input {
     while($Black_Viper_Input -ne "Out") {
         Clear-Host
         ChoicesDisplay $BlackViperDisItems
-        If ($Invalid -eq 1) {
+        If($Invalid -eq 1) {
             Write-Host ""
             Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
         }
         $Black_Viper_Input = Read-Host "`nChoice"
-        switch ($Black_Viper_Input.ToLower()) {
+        switch($Black_Viper_Input.ToLower()) {
             1 {Black_Viper_Set 1; $Black_Viper_Input = "Out"}
             2 {Black_Viper_Set 2; $Black_Viper_Input = "Out"}
             3 {Black_Viper_Set 3; $Black_Viper_Input = "Out"}
@@ -192,7 +192,7 @@ Function Black_Viper_Input {
     }
 }
 
-If ([System.Environment]::Is64BitProcess) {
+If([System.Environment]::Is64BitProcess) {
     $OSType = 64
 }
 
@@ -251,10 +251,10 @@ Function ServiceSet ([Int]$ServiceVal) {
     $CurrServices = Get-Service
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
     Write-Host "-------------------------------"
-    Foreach ($item in $csv) {
+    Foreach($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
-        
+
         If($ServiceName -like "*_*"){
             $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*"))
         }
@@ -262,34 +262,32 @@ Function ServiceSet ([Int]$ServiceVal) {
         $ServiceType = $ServicesTypeList[$ServiceTypeNum]
         $ServiceCurrType = (Get-Service $ServiceName).StartType
         $SrvCheck = ServiceCheck $ServiceName $ServiceType $ServiceCurrType
-        
-        If ($SrvCheck -eq $True) {
+
+        If($SrvCheck -eq $True) {
              $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
-            If ($ServiceTypeNum -In 1..3) {
+            If($ServiceTypeNum -In 1..3) {
                 Set-Service $ServiceName -StartupType $ServiceType
-            } ElseIf ($ServiceTypeNum -eq 4) {
+            } ElseIf($ServiceTypeNum -eq 4) {
                 $DispTemp = "$DispTemp (Delayed Start)"
                 Set-Service $ServiceName -StartupType $ServiceType
                 $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceName)
                 Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
             }
-            If ($Show_Changed -eq 1){
+            If($Show_Changed -eq 1){
                 DisplayOut $DispTemp  11 0
             }
-        } ElseIf ($SrvCheck -eq $False -and $Show_Already_Set -eq 1) {
+        } ElseIf($SrvCheck -eq $False -and $Show_Already_Set -eq 1) {
             $DispTemp = "$ServiceName is already $ServiceType"
             DisplayOut $DispTemp  15 0
-        } ElseIf ($Show_Non_Installed -eq 1) {
-            If ($ServiceName -ne "#ServiceVersion") {
-                $DispTemp = "No service with name $ServiceName"
-                DisplayOut $DispTemp  13 0
-            }
+        } ElseIf($Show_Non_Installed -eq 1) {
+            $DispTemp = "No service with name $ServiceName"
+            DisplayOut $DispTemp  13 0
         }
     }
     Write-Host "-------------------------------"
     Write-Host "Service Changed..."
 
-    If ($Automated -ne 1) {
+    If($Automated -ne 1) {
         Write-Host "Press any key to close..."
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
     }
@@ -297,12 +295,12 @@ Function ServiceSet ([Int]$ServiceVal) {
 }
 
 Function ServiceCheck([string]$S_Name, [string]$S_Type, [string]$C_Type) {
-    If (Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
-        If ($S_Type -ne $C_Type) {
+    If(Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
+        If($S_Type -ne $C_Type) {
             $ReturnV = $True
-            If ($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
+            If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
                 # Has to be removed or cant change service from disabled to anything else (Known Bug)
-                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3"  -recurse  -Force
+                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force
             }
         } Else {
             $ReturnV = $False
@@ -312,13 +310,13 @@ Function ServiceCheck([string]$S_Name, [string]$S_Type, [string]$C_Type) {
 }
 
 Function Black_Viper_Set ([Int]$Back_Viper) {
-    If ($Back_Viper -eq 1) {
-        If ($WinEdition -eq "Microsoft Windows 10 Home") {
+    If($Back_Viper -eq 1) {
+        If($WinEdition -eq "Microsoft Windows 10 Home") {
             ServiceSet $Back_Viper
-        } ElseIf ($WinEdition -eq "Microsoft Windows 10 Pro") {
+        } ElseIf($WinEdition -eq "Microsoft Windows 10 Pro") {
             ServiceSet ($Back_Viper+1)
         }
-    } ElseIf ($Back_Viper -In 2..3) {
+    } ElseIf($Back_Viper -In 2..3) {
         ServiceSet ($Back_Viper+1)
     }
 }
@@ -330,42 +328,44 @@ Function DownloadServiceFile {
 
 Function DownloadScriptFile ([String]$FilePath) {
     $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
-    (New-Object System.Net.WebClient).DownloadFile($url, $FilePath)
+    (New-Object System.Net.WebClient).DownloadFile($url, $WebScriptFilePath)
 }
 
 Function ScriptPreStart {
     $ServiceFilePath = $filebase + "\BlackViper.csv"
 
-    If (!(Test-Path $ServiceFilePath -PathType Leaf)) {
+    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         LoadWebCSV
         $Service_Ver_Check = 0
     }
-    
+
     $Script:csv = Import-Csv $ServiceFilePath
-    
-    If ($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
-        $VerFile = $TempFolder + "\Temp.csv"
-        $SerVerURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
-        (New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
-        $CSV_Ver = Import-Csv $VerFile
+
+    If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
+        $VersionFile = $TempFolder + "\Temp.csv"
+        $VersionURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
+        (New-Object System.Net.WebClient).DownloadFile($VersionURL, $VersionFile)
+        $CSV_Ver = Import-Csv $VersionFile
         $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
         $WebScriptVer = $($CSV_Ver[0].Version)
 
-        If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
+        If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
             DownloadServiceFile
         }
-        If ($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
+        If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
             DownloadScriptFile $WebScriptFilePath
             Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
             Exit
         }
     }
 
+    $csv.RemoveRange(0,1)
+
     $WinEdition = gwmi win32_operatingsystem | % caption
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
 
-    If ($Skip_Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home") {
+    If($Skip_Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home") {
         $WinEdition = "Microsoft Windows 10 Pro"
     }
 
@@ -374,13 +374,13 @@ Function ScriptPreStart {
     # 10586 = First Major Update
     # 10240 = First Release
     $ForBuild = 14393
-    
+
 <#
-    If ($Skip_Build_Check -eq 1 -and $BuildVer -lt $ForBuild) {
+    If($Skip_Build_Check -eq 1 -and $BuildVer -lt $ForBuild) {
         $BuildVer = $ForBuild
     }
     
-    If ($BuildVer -ne 14393) {
+    If($BuildVer -ne 14393) {
         Write-Host "Not a Valid Build for this Script." -ForegroundColor Red -BackgroundColor Black
         Write-Host "Creator's Update Only"
         Write-Host ""
@@ -389,7 +389,7 @@ Function ScriptPreStart {
         $DoNotRun = "Yes"
     }
 #>
-    If (!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")) {
+    If(!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")) {
         Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
         Write-Host "Win 10 Home and Pro Only"
         Write-Host ""
@@ -397,20 +397,20 @@ Function ScriptPreStart {
         Write-Host ""
         $DoNotRun = "Yes"
     }
-    If ($DoNotRun -eq "Yes") {
+    If($DoNotRun -eq "Yes") {
         Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
         Exit
     } Else{
-        If ($SettingImp -ne $null -and $SettingImp) {
+        If($SettingImp -ne $null -and $SettingImp) {
             $Automated = 1
-            If ($SettingImp -In 1..3) {
+            If($SettingImp -In 1..3) {
                 Black_Viper_Set $SettingImp
-            } ElseIf ($SettingImp.ToLower() -eq "default") {
+            } ElseIf($SettingImp.ToLower() -eq "default") {
                 Black_Viper_Set 1
-            } ElseIf ($SettingImp.ToLower() -eq "safe") {
+            } ElseIf($SettingImp.ToLower() -eq "safe") {
                 Black_Viper_Set 2
-            } ElseIf ($SettingImp.ToLower() -eq "tweaked") {
+            } ElseIf($SettingImp.ToLower() -eq "tweaked") {
                 Black_Viper_Set 3
             } Else{
                 Write-Host "Invalid Selection" -ForegroundColor Blue -BackgroundColor Black
@@ -423,11 +423,11 @@ Function ScriptPreStart {
                 Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
                 $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
             }
-        } ElseIf ($Accept_TOS -eq 0) {
+        } ElseIf($Accept_TOS -eq 0) {
             TOS
         } Else {
             Black_Viper_Input
-        }        
+        }
     }
 }
 
@@ -448,7 +448,7 @@ $Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
 
 $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
-								
+                                
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 #Note: If found will Auto download and runs that
