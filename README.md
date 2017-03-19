@@ -78,7 +78,7 @@ or <br />
 **A:** The script is as is, any problems you have/had is not My problem.
 
 **Q:** Are you going to add support for other version of Windows other than pro or home? <br />
-**A:** Sorry, only support configuration listed on Black Viper's website <br />
+**A:** Sorry, I will only support configuration listed on Black Viper's website. <br />
 
 **Q:** Are you going to add support for builds before the "Creator's Update"? <br />
 **A:** Sorry, since I dont have the configuration from before the "Creator's Update" I can't add it. <br />
