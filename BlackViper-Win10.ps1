@@ -78,8 +78,8 @@ Function TOS {
         Clear-Host
         TOSDisplay
         If ($Invalid -eq 1) {
-            Write-host ""
-            Write-host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            Write-Host ""
+            Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
         }
         $TOS = Read-Host "`nAccept? (Y)es/(N)o"
@@ -99,10 +99,10 @@ Function LoadWebCSV {
     while($LoadWebCSV -ne "Out") {
         Clear-Host
         Write-Host "Missing File 'BlackViper.csv'" -ForegroundColor Red -BackgroundColor Black
-        Write-host "Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
+        Write-Host "Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
         If ($Invalid -eq 1) {
-            Write-host ""
-            Write-host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            Write-Host ""
+            Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
         }
         $LoadWebCSV = Read-Host "`n(Y)es/(N)o"
@@ -175,8 +175,8 @@ Function Black_Viper_Input {
         Clear-Host
         ChoicesDisplay $BlackViperDisItems
         If ($Invalid -eq 1) {
-            Write-host ""
-            Write-host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
+            Write-Host ""
+            Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
         }
         $Black_Viper_Input = Read-Host "`nChoice"
@@ -250,7 +250,7 @@ Function ServiceSet ([Int]$ServiceVal) {
     $BVService = $BlackViperList[$ServiceVal]
     $CurrServices = Get-Service
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
-    Write-host "-------------------------------"
+    Write-Host "-------------------------------"
     Foreach ($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
@@ -279,11 +279,14 @@ Function ServiceSet ([Int]$ServiceVal) {
         } ElseIf ($SrvCheck -eq $False -and $Show_Already_Set -eq 1) {
             $DispTemp = "$ServiceName is already $ServiceType"
             DisplayOut $DispTemp  15 0
-        } ElseIf ($Show_Non_Installed -eq 1){
-            $DispTemp = "No service with name $ServiceName"
-            DisplayOut $DispTemp  13 0
+        } ElseIf ($Show_Non_Installed -eq 1) {
+		    If ($ServiceName -ne "#Service") {
+                $DispTemp = "No service with name $ServiceName"
+                DisplayOut $DispTemp  13 0
+			}
         }
     }
+    Write-Host "-------------------------------"
     Write-Host "Service Changed..."
 
     If ($Automated -ne 1) {
@@ -293,7 +296,7 @@ Function ServiceSet ([Int]$ServiceVal) {
     Exit
 }
 
-Function ServiceCheck([string] $S_Name, [string]$S_Type, [string]$C_Type) {
+Function ServiceCheck([string]$S_Name, [string]$S_Type, [string]$C_Type) {
     If (Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
         If ($S_Type -ne $C_Type) {
             $ReturnV = $True
@@ -345,11 +348,12 @@ Function ScriptPreStart {
         $VerFile = $TempFolder + "\Temp.csv"
         $SerVerURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
         (New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
-        $CSV_Ver = Import-Csv $ServiceFilePath
-        If ($Service_Ver_Check -eq 1 -and $CSV_Ver[1] -lt $csv[1]) {
+        $CSV_Ver = Import-Csv $VerFile
+
+        If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0].ServiceName)) {
             DownloadServiceFile
         }
-        If ($Script_Ver_Check -eq 1 -and $CSV_Ver[1] -lt $Script_Version) {
+        If ($Script_Ver_Check -eq 1 -and $($CSV_Ver[0].Version) -gt $Script_Version) {
             DownloadScriptFile
         }
     }
