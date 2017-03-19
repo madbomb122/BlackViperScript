@@ -348,7 +348,7 @@ Function ScriptPreStart {
         $SerVerURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
         (New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
         $CSV_Ver = Import-Csv $VerFile
-        $WebScriptFilePath = $filebase + "\Test-BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
+        $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
         $WebScriptVer = $($CSV_Ver[0].Version)
 
         If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
