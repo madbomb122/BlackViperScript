@@ -77,12 +77,16 @@ or <br />
 **Q:** The script messed up my computer. <br />
 **A:** The script is as is, any problems you have/had is not My problem.
 
-**Q:** Can I stop a service from being changed?. <br />
-**A:** Yes, edit the CSV file that is imported and do the change in there.
+**Q:** Are you going to add support for other version of Windows other than pro or home?. <br />
+**A:** Sorry, only support configuration listed on Black Viper's website <br />
 
-**Q:** Can I add a service to be changed?. <br />
-**A:** Yes, edit the CSV file that is imported and put it in the proper format, <br />
-  Number meaning 0 -Not installed, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay <br />
+**Q:** Are you going to add support for builds before the "Creator's Update"?. <br />
+**A:** Sorry, since I dont have the configuration from before  the "Creator's Update" I cannot add it. <br />
+**Note:** If you have the configuration please leave a comment with a way to contact you
+
+**Q:** Can I add a service to be changed or stop one from changing? <br />
+**A:** Yes, edit the CSV file that is imported and put it in the proper format <br />
+**Note:** Number meaning 0 -Not installed, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay <br />
 
 **Q:** How long are you going to maintain the script? <br />
 **A:** No Clue, but will update service changes when I see any changes or get notified of any changes.
