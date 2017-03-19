@@ -280,10 +280,10 @@ Function ServiceSet ([Int]$ServiceVal) {
             $DispTemp = "$ServiceName is already $ServiceType"
             DisplayOut $DispTemp  15 0
         } ElseIf ($Show_Non_Installed -eq 1) {
-		    If ($ServiceName -ne "#ServiceVersion") {
+            If ($ServiceName -ne "#ServiceVersion") {
                 $DispTemp = "No service with name $ServiceName"
                 DisplayOut $DispTemp  13 0
-			}
+            }
         }
     }
     Write-Host "-------------------------------"
@@ -348,20 +348,20 @@ Function ScriptPreStart {
         $SerVerURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
         (New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
         $CSV_Ver = Import-Csv $VerFile
-	    $ScriptFilePath = $filebase + "\Win10-BlackViper-Ver." + $($CSV_Ver[0].Version) + ".ps1"
-		$WebScriptVer = $($CSV_Ver[0].Version)
+        $WebScriptFilePath = $filebase + "\Win10-BlackViper-Ver." + $($CSV_Ver[0].Version) + ".ps1"
+        $WebScriptVer = $($CSV_Ver[0].Version)
 
         If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
-		write-host "Downloading service file v." $($CSV_Ver[1].Version)
+        write-host "Downloading service file v." $($CSV_Ver[1].Version)
             DownloadServiceFile
         }
         If ($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
-	    write-host "Downloading script file v." $WebScriptVer
-		write-host "Script Path = " $ScriptFilePath
-            DownloadScriptFile $ScriptFilePath
-			Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptFilePath`" $args" -Verb RunAs
-			Read-Host "`nPause"
-			Exit
+        write-host "Downloading script file v." $WebScriptVer
+        write-host "Script Path = " $WebScriptFilePath
+            DownloadScriptFile $WebScriptFilePath
+            Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
+            Read-Host "`nPause"
+            Exit
         }
     }
 
@@ -452,9 +452,11 @@ $Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
 
 $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
-                            
+#--------------------------------
+        
+#----BEING TESTED ATM----		
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
-                                #1 = Check for update of Script File (Will AUTO download)
+                                #1 = Check for update of Script File (Will AUTO download)							
 
 $Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File (Will AUTO download)
