@@ -450,10 +450,13 @@ $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
 								
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
-                                #1 = Check for update of Script File (Will AUTO download & Run)
+                                #1 = Check for update of Script File
+#Note: If found will Auto download and runs that
+#File name will be "BlackViper-Win10-Ver.(version#-here).ps1"
 
 $Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
-                                #1 = Check for update of Service File (Will AUTO download)
+                                #1 = Check for update of Service File
+#Note: If found will Auto download and uses that for the configuration
 #--------------------------------
 
 #----CHANGE AT YOUR OWN RISK!----
