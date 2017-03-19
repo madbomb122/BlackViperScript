@@ -1,5 +1,11 @@
-Work in Progress:
-Ability to check for update to Script and Service File (Skips by default)
+-----------------------------------------------------------------------------------
+0.6 (03-18-2017)
+
+Ability to check for update to Script File (Skips by default)
+Note: If found will Auto download and runs that (file name will be "BlackViper-Win10-Ver.(version-here).ps1")
+
+Ability to check for update to Service File (Skips by default)
+Note: If found will Auto download and uses that for the configuration
 
 -----------------------------------------------------------------------------------
 0.5 (03-18-2017)
