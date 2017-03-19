@@ -280,7 +280,7 @@ Function ServiceSet ([Int]$ServiceVal) {
             $DispTemp = "$ServiceName is already $ServiceType"
             DisplayOut $DispTemp  15 0
         } ElseIf ($Show_Non_Installed -eq 1) {
-		    If ($ServiceName -ne "#Service") {
+		    If ($ServiceName -ne "#ServiceVersion") {
                 $DispTemp = "No service with name $ServiceName"
                 DisplayOut $DispTemp  13 0
 			}
@@ -347,14 +347,16 @@ Function ScriptPreStart {
     If ($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
         $VerFile = $TempFolder + "\Temp.csv"
         $SerVerURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
-        (New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
+        #(New-Object System.Net.WebClient).DownloadFile($SerVerURL, $VerFile)
         $CSV_Ver = Import-Csv $VerFile
 
-        If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0].ServiceName)) {
-            DownloadServiceFile
+        If ($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0].Def-Home)) {
+		write-host "Downloading service file v.$($CSV_Ver[1].Version"
+            #DownloadServiceFile
         }
         If ($Script_Ver_Check -eq 1 -and $($CSV_Ver[0].Version) -gt $Script_Version) {
-            DownloadScriptFile
+	    write-host "Downloading script file v.$($CSV_Ver[0].Version)"
+            #DownloadScriptFile
         }
     }
 
@@ -446,10 +448,10 @@ $Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
 $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
                             
-$Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
+$Script:Script_Ver_Check = 1    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File (Will AUTO download)
 
-$Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
+$Script:Service_Ver_Check = 1   #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File (Will AUTO download)
 #--------------------------------
 
