@@ -77,12 +77,15 @@ or <br />
 **Q:** The script messed up my computer. <br />
 **A:** The script is as is, any problems you have/had is not My problem.
 
-**Q:** Are you going to add support for other version of Windows other than pro or home?. <br />
+**Q:** Are you going to add support for other version of Windows other than pro or home? <br />
 **A:** Sorry, only support configuration listed on Black Viper's website <br />
 
-**Q:** Are you going to add support for builds before the "Creator's Update"?. <br />
-**A:** Sorry, since I dont have the configuration from before  the "Creator's Update" I cannot add it. <br />
-**Note:** If you have the configuration please leave a comment with a way to contact you
+**Q:** Are you going to add support for builds before the "Creator's Update"? <br />
+**A:** Sorry, since I dont have the configuration from before the "Creator's Update" I can't add it. <br />
+**Note:** If you have the configuration please leave a comment with a way to contact you.
+
+**Q:** Will you make a script for any windows before windows 10? <br />
+**A:** NO. <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
 **A:** Yes, edit the CSV file that is imported and put it in the proper format <br />
