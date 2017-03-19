@@ -5,7 +5,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 **Note: Script is ment for Windows 10 Home x64 / Windows 10 Pro x64.. With Creator's Update Installed**  <br />
 
-**USE AT YOUR OWN RISK YOU CAN**  <br />
+**AT YOUR OWN RISK YOU CAN**  <br />
 **1. Change variable at bottom of script to skip the check for Home/Pro, and/or Creator's Update**  <br />
 **2. Still run the script on x32 w/o chaning settings (But shows a warning)**  <br />
 
