@@ -1,5 +1,5 @@
 ServiceName,Def-Home,Def-Pro,Safe,Tweaked
-#Service,0.5,0,0,0
+#ServiceVersion,0.5,0,0,0
 AJRouter,2,2,2,1
 ALG,2,2,2,1
 BthHFSrv,2,2,2,1
