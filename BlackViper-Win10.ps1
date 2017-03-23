@@ -9,7 +9,8 @@ Param([alias("Set")] [string] $SettingImp)
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = 0.7 #(03-22-2017)
+$Script_Version = 0.7 
+$Script_Date = "03-22-2017"
 $Release_Type = "Beta"
 ##########
 
@@ -139,30 +140,31 @@ Function DisplayOut([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
 
 Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu "|" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
     If($OSType -ne 64) {
-        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu " |" 14 0 1
         DisplayOutMenu "|                                                   |" 14 0 1
         DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
     } Else {
-        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;DisplayOutMenu "|" 14 0 1
-        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu "|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu " |" 14 0 1
     }
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
     for ($i=3; $i -le 5; $i++) {
-        DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;DisplayOutMenu "|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;DisplayOutMenu " |" 14 0 1
     }
-    DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[6] 13 0 0 ;DisplayOutMenu "|" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[6] 13 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;DisplayOutMenu "|" 14 0 1
-    DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;DisplayOutMenu "|" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Services File last updated on: " 15 0 0 ; DisplayOutMenu "$ServiceDate       " 11 0 0 ;DisplayOutMenu "|" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Script Version: " 15 0 0 ; DisplayOutMenu "$Script_Version ($Script_Date)                 " 11 0 0 ; DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Services File last updated on: " 15 0 0 ; DisplayOutMenu "$ServiceDate       " 11 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
 }
 
@@ -200,7 +202,7 @@ If([System.Environment]::Is64BitProcess) {
 }
 
 $BlackViperDisItems = @(
-"       Black Viper's Service Configurations      ",
+"      Black Viper's Service Configurations       ",
 "                                                 ",
 "Settings based on Black Viper's Configurations.  ",
 '1. Default                                       ',
@@ -491,7 +493,7 @@ $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
 $Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
                                 #1 = Allows you to run on non Home/Pro
 
-$Script:Build_Check = 1         #0 = Check Build (Creator's Update Minimum)
+$Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
                                 #1 = Allows you to run on Non-Creator's Update
 #--------------------------------
 
