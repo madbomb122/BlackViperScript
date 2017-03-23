@@ -1,4 +1,11 @@
 -----------------------------------------------------------------------------------
+0.7 (03-22-2017)
+
+Enabled Build Check (For creator's update)
+
+Various script improvements
+
+-----------------------------------------------------------------------------------
 0.6 (03-19-2017)
 
 Added variable with ability to check for update to Script File (Skips by default)
