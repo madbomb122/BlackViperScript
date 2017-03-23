@@ -346,10 +346,6 @@ Function PreScriptCheck {
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
 
-    If($Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home") {
-        $WinEdition = "Microsoft Windows 10 Pro"
-    }
-
     $BuildVer = [environment]::OSVersion.Version.build
     # 150?? = Creator's Update
     # 14393 = Anniversary Update
@@ -367,8 +363,12 @@ Function PreScriptCheck {
     }
 
     If(!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")) {
-        $EditionCheck = "Failed"
-        $DoNotRun = "Yes"
+        If($Edition_Check -eq 1) {
+            $WinEdition = "Microsoft Windows 10 Pro"
+        } Else {
+            $EditionCheck = "Failed"
+            $DoNotRun = "Yes"
+        }
     }
 
     If($DoNotRun -eq "Yes" -and $Automated -eq 0) {
