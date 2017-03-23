@@ -376,7 +376,6 @@ Function PreScriptCheck {
         Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
 
         If($BuildCheck -eq "Failed") {
-            Write-Host "Sorry, this Script supports Windows 10 ONLY.   " -ForegroundColor Black -BackgroundColor White
             Write-Host "Not a Valid Build for this Script.             " -ForegroundColor Black -BackgroundColor White
             Write-Host "Lowest Build Recommended is Creator's Update   " -ForegroundColor Black -BackgroundColor White
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
@@ -384,8 +383,8 @@ Function PreScriptCheck {
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
         }
 
-        If($BuildCheck -eq "Failed") {
-            Write-Host "Not a Valid OS for this Script.                " -ForegroundColor Red -BackgroundColor Black
+        If($EditionCheck -eq "Failed") {
+            Write-Host "Not a Valid Windows Edition for this Script.   " -ForegroundColor Black -BackgroundColor White
             Write-Host "Windiws 10 Home and Pro Only                   " -ForegroundColor Black -BackgroundColor White
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
             Write-Host "To skip change 'Edition_Check' in script file  " -ForegroundColor Green -BackgroundColor Black
