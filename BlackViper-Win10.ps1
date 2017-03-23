@@ -102,8 +102,8 @@ Function LoadWebCSV([String]$FilePath) {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
         Clear-Host
-        Write-Host "Error, Missing File 'BlackViper.csv'" -ForegroundColor Red -BackgroundColor Black
-        Write-Host "Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
+        Write-Host " Error, Missing File 'BlackViper.csv'   " -ForegroundColor Red -BackgroundColor Black
+        Write-Host " Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
         If($Invalid -eq 1) {
             Write-Host ""
             Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
@@ -162,8 +162,7 @@ Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|  " 14 0 0 ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "          https://github.com/madbomb122/           " 15 0 0 ;DisplayOutMenu "|" 14 0 1
-    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "            http://www.blackviper.com/             " 15 0 0 ;DisplayOutMenu "|" 14 0 1
+    DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Services File last updated on: " 15 0 0 ; DisplayOutMenu "$ServiceDate       " 11 0 0 ;DisplayOutMenu "|" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
 }
 
@@ -278,6 +277,7 @@ Function ServiceSet ([Int]$ServiceVal) {
                 $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceName)
                 Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
             }
+
             If($Show_Changed -eq 1){
                 DisplayOut $DispTemp  11 0
             }
@@ -335,7 +335,7 @@ Function PreScriptCheck {
     
     If ($WindowVersion -ne 10 -and $Automated -eq 0) {
         Write-Host "                     Error                     " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "Sorry, this Script supports Windows 10 ONLY.   " -ForegroundColor Black -BackgroundColor White
+        Write-Host " Sorry, this Script supports Windows 10 ONLY.  " -ForegroundColor Black -BackgroundColor White
         Write-Host "                                               "
         Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
@@ -376,20 +376,21 @@ Function PreScriptCheck {
         Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
 
         If($BuildCheck -eq "Failed") {
-            Write-Host "Not a Valid Build for this Script.             " -ForegroundColor Black -BackgroundColor White
-            Write-Host "Lowest Build Recommended is Creator's Update   " -ForegroundColor Black -BackgroundColor White
+            Write-Host " Not a valid Build for this Script.            " -ForegroundColor Black -BackgroundColor White
+            Write-Host " Lowest Build Recommended is Creator's Update  " -ForegroundColor Black -BackgroundColor White
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-            Write-Host "To skip change 'Build_Check' in script file.   " -ForegroundColor Green -BackgroundColor Black
+            Write-Host " To skip change 'Build_Check' in script file.  " -ForegroundColor Green -BackgroundColor Black
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
         }
 
         If($EditionCheck -eq "Failed") {
-            Write-Host "Not a Valid Windows Edition for this Script.   " -ForegroundColor Black -BackgroundColor White
-            Write-Host "Windiws 10 Home and Pro Only                   " -ForegroundColor Black -BackgroundColor White
+            Write-Host " Not a valid Windows Edition for this Script.  " -ForegroundColor Black -BackgroundColor White
+            Write-Host " Windows 10 Home and Pro Only                  " -ForegroundColor Black -BackgroundColor White
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-            Write-Host "To skip change 'Edition_Check' in script file  " -ForegroundColor Green -BackgroundColor Black
+            Write-Host " To skip change 'Edition_Check' in script file " -ForegroundColor Green -BackgroundColor Black
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
         }
+		
         Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
         Exit
@@ -420,6 +421,7 @@ Function PreScriptCheck {
                 Exit
             }
         }
+		$ServiceDate = ($csv[0]."Def-Pro")
         $csv.RemoveRange(0,1)
     }
     ScriptPreStart
@@ -439,10 +441,10 @@ Function ScriptPreStart {
         } ElseIf($Automated -eq 0) {
             Write-Host "            Error Invalid Selection            " -ForegroundColor Red -BackgroundColor Black
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor Black
-            Write-Host "Valid Swiches are:                             " -ForegroundColor Blue -BackgroundColor Black
-            Write-Host "1 or Default                                   " -ForegroundColor Green -BackgroundColor Black
-            Write-Host "2 or Safe                                      " -ForegroundColor Yellow -BackgroundColor Black
-            Write-Host "3 or Tweaked                                   " -ForegroundColor Red -BackgroundColor Black
+            Write-Host " Valid Swiches are:                            " -ForegroundColor Blue -BackgroundColor Black
+            Write-Host " 1 or Default                                  " -ForegroundColor Green -BackgroundColor Black
+            Write-Host " 2 or Safe                                     " -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host " 3 or Tweaked                                  " -ForegroundColor Red -BackgroundColor Black
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor Black
             Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
             $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
@@ -489,7 +491,7 @@ $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
 $Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
                                 #1 = Allows you to run on non Home/Pro
 
-$Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
+$Script:Build_Check = 1         #0 = Check Build (Creator's Update Minimum)
                                 #1 = Allows you to run on Non-Creator's Update
 #--------------------------------
 
