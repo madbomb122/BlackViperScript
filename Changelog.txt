@@ -2,7 +2,10 @@
 0.7 (03-22-2017)
 
 Enabled Build Check (For creator's update)
+Added Display of Script Version/Date
 Added Display of Last update of Service File
+
+Removed Display of Websites
 
 Various script improvements
 
