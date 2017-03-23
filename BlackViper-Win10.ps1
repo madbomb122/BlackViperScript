@@ -53,6 +53,7 @@ $ScriptUrl = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/mast
 Function TOSDisplay {
     If($Release_Type -ne "Stable") {
         Write-Host "                 Caution!!!                    " -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
         Write-Host " Service Configuration are based on Creator's  " -ForegroundColor Red -BackgroundColor Black
         Write-Host " Update and is still being changed.            " -ForegroundColor Red -BackgroundColor Black
         Write-Host " Use AT YOUR OWN RISK.                         " -ForegroundColor Red -BackgroundColor Black
@@ -60,11 +61,11 @@ Function TOSDisplay {
     }
     If($OSType -ne 64) {
         Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
+        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
         Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
         Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
         Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
     }
-    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     Write-Host "                 Terms of Use                  " -ForegroundColor Green -BackgroundColor Black
     Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
     Write-Host "This program comes with ABSOLUTELY NO WARRANTY." -ForegroundColor Black -BackgroundColor White
@@ -356,13 +357,13 @@ Function PreScriptCheck {
     # 10240 = First Release
     $ForBuild = 15000
 
-    If($Build_Check -eq 1 -and $BuildVer -lt $ForBuild) {
-        $BuildVer = $ForBuild
-    }
-
-    If($BuildVer -ne 14393) {
-        $BuildCheck = "Failed"
-        $DoNotRun = "Yes"
+    If($BuildVer -lt $ForBuild) {
+        If($Build_Check -eq 1) {
+            $BuildVer = $ForBuild
+        } Else {
+            $BuildCheck = "Failed"
+            $DoNotRun = "Yes"
+        }
     }
 
     If(!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")) {
@@ -436,7 +437,7 @@ Function ScriptPreStart {
             Black_Viper_Set 2
         } ElseIf($SettingImp.ToLower() -eq "tweaked") {
             Black_Viper_Set 3
-        } ElseIf($Automated -eq 0} {
+        } ElseIf($Automated -eq 0) {
             Write-Host "            Error Invalid Selection            " -ForegroundColor Red -BackgroundColor Black
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor Black
             Write-Host "Valid Swiches are:                             " -ForegroundColor Blue -BackgroundColor Black
