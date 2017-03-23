@@ -3,13 +3,13 @@ Param([alias("Set")] [string] $SettingImp)
 # Win10 Black Viper Service Configuration Script
 #
 # Black Viper's Service Configurations From
-# Website: http://www.blackviper.com/service-configurations/black-vipers-windows-10-service-configurations/
+# Website: http://www.blackviper.com/
 #
 # Script + Menu By
-# Author: Madbomb122
-# Website: https://github.com/madbomb122/
+#  Author: Madbomb122
+# Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = 0.6 #(03-19-2017)
+$Script_Version = 0.7 #(03-22-2017)
 $Release_Type = "Beta"
 ##########
 
@@ -35,7 +35,6 @@ $Release_Type = "Beta"
 #$Release_Type = "Testing"
 #$Release_Type = "Stable"
 
-#$filebase = (Get-Item -Path ".\" -Verbose).FullName
 $Global:filebase = $PSScriptRoot
 $ErrorActionPreference= 'silentlycontinue'
 
@@ -46,6 +45,10 @@ If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::
 }
 
 $TempFolder = $env:Temp
+
+$VersionURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
+$ServiceUrl = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+$ScriptUrl = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
 
 Function TOSDisplay {
     If($Release_Type -ne "Stable") {
@@ -94,11 +97,11 @@ Function TOS {
     Return
 }
 
-Function LoadWebCSV {
+Function LoadWebCSV([String]$FilePath) {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
         Clear-Host
-        Write-Host "Missing File 'BlackViper.csv'" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "Error, Missing File 'BlackViper.csv'" -ForegroundColor Red -BackgroundColor Black
         Write-Host "Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
         If($Invalid -eq 1) {
             Write-Host ""
@@ -109,8 +112,8 @@ Function LoadWebCSV {
         switch ($LoadWebCSV.ToLower()) {
             n {Exit}
             no {Exit}
-            y {DownloadServiceFile;$LoadWebCSV = "Out"}
-            yes {DownloadServiceFile;$LoadWebCSV = "Out"}
+            y {DownloadServiceFile $FilePath;$LoadWebCSV = "Out"}
+            yes {DownloadServiceFile $FilePath;$LoadWebCSV = "Out"}
             default {$Invalid = 1}
         }
     }
@@ -247,6 +250,7 @@ $BlackViperList = @(
 
 Function ServiceSet ([Int]$ServiceVal) {
     Clear-Host
+    
     $BVService = $BlackViperList[$ServiceVal]
     $CurrServices = Get-Service
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
@@ -284,10 +288,10 @@ Function ServiceSet ([Int]$ServiceVal) {
             DisplayOut $DispTemp  13 0
         }
     }
-    Write-Host "-------------------------------"
-    Write-Host "Service Changed..."
 
     If($Automated -ne 1) {
+        Write-Host "-------------------------------"
+        Write-Host "Service Changed..."
         Write-Host "Press any key to close..."
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
     }
@@ -321,113 +325,133 @@ Function Black_Viper_Set ([Int]$Back_Viper) {
     }
 }
 
-Function DownloadServiceFile {
-    $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
-    (New-Object System.Net.WebClient).DownloadFile($url, $ServiceFilePath)
+Function DownloadFile ([String]$Url, [String]$FilePath) {
+    (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath)
 }
 
-Function DownloadScriptFile ([String]$FilePath) {
-    $url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
-    (New-Object System.Net.WebClient).DownloadFile($url, $WebScriptFilePath)
-}
-
-Function ScriptPreStart {
-    $ServiceFilePath = $filebase + "\BlackViper.csv"
-
-    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-        LoadWebCSV
-        $Service_Ver_Check = 0
+Function PreScriptCheck {
+    $WindowVersion = [Environment]::OSVersion.Version.Major
+    
+    If ($WindowVersion -ne 10 -and $Automated -eq 0) {
+        Write-Host "                     Error                     " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "Sorry, this Script supports Windows 10 ONLY.   " -ForegroundColor Black -BackgroundColor White
+        Write-Host "                                               "
+        Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+        Exit
     }
-
-    $Script:csv = Import-Csv $ServiceFilePath
-
-    If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
-        $VersionFile = $TempFolder + "\Temp.csv"
-        $VersionURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
-        (New-Object System.Net.WebClient).DownloadFile($VersionURL, $VersionFile)
-        $CSV_Ver = Import-Csv $VersionFile
-        $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
-        $WebScriptVer = $($CSV_Ver[0].Version)
-
-        If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
-            DownloadServiceFile
-        }
-        If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
-            DownloadScriptFile $WebScriptFilePath
-            Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
-            Exit
-        }
-    }
-
-    $csv.RemoveRange(0,1)
-
+    
     $WinEdition = gwmi win32_operatingsystem | % caption
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
 
-    If($Skip_Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home") {
+    If($Edition_Check -eq 1 -and $WinEdition -ne "Microsoft Windows 10 Home") {
         $WinEdition = "Microsoft Windows 10 Pro"
     }
 
     $BuildVer = [environment]::OSVersion.Version.build
+    # 150?? = Creator's Update
     # 14393 = Anniversary Update
     # 10586 = First Major Update
     # 10240 = First Release
-    $ForBuild = 14393
+    $ForBuild = 15000
 
-<#
-    If($Skip_Build_Check -eq 1 -and $BuildVer -lt $ForBuild) {
+    If($Build_Check -eq 1 -and $BuildVer -lt $ForBuild) {
         $BuildVer = $ForBuild
     }
-    
+
     If($BuildVer -ne 14393) {
-        Write-Host "Not a Valid Build for this Script." -ForegroundColor Red -BackgroundColor Black
-        Write-Host "Creator's Update Only"
-        Write-Host ""
-        Write-Host "To skip this change 'Skip_Build_Check' to 1 in script file"
-        Write-Host ""
+        $BuildCheck = "Failed"
         $DoNotRun = "Yes"
     }
-#>
+
     If(!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")) {
-        Write-Host "Not a Valid OS for this Script." -ForegroundColor Red -BackgroundColor Black
-        Write-Host "Win 10 Home and Pro Only"
-        Write-Host ""
-        Write-Host "To skip this change 'Skip_Edition_Check' to 1 in script file"
-        Write-Host ""
+        $EditionCheck = "Failed"
         $DoNotRun = "Yes"
     }
-    If($DoNotRun -eq "Yes") {
-        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+
+    If($DoNotRun -eq "Yes" -and $Automated -eq 0) {
+        Write-Host "                     Error                     " -ForegroundColor Red -BackgroundColor Black
+        Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+
+        If($BuildCheck -eq "Failed") {
+            Write-Host "Sorry, this Script supports Windows 10 ONLY.   " -ForegroundColor Black -BackgroundColor White
+            Write-Host "Not a Valid Build for this Script.             " -ForegroundColor Black -BackgroundColor White
+            Write-Host "Lowest Build Recommended is Creator's Update   " -ForegroundColor Black -BackgroundColor White
+            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+            Write-Host "To skip change 'Build_Check' in script file.   " -ForegroundColor Green -BackgroundColor Black
+            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+        }
+
+        If($BuildCheck -eq "Failed") {
+            Write-Host "Not a Valid OS for this Script.                " -ForegroundColor Red -BackgroundColor Black
+            Write-Host "Windiws 10 Home and Pro Only                   " -ForegroundColor Black -BackgroundColor White
+            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+            Write-Host "To skip change 'Edition_Check' in script file  " -ForegroundColor Green -BackgroundColor Black
+            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+        }
+        Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
         Exit
-    } Else{
-        If($SettingImp -ne $null -and $SettingImp) {
-            $Automated = 1
-            If($SettingImp -In 1..3) {
-                Black_Viper_Set $SettingImp
-            } ElseIf($SettingImp.ToLower() -eq "default") {
-                Black_Viper_Set 1
-            } ElseIf($SettingImp.ToLower() -eq "safe") {
-                Black_Viper_Set 2
-            } ElseIf($SettingImp.ToLower() -eq "tweaked") {
-                Black_Viper_Set 3
-            } Else{
-                Write-Host "Invalid Selection" -ForegroundColor Blue -BackgroundColor Black
-                Write-Host ""
-                Write-Host "Valid Selections are:" -ForegroundColor Blue -BackgroundColor Black
-                Write-Host "1 or Default" -ForegroundColor Green -BackgroundColor Black
-                Write-Host "2 or Safe" -ForegroundColor Yellow -BackgroundColor Black
-                Write-Host "3 or Tweaked" -ForegroundColor Red -BackgroundColor Black
-                Write-Host ""
-                Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
-                $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
-            }
-        } ElseIf($Accept_TOS -eq 0) {
-            TOS
-        } Else {
-            Black_Viper_Input
+    } Else {
+        $ServiceFilePath = $filebase + "\BlackViper.csv"
+
+        If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+            LoadWebCSV $ServiceFilePath
+            $Service_Ver_Check = 0
         }
+
+        $Script:csv = Import-Csv $ServiceFilePath
+
+        If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
+            $VersionFile = $TempFolder + "\Temp.csv"
+            DownloadFile $VersionURL $VersionFile
+            $CSV_Ver = Import-Csv $VersionFile
+            $WebScriptVer = $($CSV_Ver[0].Version)
+
+            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
+                DownloadFile $ServiceUrl $ServiceFilePath
+            }
+
+            If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
+                $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
+                DownloadFile $ScriptUrl $WebScriptFilePath
+                Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
+                Exit
+            }
+        }
+        $csv.RemoveRange(0,1)
+    }
+    ScriptPreStart
+}
+
+Function ScriptPreStart {
+    If($SettingImp -ne $null -and $SettingImp) {
+        $Automated = 1
+        If($SettingImp -In 1..3) {
+            Black_Viper_Set $SettingImp
+        } ElseIf($SettingImp.ToLower() -eq "default") {
+            Black_Viper_Set 1
+        } ElseIf($SettingImp.ToLower() -eq "safe") {
+            Black_Viper_Set 2
+        } ElseIf($SettingImp.ToLower() -eq "tweaked") {
+            Black_Viper_Set 3
+        } ElseIf($Automated -eq 0} {
+            Write-Host "            Error Invalid Selection            " -ForegroundColor Red -BackgroundColor Black
+            Write-Host "                                               " -ForegroundColor Black -BackgroundColor Black
+            Write-Host "Valid Swiches are:                             " -ForegroundColor Blue -BackgroundColor Black
+            Write-Host "1 or Default                                   " -ForegroundColor Green -BackgroundColor Black
+            Write-Host "2 or Safe                                      " -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "3 or Tweaked                                   " -ForegroundColor Red -BackgroundColor Black
+            Write-Host "                                               " -ForegroundColor Black -BackgroundColor Black
+            Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
+            $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+            Exit
+        }
+    } ElseIf($Accept_TOS -eq 0) {
+        TOS
+    } Else {
+        Black_Viper_Input
     }
 }
 
@@ -437,18 +461,9 @@ Function ScriptPreStart {
 $Script:Accept_TOS = 0          #0 = See TOS
                                 #Anything else = Accept TOS
 
-$Script:Automated = 0           #0 = Pause at end of Script
-                                #1 = Close powershell at end of Script
+$Script:Automated = 0           #0 = Pause On Errors or End of Script
+                                #1 = Close On Errors or End of Script
 
-$Script:Show_Changed = 1        #0 = Dont Show Changed Services
-                                #1 = Show Changed Services
-                                
-$Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
-                                #1 = Show Already set Services
-
-$Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
-                                #1 = Show Services not present
-                                
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 #Note: If found will Auto download and runs that
@@ -459,15 +474,26 @@ $Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
 #Note: If found will Auto download and uses that for the configuration
 #--------------------------------
 
+#--------Display Variables-------
+$Script:Show_Changed = 1        #0 = Dont Show Changed Services
+                                #1 = Show Changed Services
+
+$Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
+                                #1 = Show Already set Services
+
+$Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
+                                #1 = Show Services not present
+#--------------------------------
+
 #----CHANGE AT YOUR OWN RISK!----
-$Script:Skip_Edition_Check = 0  #0 = Check if Home or Pro Edition
+$Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
                                 #1 = Allows you to run on non Home/Pro
 
-$Script:Skip_Build_Check = 0    #0 = Check if Creator's Update
-                                #1 = Allows you to run on non Home/Pro Creator's Update
+$Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
+                                #1 = Allows you to run on Non-Creator's Update
 #--------------------------------
 
 # --------------------------------------------------------------------------
 
 #Starts the script (Do not change)
-ScriptPreStart
+PreScriptCheck
