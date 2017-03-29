@@ -1,25 +1,35 @@
 @ECHO OFF
 
-::----------------------------------------------------------------------
-
 :: Instructions
-:: Remove the 2 Colons infront of "The Command" you want to run
-:: Bat file MUST be in same directory as script
+:: Bat, Script MUST be in same Folder
+:: Change RunOption to = what you want to run (just the number)
 
-:: Format of File
-:: Description of "The Command"
-:: "The Command"
+set Run_Option=0
+:: 0 = Run with Menu
+:: 1 = Run with Windows Default Service Configuration
+:: 2 = Run with Black Viper Safe
+:: 3 = Run with Black Viper Tweaked
 
+set Script_File=BlackViper-Win10.ps1
+
+:: Do not change unless you know what you are doing
+set Script_Directory=%~dp0
+set Script_Path=%Script_Directory%%Script_File%
+
+:: DO NOT CHANGE ANYTHING PAST THIS LINE
 ::----------------------------------------------------------------------
+set Use_Arg=yes
 
-::Run script with Menu Selection
-::PowerShell.exe -NoProfile -Command "& {Start-Process PowerShell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File %~dp0BlackViper-Win10.ps1' -Verb RunAs}"
+if /i %Run_Option%==0 set Use_Arg=no
 
-::Run script with Black Viper Default
-::PowerShell.exe -NoProfile -Command "& {Start-Process PowerShell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File %~dp0BlackViper-Win10.ps1 -Set 1' -Verb RunAs}"
+SETLOCAL ENABLEDELAYEDEXPANSION
+if /i %Use_Arg%==no (
+    powershell.exe -noprofile -ExecutionPolicy Bypass -command "&{start-process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -file \"!Script_Path!\"' -verb RunAs}"
+)
+ENDLOCAL DISABLEDELAYEDEXPANSION
 
-::Run script with Black Viper Safe
-::PowerShell.exe -NoProfile -Command "& {Start-Process PowerShell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File %~dp0BlackViper-Win10.ps1 -Set 2' -Verb RunAs}"
-
-::Run script with Black Viper Tweaked
-::PowerShell.exe -NoProfile -Command "& {Start-Process PowerShell.exe -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File %~dp0BlackViper-Win10.ps1 -Set 3' -Verb RunAs}"
+SETLOCAL ENABLEDELAYEDEXPANSION
+if /i %Use_Arg%==yes (
+    PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File \"!Script_Path!\" -Set \"!Run_Option!\"' -Verb RunAs}";
+)
+ENDLOCAL DISABLEDELAYEDEXPANSION
