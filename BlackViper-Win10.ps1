@@ -144,26 +144,23 @@ Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;DisplayOutMenu " |" 14 0 1
     If($OSType -ne 64) {
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu " |" 14 0 1
         DisplayOutMenu "|                                                   |" 14 0 1
         DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
-    } Else {
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;DisplayOutMenu " |" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[2] 2 0 0 ;DisplayOutMenu " |" 14 0 1
     }
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
-    for ($i=3; $i -le 5; $i++) {
+    for ($i=2; $i -le 4; $i++) {
         DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;DisplayOutMenu " |" 14 0 1
     }
-    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[6] 13 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[5] 13 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[6] 15 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;DisplayOutMenu " |" 14 0 1
-    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[9] 15 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Script Version: " 15 0 0 ; DisplayOutMenu "$Script_Version ($Script_Date)                 " 11 0 0 ; DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Services File last updated on: " 15 0 0 ; DisplayOutMenu "$ServiceDate       " 11 0 0 ;DisplayOutMenu " |" 14 0 1
@@ -261,7 +258,6 @@ $CopyrightItems = @(
 
 $BlackViperDisItems = @(
 "      Black Viper's Service Configurations       ",
-"                                                 ",
 "Settings based on Black Viper's Configurations.  ",
 '1. Default                                       ',
 '2. Safe                                          ',
