@@ -7,7 +7,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 **AT YOUR OWN RISK YOU CAN**  <br />
 **1. Change variable at bottom of script to skip the check for Home/Pro, and/or Creator's Update**  <br />
-**2. Still run the script on x32 w/o chaning settings (But shows a warning)**  <br />
+**2. Still run the script on x32 w/o changing settings (But shows a warning)**  <br />
 
 # [](#header-1)Basic Usage
 Run the Script <br />
@@ -56,7 +56,7 @@ or <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
 **Q:** Who do I contact about the Service Configurations or an issue with the configuration? <br />
-**A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper.
+**A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper himself.
 
 **Q:** I have an issue with the script, what do I do? <br />
 **A:** Post it as an issue using github's issues tab up top.
@@ -65,7 +65,7 @@ or <br />
 **A:** The script itself is safe, but changes to services may cause problems.
 
 **Q:** Can I run the script repeatedly? <br />
-**A:** Yes, with same or different settings. (same setting will do nothing but do some display)
+**A:** Yes, with same or different settings.
 
 **Q:** Can I use the script or modify it for my / my company's needs? <br />
 **A:** Sure. Just don't forget to include copyright notice as per the license requirements, and leave any Copyright in script too.
@@ -74,17 +74,17 @@ or <br />
 **A:** Yes, run the script again and select again. <br />
 
 **Q:** The script messed up my computer. <br />
-**A:** The script is as is, any problems you have/had is not My problem.
+**A:** The script is as is, any problems you have/had is your own problem.
 
-**Q:** Are you going to add support for other version of Windows other than pro or home? <br />
-**A:** Sorry, I will only support configuration listed on Black Viper's website. <br />
+**Q:** Are you going to add support for other version of Windows 10 other than pro or home? <br />
+**A:** Sorry, I only support the windows 10 configuration listed on Black Viper's website. <br />
 
 **Q:** Are you going to add support for builds before the "Creator's Update"? <br />
 **A:** Sorry, since I dont have the configuration from before the "Creator's Update" I can't add it. <br />
 **Note:** If you have the configuration please leave a comment with a way to contact you.
 
 **Q:** Will you make a script for any windows before windows 10? <br />
-**A:** NO. <br />
+**A:** Nope. <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
 **A:** Yes, edit the CSV file that is imported and put it in the proper format <br />
