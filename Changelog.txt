@@ -1,4 +1,11 @@
 -----------------------------------------------------------------------------------
+0.8 (03-29-2017)
+
+Added Copyright Display Option
+Goto Website Option
+Changed TOS Display look
+
+-----------------------------------------------------------------------------------
 0.7 (03-22-2017)
 
 Enabled Build Check (For creator's update)
