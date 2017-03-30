@@ -9,14 +9,14 @@ Param([alias("Set")] [string] $SettingImp)
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = 0.7 
-$Script_Date = "03-22-2017"
+$Script_Version = 0.8
+$Script_Date = "03-29-2017"
 $Release_Type = "Beta"
 ##########
 
 <#
     Copyright (c) 2017 Madbomb122 - Black Viper Service Script
-    Copyright (c) 1999-2017 by Charles "Black Viper" Sparks - Actual settings for the Services
+    Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -52,29 +52,30 @@ $ServiceUrl = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/mas
 $ScriptUrl = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
 
 Function TOSDisplay {
-    If($Release_Type -ne "Stable") {
-        Write-Host "                 Caution!!!                    " -ForegroundColor Yellow -BackgroundColor Black
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
-        Write-Host " Service Configuration are based on Creator's  " -ForegroundColor Red -BackgroundColor Black
-        Write-Host " Update and is still being changed.            " -ForegroundColor Red -BackgroundColor Black
-        Write-Host " Use AT YOUR OWN RISK.                         " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+    If ($Release_Type -eq "Testing" -or $Release_Type -eq "Beta") {
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Service Configuration are based on Creator's    " 15 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Update and is still being changed.              " 15 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Use AT YOUR OWN RISK.                           " 15 0 0 ;DisplayOutMenu " |" 14 0 1
     }
-    If($OSType -ne 64) {
-        Write-Host "                 WARNING!!!                    " -ForegroundColor Yellow -BackgroundColor Black
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "     These settings are ment for x64 Bit.      " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "             Use AT YOUR OWN RISK.             " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "                                               " -ForegroundColor Red -BackgroundColor Black
+    If ($OSType -ne 64) {
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 15 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "              Use AT YOUR OWN RISK.              " 15 0 0 ;DisplayOutMenu " |" 14 0 1
     }
-    Write-Host "                 Terms of Use                  " -ForegroundColor Green -BackgroundColor Black
-    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-    Write-Host "This program comes with ABSOLUTELY NO WARRANTY." -ForegroundColor Black -BackgroundColor White
-    Write-Host "This is free software, and you are welcome to  " -ForegroundColor Black -BackgroundColor White
-    Write-Host "redistribute it under certain conditions.      " -ForegroundColor Black -BackgroundColor White
-    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-    Write-Host "Read License file for full Terms.              " -ForegroundColor Black -BackgroundColor White
-    Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    DisplayOutMenu "|                                                   |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "|                                                   |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "|                                                   |" 14 0 1
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
 }
 
 Function TOS {
@@ -87,7 +88,7 @@ Function TOS {
             Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
         }
-        $TOS = Read-Host "`nAccept? (Y)es/(N)o"
+        $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
         switch ($TOS.ToLower()) {
             n {Exit}
             no {Exit}
@@ -162,6 +163,7 @@ Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[9] 15 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Script Version: " 15 0 0 ; DisplayOutMenu "$Script_Version ($Script_Date)                 " 11 0 0 ; DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Services File last updated on: " 15 0 0 ; DisplayOutMenu "$ServiceDate       " 11 0 0 ;DisplayOutMenu " |" 14 0 1
@@ -189,6 +191,7 @@ Function Black_Viper_Input {
             1 {Black_Viper_Set 1; $Black_Viper_Input = "Out"}
             2 {Black_Viper_Set 2; $Black_Viper_Input = "Out"}
             3 {Black_Viper_Set 3; $Black_Viper_Input = "Out"}
+            C {CopyrightDisplay}  #Copyright
             M {OpenWebsite "https://github.com/madbomb122/"}
             B {OpenWebsite "http://www.blackviper.com/"}
             Q {Exit}
@@ -201,6 +204,61 @@ If([System.Environment]::Is64BitProcess) {
     $OSType = 64
 }
 
+# Displays items but NO Seperators
+Function VariableDisplay ([Array]$VarToDisplay) {
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $VarToDisplay[0] 11 0 0 ;DisplayOutMenu " |" 14 0 1
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    for ($i=1; $i -lt $VarToDisplay.length; $i++) {
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $VarToDisplay[$i] 2 0 0 ;DisplayOutMenu " |" 14 0 1
+    }
+    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    Write-Host ""
+}
+
+Function CopyrightDisplay {
+    $CopyrightDisplay = 'X'
+    while ($CopyrightDisplay -ne "Out") {
+        Clear-Host
+        VariableDisplay $CopyrightItems
+        $CopyrightDisplay = Read-Host "`nPress 'Enter' to continue"
+        switch ($CopyrightDisplay) {
+            default {$CopyrightDisplay = "Out"}
+        }
+    }
+    Return
+}
+
+$CopyrightItems = @(
+'                    Copyright                    ',
+'                                                 ',
+' Services Configuration                          ',
+' Copyright (c) 1999-2017                         ', 
+' Charles "Black Viper" Sparks                    ',
+'                                                 ',
+' Black Viper Service Script                      ',
+' Copyright (c) 2017 Madbomb122                   ',
+'                                                 ',
+' This program is free software: you can          ',
+' redistribute it and/or modify This program is   ',
+' free software This program is free software:    ',
+' you can redistribute it and/or modify it under  ',
+' the terms of the GNU General Public License as  ',
+' published by the Free Software Foundation,      ',
+' version 3 of the License.                       ',
+'                                                 ',
+' This program is distributed in the hope that it ',
+' will be useful, but WITHOUT ANY WARRANTY;       ',
+' without even the implied warranty of            ',
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR     ',
+' PURPOSE.  See the GNU General Public License    ',
+' for more details.                               ',
+'                                                 ',
+' You should have received a copy of the GNU      ',
+' General Public License along with this program. ',
+' If not, see <http://www.gnu.org/licenses/>.     ',
+'                                                 ')
+
 $BlackViperDisItems = @(
 "      Black Viper's Service Configurations       ",
 "                                                 ",
@@ -209,6 +267,7 @@ $BlackViperDisItems = @(
 '2. Safe                                          ',
 '3. Tweaked                                       ',
 'Q. Quit (No changes)                             ',
+'C. Display Copyright                             ',
 "M. Go to Madbomb122's Github                     ",
 "B. Go to Black Viper's Website                   ")
 
@@ -332,6 +391,18 @@ Function DownloadFile ([String]$Url, [String]$FilePath) {
     (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath)
 }
 
+Function InternetCheck {
+    If (!(Test-Connection -computer google.com -count 1 -quiet)) {
+        If (!(Test-Connection -computer yahoo.com -count 1 -quiet)) {
+            Return $false
+        } Else {
+            Return $true
+        }
+    } Else {
+        Return $true
+    }
+}
+
 Function PreScriptCheck {
     $WindowVersion = [Environment]::OSVersion.Version.Major
     
@@ -392,7 +463,7 @@ Function PreScriptCheck {
             Write-Host " To skip change 'Edition_Check' in script file " -ForegroundColor Green -BackgroundColor Black
             Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
         }
-		
+
         Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
         Exit
@@ -407,23 +478,30 @@ Function PreScriptCheck {
         $Script:csv = Import-Csv $ServiceFilePath
 
         If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
-            $VersionFile = $TempFolder + "\Temp.csv"
-            DownloadFile $VersionURL $VersionFile
-            $CSV_Ver = Import-Csv $VersionFile
-            $WebScriptVer = $($CSV_Ver[0].Version)
+            If (InternetCheck) {
+                $VersionFile = $TempFolder + "\Temp.csv"
+                DownloadFile $VersionURL $VersionFile
+                $CSV_Ver = Import-Csv $VersionFile
+                $WebScriptVer = $($CSV_Ver[0].Version)
 
-            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
-                DownloadFile $ServiceUrl $ServiceFilePath
-            }
+                If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
+                    DownloadFile $ServiceUrl $ServiceFilePath
+                }
 
-            If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
-                $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
-                DownloadFile $ScriptUrl $WebScriptFilePath
-                Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
-                Exit
+                If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
+                    $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
+                    DownloadFile $ScriptUrl $WebScriptFilePath
+                    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
+                    Exit
+                }
+            } ElseIf($Automated -eq 0) {
+                Clear-Host
+                Write-Host "No internet connection dectected." -ForegroundColor Red -BackgroundColor Black
+                Write-Host "Tested by pinging google.com and yahoo.com" -ForegroundColor Red -BackgroundColor Black
+                Read-Host -Prompt "Press any key to continue"
             }
         }
-		$ServiceDate = ($csv[0]."Def-Pro")
+        $ServiceDate = ($csv[0]."Def-Pro")
         $csv.RemoveRange(0,1)
     }
     ScriptPreStart
