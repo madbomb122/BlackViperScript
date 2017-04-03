@@ -58,7 +58,7 @@ or <br />
 **Q:** The script window closes or gives an error saying script is blocked, what do i do? <br />
 **A:** By default windows blocks ps1 scripts, you can use one of the following <br />
          1. Use the bat file to run the script (recommended) <br />
-         2. On an admin powershell console `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted` (not recommended) <br />
+         2. On an admin powershell console `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted` <br />
 
 **Q:** Who do I contact about the Service Configurations or an issue with the configuration? <br />
 **A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper himself.
