@@ -1,8 +1,8 @@
 -----------------------------------------------------------------------------------
 0.9 (04-02-2017) -Final Beta/Test Version
 
-Various display changes
-Various Fixes
+Some display changes
+Changed the 'go to website' to open with default browser instead of IE
 
 -----------------------------------------------------------------------------------
 0.8 (03-29-2017)
