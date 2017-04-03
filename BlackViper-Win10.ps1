@@ -578,7 +578,7 @@ $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
 #Note: If found will Auto download and runs that
 #File name will be "BlackViper-Win10-Ver.(version#).ps1"
 
-$Script:Service_Ver_Check = 1   #0 = Skip Check for update of Service File
+$Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File
 #Note: If found will Auto download and uses that for the configuration
 #--------------------------------
