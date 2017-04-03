@@ -21,7 +21,7 @@ Select what you want <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
-Run script with changing Services to Default Service Configuration (Only ones changed by Black viper's Service Configurations): <br />
+Runs script with changing Services to Default Configuration (Only ones changed by this script): <br />
    -Set 1 <br />
    -Set Default
 
@@ -31,7 +31,7 @@ or <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
 ******
 
-Run script with changing Services to Black Viper's Safe Service Configuration: <br />
+Runs script with changing Services to Black Viper's Safe Configuration: <br />
    -Set 2 <br />
    -Set Safe
 
@@ -41,7 +41,7 @@ or <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Safe` <br />
 ******
 
-Run script with changing Services to Black Viper's Tweaked Service Configuration: <br />
+Runs script with changing Services to Black Viper's Tweaked Configuration: <br />
    -Set 3 <br />
    -Set Tweaked
 
