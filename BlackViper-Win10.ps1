@@ -2,15 +2,16 @@ Param([alias("Set")] [string] $SettingImp)
 ##########
 # Win10 Black Viper Service Configuration Script
 #
-# Black Viper's Service Configurations From
+# Black Viper's Service Configurations
+#  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
 # Script + Menu By
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = 0.8
-$Script_Date = "03-29-2017"
+$Script_Version = 0.9
+$Script_Date = "04-02-2017"
 $Release_Type = "Beta"
 ##########
 
@@ -47,35 +48,42 @@ If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::
 
 $TempFolder = $env:Temp
 
-$VersionURL = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
-$ServiceUrl = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
-$ScriptUrl = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+$Version_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
+$Service_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+$Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
 
 Function TOSDisplay {
-    If ($Release_Type -eq "Testing" -or $Release_Type -eq "Beta") {
-        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Service Configuration are based on Creator's    " 15 0 0 ;DisplayOutMenu " |" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Update and is still being changed.              " 15 0 0 ;DisplayOutMenu " |" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Use AT YOUR OWN RISK.                           " 15 0 0 ;DisplayOutMenu " |" 14 0 1
+    $BorderColor = 14
+    If($Release_Type -eq "Testing" -or $Release_Type -eq "Beta") {
+        $BorderColor = 15
+        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " Service Configuration are based on Creator's    " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " Update and is still being changed.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " Use AT YOUR OWN RISK.                           " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1
     }
-    If ($OSType -ne 64) {
-        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 15 0 0 ;DisplayOutMenu " |" 14 0 1
-        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "              Use AT YOUR OWN RISK.              " 15 0 0 ;DisplayOutMenu " |" 14 0 1
+    If($OSType -ne 64) {
+        $BorderColor = 15
+        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              Use AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1
     }
-    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" 14 0 1
-    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    DisplayOutMenu "|                                                   |" 14 0 1
-    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" 14 0 1
-    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
-    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" 14 0 1
-    DisplayOutMenu "|                                                   |" 14 0 1
-    DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" 14 0 1
-    DisplayOutMenu "|                                                   |" 14 0 1
-    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
 }
 
 Function TOS {
@@ -89,7 +97,7 @@ Function TOS {
             $Invalid = 0
         }
         $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
-        switch ($TOS.ToLower()) {
+        Switch($TOS.ToLower()) {
             n {Exit}
             no {Exit}
             y {Black_Viper_Input}
@@ -100,19 +108,25 @@ Function TOS {
     Return
 }
 
-Function LoadWebCSV([String]$FilePath) {
+Function LoadWebCSV ([String]$FilePath) {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
         Clear-Host
-        Write-Host " Error, Missing File 'BlackViper.csv'   " -ForegroundColor Red -BackgroundColor Black
-        Write-Host " Download File from Madbomb122's Github?" -ForegroundColor Green -BackgroundColor Black
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                      Error                      " 13 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "|                                                   |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Missing File 'BlackViper.csv'                   " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "|                                                   |" 14 0 1
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
         If($Invalid -eq 1) {
             Write-Host ""
             Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
             $Invalid = 0
         }
-        $LoadWebCSV = Read-Host "`n(Y)es/(N)o"
-        switch ($LoadWebCSV.ToLower()) {
+        $LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
+        Switch($LoadWebCSV.ToLower()) {
             n {Exit}
             no {Exit}
             y {DownloadServiceFile $FilePath;$LoadWebCSV = "Out"}
@@ -123,7 +137,7 @@ Function LoadWebCSV([String]$FilePath) {
     Return
 }
 
-Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine) {
+Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine) {
     If($NewLine -eq 0) {
         Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
@@ -131,7 +145,7 @@ Function DisplayOutMenu([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]
     }
 }
 
-Function DisplayOut([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
+Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
     If($TxtColor -le 15) {
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
@@ -152,7 +166,7 @@ Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "|                                                   |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "|                                                   |" 14 0 1
-    for ($i=2; $i -le 4; $i++) {
+    For($i=2; $i -le 4; $i++) {
         DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;DisplayOutMenu " |" 14 0 1
     }
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $ChToDisplay[5] 13 0 0 ;DisplayOutMenu " |" 14 0 1
@@ -165,12 +179,6 @@ Function ChoicesDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Script Version: " 15 0 0 ; DisplayOutMenu "$Script_Version ($Script_Date)                 " 11 0 0 ; DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Services File last updated on: " 15 0 0 ; DisplayOutMenu "$ServiceDate       " 11 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-}
-
-Function OpenWebsite ([String]$Website) {
-    $IE=new-object -com internetexplorer.application
-    $IE.navigate2($Website)
-    $IE.visible=$true
 }
 
 Function Black_Viper_Input {
@@ -188,13 +196,17 @@ Function Black_Viper_Input {
             1 {Black_Viper_Set 1; $Black_Viper_Input = "Out"}
             2 {Black_Viper_Set 2; $Black_Viper_Input = "Out"}
             3 {Black_Viper_Set 3; $Black_Viper_Input = "Out"}
-            C {CopyrightDisplay}  #Copyright
-            M {OpenWebsite "https://github.com/madbomb122/"}
-            B {OpenWebsite "http://www.blackviper.com/"}
+            C {CopyrightDisplay}
+            M {Openwebsite "https://github.com/madbomb122/"}
+            B {Openwebsite "http://www.blackviper.com/"}
             Q {Exit}
             default {$Invalid = 1}
         }
     }
+}
+
+Function Openwebsite ([String]$Url) {
+    [System.Diagnostics.Process]::Start($Url)
 }
 
 If([System.Environment]::Is64BitProcess) {
@@ -206,7 +218,7 @@ Function VariableDisplay ([Array]$VarToDisplay) {
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
     DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $VarToDisplay[0] 11 0 0 ;DisplayOutMenu " |" 14 0 1
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-    for ($i=1; $i -lt $VarToDisplay.length; $i++) {
+    For($i=1; $i -lt $VarToDisplay.length; $i++) {
         DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu $VarToDisplay[$i] 2 0 0 ;DisplayOutMenu " |" 14 0 1
     }
     DisplayOutMenu "|---------------------------------------------------|" 14 0 1
@@ -215,11 +227,11 @@ Function VariableDisplay ([Array]$VarToDisplay) {
 
 Function CopyrightDisplay {
     $CopyrightDisplay = 'X'
-    while ($CopyrightDisplay -ne "Out") {
+    While($CopyrightDisplay -ne "Out") {
         Clear-Host
         VariableDisplay $CopyrightItems
         $CopyrightDisplay = Read-Host "`nPress 'Enter' to continue"
-        switch ($CopyrightDisplay) {
+        Switch($CopyrightDisplay) {
             default {$CopyrightDisplay = "Out"}
         }
     }
@@ -233,7 +245,7 @@ $CopyrightItems = @(
 ' Copyright (c) 1999-2017                         ', 
 ' Charles "Black Viper" Sparks                    ',
 '                                                 ',
-' Black Viper Service Script                      ',
+' This Script                                     ',
 ' Copyright (c) 2017 Madbomb122                   ',
 '                                                 ',
 ' This program is free software: you can          ',
@@ -356,7 +368,7 @@ Function ServiceSet ([Int]$ServiceVal) {
     Exit
 }
 
-Function ServiceCheck([string]$S_Name, [string]$S_Type, [string]$C_Type) {
+Function ServiceCheck ([string]$S_Name, [string]$S_Type, [string]$C_Type) {
     If(Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
         If($S_Type -ne $C_Type) {
             $ReturnV = $True
@@ -388,8 +400,8 @@ Function DownloadFile ([String]$Url, [String]$FilePath) {
 }
 
 Function InternetCheck {
-    If (!(Test-Connection -computer google.com -count 1 -quiet)) {
-        If (!(Test-Connection -computer yahoo.com -count 1 -quiet)) {
+    If(!(Test-Connection -computer google.com -count 1 -quiet)) {
+        If(!(Test-Connection -computer yahoo.com -count 1 -quiet)) {
             Return $false
         } Else {
             Return $true
@@ -402,11 +414,16 @@ Function InternetCheck {
 Function PreScriptCheck {
     $WindowVersion = [Environment]::OSVersion.Version.Major
     
-    If ($WindowVersion -ne 10 -and $Automated -eq 0) {
-        Write-Host "                     Error                     " -ForegroundColor Red -BackgroundColor Black
-        Write-Host " Sorry, this Script supports Windows 10 ONLY.  " -ForegroundColor Black -BackgroundColor White
-        Write-Host "                                               "
-        Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
+    If($WindowVersion -ne 10 -and $Automated -eq 0) {
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                      Error                      " 13 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "|                                                   |" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "|                                                   |" 14 0 1
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        Write-Host ""
+        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
         Exit
     }
@@ -441,26 +458,29 @@ Function PreScriptCheck {
     }
 
     If($DoNotRun -eq "Yes" -and $Automated -eq 0) {
-        Write-Host "                     Error                     " -ForegroundColor Red -BackgroundColor Black
-        Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                      Error                      " 13 0 0 ;DisplayOutMenu " |" 14 0 1
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        DisplayOutMenu "|                                                   |" 14 0 1
 
         If($BuildCheck -eq "Failed") {
-            Write-Host " Not a valid Build for this Script.            " -ForegroundColor Black -BackgroundColor White
-            Write-Host " Lowest Build Recommended is Creator's Update  " -ForegroundColor Black -BackgroundColor White
-            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-            Write-Host " To skip change 'Build_Check' in script file.  " -ForegroundColor Green -BackgroundColor Black
-            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Not a valid Build for this Script.              " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "|                                                   |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " To skip change 'Build_Check' in script file.    " 11 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "|                                                   |" 14 0 1
         }
 
         If($EditionCheck -eq "Failed") {
-            Write-Host " Not a valid Windows Edition for this Script.  " -ForegroundColor Black -BackgroundColor White
-            Write-Host " Windows 10 Home and Pro Only                  " -ForegroundColor Black -BackgroundColor White
-            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
-            Write-Host " To skip change 'Edition_Check' in script file " -ForegroundColor Green -BackgroundColor Black
-            Write-Host "                                               " -ForegroundColor Black -BackgroundColor White
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Not a valid Windows Edition for this Script.    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "|                                                   |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " To skip change 'Edition_Check' in script file   " 11 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "|                                                   |" 14 0 1
         }
-
-        Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
+        DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+        Write-Host ""
+        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
         Exit
     } Else {
@@ -474,27 +494,35 @@ Function PreScriptCheck {
         $Script:csv = Import-Csv $ServiceFilePath
 
         If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
-            If (InternetCheck) {
+            If(InternetCheck) {
                 $VersionFile = $TempFolder + "\Temp.csv"
-                DownloadFile $VersionURL $VersionFile
+                DownloadFile $Version_Url $VersionFile
                 $CSV_Ver = Import-Csv $VersionFile
                 $WebScriptVer = $($CSV_Ver[0].Version)
 
                 If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
-                    DownloadFile $ServiceUrl $ServiceFilePath
+                    DownloadFile $Service_Url $ServiceFilePath
                 }
 
                 If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $Script_Version) {
                     $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
-                    DownloadFile $ScriptUrl $WebScriptFilePath
+                    DownloadFile $Script_Url $WebScriptFilePath
                     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
                     Exit
                 }
             } ElseIf($Automated -eq 0) {
                 Clear-Host
-                Write-Host "No internet connection dectected." -ForegroundColor Red -BackgroundColor Black
-                Write-Host "Tested by pinging google.com and yahoo.com" -ForegroundColor Red -BackgroundColor Black
-                Read-Host -Prompt "Press any key to continue"
+                DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+                DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "                      Error                      " 13 0 0 ;DisplayOutMenu " |" 14 0 1
+                DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+                DisplayOutMenu "|                                                   |" 14 0 1
+                DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "No internet connection dectected.                " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+                DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "Tested by pinging google.com and yahoo.com       " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+                DisplayOutMenu "|                                                   |" 14 0 1
+                DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+                Write-Host ""
+                Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+                $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
             }
         }
         $ServiceDate = ($csv[0]."Def-Pro")
@@ -514,17 +542,18 @@ Function ScriptPreStart {
             Black_Viper_Set 2
         } ElseIf($SettingImp.ToLower() -eq "tweaked") {
             Black_Viper_Set 3
-        } ElseIf($Automated -eq 0) {
-            Write-Host "            Error Invalid Selection            " -ForegroundColor Red -BackgroundColor Black
-            Write-Host "                                               " -ForegroundColor Black -BackgroundColor Black
-            Write-Host " Valid Swiches are:                            " -ForegroundColor Blue -BackgroundColor Black
-            Write-Host " 1 or Default                                  " -ForegroundColor Green -BackgroundColor Black
-            Write-Host " 2 or Safe                                     " -ForegroundColor Yellow -BackgroundColor Black
-            Write-Host " 3 or Tweaked                                  " -ForegroundColor Red -BackgroundColor Black
-            Write-Host "                                               " -ForegroundColor Black -BackgroundColor Black
-            Write-Host "Press Any key to Close...                      " -ForegroundColor White -BackgroundColor Black
-            $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
-            Exit
+        } Else {
+            Clear-Host
+            DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu "             Error Invalid Selection             " 13 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "|---------------------------------------------------|" 14 0 1
+            DisplayOutMenu "|                                                   |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " Valid Swiches are:                              " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " 1 or Default                                    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " 2 or Safe                                       " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "| " 14 0 0 ;DisplayOutMenu " 3 or Tweaked                                    " 2 0 0 ;DisplayOutMenu " |" 14 0 1
+            DisplayOutMenu "|                                                   |" 14 0 1
+            DisplayOutMenu "|---------------------------------------------------|" 14 0 1
         }
     } ElseIf($Accept_TOS -eq 0) {
         TOS
@@ -545,9 +574,9 @@ $Script:Automated = 0           #0 = Pause On Errors or End of Script
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 #Note: If found will Auto download and runs that
-#File name will be "BlackViper-Win10-Ver.(version#-here).ps1"
+#File name will be "BlackViper-Win10-Ver.(version#).ps1"
 
-$Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
+$Script:Service_Ver_Check = 1   #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File
 #Note: If found will Auto download and uses that for the configuration
 #--------------------------------
