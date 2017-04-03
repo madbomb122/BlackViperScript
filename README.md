@@ -21,7 +21,7 @@ Select what you want <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
-Run script with changing Services to Default Settings (Only ones changed by Black viper's settings): <br />
+Run script with changing Services to Default Service Configuration (Only ones changed by Black viper's Service Configurations): <br />
    -Set 1 <br />
    -Set Default
 
@@ -31,7 +31,7 @@ or <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
 ******
 
-Run script with changing Services to Black Viper's Safe Setting: <br />
+Run script with changing Services to Black Viper's Safe Service Configuration: <br />
    -Set 2 <br />
    -Set Safe
 
@@ -41,7 +41,7 @@ or <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Safe` <br />
 ******
 
-Run script with changing Services to Black Viper's Tweaked Setting: <br />
+Run script with changing Services to Black Viper's Tweaked Service Configuration: <br />
    -Set 3 <br />
    -Set Tweaked
 
@@ -89,7 +89,7 @@ or <br />
 **Note:** If you have the configuration please leave a comment with a way to contact you.
 
 **Q:** Will you make a script for any windows before windows 10? <br />
-**A:** Nope. <br />
+**A:** No. <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
 **A:** Yes, edit the CSV file that is imported and put it in the proper format <br />
