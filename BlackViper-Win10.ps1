@@ -400,7 +400,9 @@ Function DownloadFile ([String]$Url, [String]$FilePath) {
 }
 
 Function InternetCheck {
-    If(!(Test-Connection -computer google.com -count 1 -quiet)) {
+    If($Internet_Check -eq 1) {
+        Return $true
+	} ElseIf(!(Test-Connection -computer google.com -count 1 -quiet)) {
         If(!(Test-Connection -computer yahoo.com -count 1 -quiet)) {
             Return $false
         } Else {
@@ -593,6 +595,9 @@ $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
 #--------------------------------
 
 #----CHANGE AT YOUR OWN RISK!----
+$Script:Internet_Check = 0      #0 = Checks if you have internet by doing a ping to google.com and yahoo.com
+                                #1 = Bypass check if you have google.com and yahoo.com blocked
+								
 $Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
                                 #1 = Allows you to run on non Home/Pro
 
