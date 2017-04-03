@@ -3,11 +3,12 @@
 
 Some display changes
 Changed the 'go to website' to open with default browser instead of IE
+added bypass for internet check (incase you have google.com and yahoo.com blocked)
 
 -----------------------------------------------------------------------------------
 0.8 (03-29-2017)
 
-Added Internet Check if script checks for update
+Added Internet Check if script checks for update (pings google.com and yahoo.com)
 Added Copyright Display Option
 Goto Website Option
 Changed TOS Display look
