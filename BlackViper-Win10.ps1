@@ -11,7 +11,7 @@ Param([alias("Set")] [string] $SettingImp)
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = 0.9
-$Script_Date = "04-02-2017"
+$Script_Date = "04-04-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Beta"
 ##########
