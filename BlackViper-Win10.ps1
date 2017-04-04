@@ -12,6 +12,7 @@ Param([alias("Set")] [string] $SettingImp)
 #
 $Script_Version = 0.9
 $Script_Date = "04-02-2017"
+#$Release_Type = "Stable"
 $Release_Type = "Beta"
 ##########
 
@@ -31,6 +32,52 @@ $Release_Type = "Beta"
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#>
+
+<#
+----------------------------------------------------------------------------
+.Prerequisite
+    System: Windows 10
+	Build: Home x64 or Pro x64
+	Min Patch: Creator's Update
+	Files: This script and 'BlackViper.csv' (has the service information in it)
+
+.DESCRIPTION
+    Script that can set Windows 10 services based on Black Viper's Service Configurations. 
+
+    AT YOUR OWN RISK YOU CAN 
+        1. Still run the script on x32 w/o changing settings (But shows a warning) 
+        2. Change variable at bottom of script to skip the check for Home/Pro
+		3. Change variable at bottom of script to skip the check for Creator's Update 
+
+.BASIC USAGE
+    Use the Menu and select the desired Services Configuration
+
+.ADVANCED USAGE
+    Use one of the following Methods or use the at Bat file provided 
+    (Bat file provided can run script, look in bat file for insructions)
+
+1. Runs script with changing Services to Default Configuration (Only ones changed by this script): 
+      -Set 1 
+      -Set Default
+
+Example: BlackViper-Win10.ps1 -Set 1
+Example: BlackViper-Win10.ps1 -Set Default
+------
+2. Runs script with changing Services to Black Viper's Safe Configuration: 
+      -Set 2 
+      -Set Safe
+
+Example: BlackViper-Win10.ps1 -Set 2
+Example: BlackViper-Win10.ps1 -Set Safe
+------
+3. Runs script with changing Services to Black Viper's Tweaked Configuration: 
+      -Set 3 
+      -Set Tweaked
+
+Example: BlackViper-Win10.ps1 -Set 3
+Example: BlackViper-Win10.ps1 -Set Tweaked
+----------------------------------------------------------------------------
 #>
 
 #$Release_Type = "Beta"
