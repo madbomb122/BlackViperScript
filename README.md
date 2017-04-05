@@ -12,7 +12,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **---B. Creator's Update** *($Script:Build_Check)* <br />
 
 # [](#header-1)Basic Usage
-Run the Script <br />
+Run the Script by bat file or `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
 Select desired Services Configuration <br />
 *1. Default <br />
 2. Safe <br />
