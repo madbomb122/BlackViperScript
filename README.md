@@ -6,18 +6,20 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **Note: Script is ment for Windows 10 Home x64 / Windows 10 Pro x64.. With Creator's Update Installed**  <br />
 
 **AT YOUR OWN RISK YOU CAN**  <br />
-**1. Change variable at bottom of script to skip the check for Home/Pro, and/or Creator's Update**  <br />
-**2. Still run the script on x32 w/o changing settings (But shows a warning)**  <br />
+**1. Run the script on x32 w/o changing settings (But shows a warning)** <br />
+**2. Change variable at bottom of script to skip the check for** <br />
+**---A. Home/Pro** *($Script:Edition_Check)* <br />
+**---B. Creator's Update** *($Script:Build_Check)* <br />
 
 # [](#header-1)Basic Usage
 Run the Script <br />
-Use the Menu <br />
-Select what you want <br />
+Select desired Services Configuration <br />
 *1. Default <br />
 2. Safe <br />
 3. Tweaked <br />*
 
 ## [](#header-2)Advanced Usage
+**Note: Best for automation**
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
