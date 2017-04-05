@@ -19,7 +19,7 @@ Select desired Services Configuration <br />
 3. Tweaked <br />*
 
 ## [](#header-2)Advanced Usage
-**Note: Best for automation**
+**Note: Best for automation** <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
