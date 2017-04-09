@@ -5,10 +5,12 @@
 :: Change RunOption to = what you want to run (just the number)
 
 set Run_Option=0
+:: Anything other than following does nothing
 :: 0 = Run with Menu
 :: 1 = Run with Windows Default Service Configuration
 :: 2 = Run with Black Viper Safe
 :: 3 = Run with Black Viper Tweaked
+:: 4 = Exit (Dont Run script)
 
 set Script_File=BlackViper-Win10.ps1
 
@@ -21,6 +23,7 @@ set Script_Path=%Script_Directory%%Script_File%
 set Use_Arg=yes
 
 if /i %Run_Option%==0 set Use_Arg=no
+if /i %Run_Option%==4 Exit
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 if /i %Use_Arg%==no (
