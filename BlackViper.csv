@@ -1,5 +1,5 @@
 ServiceName,Def-Home,Def-Pro,Safe-Desk,Safe-Lap,Tweaked-Desk
-#ServiceVersion,1,Apr-14-2017,0,0,0
+#ServiceVersion,1.0,Apr-14-2017,0,0,0
 AJRouter,2,2,2,2,1
 ALG,2,2,1,1,1
 AppMgmt,0,2,2,2,1
