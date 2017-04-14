@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------
-0.9 (04-04-2017) -Final Beta/Test Version
+1.0 (04-14-2017)
 
+Updated script to check for laptop/desktop
+
+-----------------------------------------------------------------------------------
+0.9 (04-02-2017) -Final Beta/Test Version
+
+Script checks for service file update by default
 Some display changes
 Changed the 'go to website' to open with default browser instead of IE
 added bypass for internet check (incase you have google.com and yahoo.com blocked)
