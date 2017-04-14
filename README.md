@@ -11,6 +11,13 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **---A. Home/Pro** *($Script:Edition_Check)* <br />
 **---B. Creator's Update** *($Script:Build_Check)* <br />
 
+# [](#header-1)Usage Requirements
+**OS:** Windows 10  <br />
+**OS Build:** Pro or Home <br />
+**Update:** Creator's Update <br />
+**Needed Files:** `BlackViper-Win10.ps1` (Script File), `BlackViper.csv` (Service Config File) <br />
+**Recommended Files:** `_Win10-BlackViper.bat` (To run script) <br />
+
 # [](#header-1)Basic Usage
 Run the Script by bat file or `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
 Select desired Services Configuration <br />
@@ -18,7 +25,7 @@ Select desired Services Configuration <br />
 2. Safe <br />
 3. Tweaked <br />*
 
-## [](#header-2)Advanced Usage
+## [](#header-1)Advanced Usage
 **Note: Best for automation** <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
@@ -69,7 +76,7 @@ or <br />
 **A:** Post it as an issue using github's issues tab up top.
 
 **Q:** Can I run the script safely? <br />
-**A:** The script itself is safe, but changes to services may cause problems.
+**A:** The script itself is safe, but changes to services may cause problems for certin programs.
 
 **Q:** Can I run the script repeatedly? <br />
 **A:** Yes, with same or different settings.
@@ -94,7 +101,7 @@ or <br />
 **A:** No. <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
-**A:** Yes, edit the CSV file that is imported and put it in the proper format <br />
+**A:** Yes, edit the file `BlackViper.csv` and put it in the proper format <br />
 **Note:** Number meaning 0 -Not installed, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay <br />
 
 **Q:** How long are you going to maintain the script? <br />
