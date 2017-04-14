@@ -100,6 +100,9 @@ or <br />
 **Q:** Will you make a script for any windows before windows 10? <br />
 **A:** No. <br />
 
+**Q:** Can I download the csv file from Black Viper's website and use that? <br />
+**A:** No, my file is not the same. <br />
+
 **Q:** Can I add a service to be changed or stop one from changing? <br />
 **A:** Yes, edit the file `BlackViper.csv` and put it in the proper format <br />
 **Note:** Number meaning 0 -Not installed/skip, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay <br />
