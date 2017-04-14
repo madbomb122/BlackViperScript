@@ -1,4 +1,4 @@
-﻿Param([alias("Set")] [string] $SettingImp)
+Param([alias("Set")] [string] $SettingImp)
 ##########
 # Win10 Black Viper Service Configuration Script
 #
@@ -11,7 +11,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "1.0"
-$Script_Date = "04-??-2017"
+$Script_Date = "04-14-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Beta"
 ##########
@@ -231,8 +231,7 @@ Function TOSDisplay {
         DisplayOutMenu $MenuArray[0] $BorderColor 0 1
         DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
         DisplayOutMenu $MenuArray[1] $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " Service Configuration are based on Creator's    " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " Update and is still being changed.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
         DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " Use AT YOUR OWN RISK.                           " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
         DisplayOutMenu $MenuArray[1] $BorderColor 0 1
     }
