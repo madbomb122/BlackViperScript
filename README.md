@@ -13,8 +13,8 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 # [](#header-1)Usage Requirements
 **OS:** Windows 10  x64 <br />
-**Edition:** Pro or Home (Can Run on other Builds AT YOUR OWN RISK) <br />
-**Build:** Creator's Update (Can Run on other Updates AT YOUR OWN RISK) <br />
+**Edition:** Pro or Home (Can Run on other Edition AT YOUR OWN RISK) <br />
+**Build:** Creator's Update (Can Run on other Build AT YOUR OWN RISK) <br />
 **Needed Files:** `BlackViper-Win10.ps1` (Script File), `BlackViper.csv` (Service Config File) <br />
 **Recommended Files:** `_Win10-BlackViper.bat` (To run script easier) <br />
 
