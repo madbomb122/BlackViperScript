@@ -45,10 +45,10 @@ $Release_Type = "Beta"
 
 <#--------------------------------------------------------------------------------
 .Prerequisite to run script
-    System: Windows 10
-    Build: Home x64 or Pro x64
-    Min Patch: Creator's Update
-    Files: This script and 'BlackViper.csv' (has the Service Configurations in it)
+    System: Windows 10 x64
+    Edition: Home or Pro     (Can run on other Edition AT YOUR OWN RISK)
+    Build: Creator's Update  (Can run on other Build AT YOUR OWN RISK)
+    Files: This script and 'BlackViper.csv' (Service Configurations)
 
 .DESCRIPTION
     Script that can set services based on Black Viper's Service Configurations. 
@@ -189,9 +189,9 @@ Function  AutomatedExitCheck ([int]$ExitBit) {
         Write-Host ""
         Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
-	}
-	If ($ExitBit -eq 1) {
-	    Exit
+    }
+    If ($ExitBit -eq 1) {
+        Exit
     }
 }
 
@@ -209,11 +209,11 @@ Function Error_Top_Display {
 
 Function LaptopCheck {
     $hadwaretype = Get-WmiObject -Class Win32_ComputerSystem
-	If($hadwaretype.PCSystemType -ne 2) {
-	     return "-Desk"
-	} Else {
-	     return "-Lap"
-	}
+    If($hadwaretype.PCSystemType -ne 2) {
+         return "-Desk"
+    } Else {
+         return "-Lap"
+    }
 }
 
 ##########
@@ -323,7 +323,10 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     DisplayOutMenu $MenuArray[0] 14 0 1
     DisplayOutMenu $MenuArray[1] 14 0 1
     For($i=2; $i -le 4; $i++) {
-        LeftLine ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;RightLine
+        If($i -eq 4 -and $IsLaptop -eq "-Lap") {
+        } Else {
+            LeftLine ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;RightLine
+        }
     }
     LeftLine ;DisplayOutMenu $ChToDisplay[5] 13 0 0 ;RightLine
     DisplayOutMenu $MenuArray[1] 14 0 1
@@ -351,7 +354,7 @@ Function Black_Viper_Input {
         switch($Black_Viper_Input.ToLower()) {
             1 {Black_Viper_Set 1; $Black_Viper_Input = "Out"}
             2 {Black_Viper_Set 2; $Black_Viper_Input = "Out"}
-            3 {Black_Viper_Set 3; $Black_Viper_Input = "Out"}
+            3 {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
             C {CopyrightDisplay}
             M {Openwebsite "https://github.com/madbomb122/"}
             B {Openwebsite "http://www.blackviper.com/"}
@@ -508,8 +511,7 @@ Function Black_Viper_Set ([Int]$Back_Viper) {
     } ElseIf($Back_Viper -eq 2) {
         ServiceSet ("Safe"+$IsLaptop)
     } ElseIf($Back_Viper -eq 3) {
-        #ServiceSet ("Tweaked"+$IsLaptop)
-        ServiceSet ("Tweaked"+"-Desk")
+        ServiceSet ("Tweaked"+$IsLaptop)
     }
 }
 
@@ -610,11 +612,11 @@ Function PreScriptCheck {
                 LeftLine ;DisplayOutMenu "Tested by pinging google.com and yahoo.com       " 2 0 0 ;RightLine
                 DisplayOutMenu $MenuArray[1] 14 0 1
                 DisplayOutMenu $MenuArray[0] 14 0 1
-				If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+                If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
                     AutomatedExitCheck 1
                 } Else {
                     AutomatedExitCheck 0
-				}
+                }
             }
         }
         $ServiceDate = ($csv[0]."Def-Pro")
@@ -627,13 +629,15 @@ Function PreScriptCheck {
 Function ScriptPreStart {
     If($SettingImp -ne $null -and $SettingImp) {
         $Automated = 1
-        If($SettingImp -In 1..3) {
+        If($SettingImp -In 1..2) {
+            Black_Viper_Set $SettingImp
+        } ElseIf($SettingImp -eq 3 -and $IsLaptop -ne "-Lap") {
             Black_Viper_Set $SettingImp
         } ElseIf($SettingImp.ToLower() -eq "default") {
             Black_Viper_Set 1
         } ElseIf($SettingImp.ToLower() -eq "safe") {
             Black_Viper_Set 2
-        } ElseIf($SettingImp.ToLower() -eq "tweaked") {
+        } ElseIf($SettingImp.ToLower() -eq "tweaked" -and $IsLaptop -ne "-Lap") {
             Black_Viper_Set 3
         } Else {
             Clear-Host
@@ -644,7 +648,11 @@ Function ScriptPreStart {
             LeftLine ;DisplayOutMenu " Valid Swiches are:                              " 2 0 0 ;RightLine
             LeftLine ;DisplayOutMenu " 1 or Default                                    " 2 0 0 ;RightLine
             LeftLine ;DisplayOutMenu " 2 or Safe                                       " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 3 or Tweaked                                    " 2 0 0 ;RightLine
+            If($IsLaptop -eq "-Lap") {
+                LeftLine ;DisplayOutMenu " 3 or Tweaked -Not Avilable for Laptop ATM       " 15 0 0 ;RightLine
+            } Else {
+                LeftLine ;DisplayOutMenu " 3 or Tweaked                                    " 2 0 0 ;RightLine
+            }
             DisplayOutMenu $MenuArray[1] 14 0 1
             DisplayOutMenu $MenuArray[0] 14 0 1
         }
