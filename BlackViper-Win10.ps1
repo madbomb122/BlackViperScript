@@ -433,20 +433,10 @@ $ServicesTypeList = @(
     'Automatic'  #4 -Automatic (Delayed Start)
 )
 
-$BlackViperList = @(
-    '',
-    'Def-Home',
-    'Def-Pro',
-    'Safe',
-    'Tweaked'
-)
-
 $Script:Black_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
 
 Function ServiceSet ([String]$BVService) {
-#Function ServiceSet ([Int]$ServiceVal) {
     Clear-Host
-    #$BVService = $BlackViperList[$ServiceVal]
     $CurrServices = Get-Service
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
     Write-Host "-------------------------------"
@@ -503,11 +493,7 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type, [string]$C_Type) {
 
 Function Black_Viper_Set ([Int]$Back_Viper) {
     If($Back_Viper -eq 1) {
-        If($WinEdition -eq "Microsoft Windows 10 Home") {
-            ServiceSet "Def-Home"
-        } ElseIf($WinEdition -eq "Microsoft Windows 10 Pro") {
-            ServiceSet "Def-Pro"
-        }
+        ServiceSet ("Def"+$WinEdition)
     } ElseIf($Back_Viper -eq 2) {
         ServiceSet ("Safe"+$IsLaptop)
     } ElseIf($Back_Viper -eq 3) {
@@ -542,13 +528,13 @@ Function PreScriptCheck {
     $WinEdition = gwmi win32_operatingsystem | % caption
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
-    If(!($WinEdition -eq "Microsoft Windows 10 Home" -or $WinEdition -eq "Microsoft Windows 10 Pro")) {
-        If($Edition_Check -eq 1) {
-            $WinEdition = "Microsoft Windows 10 Pro"
-        } Else {
-            $EditionCheck = "Failed"
-            $DoNotRun = "Yes"
-        }
+    If($WinEdition -eq "Microsoft Windows 10 Home") {
+        $WinEdition = "-Home"
+    } ElseIf($WinEdition -eq "Microsoft Windows 10 Pro" -or $Edition_Check -eq 1) {
+        $WinEdition = "-Pro"
+    } Else {
+        $EditionCheck = "Failed"
+        $DoNotRun = "Yes"
     }
 
     $BuildVer = [environment]::OSVersion.Version.build
