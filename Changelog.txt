@@ -1,7 +1,8 @@
 -----------------------------------------------------------------------------------
-1.0 (04-14-2017)
+1.0 (04-15-2017) -In Testing
 
 Updated script to check for laptop/desktop
+Removed 'Tweaked' setting for laptop (no settings aviable for it atm)
 
 -----------------------------------------------------------------------------------
 0.9 (04-02-2017) -Final Beta/Test Version
