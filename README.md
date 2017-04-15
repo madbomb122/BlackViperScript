@@ -23,7 +23,7 @@ Run the Script by bat file or `powershell.exe -NoProfile -ExecutionPolicy Bypass
 Select desired Services Configuration <br />
 *1. Default <br />
 2. Safe <br />
-3. Tweaked <br />*
+3. Tweaked (Not supported for laptop ATM)<br />*
 
 ## [](#header-1)Advanced Usage
 **Note: Best for automation** <br />
@@ -53,6 +53,7 @@ or <br />
 Runs script with changing Services to Black Viper's Tweaked Configuration: <br />
    -Set 3 <br />
    -Set Tweaked
+**NOTE: Not supported for laptop ATM**
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 3` <br />
