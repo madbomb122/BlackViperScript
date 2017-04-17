@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------------
 1.0 (04-15-2017) -In Testing
 
-Updated script to check for laptop/desktop
+Updated script to check for laptop/desktop (to accommodate the added laptop/desktop config)
 Removed 'Tweaked' setting for laptop (no settings aviable for it atm)
 
 -----------------------------------------------------------------------------------
