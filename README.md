@@ -52,8 +52,8 @@ or <br />
 
 Runs script with changing Services to Black Viper's Tweaked Configuration: <br />
    -Set 3 <br />
-   -Set Tweaked
-**NOTE: Not supported for laptop ATM**
+   -Set Tweaked <br />
+**NOTE: Not supported on laptop ATM**
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 3` <br />
@@ -91,7 +91,7 @@ or <br />
 **Q:** The script messed up my computer. <br />
 **A:** The script is as is, any problems you have/had is your own problem.
 
-**Q:** Are you going to add support for other version of Windows 10 other than pro or home? <br />
+**Q:** Are you going to add support for other editions of Windows 10 other than pro or home? <br />
 **A:** Sorry, I only support the windows 10 configuration listed on Black Viper's website. <br />
 
 **Q:** Are you going to add support for builds before the "Creator's Update"? <br />
@@ -107,6 +107,9 @@ or <br />
 **Q:** Can I add a service to be changed or stop one from changing? <br />
 **A:** Yes, edit the file `BlackViper.csv` and put it in the proper format <br />
 **Note:** Number meaning 0 -Not installed/skip, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay <br />
+
+**Q:** I have a suggestion for the script, how do i suggest it? <br />
+**A:** Do a pull request with the change or submit it as an issue with the suggestion. <br />
 
 **Q:** How long are you going to maintain the script? <br />
 **A:** No Clue, but will update service changes when I see any changes or get notified of any changes.
