@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------
-1.0 (04-15-2017) -In Testing
+1.0 (04-18-2017)
 
 Updated script to check for laptop/desktop (to accommodate the added laptop/desktop config)
 Removed 'Tweaked' setting for laptop (no settings aviable for it atm)
+changed the internet ping test to github.com instead of google.com and yahoo.com
 
 -----------------------------------------------------------------------------------
 0.9 (04-02-2017) -Final Beta/Test Version
