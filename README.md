@@ -12,9 +12,9 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **---B. Creator's Update** *($Script:Build_Check)* <br />
 
 # [](#header-1)Usage Requirements
-**OS:** Windows 10  x64 <br />
-**Edition:** Pro or Home (Can Run on other Edition AT YOUR OWN RISK) <br />
-**Build:** Creator's Update (Can Run on other Build AT YOUR OWN RISK) <br />
+**OS:** `Windows 10  x64` <br />
+**Edition:** `Pro or Home` (Can Run on other Edition AT YOUR OWN RISK) <br />
+**Build:** `Creator's Update` (Can Run on other Build AT YOUR OWN RISK) <br />
 **Needed Files:** `BlackViper-Win10.ps1` (Script File), `BlackViper.csv` (Service Config File) <br />
 **Recommended Files:** `_Win10-BlackViper.bat` (To run script easier) <br />
 
@@ -31,8 +31,8 @@ Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
 Runs script with changing Services to Default Configuration (Only ones changed by this script): <br />
-   -Set 1 <br />
-   -Set Default
+`   -Set 1`<br />
+`   -Set Default`
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 1` <br />
@@ -41,8 +41,8 @@ or <br />
 ******
 
 Runs script with changing Services to Black Viper's Safe Configuration: <br />
-   -Set 2 <br />
-   -Set Safe
+`   -Set 2` <br />
+`   -Set Safe`
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 2` <br />
@@ -51,8 +51,8 @@ or <br />
 ******
 
 Runs script with changing Services to Black Viper's Tweaked Configuration: <br />
-   -Set 3 <br />
-   -Set Tweaked <br />
+`   -Set 3` <br />
+`   -Set Tweaked` <br />
 **NOTE: Not supported on laptop ATM**
 
 Examples: <br />
