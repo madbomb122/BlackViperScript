@@ -62,6 +62,9 @@ or <br />
 ******
 
 ## FAQ
+**Q:** Do you accept any donations? <br />
+**A:** Not for this script, I'd rather you donate to Black Viper than me since his configurations take alot of effort to do.
+
 **Q:** The script file looks all messy in notepad, How do i view it? <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
