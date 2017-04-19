@@ -65,6 +65,9 @@ or <br />
 **Q:** Do you accept any donations? <br />
 **A:** Not for this script, I'd rather you donate to Black Viper than me since his configurations take alot of effort to do.
 
+**Q:** How can I contact you? <br />
+**A:** You can email me @ madbomb122@gmail.com
+
 **Q:** The script file looks all messy in notepad, How do i view it? <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
@@ -99,7 +102,7 @@ or <br />
 
 **Q:** Are you going to add support for builds before the "Creator's Update"? <br />
 **A:** Sorry, since I dont have the configuration from before the "Creator's Update" I can't add it. <br />
-**Note:** If you have the configuration please leave a comment with a way to contact you.
+**Note:** If you have the configuration please contact me.
 
 **Q:** Will you make a script for any windows before windows 10? <br />
 **A:** No. <br />
