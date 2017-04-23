@@ -215,15 +215,15 @@ Function DownloadFile ([String]$Url, [String]$FilePath) {
 
 Function Error_Top_Display {
     Clear-Host
-    DiagnosticCheck
+    DiagnosticCheck 0
     MenuLine
     LeftLine ;DisplayOutMenu "                      Error                      " 13 0 0 ;RightLine
     MenuLine
     MenuBlankLine
 }
 
-Function DiagnosticCheck {
-    If($Release_Type -ne "Stable") {
+Function DiagnosticCheck ([int]$Bypass) {
+    If($Release_Type -ne "Stable" -or $Bypass -eq 1) {
         $WindowVersion = [Environment]::OSVersion.Version.Major
         $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
         $WindowsEdition =  $FullWinEdition.Split(' ')[-1]
@@ -570,6 +570,11 @@ Function InternetCheck {
 }
 
 Function PreScriptCheck {
+    If($SettingImp -ne $null -and $SettingImp -eq "diag") {
+        $ErrorDi = "Manual Diag"
+        DiagnosticCheck 1
+		Exit
+    }
     $WindowVersion = [Environment]::OSVersion.Version.Major
     If($WindowVersion -ne 10) {
         Error_Top_Display
