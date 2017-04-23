@@ -5,6 +5,8 @@ Added another check for 'BlackViper.csv', in a certin case script would have ran
 Fixed an issue with script failing edition check on non english versions of windows
 Fixed an issue with edition check showing blank error
 
+Thanks to Mehanik511 posting an issue, edition check issue is fixed on non english versions of windows
+
 -----------------------------------------------------------------------------------
 1.0 (04-14-2017)
 
