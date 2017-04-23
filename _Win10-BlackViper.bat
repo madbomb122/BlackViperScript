@@ -42,7 +42,7 @@ ENDLOCAL DISABLEDELAYEDEXPANSION
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 If /i %Use_Arg%==diag (
-    echo "Running !Script_File! -Set !Run_Option!"
+    echo "Running !Script_File! to Show Diagnostic Output"
     PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File \"!Script_Path!\" -Set diag' -Verb RunAs}";
 )
 ENDLOCAL DISABLEDELAYEDEXPANSION
