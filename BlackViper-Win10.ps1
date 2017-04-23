@@ -10,8 +10,8 @@ Param([alias("Set")] [string] $SettingImp)
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.0"
-$Script_Date = "04-18-2017"
+$Script_Version = "1.1"
+$Script_Date = "04-23-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -112,8 +112,11 @@ Example: BlackViper-Win10.ps1 -Set Tweaked
 # Pre-Script -Start
 ##########
 
+If($Release_Type -eq "Stable") {
+    $ErrorActionPreference= 'silentlycontinue'
+}
+
 $Global:filebase = $PSScriptRoot
-$ErrorActionPreference= 'silentlycontinue'
 
 # Ask for elevated permissions if required
 If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
@@ -571,6 +574,8 @@ Function PreScriptCheck {
 
     If($DoNotRun -eq "Yes") {
         Error_Top_Display
+        LeftLine ;DisplayOutMenu " Script won't run due to the following problem(s)" 2 0 0 ;RightLine
+        MenuBlankLine
         If($EditionCheck -eq "Fail") {
             LeftLine ;DisplayOutMenu " Not a valid Windows Edition for this Script.    " 2 0 0 ;RightLine
             LeftLine ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 ;RightLine
@@ -631,6 +636,14 @@ Function PreScriptCheck {
 }
 
 Function ScriptPreStart {
+    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+        Error_Top_Display
+        LeftLine ;DisplayOutMenu " The File 'BlackViper.csv' is missing and        " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu " couldn't download for some reason.              " 2 0 0 ;RightLine
+        MenuLine
+        MenuBlankLine
+		AutomatedExitCheck 1
+    } 
     If($SettingImp -ne $null -and $SettingImp) {
         $Automated = 1
         If($SettingImp -In 1..2) {
