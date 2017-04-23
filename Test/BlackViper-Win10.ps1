@@ -227,11 +227,11 @@ Function DiagnosticCheck {
     If($Release_Type -ne "Stable") {
         $WindowVersion = [Environment]::OSVersion.Version.Major
         $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
-	    $WindowsEdition =  $FullWinEdition.Split(' ')[-1]
+        $WindowsEdition =  $FullWinEdition.Split(' ')[-1]
         $WindowsBuild = [Environment]::OSVersion.Version.build
         $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
-		
+        
         DisplayOutMenu " Diagnostic Output --Start---" 15 0 1
         DisplayOutMenu " Script Version = $Script_Version" 15 0 1
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1
@@ -583,7 +583,7 @@ Function PreScriptCheck {
 
     $ErrorDi = ""
     $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
-	$WinEdition =  $FullWinEdition.Split(' ')[-1]
+    $WinEdition =  $FullWinEdition.Split(' ')[-1]
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
     If($WinEdition -eq "Home") {
