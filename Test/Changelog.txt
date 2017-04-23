@@ -9,7 +9,7 @@ Added another check for 'BlackViper.csv', in a certin case script would have ran
 Updated script to check for laptop/desktop
 
 -----------------------------------------------------------------------------------
-0.9 (04-02-2017)
+0.9 (04-02-2017) -Final Beta/Test Version
 
 Script checks for service file update by default
 Some display changes
