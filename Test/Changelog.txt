@@ -1,0 +1,105 @@
+-----------------------------------------------------------------------------------
+
+1.1 (04-23-2017)
+
+
+
+Added another check for 'BlackViper.csv', in a certin case script would have ran w/o it
+
+
+
+-----------------------------------------------------------------------------------
+1.0 (04-14-2017)
+
+Updated script to check for laptop/desktop
+
+-----------------------------------------------------------------------------------
+0.9 (04-02-2017)
+
+Script checks for service file update by default
+Some display changes
+Changed the 'go to website' to open with default browser instead of IE
+added bypass for internet check (incase you have google.com and yahoo.com blocked)
+
+-----------------------------------------------------------------------------------
+0.8 (03-29-2017)
+
+Added Internet Check if script checks for update (pings google.com and yahoo.com)
+Added Copyright Display Option
+Goto Website Option
+Changed TOS Display look
+
+-----------------------------------------------------------------------------------
+0.7 (03-22-2017)
+
+Enabled Build Check (For creator's update)
+Added Display of Script Version/Date
+Added Display of Last update of Service File
+
+Removed Display of Websites
+
+Various script improvements
+
+-----------------------------------------------------------------------------------
+0.6 (03-19-2017)
+
+Added variable with ability to check for update to Script File (Skips by default)
+Note: If found will Auto download and runs that (file name will be "BlackViper-Win10-Ver.(version-here).ps1")
+
+Added variable with ability to check for update to Service File (Skips by default)
+Note: If found will Auto download and uses that for the configuration
+
+-----------------------------------------------------------------------------------
+0.5 (03-18-2017)
+
+Added variable with ability to:
+Skip Edition check (USE AT YOUR OWN RISK)
+Skip Build check (USE AT YOUR OWN RISK)
+Skip TOS (If you accept it)
+have Script close at end (before it paused so you can see results)
+show/hide display of Services change, already set, and not present
+
+Added per Black Viper's Request
+Build Check (For creator's update) -Disabled till creator's update is released
+
+-----------------------------------------------------------------------------------
+0.4 (03-14-2017)
+
+Added Color to Script output
+Fixed bug that showed "Service is already" if service doesnt exist
+
+Changed script to load services from file 'BlackViper.csv' instead of from within script
+^If it isnt with script it will give you an option to download the file
+
+-----------------------------------------------------------------------------------
+0.3 (03-13-2017)
+
+Added per Black Viper's Request
+Check for x64 bit (still runs on x32 but gives a warning) 
+
+-----------------------------------------------------------------------------------
+0.2 (03-04-2017)
+
+Bug fix (script didnt get the right type for current service setting)
+
+-----------------------------------------------------------------------------------
+0.1 (02-26-2017)
+
+Added ability to use switches to bypass menu to run one of the choices
+
+Choices are:
+-set 1
+-set default
+
+-set 2
+-set safe
+
+-set 3
+-set tweaked
+
+-----------------------------------------------------------------------------------
+0.0 (02-22-2017)
+
+Initial Start of Script
+
+-----------------------------------------------------------------------------------
