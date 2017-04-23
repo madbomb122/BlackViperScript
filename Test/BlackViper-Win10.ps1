@@ -226,6 +226,7 @@ Function Error_Top_Display {
 		$WindowsBuild = [Environment]::OSVersion.Version.build
 		$winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         DisplayOutMenu " Script Version = $Script_Version" 2 0 1
+        DisplayOutMenu " Services Version = $ServiceVersion" 2 0 1
         DisplayOutMenu " Error Type = $ErrorDi" 2 0 1
         Write-Host ""
         DisplayOutMenu " Window = $WindowVersion" 2 0 1
@@ -233,7 +234,7 @@ Function Error_Top_Display {
         DisplayOutMenu " Build = $WindowsBuild" 2 0 1
         DisplayOutMenu " Version = $winV" 2 0 1
         MenuBlankLine
-    }    
+    }
 }
 
 Function LaptopCheck {
@@ -656,6 +657,7 @@ Function PreScriptCheck {
                 }
             }
         }
+		$ServiceVersion = $($CSV_Ver[1].Version)
         $ServiceDate = ($csv[0]."Def-Pro")
         $csv.RemoveRange(0,1)
     }
