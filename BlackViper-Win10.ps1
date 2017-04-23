@@ -104,7 +104,6 @@ Example: BlackViper-Win10.ps1 -Set Tweaked
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-#$Release_Type = "Beta"
 #$Release_Type = "Testing"
 #$Release_Type = "Stable"
 
@@ -240,7 +239,7 @@ Function LaptopCheck {
 
 Function TOSDisplay {
     $BorderColor = 14
-    If($Release_Type -eq "Testing" -or $Release_Type -eq "Beta") {
+    If($Release_Type -ne "Stable") {
         $BorderColor = 15
         DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
         DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
@@ -604,13 +603,21 @@ Function PreScriptCheck {
                 $VersionFile = $TempFolder + "\Temp.csv"
                 DownloadFile $Version_Url $VersionFile
                 $CSV_Ver = Import-Csv $VersionFile
-                $WebScriptVer = $($CSV_Ver[0].Version)
+                If($Release_Type -eq "Stable") {
+                    $WebScriptVer = $($CSV_Ver[0].Version)
+                } Else {
+                    $WebScriptVer = $($CSV_Ver[3].Version)
+                }
                 If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
                     DownloadFile $Service_Url $ServiceFilePath
                 }
                 $SV=[Int]$Script_Version
                 If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
-                    $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $($CSV_Ver[0].Version) + ".ps1"
+                    If($Release_Type -eq "Stable") {
+                        $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $WebScriptVer + ".ps1"
+                    } Else {
+                        $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $WebScriptVer + "-Testing.ps1"
+                    }
                     DownloadFile $Script_Url $WebScriptFilePath
                     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
                     Exit
@@ -642,7 +649,7 @@ Function ScriptPreStart {
         LeftLine ;DisplayOutMenu " couldn't download for some reason.              " 2 0 0 ;RightLine
         MenuLine
         MenuBlankLine
-		AutomatedExitCheck 1
+        AutomatedExitCheck 1
     } 
     If($SettingImp -ne $null -and $SettingImp) {
         $Automated = 1
