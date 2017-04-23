@@ -2,6 +2,8 @@
 1.1 (04-23-2017)
 
 Added another check for 'BlackViper.csv', in a certin case script would have ran w/o it
+Fixed an issue with script failing edition check on non english versions of windows
+Fixed an issue with edition check showing blank error
 
 -----------------------------------------------------------------------------------
 1.0 (04-14-2017)
