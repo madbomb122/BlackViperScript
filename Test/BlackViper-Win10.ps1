@@ -233,6 +233,16 @@ Function Error_Top_Display {
         DisplayOutMenu " Edition = $WindowsEdition" 2 0 1
         DisplayOutMenu " Build = $WindowsBuild" 2 0 1
         DisplayOutMenu " Version = $winV" 2 0 1
+		Write-Host ""
+        DisplayOutMenu " Automated = $Automated" 2 0 1
+        DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 2 0 1
+        DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 2 0 1
+        DisplayOutMenu " Show_Changed = $Show_Changed" 2 0 1
+        DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 2 0 1
+        DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 2 0 1
+        DisplayOutMenu " Internet_Check = $Internet_Check" 2 0 1
+        DisplayOutMenu " Edition_Check = $Edition_Check" 2 0 1
+        DisplayOutMenu " Build_Check = $Build_Check" 2 0 1
         MenuBlankLine
     }
 }
