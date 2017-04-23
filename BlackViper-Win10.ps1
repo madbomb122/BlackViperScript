@@ -309,7 +309,7 @@ Function TOSDisplay {
 Function TOS {
     $TOS = 'X'
     while($TOS -ne "Out") {
-        #Clear-Host
+        Clear-Host
         TOSDisplay
         If($Invalid -eq 1) {
             Write-Host ""
