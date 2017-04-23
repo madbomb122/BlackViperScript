@@ -216,11 +216,11 @@ Function DownloadFile ([String]$Url, [String]$FilePath) {
 
 Function Error_Top_Display {
     Clear-Host
+    DiagnosticCheck
     MenuLine
     LeftLine ;DisplayOutMenu "                      Error                      " 13 0 0 ;RightLine
     MenuLine
     MenuBlankLine
-    DiagnosticCheck
 }
 
 Function DiagnosticCheck {
@@ -251,7 +251,7 @@ Function DiagnosticCheck {
         DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1
         DisplayOutMenu " Build_Check = $Build_Check" 15 0 1
         DisplayOutMenu " Diagnostic Output --End---" 15 0 1
-        MenuBlankLine
+        Write-Host ""
     }
 }
 
