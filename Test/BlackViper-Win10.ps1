@@ -10,7 +10,7 @@ Param([alias("Set")] [string] $SettingImp)
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.1"
+$Script_Version = "1.2"
 $Script_Date = "04-23-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -220,6 +220,20 @@ Function Error_Top_Display {
     LeftLine ;DisplayOutMenu "                      Error                      " 13 0 0 ;RightLine
     MenuLine
     MenuBlankLine
+    If($Release_Type -ne "Stable") {
+	    $WindowVersion = [Environment]::OSVersion.Version.Major
+		$WindowsEdition = (Get-WmiObject Win32_OperatingSystem).Caption
+		$WindowsBuild = [Environment]::OSVersion.Version.build
+		$winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
+        DisplayOutMenu " Script Version = $Script_Version" 2 0 1
+        DisplayOutMenu " Error Type = $ErrorDi" 2 0 1
+        Write-Host ""
+        DisplayOutMenu " Window = $WindowVersion" 2 0 1
+        DisplayOutMenu " Edition = $WindowsEdition" 2 0 1
+        DisplayOutMenu " Build = $WindowsBuild" 2 0 1
+        DisplayOutMenu " Version = $winV" 2 0 1
+        MenuBlankLine
+    }    
 }
 
 Function LaptopCheck {
@@ -302,6 +316,7 @@ Function LoadWebCSV ([String]$FilePath) {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
         Error_Top_Display
+        $ErrorDi = "Missing File (LoadWebCSV)"
         LeftLine ;DisplayOutMenu " Missing File 'BlackViper.csv'                   " 2 0 0 ;RightLine
         LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
         MenuBlankLine
@@ -537,12 +552,14 @@ Function PreScriptCheck {
     $WindowVersion = [Environment]::OSVersion.Version.Major
     If($WindowVersion -ne 10) {
         Error_Top_Display
+        $ErrorDi = "Window Version"
         LeftLine ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 ;RightLine
         MenuBlankLine
         MenuLine
         AutomatedExitCheck 1
     }
 
+    $ErrorDi = ""
     $WinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
@@ -551,6 +568,7 @@ Function PreScriptCheck {
     } ElseIf($WinEdition -eq "Microsoft Windows 10 Pro" -or $Edition_Check -eq 1) {
         $WinEdition = "-Pro"
     } Else {
+        $ErrorDi = "Edition"
         $EditionCheck = "Failed"
         $DoNotRun = "Yes"
     }
@@ -568,6 +586,7 @@ Function PreScriptCheck {
     # 1507 = First Release
     
     If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) {
+        $ErrorDi = $ErrorDi + " Build"
         $BuildCheck = "Fail"
         $DoNotRun = "Yes"
     }
@@ -625,6 +644,7 @@ Function PreScriptCheck {
                 }
             } Else {
                 Error_Top_Display
+                $ErrorDi = "No Internet"
                 LeftLine ;DisplayOutMenu "No internet connection dectected.                " 2 0 0 ;RightLine
                 LeftLine ;DisplayOutMenu "Tested by pinging github.com                     " 2 0 0 ;RightLine
                 MenuBlankLine
@@ -646,6 +666,7 @@ Function PreScriptCheck {
 Function ScriptPreStart {
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         Error_Top_Display
+        $ErrorDi = "Missing File -ScriptPreStart"
         LeftLine ;DisplayOutMenu " The File 'BlackViper.csv' is missing and        " 2 0 0 ;RightLine
         LeftLine ;DisplayOutMenu " couldn't download for some reason.              " 2 0 0 ;RightLine
         MenuLine
