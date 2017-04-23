@@ -220,29 +220,37 @@ Function Error_Top_Display {
     LeftLine ;DisplayOutMenu "                      Error                      " 13 0 0 ;RightLine
     MenuLine
     MenuBlankLine
+    DiagnosticCheck
+}
+
+Function DiagnosticCheck {
     If($Release_Type -ne "Stable") {
-	    $WindowVersion = [Environment]::OSVersion.Version.Major
-		$WindowsEdition = (Get-WmiObject Win32_OperatingSystem).Caption
-		$WindowsBuild = [Environment]::OSVersion.Version.build
-		$winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
-        DisplayOutMenu " Script Version = $Script_Version" 2 0 1
-        DisplayOutMenu " Services Version = $ServiceVersion" 2 0 1
-        DisplayOutMenu " Error Type = $ErrorDi" 2 0 1
+        $WindowVersion = [Environment]::OSVersion.Version.Major
+        $WindowsEdition = (Get-WmiObject Win32_OperatingSystem).Caption
+        $WindowsBuild = [Environment]::OSVersion.Version.build
+        $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
+        $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
+        DisplayOutMenu " Diagnostic Output --Start---" 15 0 1
+        DisplayOutMenu " Script Version = $Script_Version" 15 0 1
+        DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1
+        DisplayOutMenu " Error Type = $ErrorDi" 15 0 1
         Write-Host ""
-        DisplayOutMenu " Window = $WindowVersion" 2 0 1
-        DisplayOutMenu " Edition = $WindowsEdition" 2 0 1
-        DisplayOutMenu " Build = $WindowsBuild" 2 0 1
-        DisplayOutMenu " Version = $winV" 2 0 1
-		Write-Host ""
-        DisplayOutMenu " Automated = $Automated" 2 0 1
-        DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 2 0 1
-        DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 2 0 1
-        DisplayOutMenu " Show_Changed = $Show_Changed" 2 0 1
-        DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 2 0 1
-        DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 2 0 1
-        DisplayOutMenu " Internet_Check = $Internet_Check" 2 0 1
-        DisplayOutMenu " Edition_Check = $Edition_Check" 2 0 1
-        DisplayOutMenu " Build_Check = $Build_Check" 2 0 1
+        DisplayOutMenu " Window = $WindowVersion" 15 0 1
+        DisplayOutMenu " Edition = $WindowsEdition" 15 0 1
+        DisplayOutMenu " Build = $WindowsBuild" 15 0 1
+        DisplayOutMenu " Version = $winV" 15 0 1
+        DisplayOutMenu " PC Type = $PCType" 15 0 1
+        Write-Host ""
+        DisplayOutMenu " Automated = $Automated" 15 0 1
+        DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1
+        DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 15 0 1
+        DisplayOutMenu " Show_Changed = $Show_Changed" 15 0 1
+        DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 15 0 1
+        DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 15 0 1
+        DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1
+        DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1
+        DisplayOutMenu " Build_Check = $Build_Check" 15 0 1
+        DisplayOutMenu " Diagnostic Output --End---" 15 0 1
         MenuBlankLine
     }
 }
@@ -667,7 +675,7 @@ Function PreScriptCheck {
                 }
             }
         }
-		$ServiceVersion = $($CSV_Ver[1].Version)
+        $ServiceVersion = $($CSV_Ver[1].Version)
         $ServiceDate = ($csv[0]."Def-Pro")
         $csv.RemoveRange(0,1)
     }
