@@ -309,7 +309,7 @@ Function TOSDisplay {
 Function TOS {
     $TOS = 'X'
     while($TOS -ne "Out") {
-        Clear-Host
+        #Clear-Host
         TOSDisplay
         If($Invalid -eq 1) {
             Write-Host ""
@@ -652,6 +652,7 @@ Function PreScriptCheck {
                 }
                 If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
                     DownloadFile $Service_Url $ServiceFilePath
+                    [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
                 }
                 $SV=[Int]$Script_Version
                 If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
@@ -678,9 +679,9 @@ Function PreScriptCheck {
                 }
             }
         }
-        $ServiceVersion = $($CSV_Ver[1].Version)
+        $ServiceVersion = ($csv[0]."Def-Home")
         $ServiceDate = ($csv[0]."Def-Pro")
-        $csv.RemoveRange(0,1)
+        $csvtemp.RemoveAt(0)
     }
     $IsLaptop = LaptopCheck
     ScriptPreStart
