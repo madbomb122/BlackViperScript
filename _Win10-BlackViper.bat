@@ -24,6 +24,7 @@ Set Use_Arg=yes
 
 If /i %Run_Option%==0 Set Use_Arg=no
 If /i %Run_Option%==4 Exit
+If /i %Run_Option%==5 Set Use_Arg=diag
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 If /i %Use_Arg%==no (
@@ -36,5 +37,12 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 If /i %Use_Arg%==yes (
     echo "Running !Script_File! -Set !Run_Option!"
     PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File \"!Script_Path!\" -Set \"!Run_Option!\"' -Verb RunAs}";
+)
+ENDLOCAL DISABLEDELAYEDEXPANSION
+
+SETLOCAL ENABLEDELAYEDEXPANSION
+If /i %Use_Arg%==diag (
+    echo "Running !Script_File! -Set !Run_Option!"
+    PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File \"!Script_Path!\" -Set diag' -Verb RunAs}";
 )
 ENDLOCAL DISABLEDELAYEDEXPANSION
