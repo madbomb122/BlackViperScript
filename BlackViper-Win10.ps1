@@ -128,8 +128,7 @@ $ForBuild = 15063
 $ForVer = 1703
 
 $Version_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
-$Service_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
-$Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+$Service_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
 
 If([System.Environment]::Is64BitProcess) {
     $OSType = 64
@@ -333,7 +332,7 @@ Function TOS {
 ##########
 
 #Check if you want to download the missing Service setting file
-Function LoadWebCSV ([String]$FilePath) {
+Function LoadWebCSV {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
         Error_Top_Display
@@ -352,8 +351,8 @@ Function LoadWebCSV ([String]$FilePath) {
         Switch($LoadWebCSV.ToLower()) {
             n {Exit}
             no {Exit}
-            y {DownloadServiceFile $FilePath;$LoadWebCSV = "Out"}
-            yes {DownloadServiceFile $FilePath;$LoadWebCSV = "Out"}
+            y {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
+            yes {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
             default {$Invalid = 1}
         }
     }
@@ -387,7 +386,7 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     LeftLine ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;RightLine
     MenuLine
     LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 ;DisplayOutMenu ("$ServiceDate"	+(" "*(18-$ServiceDate.length))) 11 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 ;DisplayOutMenu ("$ServiceDate" +(" "*(18-$ServiceDate.length))) 11 0 0 ;RightLine
     MenuLine
 }
 
@@ -660,7 +659,7 @@ Function PreScriptCheck {
     } Else {
         $ServiceFilePath = $filebase + "\BlackViper.csv"
         If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-            LoadWebCSV $ServiceFilePath
+            LoadWebCSV
             $Service_Ver_Check = 0
         }
         $Script:csv = Import-Csv $ServiceFilePath
@@ -681,10 +680,23 @@ Function PreScriptCheck {
                 $SV=[Int]$Script_Version
                 If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
                     If($Release_Type -eq "Stable") {
-                        $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $WebScriptVer + ".ps1"
+                        $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + ".ps1"
+                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
                     } Else {
-                        $WebScriptFilePath = $filebase + "\BlackViper-Win10-Ver." + $WebScriptVer + "-Testing.ps1"
+                        $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "-Testing.ps1"
+                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
                     }
+                    $WebScriptFilePath = $filebase + "\" + $DFilename
+                    Clear-Host
+                    MenuLine
+                    LeftLine ;DisplayOutMenu "                  Update Found!                  " 13 0 0 ;RightLine
+                    MenuLine
+                    MenuBlankLine
+                    LeftLine ;DisplayOutMenu "Downloading version " 15 0 0 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 ;RightLine
+                    LeftLine ;DisplayOutMenu "Will run " 15 0 0 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 ;RightLine
+                    LeftLine ;DisplayOutMenu "after download is complete.                       " 2 0 0 ;RightLine
+                    MenuBlankLine
+                    MenuLine
                     DownloadFile $Script_Url $WebScriptFilePath
                     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
                     Exit
