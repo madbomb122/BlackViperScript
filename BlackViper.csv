@@ -1,5 +1,5 @@
 ServiceName,Def-Home,Def-Pro,Safe-Desk,Safe-Lap,Tweaked-Desk
-#ServiceVersion,1.0,Apr-17-2017,0,0,0
+#ServiceVersion,1.1,Apr-24-2017,0,0,0
 AJRouter,2,2,2,2,1
 ALG,2,2,1,1,1
 AppMgmt,0,2,2,2,1
@@ -48,7 +48,7 @@ SensorService,2,2,1,2,1
 ScDeviceEnum,2,2,1,1,1
 SCPolicySvc,2,2,1,1,1
 SNMPTRAP,2,2,1,1,1
-StorSvc,2,2,2,2,1
+StorSvc,2,2,2,2,2
 TabletInputService,2,2,1,2,1
 WebClient,2,2,2,2,1
 WFDSConSvc,2,2,1,2,1
