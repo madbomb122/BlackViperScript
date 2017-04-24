@@ -130,7 +130,12 @@ $ForVer = 1703
 
 $Version_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
 $Service_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
-$Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+If($Release_Type -eq "Testing"){
+    $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
+} Else {
+    $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+}
+
 
 If([System.Environment]::Is64BitProcess) {
     $OSType = 64
