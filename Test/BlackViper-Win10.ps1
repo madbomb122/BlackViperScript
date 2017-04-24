@@ -339,7 +339,8 @@ Function LoadWebCSV ([String]$FilePath) {
     while($LoadWebCSV -ne "Out") {
         Error_Top_Display
         $ErrorDi = "Missing File (LoadWebCSV)"
-        LeftLine ;DisplayOutMenu " Missing File 'BlackViper.csv'                   " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing.             " 2 0 0 ;RightLine
+        MenuBlankLine
         LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
         MenuBlankLine
         MenuLine
@@ -368,7 +369,7 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     LeftLine ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;RightLine
     If($OSType -ne 64) {
         MenuBlankLine
-        DisplayOutMenu "|" 14 0 0 ;DisplayOutMenu "  Settings are ment for x64. Use AT YOUR OWN RISK. " 13 0 0 ;DisplayOutMenu "|" 14 0 1
+        LeftLine ;DisplayOutMenu " Settings are ment for x64. Use AT YOUR OWN RISK." 13 0 0 ;RightLine
     }
     MenuBlankLine
     MenuLine
@@ -386,8 +387,8 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     LeftLine ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;RightLine
     LeftLine ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;RightLine
     MenuLine
-    LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 ; DisplayOutMenu "$Script_Version ($Script_Date)                 " 11 0 0 ; RightLine
-    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 ; DisplayOutMenu "$ServiceDate       " 11 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 ;DisplayOutMenu ("$ServiceDate"	+(" "*(18-$ServiceDate.length))) 11 0 0 ;RightLine
     MenuLine
 }
 
@@ -574,13 +575,15 @@ Function PreScriptCheck {
     If($SettingImp -ne $null -and $SettingImp -eq "diag") {
         $ErrorDi = "Manual Diag"
         DiagnosticCheck 1
-		Exit
+        Exit
     }
     $WindowVersion = [Environment]::OSVersion.Version.Major
     If($WindowVersion -ne 10) {
         Error_Top_Display
         $ErrorDi = "Window Version"
         LeftLine ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 ;RightLine
+        MenuBlankLine
+        LeftLine ;DisplayOutMenu " You are using Window " 2 0 0 ;DisplayOutMenu ("$WindowVersion"+(" "*(27-$WindowVersion.length))) 15 0 0 ;RightLine
         MenuBlankLine
         MenuLine
         AutomatedExitCheck 1
@@ -607,14 +610,18 @@ Function PreScriptCheck {
     # 10586 = First Major Update
     # 10240 = First Release
     
-    #$Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
+    $Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
     # 1703 = Creator's Update
     # 1607 = Anniversary Update
     # 1511 = First Major Update
     # 1507 = First Release
     
     If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) {
-        $ErrorDi = $ErrorDi + " Build"
+        If($EditionCheck -eq "Fail") {
+            $ErrorDi += " and Build"
+        } Else {
+            $ErrorDi = "Build"
+        }
         $BuildCheck = "Fail"
         $DoNotRun = "Yes"
     }
@@ -623,21 +630,33 @@ Function PreScriptCheck {
         Error_Top_Display
         LeftLine ;DisplayOutMenu " Script won't run due to the following problem(s)" 2 0 0 ;RightLine
         MenuBlankLine
+        MenuLine
+        $Count = 0
         If($EditionCheck -eq "Fail") {
-            LeftLine ;DisplayOutMenu " Not a valid Windows Edition for this Script.    " 2 0 0 ;RightLine
+            $Count++
+            MenuBlankLine
+            LeftLine ;DisplayOutMenu " $Count. Not a valid Windows Edition for this Script. " 2 0 0 ;RightLine
             LeftLine ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 ;RightLine
             MenuBlankLine
-            LeftLine ;DisplayOutMenu " To skip change 'Edition_Check' in script file   " 11 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " You are using " 2 0 0;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.length))) 15 0 0 ;RightLine
             MenuBlankLine
+            LeftLine ;DisplayOutMenu " To skip change " 2 0 0 ;DisplayOutMenu "Edition_Check" 15 0 0 ;DisplayOutMenu " in script file.    " 2 0 0 ;RightLine
+            MenuBlankLine
+            MenuLine
         }
         If($BuildCheck -eq "Fail") {
-            LeftLine ;DisplayOutMenu " Not a valid Build for this Script.              " 2 0 0 ;RightLine
+            $Count++
+            MenuBlankLine
+            LeftLine ;DisplayOutMenu " $Count. Not a valid Build for this Script.           " 2 0 0 ;RightLine
             LeftLine ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 ;RightLine
             MenuBlankLine
-            LeftLine ;DisplayOutMenu " To skip change 'Build_Check' in script file.    " 11 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " You are using Build " 2 0 0;DisplayOutMenu ("$BuildVer" +(" "*(24-$BuildVer.length))) 15 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " You are using Verison " 2 0 0;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.length))) 15 0 0 ;RightLine
             MenuBlankLine
+            LeftLine ;DisplayOutMenu " To skip change " 2 0 0 ;DisplayOutMenu "Build_Check" 15 0 0 ;DisplayOutMenu " in script file.      " 2 0 0 ;RightLine
+            MenuBlankLine
+            MenuLine
         }
-        MenuLine
         AutomatedExitCheck 1
     } Else {
         $ServiceFilePath = $filebase + "\BlackViper.csv"
@@ -674,8 +693,12 @@ Function PreScriptCheck {
             } Else {
                 Error_Top_Display
                 $ErrorDi = "No Internet"
-                LeftLine ;DisplayOutMenu "No internet connection dectected.                " 2 0 0 ;RightLine
+                LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
+                LeftLine ;DisplayOutMenu "download because the Internet check failed.      " 2 0 0 ;RightLine
+                MenuBlankLine
                 LeftLine ;DisplayOutMenu "Tested by pinging github.com                     " 2 0 0 ;RightLine
+                MenuBlankLine
+                LeftLine ;DisplayOutMenu "To skip change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " in script file.    " 2 0 0 ;RightLine
                 MenuBlankLine
                 MenuLine
                 If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
@@ -697,8 +720,8 @@ Function ScriptPreStart {
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         Error_Top_Display
         $ErrorDi = "Missing File -ScriptPreStart"
-        LeftLine ;DisplayOutMenu " The File 'BlackViper.csv' is missing and        " 2 0 0 ;RightLine
-        LeftLine ;DisplayOutMenu " couldn't download for some reason.              " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 ;RightLine
         MenuLine
         MenuBlankLine
         AutomatedExitCheck 1
