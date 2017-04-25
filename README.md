@@ -5,6 +5,8 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 **Note: Script is ment for Windows 10 Home x64 / Windows 10 Pro x64.. With Creator's Update Installed**  <br />
 
+**Note: If you are using a non english version of Windows and get a Build Check Error, please let me know**  <br />
+
 **AT YOUR OWN RISK YOU CAN**  <br />
 **1. Run the script on x32 w/o changing settings (But shows a warning)** <br />
 **2. Change variable at bottom of script to skip the check for** <br />
@@ -12,7 +14,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **---B. Creator's Update** *($Script:Build_Check)* <br />
 
 # [](#header-1)Usage Requirements
-**OS:** `Windows 10  x64` <br />
+**OS:** `Windows 10  x64` (Can Run on x32 AT YOUR OWN RISK) <br />
 **Edition:** `Pro or Home` (Can Run on other Edition AT YOUR OWN RISK) <br />
 **Build:** `Creator's Update` (Can Run on other Build AT YOUR OWN RISK) <br />
 **Needed Files:** `BlackViper-Win10.ps1` (Script File), `BlackViper.csv` (Service Config File) <br />
@@ -112,7 +114,7 @@ or <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
 **A:** Yes, edit the file `BlackViper.csv` and put it in the proper format <br />
-**Note:** Number meaning 0 -Not installed/skip, 1 -Disable, 2 -Manual, 3 -Auto Normal, 4 -Auto Delay <br />
+**Note:** Number meaning `0 -Not installed/skip`, `1 -Disable, 2 -Manual`, `3 -Auto Normal`, `4 -Auto Delay` <br />
 
 **Q:** I have a suggestion for the script, how do i suggest it? <br />
 **A:** Do a pull request with the change or submit it as an issue with the suggestion. <br />
