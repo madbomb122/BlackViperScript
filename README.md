@@ -118,4 +118,7 @@ or <br />
 **A:** Do a pull request with the change or submit it as an issue with the suggestion. <br />
 
 **Q:** How long are you going to maintain the script? <br />
-**A:** No Clue, but will update service changes when I see any changes or get notified of any changes.
+**A:** No Clue.
+
+**Q:** When do you update the services file (BlackViper.csv)? <br />
+**A:** When Black Viper tells me a change, I see an update on his site, or someone tells me there is an update.
