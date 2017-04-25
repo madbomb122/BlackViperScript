@@ -66,6 +66,7 @@ or <br />
 ## FAQ
 **Q:** Do you accept any donations? <br />
 **A:** Not for this script, I'd rather you donate to Black Viper than me since his configurations take alot of effort to do.
+**NOTE: ** http://www.blackviper.com/support-bv/
 
 **Q:** How can I contact you? <br />
 **A:** You can email me @ madbomb122@gmail.com
