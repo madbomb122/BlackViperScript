@@ -51,6 +51,7 @@ Select desired Services Configuration <br />
 
 # Advanced_Usage
 **Note: Best for automation** <br />
+**Note: You wont see any errors (Script will close of error)** <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
