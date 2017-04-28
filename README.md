@@ -48,7 +48,7 @@ Next follow the **Basic Usage** or **Advanced Usage**
 Run the Script by bat file `_Win10-BlackViper.bat` (Recommended) <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
 Select desired Services Configuration <br />
-1. Default <br />
+*1. Default <br />
 2. Safe (Recommended Option) <br />
 3. Tweaked (Not supported for laptop ATM)<br />*
 
