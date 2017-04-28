@@ -1,7 +1,7 @@
 # CONTENTS
-1. [Description/About](#Description)
+1. [Description/About](#DESCRIPTION)
 2. [System/Usage Requirements](#Requirements)
-3. [How To Use and Run File](#Use)
+3. [How To Use and Run File](#USE)
 4. [Basic Usage](#Basic_Usage)
 5. [Advanced Usage](#Advanced_Usage)
 5. [FAQ](#FAQ)
@@ -28,7 +28,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **Needed Files:** `BlackViper-Win10.ps1` (Script File), `BlackViper.csv` (Service Config File) <br />
 **Recommended Files:** `_Win10-BlackViper.bat` (To run script easier) <br />
 
-# Use
+# USE
 Download/Save the following files <br />
    `BlackViper-Win10.ps1` -Need (Script File) <br />
    `BlackViper.csv` -Need (Service Config File) <br />
