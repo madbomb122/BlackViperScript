@@ -36,7 +36,7 @@ Make sure to LOOK at this <br />
 **---A. Home/Pro** *($Script:Edition_Check)* <br />
 **---B. Creator's Update** *($Script:Build_Check)* <br />
 
-# USE
+# How to Use/Run
 Download/Save the following files <br />
    `BlackViper-Win10.ps1` -Need (Script File) <br />
    `BlackViper.csv` -Need (Service Config File) <br />
@@ -45,10 +45,11 @@ Download/Save the following files <br />
 Next follow the **Basic Usage** or **Advanced Usage**
 
 # Basic_Usage
-Run the Script by bat file or `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
+Run the Script by bat file `_Win10-BlackViper.bat` (Recommended) <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
 Select desired Services Configuration <br />
-*1. Default <br />
-2. Safe <br />
+1. Default <br />
+2. Safe (Recommended Option) <br />
 3. Tweaked (Not supported for laptop ATM)<br />*
 
 # Advanced_Usage
