@@ -6,7 +6,7 @@
 5. [Advanced Usage](#Advanced_Usage)
 5. [FAQ](#FAQ)
 
-# Description
+# DESCRIPTION
 Easy to use Script that can set Windows 10 services based on Black Viper's Service Configurations.  <br />
 
 Black Viper's Service Configurations from http://www.blackviper.com/
