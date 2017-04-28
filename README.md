@@ -21,12 +21,12 @@ Make sure to LOOK at this <br />
 
 |  Files     | Need or Recommend            | Description
 | :--------- | :----------------------------| :--------------------------- |
-|BlackViper-Win10.ps1 |   **_Need_**              |    Script               |
-|BlackViper.csv |   **_Need_**             |    Service Configurations             | 
-| _Win10-BlackViper.bat | **Recommended** | To run script easier | 
-| README.md | **Recommended** | A Readme File |
-|Changelog.txt | Not Needed | A Changelog | 
+|**_BlackViper-Win10.ps1_** |   **_Need_**              |    Script               |
+|**_BlackViper.csv_** |   **_Need_**             |    Service Configurations             | 
+| **_Win10-BlackViper.bat** | **Recommended** | To run script easier | 
+| **README.md** | **Recommended** | This Readme |
 | LICENSE |  | The License Agreement |
+|Changelog.txt | Not Needed | A Changelog | 
 | todo.md | Not Needed | List of To-Do or Thinking of Doing |
 
 **Note:**
