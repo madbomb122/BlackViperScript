@@ -17,20 +17,17 @@ Make sure to LOOK at this <br />
 |**Build**   | Creator's Update                 | Pre-Creator's Update         |
 
 <br />
-<br />
 
-|  Files     | Need or Recommend            | Description
-| :--------- | :----------------------------| :--------------------------- |
-|**_BlackViper-Win10.ps1_** |   **_Need_**              |    Script               |
-|**_BlackViper.csv_** |   **_Need_**             |    Service Configurations             | 
-| **_Win10-BlackViper.bat** | **Recommended** | To run script easier | 
-| **README.md** | **Recommended** | This Readme |
-| LICENSE |  | The License Agreement |
-|Changelog.txt | Not Needed | A Changelog | 
-| todo.md | Not Needed | List of To-Do or Thinking of Doing |
+**_Need Files_** <br />
+`BlackViper-Win10.ps1`* (Script) <br />
+`BlackViper.csv` (Service Configurations) <br />
+
+**Recommended Files** <br />
+`_Win10-BlackViper.bat` (To run script easier) <br /> 
+`README.md` (This Readme) <br />
 
 **Note:**
-**AT YOUR OWN RISK**  <br />
+**AT YOUR OWN RISK** <br />
 **1. Run the script on x32 w/o changing settings (But shows a warning)** <br />
 **2. Change variable at bottom of script to skip the check for** <br />
 **---A. Home/Pro** *($Script:Edition_Check)* <br />
