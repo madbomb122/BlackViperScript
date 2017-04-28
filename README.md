@@ -13,12 +13,20 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **---A. Home/Pro** *($Script:Edition_Check)* <br />
 **---B. Creator's Update** *($Script:Build_Check)* <br />
 
-# [](#header-1)Usage Requirements
+# [](#header-1)System/Usage Requirements
 **OS:** `Windows 10  x64` (Can Run on x32 AT YOUR OWN RISK) <br />
 **Edition:** `Pro or Home` (Can Run on other Edition AT YOUR OWN RISK) <br />
 **Build:** `Creator's Update` (Can Run on other Build AT YOUR OWN RISK) <br />
 **Needed Files:** `BlackViper-Win10.ps1` (Script File), `BlackViper.csv` (Service Config File) <br />
 **Recommended Files:** `_Win10-BlackViper.bat` (To run script easier) <br />
+
+# [](#header-1)How To Use and Run File
+Download/Save the following files <br />
+   `BlackViper-Win10.ps1` -Need (Script File) <br />
+   `BlackViper.csv` -Need (Service Config File) <br />
+   `_Win10-BlackViper.bat` -Recommended (Bat File) <br />
+  **Note: DO NOT RENAME THE FILES**<br />
+Next follow the **Basic Usage** or **Advanced Usage**
 
 # [](#header-1)Basic Usage
 Run the Script by bat file or `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
