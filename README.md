@@ -1,4 +1,12 @@
-## Description
+# CONTENTS
+1. [Description/About](#Description)
+2. [System/Usage Requirements](#Requirements)
+3. [How To Use and Run File](#Use)
+4. [Basic Usage](#Basic_Usage)
+5. [Advanced Usage](#Advanced_Usage)
+5. [FAQ](#FAQ)
+
+# Description
 Easy to use Script that can set Windows 10 services based on Black Viper's Service Configurations.  <br />
 
 Black Viper's Service Configurations from http://www.blackviper.com/
@@ -13,14 +21,14 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 **---A. Home/Pro** *($Script:Edition_Check)* <br />
 **---B. Creator's Update** *($Script:Build_Check)* <br />
 
-# [](#header-1)System/Usage Requirements
+# Requirements
 **OS:** `Windows 10  x64` (Can Run on x32 AT YOUR OWN RISK) <br />
 **Edition:** `Pro or Home` (Can Run on other Edition AT YOUR OWN RISK) <br />
 **Build:** `Creator's Update` (Can Run on other Build AT YOUR OWN RISK) <br />
 **Needed Files:** `BlackViper-Win10.ps1` (Script File), `BlackViper.csv` (Service Config File) <br />
 **Recommended Files:** `_Win10-BlackViper.bat` (To run script easier) <br />
 
-# [](#header-1)How To Use and Run File
+# Use
 Download/Save the following files <br />
    `BlackViper-Win10.ps1` -Need (Script File) <br />
    `BlackViper.csv` -Need (Service Config File) <br />
@@ -28,14 +36,14 @@ Download/Save the following files <br />
   **Note: DO NOT RENAME THE FILES**<br />
 Next follow the **Basic Usage** or **Advanced Usage**
 
-# [](#header-1)Basic Usage
+# Basic_Usage
 Run the Script by bat file or `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
 Select desired Services Configuration <br />
 *1. Default <br />
 2. Safe <br />
 3. Tweaked (Not supported for laptop ATM)<br />*
 
-## [](#header-1)Advanced Usage
+# Advanced_Usage
 **Note: Best for automation** <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
@@ -71,7 +79,7 @@ or <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Tweaked` <br />
 ******
 
-## FAQ
+# FAQ
 **Q:** Do you accept any donations? <br />
 **A:** Not for this script, I'd rather you donate to Black Viper than me since his configurations take alot of effort to do. <br />
 **NOTE:** http://www.blackviper.com/support-bv/
