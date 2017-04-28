@@ -7,8 +7,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 **Note: If you are using a non english version of Windows and get a Build Check Error, please let me know**  <br />
 
-# Requirements
-Make sure to LOOK at this <br />
+# Requirements (Make sure to LOOK at this)
 
 |            | Recommended Requirements         | AT YOURN OWN RISK* (See Note Bellow)            |
 | :--------- | :--------------------------------| :--------------------------- |
