@@ -11,20 +11,25 @@ Set Black_Viper=0
 :: 3 = Run with Black Viper Tweaked
 
 :: Change these to yes or no
-Set Accept_TOS=no
-Set Automated=no 
+Set Accept_ToS=no
+:: no = See ToS
+:: yes = Skip ToS (You accepted it)
 
+Set Automated=no 
+:: no = Pause on - User input, On Errors, or End of Script
+:: yes = Close on - User input, On Errors, or End of Script
+								
 :: Update Checks   
 :: If %update is found it will Auto-download and use that (with your settings)       
-Set Script=No
-Set Service=No
+Set Script=no
+Set Service=no
 Set Internet_Check=yes 
-:: ^only matters If %script or service is yes or github.com is blocked
+:: Internet_Check only matters If Script or Service is yes or pings to github.com is blocked
 
 :: Skip Script Check
 :: SKIP AT YOUR OWN RISK
-Set Skip_Build_Check=No
-Set Skip_Edition_Check=No
+Set Skip_Build_Check=no
+Set Skip_Edition_Check=no
 
 ::----------------------------------------------------------------------
 :: Do not change unless you know what you are doing
@@ -37,7 +42,7 @@ Set Script_Path=%Script_Directory%%Script_File%
 ::Set Run_Option=
 
 SETLOCAL ENABLEDELAYEDEXPANSION
-If %Accept_TOS%==yes Set Run_Option=!Run_Option!-atos 
+If %Accept_ToS%==yes Set Run_Option=!Run_Option!-atos 
 
 If %Black_Viper%==1 Set Run_Option=!Run_Option!-default 
 
@@ -47,7 +52,7 @@ If %Black_Viper%==3 Set Run_Option=!Run_Option!-tweaked
 
 If %Skip_Build_Check%==yes Set Run_Option=!Run_Option!-sbc 
 
-If %Skip_Edition_Check%==yes Set Run_Option=!Run_Option!"-sec 
+If %Skip_Edition_Check%==yes Set Run_Option=!Run_Option!-sec 
 
 If %Internet_Check%==no Set Run_Option=!Run_Option!-sic 
 
