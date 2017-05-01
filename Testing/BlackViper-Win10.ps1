@@ -1,4 +1,3 @@
-Param([alias("Set")] [string] $SettingImp)
 ##########
 # Win10 Black Viper Service Configuration Script
 #
@@ -11,7 +10,7 @@ Param([alias("Set")] [string] $SettingImp)
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "1.2"
-$Script_Date = "04-30-2017"
+$Script_Date = "05-01-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -68,32 +67,33 @@ $Release_Type = "Testing"
            B. Creator's Update ($Script:Build_Check)
 
 .BASIC USAGE
-    Use the Menu and select the desired Services Configuration
+  Run script with powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
+  or Use bat file provided
+  
+  Then Use the Menu Provided and
+  Select the desired Services Configuration
+    1. Default 
+    2. Safe (Recommended Option) 
+    3. Tweaked (Not supported for laptop ATM)
 
 .ADVANCED USAGE
-    Use one of the following Methods or use the at Bat file provided 
-    (Bat file provided can run script, look in bat file for insructions)
+ One of the following Methods...
+  1. Edit values at bottom of the script then run script
+  2. Edit bat file and ru
+  3. Run the script with one of these arguments/switches (space between multiple)
 
-1. Runs script with changing Services to Default Configuration (Only ones changed by this script): 
-      -Set 1 
-      -Set Default
+ Switches       Description of Switch
+  -atos          (Accepts ToS)
+  -auto          (Runs the script to be Automated.. Closes on User input, Errors, End of Script)
+  -default       (Runs the script with Services to Default Configuration)
+  -safe          (Runs the script with Services to Black Viper's Safe Configuration)
+  -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
+  -sec           (Skips Edition Check)
+  -sbc           (Skips Build Check)
+  -sic           (Skips Internet Check)
+  -usc           (Checks for Update to Script file before running)
+  -use           (Checks for Update to Service file before running)
 
-Example: BlackViper-Win10.ps1 -Set 1
-Example: BlackViper-Win10.ps1 -Set Default
-------
-2. Runs script with changing Services to Black Viper's Safe Configuration: 
-      -Set 2 
-      -Set Safe
-
-Example: BlackViper-Win10.ps1 -Set 2
-Example: BlackViper-Win10.ps1 -Set Safe
-------
-3. Runs script with changing Services to Black Viper's Tweaked Configuration: 
-      -Set 3 
-      -Set Tweaked
-
-Example: BlackViper-Win10.ps1 -Set 3
-Example: BlackViper-Win10.ps1 -Set Tweaked
 --------------------------------------------------------------------------------#>
 
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -112,12 +112,9 @@ Example: BlackViper-Win10.ps1 -Set Tweaked
 # Pre-Script -Start
 ##########
 
-$PassedArg = $args
+If($Release_Type -eq "Stable") { $ErrorActionPreference= 'silentlycontinue' }
 
-If($Release_Type -eq "Stable") {
-    $ErrorActionPreference= 'silentlycontinue'
-}
-
+$Global:PassedArg = $args
 $Global:filebase = $PSScriptRoot
 
 # Ask for elevated permissions if required
@@ -133,9 +130,7 @@ $ForVer = 1703
 $Version_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
 $Service_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
 
-If([System.Environment]::Is64BitProcess) {
-    $OSType = 64
-}
+If([System.Environment]::Is64BitProcess) { $OSType = 64 }
 
 $colors = @(
     "black",        #0
@@ -156,22 +151,6 @@ $colors = @(
     "yellow"        #15
 )
 
-Function MenuBlankLine {
-    DisplayOutMenu "|                                                   |" 14 0 1
-}
-
-Function MenuLine {
-    DisplayOutMenu "|---------------------------------------------------|" 14 0 1
-}
-
-Function LeftLine {
-    DisplayOutMenu "| " 14 0 0
-}
-
-Function RightLine {
-    DisplayOutMenu " |" 14 0 1
-}
-
 ##########
 # Pre-Script -End
 ##########
@@ -179,6 +158,13 @@ Function RightLine {
 ##########
 # Multi Use Functions -Start
 ##########
+
+Function MenuBlankLine { DisplayOutMenu "|                                                   |" 14 0 1 }
+Function MenuLine { DisplayOutMenu "|---------------------------------------------------|" 14 0 1 }
+Function LeftLine { DisplayOutMenu "| " 14 0 0 }
+Function RightLine { DisplayOutMenu " |" 14 0 1 }
+Function Openwebsite ([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
+Function DownloadFile ([String]$Url, [String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 
 Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine) {
     If($NewLine -eq 0) {
@@ -196,23 +182,13 @@ Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
     }
 }
 
-Function Openwebsite ([String]$Url) {
-    [System.Diagnostics.Process]::Start($Url)
-}
-
 Function  AutomatedExitCheck ([int]$ExitBit) {
     If ($Automated -ne 1) {
         Write-Host ""
         Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
         $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
     }
-    If ($ExitBit -eq 1) {
-        Exit
-    }
-}
-
-Function DownloadFile ([String]$Url, [String]$FilePath) {
-    (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath)
+    If ($ExitBit -eq 1) { Exit }
 }
 
 Function Error_Top_Display {
@@ -224,6 +200,12 @@ Function Error_Top_Display {
     MenuBlankLine
 }
 
+Function Error_Bottom {
+    MenuLine
+    MenuBlankLine
+    AutomatedExitCheck 1
+}
+
 Function DiagnosticCheck ([int]$Bypass) {
     If($Release_Type -ne "Stable" -or $Bypass -eq 1) {
         $WindowVersion = [Environment]::OSVersion.Version.Major
@@ -233,18 +215,16 @@ Function DiagnosticCheck ([int]$Bypass) {
         $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
         
-        DisplayOutMenu " Diagnostic Output --Start---" 15 0 1
+        DisplayOutMenu " Diagnostic Output" 15 0 1
+        DisplayOutMenu " --------Start--------" 15 0 1
         DisplayOutMenu " Script Version = $Script_Version" 15 0 1
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1
-        DisplayOutMenu " Error Type = $ErrorDi" 15 0 1
-        Write-Host ""
+        DisplayOutMenu " Error Type = $ErrorDi" 13 0 1
         DisplayOutMenu " Window = $WindowVersion" 15 0 1
-        DisplayOutMenu " Edition (Full) = $FullWinEdition" 15 0 1
-        DisplayOutMenu " Edition (Part) = $WindowsEdition" 15 0 1
+        DisplayOutMenu " Edition = $WindowsEdition" 15 0 1
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1
         DisplayOutMenu " Version = $winV" 15 0 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1
-        Write-Host ""
         DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1
         DisplayOutMenu " Automated = $Automated" 15 0 1
         DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1
@@ -255,9 +235,8 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1
         DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1
         DisplayOutMenu " Build_Check = $Build_Check" 15 0 1
-        Write-Host ""
         DisplayOutMenu " Args = $PassedArg" 15 0 1
-        DisplayOutMenu " Diagnostic Output --End---" 15 0 1
+        DisplayOutMenu " ---------End---------" 15 0 1
         Write-Host ""
     }
 }
@@ -325,8 +304,8 @@ Function TOS {
         Switch($TOS.ToLower()) {
             n {Exit}
             no {Exit}
-            y {Black_Viper_Input}
-            yes {Black_Viper_Input}
+            y {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper}; $Black_Viper_Input = "Out"}
+            yes {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper}; $Black_Viper_Input = "Out"}
             default {$Invalid = 1}
         }
     }
@@ -379,10 +358,7 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     MenuLine
     MenuBlankLine
     For($i=2; $i -le 4; $i++) {
-        If($i -eq 4 -and $IsLaptop -eq "-Lap") {
-        } Else {
-            LeftLine ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;RightLine
-        }
+        If(!($i -eq 4 -and $IsLaptop -eq "-Lap")) { LeftLine ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;RightLine } 
     }
     LeftLine ;DisplayOutMenu $ChToDisplay[5] 13 0 0 ;RightLine
     MenuBlankLine
@@ -438,15 +414,11 @@ Function CopyrightDisplay {
         MenuLine
         LeftLine ;DisplayOutMenu $CopyrightItems[0] 11 0 0 ;RightLine
         MenuLine
-        For($i=1; $i -lt $CopyrightItems.length; $i++) {
-            LeftLine ;DisplayOutMenu $CopyrightItems[$i] 2 0 0 ;RightLine
-        }
+        For($i=1; $i -lt $CopyrightItems.length; $i++) { LeftLine ;DisplayOutMenu $CopyrightItems[$i] 2 0 0 ;RightLine }
         MenuLine
         Write-Host ""
         $CopyrightDisplay = Read-Host "`nPress 'Enter' to continue"
-        Switch($CopyrightDisplay) {
-            default {$CopyrightDisplay = "Out"}
-        }
+        Switch($CopyrightDisplay) { default {$CopyrightDisplay = "Out"} }
     }
     Return
 }
@@ -508,9 +480,7 @@ Function ServiceSet ([String]$BVService) {
     Foreach($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
-        If($ServiceName -like "*_*"){
-            $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*"))
-        }
+        If($ServiceName -like "*_*"){ $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*")) }
         $ServiceType = $ServicesTypeList[$ServiceTypeNum]
         $ServiceCurrType = (Get-Service $ServiceName).StartType
         $SrvCheck = ServiceCheck $ServiceName $ServiceType $ServiceCurrType
@@ -524,9 +494,7 @@ Function ServiceSet ([String]$BVService) {
                 $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceName)
                 Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
             }
-            If($Show_Changed -eq 1){
-                DisplayOut $DispTemp  11 0
-            }
+            If($Show_Changed -eq 1){ DisplayOut $DispTemp  11 0 }
         } ElseIf($SrvCheck -eq $False -and $Show_Already_Set -eq 1) {
             $DispTemp = "$ServiceName is already $ServiceType"
             DisplayOut $DispTemp  15 0
@@ -577,20 +545,19 @@ Function InternetCheck {
 }
 
 Function PreScriptCheck {
-	ArgCheck
+    ArgCheck
     $WindowVersion = [Environment]::OSVersion.Version.Major
     If($WindowVersion -ne 10) {
         Error_Top_Display
-        $ErrorDi = "Window Version"
+        $ErrorDi = "Not Window 10"
         LeftLine ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 ;RightLine
         MenuBlankLine
         LeftLine ;DisplayOutMenu " You are using Window " 2 0 0 ;DisplayOutMenu ("$WindowVersion"+(" "*(27-$WindowVersion.length))) 15 0 0 ;RightLine
-        MenuBlankLine
-        MenuLine
-        AutomatedExitCheck 1
+        Error_Bottom
     }
 
     $ErrorDi = ""
+    $EBCount = 0
     $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
     $WinEdition =  $FullWinEdition.Split(' ')[-1]
     #Pro = Microsoft Windows 10 Pro
@@ -602,7 +569,7 @@ Function PreScriptCheck {
     } Else {
         $ErrorDi = "Edition"
         $EditionCheck = "Fail"
-        $DoNotRun = "Yes"
+        $EBCount++
     }
 
     $BuildVer = [Environment]::OSVersion.Version.build
@@ -624,46 +591,50 @@ Function PreScriptCheck {
             $ErrorDi = "Build"
         }
         $BuildCheck = "Fail"
-        $DoNotRun = "Yes"
+        $EBCount++
     }
 
-    If($DoNotRun -eq "Yes") {
+    If($EBCount -ne 0) {
         Error_Top_Display
         LeftLine ;DisplayOutMenu " Script won't run due to the following problem(s)" 2 0 0 ;RightLine
         MenuBlankLine
         MenuLine
-        $Count = 0
         If($EditionCheck -eq "Fail") {
-            $Count++
             MenuBlankLine
-            LeftLine ;DisplayOutMenu " $Count. Not a valid Windows Edition for this Script. " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " $EBCount. Not a valid Windows Edition for this Script. " 2 0 0 ;RightLine
             LeftLine ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 ;RightLine
             MenuBlankLine
             LeftLine ;DisplayOutMenu " You are using " 2 0 0;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.length))) 15 0 0 ;RightLine
             MenuBlankLine
-            LeftLine ;DisplayOutMenu " To skip change " 2 0 0 ;DisplayOutMenu "Edition_Check" 15 0 0 ;DisplayOutMenu " in script file.    " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 1. Change " 2 0 0 ;DisplayOutMenu "Edition_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "= 1" 15 0 0 ; ;DisplayOutMenu " in script file   " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 2. Run Script with " 2 0 0 ;DisplayOutMenu "-sec" 15 0 0 ;DisplayOutMenu " argument                " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 3. Change " 2 0 0 ;DisplayOutMenu "Skip_Edition_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "=yes" 15 0 0 ; ;DisplayOutMenu " in bat file" 2 0 0 ;RightLine
             MenuBlankLine
             MenuLine
         }
         If($BuildCheck -eq "Fail") {
-            $Count++
             MenuBlankLine
-            LeftLine ;DisplayOutMenu " $Count. Not a valid Build for this Script.           " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " $EBCount. Not a valid Build for this Script.           " 2 0 0 ;RightLine
             LeftLine ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 ;RightLine
             MenuBlankLine
             LeftLine ;DisplayOutMenu " You are using Build " 2 0 0;DisplayOutMenu ("$BuildVer" +(" "*(24-$BuildVer.length))) 15 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " You are using Verison " 2 0 0;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.length))) 15 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " You are using Version " 2 0 0;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.length))) 15 0 0 ;RightLine
             MenuBlankLine
-            LeftLine ;DisplayOutMenu " To skip change " 2 0 0 ;DisplayOutMenu "Build_Check" 15 0 0 ;DisplayOutMenu " in script file.      " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 1. Change " 2 0 0 ;DisplayOutMenu "Build_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "= 1" 15 0 0 ; ;DisplayOutMenu " in script file     " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 2. Run Script with " 2 0 0 ;DisplayOutMenu "-sbc" 15 0 0 ;DisplayOutMenu " argument                " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 3. Change " 2 0 0 ;DisplayOutMenu "Skip_Build_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "=yes" 15 0 0 ; ;DisplayOutMenu " in bat file  " 2 0 0 ;RightLine
             MenuBlankLine
             MenuLine
         }
         AutomatedExitCheck 1
     }
-	VariousChecks
+    VariousChecks
 }
-	
-Function VariousChecks {	
+    
+Function VariousChecks {
     $ServiceFilePath = $filebase + "\BlackViper.csv"
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         LoadWebCSV
@@ -705,21 +676,38 @@ Function VariousChecks {
                 MenuBlankLine
                 MenuLine
                 DownloadFile $Script_Url $WebScriptFilePath
-                Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $PassedArg" -Verb RunAs
+                $UpArg = ""
+                If($Accept_TOS -ne 0) { $UpArg = $UpArg + "-atos" }
+                If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
+                If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                
+                If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
+                If($Edition_Check -eq 1) { $UpArg = $UpArg + "-sec" }
+                If($Build_Check -eq 1) { $UpArg = $UpArg + "-sbc" }
+                If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
+                If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
+                If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
+                Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
                 Exit
             }
         } Else {
             Error_Top_Display
             $ErrorDi = "No Internet"
-            LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu "download because the Internet check failed.      " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " Update Failed Because no internet was detected. " 2 0 0 ;RightLine
             MenuBlankLine
-            LeftLine ;DisplayOutMenu "Tested by pinging github.com                     " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " Tested by pinging github.com                    " 2 0 0 ;RightLine
             MenuBlankLine
-            LeftLine ;DisplayOutMenu "To skip change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " in script file.    " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 1. Change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "= 1" 15 0 0 ; ;DisplayOutMenu " in script file  " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 2. Run Script with " 2 0 0 ;DisplayOutMenu "-sic" 15 0 0 ;DisplayOutMenu " argument                " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu " 3. Change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "=no" 15 0 0 ; ;DisplayOutMenu " in bat file     " 2 0 0 ;RightLine
             MenuBlankLine
             MenuLine
             If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+                MenuBlankLine
+                LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and the script" 2 0 0 ;RightLine
+                LeftLine ;DisplayOutMenu "can't run w/o it.      " 2 0 0 ;RightLine
+                MenuBlankLine
+                MenuLine
                 AutomatedExitCheck 1
             } Else {
                 AutomatedExitCheck 0
@@ -738,60 +726,83 @@ Function ScriptPreStart {
         $ErrorDi = "Missing File -ScriptPreStart"
         LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
         LeftLine ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 ;RightLine
-        MenuLine
-        MenuBlankLine
-        AutomatedExitCheck 1
-    } 
-	If($argsUsed -eq 2) {
-        Black_Viper_Set $Black_Viper
-    } ElseIf($Accept_TOS -eq 0) {
-        TOS
-    } Else {
-        Black_Viper_Input
+        Error_Bottom
     }
+    If($argsUsed -eq 2) {
+        If($Accept_TOS -eq 1 -or $Automated -eq 1) {
+            Black_Viper_Set $Black_Viper
+        } Else {
+            TOS
+        }
+    } ElseIf($Automated -eq 0) {
+        If($Accept_TOS -eq 0) { 
+            TOS
+        } Else {
+            Black_Viper_Input
+        }
+    } ElseIf($Automated -eq 1) {
+        Exit
+    } 
 }
 
 Function ArgCheck {
-	$IsLaptop = LaptopCheck
-	If ($PassedArg.length -gt 0) {
+    $IsLaptop = LaptopCheck
+    If ($PassedArg.length -gt 0) {
         For($i=0; $i -le $PassedArg.length; $i++) {
-		    $ArgVal = $PassedArg[$i]
-			If(!($PassedArg[$i] -is [int])){
-		        $ArgVal = $ArgVal.ToLower()
-			}
-            If($ArgVal -eq 1 -or $ArgVal -eq "-default") {
-	   	        $Script:Black_Viper = 1
-				$Script:argsUsed = 2
-    		} ElseIf($ArgVal -eq 2 -or $ArgVal -eq "-safe") {
-	    	    $Script:Black_Viper = 2
-				$Script:argsUsed = 2
-		    } ElseIf($ArgVal -eq 3 -or $ArgVal -eq "-tweaked" -and $IsLaptop -ne "-Lap") {
-    		    $Script:Black_Viper = 3
-				$Script:argsUsed = 2
-	    	} ElseIf($ArgVal -eq "-sbc") {
-		        $Script:Build_Check = 1
-				$Script:argsUsed = 1
-    		} ElseIf($ArgVal -eq "-sec") {
-	    	    $Script:Edition_Check = 1
-				$Script:argsUsed = 1
-		    } ElseIf($ArgVal -eq "-sic") {
-		        $Script:Internet_Check = 1
-				$Script:argsUsed = 1
-    		} ElseIf($ArgVal -eq "-usc") {
-	    	    $Script:Script_Ver_Check = 1
-				$Script:argsUsed = 1
-		    } ElseIf($ArgVal -eq "-use") {
-    		    $Script:Service_Ver_Check = 1
-				$Script:argsUsed = 1
-	    	} ElseIf($ArgVal -eq "-atos") {
-    		    $Script:Accept_TOS = 1
-	    	} ElseIf($ArgVal -eq "-auto") {
-    		    $Script:Automated = 1
-	    	}
-		}
-	}
-	If($argsUsed -eq 2) {
-        Black_Viper_Set $Black_Viper
+            If($ArgVal.StartsWith("-")){
+                $ArgVal = $PassedArg[$i].ToLower()
+                #If($ArgVal -eq "-set" -and $PassedArg[($i+1)] -In 1..3) {
+                If($ArgVal -eq "-set") {
+                    $PasVal = $PassedArg[($i+1)]
+                    If($PasVal -In 1..2) {
+                       $Script:Black_Viper = $PasVal
+                       $Script:argsUsed = 2
+                    } ElseIf($PasVal -eq 3 -and $IsLaptop -ne "-Lap") {
+                       $Script:Black_Viper = $PasVal
+                       $Script:argsUsed = 2
+                    }
+                } ElseIf($ArgVal -eq "-default") {
+                    $Script:Black_Viper = 1
+                    $Script:argsUsed = 2
+                } ElseIf($ArgVal -eq "-safe") {
+                    $Script:Black_Viper = 2
+                    $Script:argsUsed = 2
+                } ElseIf($ArgVal -eq "-tweaked") {
+                    If($IsLaptop -ne "-Lap") {
+                        $Script:Black_Viper = 3
+                        $Script:argsUsed = 2
+                    } Else {
+                        $Script:argsUsed = 3
+                    }
+                } ElseIf($ArgVal -eq "-sbc") {
+                    $Script:Build_Check = 1
+                    $Script:argsUsed = 1
+                } ElseIf($ArgVal -eq "-sec") {
+                    $Script:Edition_Check = 1
+                    $Script:argsUsed = 1
+                } ElseIf($ArgVal -eq "-sic") {
+                    $Script:Internet_Check = 1
+                    $Script:argsUsed = 1
+                } ElseIf($ArgVal -eq "-usc") {
+                    $Script:Script_Ver_Check = 1
+                    $Script:argsUsed = 1
+                } ElseIf($ArgVal -eq "-use") {
+                    $Script:Service_Ver_Check = 1
+                    $Script:argsUsed = 1
+                } ElseIf($ArgVal -eq "-atos") {
+                    $Script:Accept_TOS = 1
+                } ElseIf($ArgVal -eq "-auto") {
+                    $Script:Automated = 1
+                }
+            }
+        }
+    }
+    If($argsUsed -eq 3 -and $Automated -eq 1) {
+        Error_Top_Display
+        $ErrorDi = "Automated but Tweaked + Laptop"
+        LeftLine ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu "Laptops can't use Twaked option.                 " 2 0 0 ;RightLine
+        Error_Bottom
     } 
 }
 
@@ -804,8 +815,8 @@ Function ArgCheck {
 $Script:Accept_TOS = 0          #0 = See TOS
                                 #Anything else = Accept TOS
 
-$Script:Automated = 0           #0 = Pause On Errors or End of Script
-                                #1 = Close On Errors or End of Script
+$Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script
+                                #1 = Close on - User input, On Errors, or End of Script
 
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
