@@ -8,3 +8,4 @@ Only Differances between script are:
 4. Error display may show various info for diagnostic purposes
 
 **Note: Use the copy here if you dont mind possible bugs or problems.**
+**Note: Dont forget to download the file `BlackViper.csv` from the non-test.**
