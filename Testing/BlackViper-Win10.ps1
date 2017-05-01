@@ -10,8 +10,8 @@ Param([alias("Set")] [string] $SettingImp)
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.1"
-$Script_Date = "04-23-2017"
+$Script_Version = "1.2"
+$Script_Date = "04-30-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -112,6 +112,8 @@ Example: BlackViper-Win10.ps1 -Set Tweaked
 # Pre-Script -Start
 ##########
 
+$PassedArg = $args
+
 If($Release_Type -eq "Stable") {
     $ErrorActionPreference= 'silentlycontinue'
 }
@@ -120,7 +122,7 @@ $Global:filebase = $PSScriptRoot
 
 # Ask for elevated permissions if required
 If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $PassedArg" -Verb RunAs
     Exit
 }
 
@@ -243,6 +245,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Version = $winV" 15 0 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1
         Write-Host ""
+        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1
         DisplayOutMenu " Automated = $Automated" 15 0 1
         DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1
         DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 15 0 1
@@ -252,6 +255,8 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1
         DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1
         DisplayOutMenu " Build_Check = $Build_Check" 15 0 1
+        Write-Host ""
+        DisplayOutMenu " Args = $PassedArg" 15 0 1
         DisplayOutMenu " Diagnostic Output --End---" 15 0 1
         Write-Host ""
     }
@@ -493,6 +498,7 @@ $ServicesTypeList = @(
 )
 
 $Script:Black_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
+$Script:argsUsed = 0
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
@@ -571,11 +577,7 @@ Function InternetCheck {
 }
 
 Function PreScriptCheck {
-    If($SettingImp -ne $null -and $SettingImp -eq "diag") {
-        $ErrorDi = "Manual Diag"
-        DiagnosticCheck 1
-        Exit
-    }
+	ArgCheck
     $WindowVersion = [Environment]::OSVersion.Version.Major
     If($WindowVersion -ne 10) {
         Error_Top_Display
@@ -657,74 +659,76 @@ Function PreScriptCheck {
             MenuLine
         }
         AutomatedExitCheck 1
-    } Else {
-        $ServiceFilePath = $filebase + "\BlackViper.csv"
-        If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-            LoadWebCSV
-            $Service_Ver_Check = 0
-        }
-        $Script:csv = Import-Csv $ServiceFilePath
-        If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
-            If(InternetCheck) {
-                $VersionFile = $TempFolder + "\Temp.csv"
-                DownloadFile $Version_Url $VersionFile
-                $CSV_Ver = Import-Csv $VersionFile
-                If($Release_Type -eq "Stable") {
-                    $WebScriptVer = $($CSV_Ver[0].Version)
-                } Else {
-                    $WebScriptVer = $($CSV_Ver[3].Version)
-                }
-                If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
-                    DownloadFile $Service_Url $ServiceFilePath
-                    [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
-                }
-                $SV=[Int]$Script_Version
-                If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
-                    If($Release_Type -eq "Stable") {
-                        $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + ".ps1"
-                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
-                    } Else {
-                        $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "-Testing.ps1"
-                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
-                    }
-                    $WebScriptFilePath = $filebase + "\" + $DFilename
-                    Clear-Host
-                    MenuLine
-                    LeftLine ;DisplayOutMenu "                  Update Found!                  " 13 0 0 ;RightLine
-                    MenuLine
-                    MenuBlankLine
-                    LeftLine ;DisplayOutMenu "Downloading version " 15 0 0 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 ;RightLine
-                    LeftLine ;DisplayOutMenu "Will run " 15 0 0 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 ;RightLine
-                    LeftLine ;DisplayOutMenu "after download is complete.                       " 2 0 0 ;RightLine
-                    MenuBlankLine
-                    MenuLine
-                    DownloadFile $Script_Url $WebScriptFilePath
-                    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $args" -Verb RunAs
-                    Exit
-                }
+    }
+	VariousChecks
+}
+	
+Function VariousChecks {	
+    $ServiceFilePath = $filebase + "\BlackViper.csv"
+    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+        LoadWebCSV
+        $Service_Ver_Check = 0
+    }
+    $Script:csv = Import-Csv $ServiceFilePath
+    If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
+        If(InternetCheck) {
+            $VersionFile = $TempFolder + "\Temp.csv"
+            DownloadFile $Version_Url $VersionFile
+            $CSV_Ver = Import-Csv $VersionFile
+            If($Release_Type -eq "Stable") {
+                $WebScriptVer = $($CSV_Ver[0].Version)
             } Else {
-                Error_Top_Display
-                $ErrorDi = "No Internet"
-                LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
-                LeftLine ;DisplayOutMenu "download because the Internet check failed.      " 2 0 0 ;RightLine
+                $WebScriptVer = $($CSV_Ver[3].Version)
+            }
+            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
+                DownloadFile $Service_Url $ServiceFilePath
+                [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+            }
+            $SV=[Int]$Script_Version
+            If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
+                If($Release_Type -eq "Stable") {
+                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + ".ps1"
+                    $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+                } Else {
+                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "-Testing.ps1"
+                    $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
+                }
+                $WebScriptFilePath = $filebase + "\" + $DFilename
+                Clear-Host
+                MenuLine
+                LeftLine ;DisplayOutMenu "                  Update Found!                  " 13 0 0 ;RightLine
+                MenuLine
                 MenuBlankLine
-                LeftLine ;DisplayOutMenu "Tested by pinging github.com                     " 2 0 0 ;RightLine
-                MenuBlankLine
-                LeftLine ;DisplayOutMenu "To skip change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " in script file.    " 2 0 0 ;RightLine
+                LeftLine ;DisplayOutMenu "Downloading version " 15 0 0 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 ;RightLine
+                LeftLine ;DisplayOutMenu "Will run " 15 0 0 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 ;RightLine
+                LeftLine ;DisplayOutMenu "after download is complete.                       " 2 0 0 ;RightLine
                 MenuBlankLine
                 MenuLine
-                If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-                    AutomatedExitCheck 1
-                } Else {
-                    AutomatedExitCheck 0
-                }
+                DownloadFile $Script_Url $WebScriptFilePath
+                Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $PassedArg" -Verb RunAs
+                Exit
+            }
+        } Else {
+            Error_Top_Display
+            $ErrorDi = "No Internet"
+            LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
+            LeftLine ;DisplayOutMenu "download because the Internet check failed.      " 2 0 0 ;RightLine
+            MenuBlankLine
+            LeftLine ;DisplayOutMenu "Tested by pinging github.com                     " 2 0 0 ;RightLine
+            MenuBlankLine
+            LeftLine ;DisplayOutMenu "To skip change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " in script file.    " 2 0 0 ;RightLine
+            MenuBlankLine
+            MenuLine
+            If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+                AutomatedExitCheck 1
+            } Else {
+                AutomatedExitCheck 0
             }
         }
-        $ServiceVersion = ($csv[0]."Def-Home")
-        $ServiceDate = ($csv[0]."Def-Pro")
-        $csvtemp.RemoveAt(0)
     }
-    $IsLaptop = LaptopCheck
+    $ServiceVersion = ($csv[0]."Def-Home")
+    $ServiceDate = ($csv[0]."Def-Pro")
+    $csvtemp.RemoveAt(0)
     ScriptPreStart
 }
 
@@ -738,40 +742,57 @@ Function ScriptPreStart {
         MenuBlankLine
         AutomatedExitCheck 1
     } 
-    If($SettingImp -ne $null -and $SettingImp) {
-        $Automated = 1
-        If($SettingImp -In 1..2) {
-            Black_Viper_Set $SettingImp
-        } ElseIf($SettingImp -eq 3 -and $IsLaptop -ne "-Lap") {
-            Black_Viper_Set $SettingImp
-        } ElseIf($SettingImp.ToLower() -eq "default") {
-            Black_Viper_Set 1
-        } ElseIf($SettingImp.ToLower() -eq "safe") {
-            Black_Viper_Set 2
-        } ElseIf($SettingImp.ToLower() -eq "tweaked" -and $IsLaptop -ne "-Lap") {
-            Black_Viper_Set 3
-        } Else {
-            Clear-Host
-            MenuLine
-            LeftLine ;DisplayOutMenu "             Error Invalid Selection             " 13 0 0 ;RightLine
-            MenuLine
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " Valid Swiches are:                              " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 1 or Default                                    " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 2 or Safe                                       " 2 0 0 ;RightLine
-            If($IsLaptop -eq "-Lap") {
-                LeftLine ;DisplayOutMenu " 3 or Tweaked -Not Avilable for Laptop ATM       " 15 0 0 ;RightLine
-            } Else {
-                LeftLine ;DisplayOutMenu " 3 or Tweaked                                    " 2 0 0 ;RightLine
-            }
-            MenuBlankLine
-            MenuLine
-        }
+	If($argsUsed -eq 2) {
+        Black_Viper_Set $Black_Viper
     } ElseIf($Accept_TOS -eq 0) {
         TOS
     } Else {
         Black_Viper_Input
     }
+}
+
+Function ArgCheck {
+	$IsLaptop = LaptopCheck
+	If ($PassedArg.length -gt 0) {
+        For($i=0; $i -le $PassedArg.length; $i++) {
+		    $ArgVal = $PassedArg[$i]
+			If(!($PassedArg[$i] -is [int])){
+		        $ArgVal = $ArgVal.ToLower()
+			}
+            If($ArgVal -eq 1 -or $ArgVal -eq "-default") {
+	   	        $Script:Black_Viper = 1
+				$Script:argsUsed = 2
+    		} ElseIf($ArgVal -eq 2 -or $ArgVal -eq "-safe") {
+	    	    $Script:Black_Viper = 2
+				$Script:argsUsed = 2
+		    } ElseIf($ArgVal -eq 3 -or $ArgVal -eq "-tweaked" -and $IsLaptop -ne "-Lap") {
+    		    $Script:Black_Viper = 3
+				$Script:argsUsed = 2
+	    	} ElseIf($ArgVal -eq "-sbc") {
+		        $Script:Build_Check = 1
+				$Script:argsUsed = 1
+    		} ElseIf($ArgVal -eq "-sec") {
+	    	    $Script:Edition_Check = 1
+				$Script:argsUsed = 1
+		    } ElseIf($ArgVal -eq "-sic") {
+		        $Script:Internet_Check = 1
+				$Script:argsUsed = 1
+    		} ElseIf($ArgVal -eq "-usc") {
+	    	    $Script:Script_Ver_Check = 1
+				$Script:argsUsed = 1
+		    } ElseIf($ArgVal -eq "-use") {
+    		    $Script:Service_Ver_Check = 1
+				$Script:argsUsed = 1
+	    	} ElseIf($ArgVal -eq "-atos") {
+    		    $Script:Accept_TOS = 1
+	    	} ElseIf($ArgVal -eq "-auto") {
+    		    $Script:Automated = 1
+	    	}
+		}
+	}
+	If($argsUsed -eq 2) {
+        Black_Viper_Set $Black_Viper
+    } 
 }
 
 #--------------------------------------------------------------------------
