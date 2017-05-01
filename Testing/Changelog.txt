@@ -1,8 +1,19 @@
 -----------------------------------------------------------------------------------
 1.2 (0?-??-2017)
 
-Removed Old Arguments (all the -Set)
-Added/Changed Arguments to accept multiple (See Bat File for Options)
+Added/Changed Arguments/Switches to accept multiple 
+
+ Switches       Description of Switch
+  -atos          (Accepts ToS)
+  -auto          (Runs the script to be Automated.. Closes on User input, Errors, End of Script)
+  -default       (Runs the script with Services to Default Configuration)
+  -safe          (Runs the script with Services to Black Viper's Safe Configuration)
+  -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
+  -sec           (Skips Edition Check)
+  -sbc           (Skips Build Check)
+  -sic           (Skips Internet Check)
+  -usc           (Checks for Update to Script file before running)
+  -use           (Checks for Update to Service file before running)
 
 -----------------------------------------------------------------------------------
 1.1 (04-23-2017)
