@@ -338,7 +338,7 @@ Function LoadWebCSV {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
         Error_Top_Display
-        $ErrorDi = "Missing File (LoadWebCSV)"
+        $ErrorDi = "Missing File BlackViper.csv -LoadCSV"
         LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing.             " 2 0 0 ;RightLine
         MenuBlankLine
         LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
@@ -603,10 +603,11 @@ Function PreScriptCheck {
     
     If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) {
         If($EditionCheck -eq "Fail") {
-            $ErrorDi += " and Build"
+            $ErrorDi += " & Build"
         } Else {
             $ErrorDi = "Build"
         }
+		$ErrorDi += " Check Failed"
         $BuildCheck = "Fail"
         $EBCount++
     }
@@ -739,7 +740,7 @@ Function VariousChecks {
 
 Function ScriptPreStart {
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-        $ErrorDi = "Missing File -ScriptPreStart"
+        $ErrorDi = "Missing File BlackViper.csv -ScriptPreStart"
         Error_Top_Display
         LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
         LeftLine ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 ;RightLine
@@ -758,7 +759,7 @@ Function ScriptPreStart {
     } ElseIf($Automated -eq 1) {
         Black_Viper_Input
     } Else {
-        $ErrorDi = "Unknown"
+        $ErrorDi = "Unknown -ScriptPreStart"
         Error_Top_Display
         LeftLine ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 ;RightLine
         LeftLine ;DisplayOutMenu "to me, with Subject of 'Unknown Error', thanks.  " 2 0 0 ;RightLine
@@ -829,9 +830,9 @@ Function ArgCheck {
     }
     If($argsUsed -eq 3 -and $Automated -eq 1) {
         Error_Top_Display
-        $ErrorDi = "Automated but Tweaked + Laptop"
+        $ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
         LeftLine ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 ;RightLine
-        LeftLine ;DisplayOutMenu "Laptops can't use Twaked option.                 " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 ;RightLine
         Error_Bottom
     }
 }
