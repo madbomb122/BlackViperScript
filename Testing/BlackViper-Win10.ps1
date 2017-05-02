@@ -82,17 +82,33 @@ $Release_Type = "Testing"
   2. Edit bat file and ru
   3. Run the script with one of these arguments/switches (space between multiple)
 
+-- Basic Switches --
  Switches       Description of Switch
   -atos          (Accepts ToS)
-  -auto          (Runs the script to be Automated.. Closes on User input, Errors, End of Script)
-  -default       (Runs the script with Services to Default Configuration)
-  -safe          (Runs the script with Services to Black Viper's Safe Configuration)
-  -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
-  -sec           (Skips Edition Check)
-  -sbc           (Skips Build Check)
-  -sic           (Skips Internet Check)
+  -auto          (Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script)
+  
+--Update Switches--
+ Switches       Description of Switch
   -usc           (Checks for Update to Script file before running)
   -use           (Checks for Update to Service file before running)
+  -sic           (Skips Internet Check)
+  
+--AT YOUR OWN RISK Switches--
+ Switches       Description of Switch
+  -sec           (Skips Edition Check)
+  -sbc           (Skips Build Check)
+
+-- Service Configuration Switches --
+ Switches       Description of Switch 
+  -default       (Runs the script with Services to Default Configuration)
+  -Set 1          ^Same as Above
+  -Set default    ^Same as Above
+  -safe          (Runs the script with Services to Black Viper's Safe Configuration)
+  -Set 2          ^Same as Above
+  -Set safe       ^Same as Above
+  -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
+  -Set 3          ^Same as Above
+  -Set tweaked    ^Same as Above
 
 --------------------------------------------------------------------------------#>
 
@@ -754,13 +770,20 @@ Function ArgCheck {
                 #If($ArgVal -eq "-set" -and $PassedArg[($i+1)] -In 1..3) {
                 If($ArgVal -eq "-set") {
                     $PasVal = $PassedArg[($i+1)]
-                    If($PasVal -In 1..2) {
-                       $Script:Black_Viper = $PasVal
+                    If($PasVal -eq 1 -or "default") {
+                       $Script:Black_Viper = 1
                        $Script:argsUsed = 2
-                    } ElseIf($PasVal -eq 3 -and $IsLaptop -ne "-Lap") {
-                       $Script:Black_Viper = $PasVal
-                       $Script:argsUsed = 2
-                    }
+                    } ElseIf($ArgVal -eq "safe") {
+                        $Script:Black_Viper = 2
+                        $Script:argsUsed = 2
+                    } ElseIf($PasVal -eq 3 -or "tweaked") {
+                        If($IsLaptop -ne "-Lap") {
+                            $Script:Black_Viper = 3
+                            $Script:argsUsed = 2
+                        } Else {
+                            $Script:argsUsed = 3
+                        }
+					}
                 } ElseIf($ArgVal -eq "-default") {
                     $Script:Black_Viper = 1
                     $Script:argsUsed = 2
@@ -803,7 +826,7 @@ Function ArgCheck {
         LeftLine ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 ;RightLine
         LeftLine ;DisplayOutMenu "Laptops can't use Twaked option.                 " 2 0 0 ;RightLine
         Error_Bottom
-    } 
+    }
 }
 
 #--------------------------------------------------------------------------
