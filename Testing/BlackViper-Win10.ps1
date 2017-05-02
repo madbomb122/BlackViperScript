@@ -241,14 +241,15 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1
         DisplayOutMenu " Version = $winV" 15 0 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1
-        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1
+        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1		
+        DisplayOutMenu " ToS = $Accept_ToS" 15 0 1
         DisplayOutMenu " Automated = $Automated" 15 0 1
         DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1
         DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 15 0 1
+        DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1
         DisplayOutMenu " Show_Changed = $Show_Changed" 15 0 1
         DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 15 0 1
         DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 15 0 1
-        DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1
         DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1
         DisplayOutMenu " Build_Check = $Build_Check" 15 0 1
         DisplayOutMenu " Args = $PassedArg" 15 0 1
@@ -485,7 +486,6 @@ $ServicesTypeList = @(
     'Automatic'  #4 -Automatic (Delayed Start)
 )
 
-$Script:Black_Viper = 0   #0-Skip, 1-Default, 2-Safe, 3-Tweaked
 $Script:argsUsed = 0
 
 Function ServiceSet ([String]$BVService) {
@@ -693,7 +693,7 @@ Function VariousChecks {
                 MenuLine
                 DownloadFile $Script_Url $WebScriptFilePath
                 $UpArg = ""
-                If($Accept_TOS -ne 0) { $UpArg = $UpArg + "-atos" }
+                If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atos" }
                 If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
                 If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                
                 If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
@@ -738,27 +738,35 @@ Function VariousChecks {
 
 Function ScriptPreStart {
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-        Error_Top_Display
         $ErrorDi = "Missing File -ScriptPreStart"
+        Error_Top_Display
         LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
         LeftLine ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 ;RightLine
         Error_Bottom
     }
-    If($argsUsed -eq 2) {
-        If($Accept_TOS -eq 1 -or $Automated -eq 1) {
-            Black_Viper_Set $Black_Viper
-        } Else {
-            TOS
-        }
-    } ElseIf($Automated -eq 0) {
-        If($Accept_TOS -eq 0) { 
-            TOS
-        } Else {
-            Black_Viper_Input
-        }
+    If($argsUsed -eq 2 -or $Black_Viper -ne 0) {
+        $Script:Automated = 1
+        Black_Viper_Set $Black_Viper
+    } ElseIf($Accept_ToS -eq 1) {
+        Black_Viper_Input
+    } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
+        TOS
     } ElseIf($Automated -eq 1) {
-        Exit
-    } 
+        $ErrorDi = "No Service Configuration selected"
+        Error_Top_Display
+        LeftLine ;DisplayOutMenu "There was No Service Configuration selected.     " 2 0 0 ;RightLine
+        Error_Bottom
+        DiagnosticCheck 1
+    } Else {
+        $ErrorDi = "Unknown"
+        Error_Top_Display
+        LeftLine ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu "to me, with Subject of 'Unknown Error', thanks.  " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu " E-mail - Madbomb122@gmail.com                   " 2 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 ;RightLine
+        Error_Bottom
+        DiagnosticCheck 1
+    }
 }
 
 Function ArgCheck {
@@ -767,7 +775,10 @@ Function ArgCheck {
         For($i=0; $i -le $PassedArg.length; $i++) {
             If($ArgVal.StartsWith("-")){
                 $ArgVal = $PassedArg[$i].ToLower()
-                #If($ArgVal -eq "-set" -and $PassedArg[($i+1)] -In 1..3) {
+                <#If($ArgVal -eq "-set" -and $PassedArg[($i+1)] -In 1..3) {
+                    $Script:Black_Viper = $PassedArg[($i+1)]
+                    $Script:argsUsed = 2                
+                }#>
                 If($ArgVal -eq "-set") {
                     $PasVal = $PassedArg[($i+1)]
                     If($PasVal -eq 1 -or "default") {
@@ -783,7 +794,7 @@ Function ArgCheck {
                         } Else {
                             $Script:argsUsed = 3
                         }
-					}
+                    }
                 } ElseIf($ArgVal -eq "-default") {
                     $Script:Black_Viper = 1
                     $Script:argsUsed = 2
@@ -799,23 +810,19 @@ Function ArgCheck {
                     }
                 } ElseIf($ArgVal -eq "-sbc") {
                     $Script:Build_Check = 1
-                    $Script:argsUsed = 1
                 } ElseIf($ArgVal -eq "-sec") {
                     $Script:Edition_Check = 1
-                    $Script:argsUsed = 1
                 } ElseIf($ArgVal -eq "-sic") {
                     $Script:Internet_Check = 1
-                    $Script:argsUsed = 1
                 } ElseIf($ArgVal -eq "-usc") {
                     $Script:Script_Ver_Check = 1
-                    $Script:argsUsed = 1
                 } ElseIf($ArgVal -eq "-use") {
                     $Script:Service_Ver_Check = 1
-                    $Script:argsUsed = 1
                 } ElseIf($ArgVal -eq "-atos") {
-                    $Script:Accept_TOS = 1
+                    $Script:Accept_ToS = 1
                 } ElseIf($ArgVal -eq "-auto") {
                     $Script:Automated = 1
+                    $Script:Accept_ToS = 1
                 }
             }
         }
@@ -830,17 +837,25 @@ Function ArgCheck {
 }
 
 #--------------------------------------------------------------------------
-
 # Edit values (Option) to your preferance
 
 #----Safe to change Variables----
 # Function = Option             #Choices
-$Script:Accept_TOS = 0          #0 = See TOS
-                                #Anything else = Accept TOS
+$Script:Accept_ToS = 0          #0 = See ToS
+                                #Anything else = Accept ToS
 
 $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script
                                 #1 = Close on - User input, On Errors, or End of Script
+# Automated = 1, Implies that you accept the "ToS"
 
+$Script:Black_Viper = 0         #0-Menu
+                                #1-Default
+                                #2-Safe 
+                                #3-Tweaked (Does not work with Laptops atm)
+# Anything but Black_Viper = 0, Implies Automated = 1 and accept of "ToS" 
+#--------------------------------
+
+#--------Update Variables-------
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 #Note: If found will Auto download and runs that
