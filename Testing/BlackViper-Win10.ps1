@@ -486,6 +486,7 @@ $ServicesTypeList = @(
     'Automatic'  #4 -Automatic (Delayed Start)
 )
 
+$Script:Black_Viper = 0         #0-Menu, 1-Default, 2-Safe, 3-Tweaked
 $Script:argsUsed = 0
 
 Function ServiceSet ([String]$BVService) {
@@ -744,19 +745,18 @@ Function ScriptPreStart {
         LeftLine ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 ;RightLine
         Error_Bottom
     }
-    If($argsUsed -eq 2 -or $Black_Viper -ne 0) {
-        $Script:Automated = 1
-        Black_Viper_Set $Black_Viper
-    } ElseIf($Accept_ToS -eq 1) {
+    If($argsUsed -eq 2) {
+        If($Automated -eq 0 -or $Accept_ToS -eq 0) {
+            TOS
+        } Else {
+            Black_Viper_Set $Black_Viper
+        }
+	} ElseIf($Accept_ToS -eq 1) {
         Black_Viper_Input
     } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
         TOS
     } ElseIf($Automated -eq 1) {
-        $ErrorDi = "No Service Configuration selected"
-        Error_Top_Display
-        LeftLine ;DisplayOutMenu "There was No Service Configuration selected.     " 2 0 0 ;RightLine
-        Error_Bottom
-        DiagnosticCheck 1
+        Black_Viper_Input
     } Else {
         $ErrorDi = "Unknown"
         Error_Top_Display
@@ -847,12 +847,6 @@ $Script:Accept_ToS = 0          #0 = See ToS
 $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script
                                 #1 = Close on - User input, On Errors, or End of Script
 # Automated = 1, Implies that you accept the "ToS"
-
-$Script:Black_Viper = 0         #0-Menu
-                                #1-Default
-                                #2-Safe 
-                                #3-Tweaked (Does not work with Laptops atm)
-# Anything but Black_Viper = 0, Implies Automated = 1 and accept of "ToS" 
 #--------------------------------
 
 #--------Update Variables-------
