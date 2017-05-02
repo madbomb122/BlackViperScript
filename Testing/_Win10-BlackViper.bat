@@ -2,13 +2,16 @@
 
 :: Instructions
 :: Bat, Script MUST be in same Folder
-:: Change RunOption to = what you want to run (just the number)
+:: Change Option to = one of the listed options (mostly yes or no)
 
 Set Black_Viper=0
 :: 0 = Run with Menu
 :: 1 = Run with Windows Default Service Configuration
+:: default = Run with Windows Default Service Configuration
 :: 2 = Run with Black Viper Safe
+:: safe = Run with Black Viper Safe
 :: 3 = Run with Black Viper Tweaked
+:: tweaked = Run with Black Viper Tweaked
 
 :: Change these to yes or no
 Set Accept_ToS=no
@@ -42,25 +45,28 @@ Set Script_Path=%Script_Directory%%Script_File%
 ::Set Run_Option=
 
 SETLOCAL ENABLEDELAYEDEXPANSION
-If %Accept_ToS%==yes Set Run_Option=!Run_Option!-atos 
+If %Accept_ToS%==yes Set Run_Option=!Run_Option!-atos
 
-If %Black_Viper%==1 Set Run_Option=!Run_Option!-default 
+If %Black_Viper%==1 Set Run_Option=!Run_Option!-default
+If %Black_Viper%==default Set Run_Option=!Run_Option!-default
 
-If %Black_Viper%==2 Set Run_Option=!Run_Option!-safe 
+If %Black_Viper%==2 Set Run_Option=!Run_Option!-safe
+If %Black_Viper%==safe Set Run_Option=!Run_Option!-safe
 
-If %Black_Viper%==3 Set Run_Option=!Run_Option!-tweaked 
+If %Black_Viper%==3 Set Run_Option=!Run_Option!-tweaked
+If %Black_Viper%==tweaked Set Run_Option=!Run_Option!-tweaked
 
-If %Skip_Build_Check%==yes Set Run_Option=!Run_Option!-sbc 
+If %Skip_Build_Check%==yes Set Run_Option=!Run_Option!-sbc
 
-If %Skip_Edition_Check%==yes Set Run_Option=!Run_Option!-sec 
+If %Skip_Edition_Check%==yes Set Run_Option=!Run_Option!-sec
 
-If %Internet_Check%==no Set Run_Option=!Run_Option!-sic 
+If %Internet_Check%==no Set Run_Option=!Run_Option!-sic
 
-If %Script%==yes Set Run_Option=!Run_Option!-usc 
+If %Script%==yes Set Run_Option=!Run_Option!-usc
 
-If %Service%==yes Set Run_Option=!Run_Option!-use 
+If %Service%==yes Set Run_Option=!Run_Option!-use
 
-If %Automated%==yes Set Run_Option=!Run_Option!-auto 
+If %Automated%==yes Set Run_Option=!Run_Option!-auto
 
 echo !Run_Option!
 echo "Running !Script_File!"
