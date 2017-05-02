@@ -8,7 +8,6 @@ Set Black_Viper=0
 :: 1 = Run with Windows Default Service Configuration
 :: 2 = Run with Black Viper Safe
 :: 3 = Run with Black Viper Tweaked
-:: Anything but Black_Viper=0, Implies Automated & Accept_ToS
 
 :: Change these to yes or no
 Set Accept_ToS=no
