@@ -1,5 +1,4 @@
 @ECHO OFF
-
 :: Instructions
 :: Bat, Script MUST be in same Folder
 :: Change Option to = one of the listed options (mostly yes or no)
@@ -7,11 +6,9 @@
 Set Black_Viper=0
 :: 0 = Run with Menu
 :: 1 = Run with Windows Default Service Configuration
-:: default = Run with Windows Default Service Configuration
 :: 2 = Run with Black Viper Safe
-:: safe = Run with Black Viper Safe
 :: 3 = Run with Black Viper Tweaked
-:: tweaked = Run with Black Viper Tweaked
+:: Anything but Black_Viper=0, Implies Automated & Accept_ToS
 
 :: Change these to yes or no
 Set Accept_ToS=no
@@ -21,13 +18,14 @@ Set Accept_ToS=no
 Set Automated=no 
 :: no = Pause on - User input, On Errors, or End of Script
 :: yes = Close on - User input, On Errors, or End of Script
+:: yes, Implies that you accept the "ToS"
 								
 :: Update Checks   
-:: If %update is found it will Auto-download and use that (with your settings)       
+:: If update is found it will Auto-download and use that (with your settings)       
 Set Script=no
 Set Service=no
 Set Internet_Check=yes 
-:: Internet_Check only matters If Script or Service is yes or pings to github.com is blocked
+:: Internet_Check only matters If Script or Service is yes and pings to github.com is blocked
 
 :: Skip Script Check
 :: SKIP AT YOUR OWN RISK
@@ -42,8 +40,6 @@ Set Script_Path=%Script_Directory%%Script_File%
 
 :: DO NOT CHANGE ANYTHING PAST THIS LINE
 ::----------------------------------------------------------------------
-::Set Run_Option=
-
 SETLOCAL ENABLEDELAYEDEXPANSION
 If %Accept_ToS%==yes Set Run_Option=!Run_Option!-atos
 
