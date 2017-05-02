@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------------
 1.2 (0?-??-2017)
 
-Added/Changed Arguments/Switches to accept multiple 
+Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
 
  Switches       Description of Switch
   -atos          (Accepts ToS)
