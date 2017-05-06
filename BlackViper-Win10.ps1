@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.2"
-$Script_Date = "05-04-2017"
+$Script_Version = "1.3"
+$Script_Date = "05-06-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -108,6 +108,10 @@ $Release_Type = "Stable"
   -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
   -Set 3          ^Same as Above
   -Set tweaked    ^Same as Above
+  
+-- Misc Switches --
+ Switches       Description of Switch
+  -diag          (Shows diagnostic information)     
 
 --------------------------------------------------------------------------------#>
 
@@ -774,6 +778,7 @@ Function ArgCheck {
     $IsLaptop = LaptopCheck
     If ($PassedArg.length -gt 0) {
         For($i=0; $i -le $PassedArg.length; $i++) {
+		$ArgVal = $PassedArg[$i]
             If($ArgVal.StartsWith("-")){
                 $ArgVal = $PassedArg[$i].ToLower()
                 <#If($ArgVal -eq "-set" -and $PassedArg[($i+1)] -In 1..3) {
