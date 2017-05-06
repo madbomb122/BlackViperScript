@@ -9,7 +9,7 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 # Requirements (Make sure to LOOK at this)
 
-|            | Recommended Requirements         | AT YOURN OWN RISK* (See Note Bellow)            |
+|            | Recommended Requirements         | AT YOURN OWN RISK* (See Note Bellow) |
 | :--------- | :--------------------------------| :--------------------------- |
 |**OS**      | Windows 10 x64                   | Windows 10 x32               |
 |**Edition** | Pro or Home                      | All Others                   |
@@ -49,40 +49,27 @@ Select desired Services Configuration <br />
 3. Tweaked (Not supported for laptop ATM)<br />*
 
 # Advanced_Usage
-**Note: Best for automation** <br />
-**Note: You wont see any errors (Script will close on error)** <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
-Runs script with changing Services to Default Configuration (Only ones changed by this script): <br />
-`   -Set 1`<br />
-`   -Set Default`
+|   Switch   | Description                                                                    | Notes                            |
+| :-------- | :------------------------------------------------------------------------------| :------------------------------- |
+| -atos     | Accepts ToS                                                                    |                                  |
+| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies -atos                    |
+| -default  | Runs the script with Services to Default Configuration                         | Alternate -set default or -set 1 |
+| -safe     | Runs the script with Services to Black Viper's Safe Configuration              | Alternate -set safe or -set 2    |
+| -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alternate -set tweaked or -set 3 |
+| -sec      | Skips Edition Check (Home/Pro)                                                 | USE AT OWN RISK                  |
+| -sbc      | Skips Build Check  (Creator's Update)                                          | USE AT OWN RISK                  |
+| -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      | 
+| -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found | 
+| -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
 
-Examples: <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 1` <br />
-or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
-******
+Examples  <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default`
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -safe`
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -usc -safe -use`
 
-Runs script with changing Services to Black Viper's Safe Configuration: <br />
-`   -Set 2` <br />
-`   -Set Safe`
-
-Examples: <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 2` <br />
-or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Safe` <br />
-******
-
-Runs script with changing Services to Black Viper's Tweaked Configuration: <br />
-`   -Set 3` <br />
-`   -Set Tweaked` <br />
-**NOTE: Not supported on laptop ATM**
-
-Examples: <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set 3` <br />
-or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Tweaked` <br />
 ******
 
 # FAQ
@@ -90,16 +77,19 @@ or <br />
 **A:** Not for this script, I'd rather you donate to Black Viper than me since his configurations take alot of effort to do. <br />
 **NOTE:** http://www.blackviper.com/support-bv/
 
-**Q:** How can I contact you? <br />
-**A:** You can email me @ madbomb122@gmail.com
-
 **Q:** The script file looks all messy in notepad, How do i view it? <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
+
+**Q:** The script wont run, can you help me? <br />
+**A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.
 
 **Q:** The script window closes or gives an error saying script is blocked, what do i do? <br />
 **A:** By default windows blocks ps1 scripts, you can use one of the following <br />
          1. Use the bat file to run the script (recommended) <br />
-         2. On an admin powershell console `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted` <br />
+         2. On an admin powershell console `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted` <br />	 
+
+**Q:** How can I contact you? <br />
+**A:** You can email me @ madbomb122@gmail.com, if it's an issue please post under issue
 
 **Q:** Who do I contact about the Service Configurations or an issue with the configuration? <br />
 **A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper himself.
