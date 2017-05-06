@@ -14,6 +14,7 @@ Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
   -sic           (Skips Internet Check)
   -usc           (Checks for Update to Script file before running)
   -use           (Checks for Update to Service file before running)
+  -diag          (Shows some diagnostic information)
 
 -----------------------------------------------------------------------------------
 1.1 (04-23-2017)
