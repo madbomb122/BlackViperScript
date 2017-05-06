@@ -240,7 +240,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1
         DisplayOutMenu " Version = $winV" 15 0 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1
-        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1		
+        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1
         DisplayOutMenu " ToS = $Accept_ToS" 15 0 1
         DisplayOutMenu " Automated = $Automated" 15 0 1
         DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1
@@ -606,7 +606,7 @@ Function PreScriptCheck {
         } Else {
             $ErrorDi = "Build"
         }
-		$ErrorDi += " Check Failed"
+        $ErrorDi += " Check Failed"
         $BuildCheck = "Fail"
         $EBCount++
     }
@@ -751,7 +751,7 @@ Function ScriptPreStart {
         } Else {
             Black_Viper_Set $Black_Viper
         }
-	} ElseIf($Accept_ToS -eq 1) {
+    } ElseIf($Accept_ToS -eq 1) {
         Black_Viper_Input
     } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
         TOS
@@ -824,9 +824,18 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-auto") {
                     $Script:Automated = 1
                     $Script:Accept_ToS = 1
+                } ElseIf($ArgVal -eq "-diag") {
+                    $Script:Diagnostic = 1
                 }
             }
         }
+    }
+    If($Diagnostic -eq 1) {
+        DiagnosticCheck 1
+        Write-Host ""
+        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+		Exit
     }
     If($argsUsed -eq 3 -and $Automated -eq 1) {
         Error_Top_Display
