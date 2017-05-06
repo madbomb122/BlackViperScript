@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "1.2"
-$Script_Date = "05-01-2017"
+$Script_Date = "05-04-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -767,6 +767,7 @@ Function ScriptPreStart {
         LeftLine ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 ;RightLine
         Error_Bottom
         DiagnosticCheck 1
+        AutomatedExitCheck 1
     }
 }
 
