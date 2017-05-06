@@ -18,7 +18,7 @@ Set Automated=no
 :: no = Pause on - User input, On Errors, or End of Script
 :: yes = Close on - User input, On Errors, or End of Script
 :: yes, Implies that you accept the "ToS"
-								
+
 :: Update Checks   
 :: If update is found it will Auto-download and use that (with your settings)       
 Set Script=no
@@ -42,58 +42,58 @@ Set Script_Path=%Script_Directory%%Script_File%
 
 :: DO NOT CHANGE ANYTHING PAST THIS LINE
 ::----------------------------------------------------------------------
-if /i not "%*"=="" (
+SETLOCAL ENABLEDELAYEDEXPANSION
+
+If /i not "%*"=="" (
     for %%i in (%*) do (
-  	    if /i %%i==-atos set Accept_ToS=yes
-  	    if /i %%i==-auto set Automated=yes
-  	    if /i %%i==-usc set Script=yes
-  	    if /i %%i==-use set Service=yes
-  	    if /i %%i==-sic set Internet_Check=yes
-  	    if /i %%i==-sbc set Skip_Build_Check=yes
-  	    if /i %%i==-sec set Skip_Edition_Check=yes
-  	    if /i %%i==-default set Black_Viper=1
-  	    if /i %%i==-safe set Black_Viper=2
-  	    if /i %%i==-tweaked set Black_Viper=3
-  	    if /i %%i==-diag set Diag=yes
-  	    if /i %%i==-set set SetArg=yes
-	
-  	    if /i %SetArg%==yes (
-	        if /i %%i==default set Black_Viper=1
-    	    if /i %%i==safe set Black_Viper=2
-	        if /i %%i==tweaked set Black_Viper=3
-	        if /i %%i==1 set Black_Viper=1
-    	    if /i %%i==2 set Black_Viper=2
-	        if /i %%i==3 set Black_Viper=3
-		    set SetArg=no
-	    )
+        If /i !SetArg!==yes (
+            If /i %%i==default Set Black_Viper=1
+            If /i %%i==safe Set Black_Viper=2
+            If /i %%i==tweaked Set Black_Viper=3
+            If /i %%i==1 Set Black_Viper=1
+            If /i %%i==2 Set Black_Viper=2
+            If /i %%i==3 Set Black_Viper=3
+            Set SetArg=no
+        )
+        If /i %%i==-atos Set Accept_ToS=yes
+        If /i %%i==-auto Set Automated=yes
+        If /i %%i==-usc Set Script=yes
+        If /i %%i==-use Set Service=yes
+        If /i %%i==-sic Set Internet_Check=yes
+        If /i %%i==-sbc Set Skip_Build_Check=yes
+        If /i %%i==-sec Set Skip_Edition_Check=yes
+        If /i %%i==-default Set Black_Viper=1
+        If /i %%i==-safe Set Black_Viper=2
+        If /i %%i==-tweaked Set Black_Viper=3
+        If /i %%i==-diag Set Diag=yes
+        If /i %%i==-Set Set SetArg=yes
     )
 )
 
-SETLOCAL ENABLEDELAYEDEXPANSION
-If %Accept_ToS%==yes Set Run_Option=!Run_Option! -atos
+If /i %Accept_ToS%==yes Set Run_Option=!Run_Option! -atos
 
-If %Black_Viper%==1 Set Run_Option=!Run_Option! -default
-If %Black_Viper%==default Set Run_Option=!Run_Option! -default
+If /i %Black_Viper%==1 Set Run_Option=!Run_Option! -default
+If /i %Black_Viper%==default Set Run_Option=!Run_Option! -default
 
-If %Black_Viper%==2 Set Run_Option=!Run_Option! -safe
-If %Black_Viper%==safe Set Run_Option=!Run_Option! -safe
+If /i %Black_Viper%==2 Set Run_Option=!Run_Option! -safe
+If /i %Black_Viper%==safe Set Run_Option=!Run_Option! -safe
 
-If %Black_Viper%==3 Set Run_Option=!Run_Option! -tweaked
-If %Black_Viper%==tweaked Set Run_Option=!Run_Option! -tweaked
+If /i %Black_Viper%==3 Set Run_Option=!Run_Option! -tweaked
+If /i %Black_Viper%==tweaked Set Run_Option=!Run_Option! -tweaked
 
-If %Skip_Build_Check%==yes Set Run_Option=!Run_Option! -sbc
+If /i %Skip_Build_Check%==yes Set Run_Option=!Run_Option! -sbc
 
-If %Skip_Edition_Check%==yes Set Run_Option=!Run_Option! -sec
+If /i %Skip_Edition_Check%==yes Set Run_Option=!Run_Option! -sec
 
-If %Internet_Check%==no Set Run_Option=!Run_Option! -sic
+If /i %Internet_Check%==no Set Run_Option=!Run_Option! -sic
 
-If %Script%==yes Set Run_Option=!Run_Option! -usc
+If /i %Script%==yes Set Run_Option=!Run_Option! -usc
 
-If %Service%==yes Set Run_Option=!Run_Option! -use
+If /i %Service%==yes Set Run_Option=!Run_Option! -use
 
-If %Automated%==yes Set Run_Option=!Run_Option! -auto
+If /i %Automated%==yes Set Run_Option=!Run_Option! -auto
 
-If %Diag%==yes Set Run_Option=!Run_Option! -diag
+If /i %Diag%==yes Set Run_Option=!Run_Option! -diag
 
 echo "Running !Script_File!"
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path! !Run_Option!"' -Verb RunAs}";
