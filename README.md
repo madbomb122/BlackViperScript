@@ -66,11 +66,15 @@ Use one of the following Methods or use the at Bat file provided <br />
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
 | -diag     | Shows some diagnostic information                                              | **Script wont run** | 
 
+**Note: Switches can be used on bat file too
+
 Examples  <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -safe` <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -usc -safe -use` <br />
-
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -atos -use -set 2` <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec` <br />
+`_Win10-BlackViper.bat -Set Default` <br />
+`_Win10-BlackViper.bat -atos -use -set 2` <br />
+`_Win10-BlackViper.bat -auto -use -tweaked -sec` <br />
 ******
 
 # FAQ
