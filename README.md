@@ -34,9 +34,9 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 # How to Use/Run
 Download/Save the following files <br />
-   `BlackViper-Win10.ps1` -Need (Script File) <br />
-   `BlackViper.csv` -Need (Service Config File) <br />
-   `_Win10-BlackViper.bat` -Recommended (Bat File) <br />
+Script File: `BlackViper-Win10.ps1` -Need <br />
+Service Config File: `BlackViper.csv` -Need <br />
+Bat File: `_Win10-BlackViper.bat` -Recommended <br />
   **Note: DO NOT RENAME THE FILES**<br />
 Next follow the **Basic Usage** or **Advanced Usage**
 
@@ -52,7 +52,7 @@ Select desired Services Configuration <br />
 Use one of the following Methods or use the at Bat file provided <br />
 (Bat file provided can run script, look in bat file for insructions)
 
-|   Switch   | Description                                                                    | Notes                            |
+|   Switch  | Description                                                                    | Notes                            |
 | :-------- | :------------------------------------------------------------------------------| :------------------------------- |
 | -atos     | Accepts ToS                                                                    |                                  |
 | -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies -atos                    |
