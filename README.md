@@ -54,8 +54,8 @@ Use one of the following Methods or use the at Bat file provided <br />
 
 |   Switch  | Description                                                                    | Notes                            |
 | :-------- | :------------------------------------------------------------------------------| :------------------------------- |
-| -atos     | Accepts ToS                                                                    |                                  |
-| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies -atos                    |
+| -atos     | Accepts the ToS                                                                |                                  |
+| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                    |
 | -default  | Runs the script with Services to Default Configuration                         | Alt `-set default` or `-set 1` |
 | -safe     | Runs the script with Services to Black Viper's Safe Configuration              | Alt `-set safe` or `-set 2`    |
 | -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alt `-set tweaked` or `-set 3` |
