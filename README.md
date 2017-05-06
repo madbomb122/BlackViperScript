@@ -54,16 +54,16 @@ Use one of the following Methods or use the at Bat file provided <br />
 
 |   Switch  | Description                                                                    | Notes                            |
 | :-------- | :------------------------------------------------------------------------------| :------------------------------- |
-| -atos     | Accepts ToS                                                                    |                                  |
-| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies -atos                    |
-| -default  | Runs the script with Services to Default Configuration                         | Alternate -set default or -set 1 |
-| -safe     | Runs the script with Services to Black Viper's Safe Configuration              | Alternate -set safe or -set 2    |
-| -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alternate -set tweaked or -set 3 |
-| -sec      | Skips Edition Check (Home/Pro)                                                 | USE AT OWN RISK                  |
-| -sbc      | Skips Build Check  (Creator's Update)                                          | USE AT OWN RISK                  |
-| -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      | 
-| -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found | 
-| -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
+| `-atos`     | Accepts ToS                                                                    |                                  |
+| `-auto`     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies -atos                    |
+| `-default`  | Runs the script with Services to Default Configuration                         | Alternate `-set default` or `-set 1` |
+| `-safe`     | Runs the script with Services to Black Viper's Safe Configuration              | Alternate `-set safe` or `-set 2`    |
+| `-tweaked`  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alternate `-set tweaked` or `-set 3` |
+| `-sec`      | Skips Edition Check (Home/Pro)                                                 | **USE AT YOUR OWN RISK**             |
+| `-sbc`      | Skips Build Check  (Creator's Update)                                          | **USE AT YOUR OWN RISK**             |
+| `-sic`      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      | 
+| `-usc`      | Checks for Update to Script file before running                                | Auto downloads and runs if found | 
+| `-use`      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
 
 Examples  <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
