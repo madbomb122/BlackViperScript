@@ -1,4 +1,4 @@
-**Current Version**
+**Current Version** <br />
 **Script:** `1.3 (May 6, 2017)` <br />
 **Service:** `1.1 (Apr 24, 2017)` <br />
 
