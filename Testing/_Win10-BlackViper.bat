@@ -63,6 +63,8 @@ If %Service%==yes Set Run_Option=!Run_Option!-use
 
 If %Automated%==yes Set Run_Option=!Run_Option!-auto
 
+If %Diag%==yes Set Run_Option=!Run_Option!-diag
+
 echo "Running !Script_File!"
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path! !Run_Option!"' -Verb RunAs}";
 ENDLOCAL DISABLEDELAYEDEXPANSION
