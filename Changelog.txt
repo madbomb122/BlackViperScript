@@ -1,4 +1,21 @@
 -----------------------------------------------------------------------------------
+1.2 (05-04-2017)
+
+Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
+
+ Switches       Description of Switch
+  -atos          (Accepts ToS)
+  -auto          (Runs the script to be Automated.. Closes on User input, Errors, End of Script)
+  -default       (Runs the script with Services to Default Configuration)
+  -safe          (Runs the script with Services to Black Viper's Safe Configuration)
+  -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
+  -sec           (Skips Edition Check)
+  -sbc           (Skips Build Check)
+  -sic           (Skips Internet Check)
+  -usc           (Checks for Update to Script file before running)
+  -use           (Checks for Update to Service file before running)
+
+-----------------------------------------------------------------------------------
 1.1 (04-23-2017)
 
 Various internal script changes
@@ -10,11 +27,9 @@ Fixed an issue with edition check showing blank error
 Thanks to Mehanik511 posting an issue, both edition problems were fixed
 
 -----------------------------------------------------------------------------------
-1.0 (04-18-2017)
+1.0 (04-14-2017)
 
-Updated script to check for laptop/desktop (to accommodate the added laptop/desktop config)
-Removed 'Tweaked' setting for laptop (no settings aviable for it atm)
-changed the internet ping test to github.com instead of google.com and yahoo.com
+Updated script to check for laptop/desktop
 
 -----------------------------------------------------------------------------------
 0.9 (04-02-2017) -Final Beta/Test Version
