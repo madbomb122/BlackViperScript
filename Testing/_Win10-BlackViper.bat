@@ -14,7 +14,7 @@ Set Accept_ToS=no
 :: no = See ToS
 :: yes = Skip ToS (You accepted it)
 
-Set Automated=yes 
+Set Automated=no 
 :: no = Pause on - User input, On Errors, or End of Script
 :: yes = Close on - User input, On Errors, or End of Script
 :: yes, Implies that you accept the "ToS"
