@@ -49,8 +49,11 @@ Select desired Services Configuration <br />
 3. Tweaked (Not supported for laptop ATM)<br />*
 
 # Advanced_Usage
-Use one of the following Methods or use the at Bat file provided <br />
-(Bat file provided can run script, look in bat file for insructions)
+Use one of the following Methods you can 
+1. Run script or bat file with one (or more) of the switches bellow
+2. Edit the script (bottom of file) to change the values
+3. Edit the bat file (top of file) to change the values to add the switch
+
 
 |   Switch  | Description                                                                    | Notes                            |
 | :-------- | :------------------------------------------------------------------------------| :------------------------------- |
@@ -66,9 +69,7 @@ Use one of the following Methods or use the at Bat file provided <br />
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
 | -diag     | Shows some diagnostic information                                              | **Script wont run** | 
 
-**Note: Switches can be used on bat file too
-
-Examples  <br />
+Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -atos -use -set 2` <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec` <br />
