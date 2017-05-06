@@ -66,9 +66,9 @@ Use one of the following Methods or use the at Bat file provided <br />
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
 
 Examples  <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default`
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -safe`
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -usc -safe -use`
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -safe` <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -usc -safe -use` <br />
 
 ******
 
