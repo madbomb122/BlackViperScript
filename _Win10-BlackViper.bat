@@ -4,12 +4,11 @@
 :: Change Option to = one of the listed options (mostly yes or no)
 
 Set Black_Viper=0
-:: 0 = Run with Menu
+:: 0 = Shows Script Menu
 :: 1 = Run with Windows Default Service Configuration
-:: 2 = Run with Black Viper Safe
-:: 3 = Run with Black Viper Tweaked
+:: 2 = Run with Black Viper Safe Service Configuration
+:: 3 = Run with Black Viper Tweaked Service Configuration
 
-:: Change these to yes or no
 Set Accept_ToS=no
 :: no = See ToS
 :: yes = Skip ToS (You accepted it)
@@ -19,8 +18,9 @@ Set Automated=no
 :: yes = Close on - User input, On Errors, or End of Script
 :: yes, Implies that you accept the "ToS"
 
-:: Update Checks   
-:: If update is found it will Auto-download and use that (with your settings)       
+:: Update Checks
+:: If update is found it will Auto-download and use that (with your settings)
+:: Options, yes - no
 Set Script=no
 Set Service=no
 Set Internet_Check=yes 
@@ -28,10 +28,12 @@ Set Internet_Check=yes
 
 :: Skip Script Check
 :: SKIP AT YOUR OWN RISK
+:: Options, yes - no
 Set Skip_Build_Check=no
 Set Skip_Edition_Check=no
 
 :: Diagnostic Output (Stop automation on errors)
+:: Options, yes - no
 Set Diagnostic=no
 
 ::----------------------------------------------------------------------
