@@ -71,7 +71,7 @@ Use one of the following Methods you can
 | -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      | 
 | -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found | 
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
-| -diag     | Shows some diagnostic information                                              | **Script wont run** | 
+| -diag     | Shows some diagnostic information on error messages                            | **Stops automation** | 
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
