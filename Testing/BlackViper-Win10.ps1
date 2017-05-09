@@ -227,7 +227,7 @@ Function Error_Bottom {
 }
 
 Function DiagnosticCheck ([int]$Bypass) {
-    If($Release_Type -ne "Stable" -or $Bypass -eq 1) {
+    If($Release_Type -ne "Stable" -or $Bypass -eq 1 -or $Diagnostic -eq 1) {
         $WindowVersion = [Environment]::OSVersion.Version.Major
         $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
         $WindowsEdition =  $FullWinEdition.Split(' ')[-1]
@@ -835,13 +835,6 @@ Function ArgCheck {
                 }
             }
         }
-    }
-    If($Diagnostic -eq 1) {
-        DiagnosticCheck 1
-        Write-Host ""
-        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
-        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
-		Exit
     }
     If($argsUsed -eq 3 -and $Automated -eq 1) {
         Error_Top_Display
