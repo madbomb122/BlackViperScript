@@ -222,7 +222,15 @@ Function Error_Top_Display {
 Function Error_Bottom {
     MenuLine
     MenuBlankLine
+    If($Diagnostic -eq 1) {
+        DiagnosticCheck 1
+        Write-Host ""
+        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
+        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+        Exit
+    }
     AutomatedExitCheck 1
+    
 }
 
 Function DiagnosticCheck ([int]$Bypass) {
@@ -778,7 +786,7 @@ Function ArgCheck {
     $IsLaptop = LaptopCheck
     If ($PassedArg.length -gt 0) {
         For($i=0; $i -le $PassedArg.length; $i++) {
-		$ArgVal = $PassedArg[$i]
+            $ArgVal = $PassedArg[$i]
             If($ArgVal.StartsWith("-")){
                 $ArgVal = $PassedArg[$i].ToLower()
                 <#If($ArgVal -eq "-set" -and $PassedArg[($i+1)] -In 1..3) {
