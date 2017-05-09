@@ -31,8 +31,8 @@ Set Internet_Check=yes
 Set Skip_Build_Check=no
 Set Skip_Edition_Check=no
 
-:: Diagnostic Output (Wont run script)
-Set Diag=no
+:: Diagnostic Output (Stop automation on errors)
+Set Diagnostic=no
 
 ::----------------------------------------------------------------------
 :: Do not change unless you know what you are doing
@@ -65,7 +65,7 @@ If /i not "%*"=="" (
         If /i %%i==-default Set Black_Viper=1
         If /i %%i==-safe Set Black_Viper=2
         If /i %%i==-tweaked Set Black_Viper=3
-        If /i %%i==-diag Set Diag=yes
+        If /i %%i==-diag Set Diagnostic=yes
         If /i %%i==-Set Set SetArg=yes
     )
 )
@@ -93,7 +93,7 @@ If /i %Service%==yes Set Run_Option=!Run_Option! -use
 
 If /i %Automated%==yes Set Run_Option=!Run_Option! -auto
 
-If /i %Diag%==yes Set Run_Option=!Run_Option! -diag
+If /i %Diagnostic%==yes Set Run_Option=!Run_Option! -diag
 
 echo "Running !Script_File!"
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path! !Run_Option!"' -Verb RunAs}";
