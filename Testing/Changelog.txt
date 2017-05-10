@@ -7,6 +7,8 @@ Nothing ATM
 
 Fixed error in script was causing safe and tweaked option to not change services
 
+Thanks to Scott C for notifying me about the bug
+
 -----------------------------------------------------------------------------------
 1.3 (05-06-2017)
 
