@@ -1,4 +1,9 @@
 -----------------------------------------------------------------------------------
+1.4 (05-10-2017)
+
+Fixed error in script was causing safe and tweaked option to not change services
+
+-----------------------------------------------------------------------------------
 1.3 (05-06-2017)
 
 Fixed a messup on the new switch/arguments system
