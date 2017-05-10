@@ -9,7 +9,7 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.4"
+$Script_Version = "1.5"
 $Script_Date = "05-10-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -132,7 +132,7 @@ $Release_Type = "Testing"
 If($Release_Type -eq "Stable") { $ErrorActionPreference= 'silentlycontinue' }
 
 $Global:PassedArg = $args
-$Global:filebase = $PSScriptRoot
+$Global:filebase = $PSScriptRoot + "\"
 
 # Ask for elevated permissions if required
 If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
@@ -185,16 +185,28 @@ Function DownloadFile ([String]$Url, [String]$FilePath) { (New-Object System.Net
 
 Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine) {
     If($NewLine -eq 0) {
+	    If($MakeLog -eq 1) {
+		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append
+		}
         Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
+	    If($MakeLog -eq 1) {
+		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -Append
+		}
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     }
 }
 
 Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
     If($TxtColor -le 15) {
+	    If($MakeLog -eq 1) {
+		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append
+		}
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
+	    If($MakeLog -eq 1) {
+		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append
+		}
         Write-Host $TxtToDisplay
     }
 }
@@ -239,8 +251,8 @@ Function DiagnosticCheck ([int]$Bypass) {
         $WindowsBuild = [Environment]::OSVersion.Version.build
         $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
-        
         DisplayOutMenu " Diagnostic Output" 15 0 1
+        DisplayOutMenu " Some may show as blank" 15 0 1
         DisplayOutMenu " --------Start--------" 15 0 1
         DisplayOutMenu " Script Version = $Script_Version" 15 0 1
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1
@@ -250,6 +262,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1
         DisplayOutMenu " Version = $winV" 15 0 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1
+        DisplayOutMenu " Desktop/Laptop = $IsLaptop" 15 0 1
         DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1
         DisplayOutMenu " ToS = $Accept_ToS" 15 0 1
         DisplayOutMenu " Automated = $Automated" 15 0 1
@@ -550,12 +563,12 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type, [string]$C_Type) {
     Return $ReturnV
 }
 
-Function Black_Viper_Set ([Int]$Back_Viper) {
-    If($Back_Viper -eq 1) {
+Function Black_Viper_Set ([Int]$BVOpt) {
+    If($BVOpt -eq 1) {
         ServiceSet ("Def"+$WinEdition)
-    } ElseIf($Back_Viper -eq 2) {
+    } ElseIf($BVOpt -eq 2) {
         ServiceSet ("Safe"+$IsLaptop)
-    } ElseIf($Back_Viper -eq 3) {
+    } ElseIf($BVOpt -eq 3) {
         ServiceSet ("Tweaked"+$IsLaptop)
     }
 }
@@ -662,7 +675,7 @@ Function PreScriptCheck {
 }
     
 Function VariousChecks {
-    $ServiceFilePath = $filebase + "\BlackViper.csv"
+    $ServiceFilePath = $filebase + "BlackViper.csv"
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         LoadWebCSV
         $Service_Ver_Check = 0
@@ -691,7 +704,7 @@ Function VariousChecks {
                     $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "-Testing.ps1"
                     $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
                 }
-                $WebScriptFilePath = $filebase + "\" + $DFilename
+                $WebScriptFilePath = $filebase + $DFilename
                 Clear-Host
                 MenuLine
                 LeftLine ;DisplayOutMenu "                  Update Found!                  " 13 0 0 ;RightLine
@@ -745,7 +758,6 @@ Function VariousChecks {
     $ServiceVersion = ($csv[0]."Def-Home")
     $ServiceDate = ($csv[0]."Def-Pro")
     $csvtemp.RemoveAt(0)
-	$LogFile = $filebase + $LogName  
     ScriptPreStart
 }
 
@@ -855,6 +867,13 @@ Function ArgCheck {
         LeftLine ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 ;RightLine
         Error_Bottom
     }
+	If($MakeLog -eq 1) {
+	    $Script:LogFile = $filebase + $LogName
+	    If(Test-Path $LogFile) {
+		    $Time = Get-Date -Format g
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
+        }
+	}
 }
 
 #--------------------------------------------------------------------------
@@ -869,7 +888,7 @@ $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of
                                 #1 = Close on - User input, On Errors, or End of Script
 # Automated = 1, Implies that you accept the "ToS"
 
-$Script:MakeLog = 1             #0 = Dont make a log file
+$Script:MakeLog = 0             #0 = Dont make a log file
                                 #1 = Make a log file
 # Log file will be in same directory as script named `Script.log` (default)
 
