@@ -9,3 +9,4 @@
 
 # Might add
 - [ ] Ability to set ALL services back to default (not just ones changed by script)
+- [ ] Log file (will show errors, services changed, etc)
