@@ -5,8 +5,8 @@
 - [X] Ability to bypass Build, Edition, Internet check using arugment
 - [X] Ability to use argument/switch on bat file instead of editing it
 
-# Working/Testing on (Check Testing Folder) 
+# Working/Testing on (In Testing Script)
+- [ ] Log file (will show errors, services changed, etc).. (starting to work on, not working atm)
 
 # Might add
 - [ ] Ability to set ALL services back to default (not just ones changed by script)
-- [ ] Log file (will show errors, services changed, etc)
