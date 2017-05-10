@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.3"
-$Script_Date = "05-06-2017"
+$Script_Version = "1.4"
+$Script_Date = "05-10-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -99,7 +99,7 @@ $Release_Type = "Testing"
   -sbc           (Skips Build Check)
 
 -- Service Configuration Switches --
- Switches       Description of Switch 
+ Switches       Description of Switch
   -default       (Runs the script with Services to Default Configuration)
   -Set 1          ^Same as Above
   -Set default    ^Same as Above
@@ -112,7 +112,7 @@ $Release_Type = "Testing"
   
 -- Misc Switches --
  Switches       Description of Switch
-  -diag          (Shows diagnostic information)     
+  -diag          (Shows diagnostic information)
 
 --------------------------------------------------------------------------------#>
 
@@ -124,9 +124,6 @@ $Release_Type = "Testing"
 ## !!!!!!                                                !!!!!!
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-#$Release_Type = "Testing"
-#$Release_Type = "Stable"
 
 ##########
 # Pre-Script -Start
@@ -716,6 +713,7 @@ Function VariousChecks {
                 If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
                 If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
                 If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
+                If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
                 Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
                 Exit
             }
@@ -747,6 +745,7 @@ Function VariousChecks {
     $ServiceVersion = ($csv[0]."Def-Home")
     $ServiceDate = ($csv[0]."Def-Pro")
     $csvtemp.RemoveAt(0)
+	$LogFile = $filebase + $LogName  
     ScriptPreStart
 }
 
@@ -784,7 +783,7 @@ Function ScriptPreStart {
 }
 
 Function ArgCheck {
-    $IsLaptop = LaptopCheck
+    $Script:IsLaptop = LaptopCheck
     If ($PassedArg.length -gt 0) {
         For($i=0; $i -le $PassedArg.length; $i++) {
             $ArgVal = $PassedArg[$i]
@@ -840,6 +839,11 @@ Function ArgCheck {
                     $Script:Accept_ToS = 1
                 } ElseIf($ArgVal -eq "-diag") {
                     $Script:Diagnostic = 1
+                } ElseIf($ArgVal -eq "-log") {
+                    $Script:MakeLog = 1
+                    If(!($PassedArg[$i+1].StartsWith("-"))){
+                        $Script:LogName = $PassedArg[$i+1]
+                    }
                 }
             }
         }
@@ -864,6 +868,12 @@ $Script:Accept_ToS = 0          #0 = See ToS
 $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script
                                 #1 = Close on - User input, On Errors, or End of Script
 # Automated = 1, Implies that you accept the "ToS"
+
+$Script:MakeLog = 1             #0 = Dont make a log file
+                                #1 = Make a log file
+# Log file will be in same directory as script named `Script.log` (default)
+
+$Script:LogName = "Script.log"  #Name of log file (you can change it)
 #--------------------------------
 
 #--------Update Variables-------
