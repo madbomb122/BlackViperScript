@@ -3,6 +3,11 @@
 Nothing ATM
 
 -----------------------------------------------------------------------------------
+1.4 (05-10-2017)
+
+Fixed error in script was causing safe and tweaked option to not change services
+
+-----------------------------------------------------------------------------------
 1.3 (05-06-2017)
 
 Fixed a messup on the new switch/arguments system
@@ -23,7 +28,7 @@ Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
   -sic           (Skips Internet Check)
   -usc           (Checks for Update to Script file before running)
   -use           (Checks for Update to Service file before running)
-  -diag          (Shows some diagnostic information)
+  -diag          (Shows diagnostic info)
 
 -----------------------------------------------------------------------------------
 1.1 (04-23-2017)
