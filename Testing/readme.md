@@ -1,5 +1,7 @@
-**THIS IS A TEST VERSION**
+# Currently Testing
+Log files (ATM it copies what is shown on screen to the log file)
 
+# About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
 Only Differances between script are:
 1. Version Check will download the 'Test' version instead of 'Stable' (if there is an update)
