@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.3"
-$Script_Date = "05-06-2017"
+$Script_Version = "1.4"
+$Script_Date = "05-10-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -98,7 +98,7 @@ $Release_Type = "Stable"
   -sbc           (Skips Build Check)
 
 -- Service Configuration Switches --
- Switches       Description of Switch 
+ Switches       Description of Switch
   -default       (Runs the script with Services to Default Configuration)
   -Set 1          ^Same as Above
   -Set default    ^Same as Above
@@ -111,7 +111,7 @@ $Release_Type = "Stable"
   
 -- Misc Switches --
  Switches       Description of Switch
-  -diag          (Shows diagnostic information)     
+  -diag          (Shows diagnostic information)
 
 --------------------------------------------------------------------------------#>
 
@@ -123,9 +123,6 @@ $Release_Type = "Stable"
 ## !!!!!!                                                !!!!!!
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-#$Release_Type = "Testing"
-#$Release_Type = "Stable"
 
 ##########
 # Pre-Script -Start
@@ -715,6 +712,7 @@ Function VariousChecks {
                 If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
                 If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
                 If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
+                If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
                 Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
                 Exit
             }
@@ -783,7 +781,7 @@ Function ScriptPreStart {
 }
 
 Function ArgCheck {
-    $IsLaptop = LaptopCheck
+    $Script:IsLaptop = LaptopCheck
     If ($PassedArg.length -gt 0) {
         For($i=0; $i -le $PassedArg.length; $i++) {
             $ArgVal = $PassedArg[$i]
