@@ -176,37 +176,35 @@ $colors = @(
 # Multi Use Functions -Start
 ##########
 
-Function MenuBlankLine { DisplayOutMenu "|                                                   |" 14 0 1 }
-Function MenuLine { DisplayOutMenu "|---------------------------------------------------|" 14 0 1 }
-Function LeftLine { DisplayOutMenu "| " 14 0 0 }
-Function RightLine { DisplayOutMenu " |" 14 0 1 }
+Function MenuBlankLineLog { DisplayOutMenu "|                                                   |" 14 0 1 1 }
+Function MenuLineLog { DisplayOutMenu "|---------------------------------------------------|" 14 0 1 1 }
+Function LeftLineLog { DisplayOutMenu "| " 14 0 0 1 }
+Function RightLineLog { DisplayOutMenu " |" 14 0 1 1 }
+
+Function MenuBlankLine { DisplayOutMenu "|                                                   |" 14 0 1 0 }
+Function MenuLine { DisplayOutMenu "|---------------------------------------------------|" 14 0 1 0 }
+Function LeftLine { DisplayOutMenu "| " 14 0 0 0 }
+Function RightLine { DisplayOutMenu " |" 14 0 1 0 }
+
 Function Openwebsite ([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile ([String]$Url, [String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 
-Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine) {
+Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine,[int]$LogOut) {
     If($NewLine -eq 0) {
-	    If($MakeLog -eq 1) {
-		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append
-		}
+        If($MakeLog -eq 1 -and $LogOut -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append }
         Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
-	    If($MakeLog -eq 1) {
-		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -Append
-		}
+        If($MakeLog -eq 1 -and $LogOut -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -Append }
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     }
 }
 
 Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
     If($TxtColor -le 15) {
-	    If($MakeLog -eq 1) {
-		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append
-		}
+        If($MakeLog -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append }
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
-	    If($MakeLog -eq 1) {
-		    Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append
-		}
+        If($MakeLog -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append }
         Write-Host $TxtToDisplay
     }
 }
@@ -223,15 +221,15 @@ Function  AutomatedExitCheck ([int]$ExitBit) {
 Function Error_Top_Display {
     Clear-Host
     DiagnosticCheck 0
-    MenuLine
-    LeftLine ;DisplayOutMenu "                      Error                      " 13 0 0 ;RightLine
-    MenuLine
-    MenuBlankLine
+    MenuLineLog
+    LeftLineLog ;DisplayOutMenu "                      Error                      " 13 0 0 1 ;RightLineLog
+    MenuLineLog
+    MenuBlankLineLog
 }
 
 Function Error_Bottom {
-    MenuLine
-    MenuBlankLine
+    MenuLineLog
+    MenuBlankLineLog
     If($Diagnostic -eq 1) {
         DiagnosticCheck 1
         Write-Host ""
@@ -251,31 +249,31 @@ Function DiagnosticCheck ([int]$Bypass) {
         $WindowsBuild = [Environment]::OSVersion.Version.build
         $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
-        DisplayOutMenu " Diagnostic Output" 15 0 1
-        DisplayOutMenu " Some may show as blank" 15 0 1
-        DisplayOutMenu " --------Start--------" 15 0 1
-        DisplayOutMenu " Script Version = $Script_Version" 15 0 1
-        DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1
-        DisplayOutMenu " Error Type = $ErrorDi" 13 0 1
-        DisplayOutMenu " Window = $WindowVersion" 15 0 1
-        DisplayOutMenu " Edition = $WindowsEdition" 15 0 1
-        DisplayOutMenu " Build = $WindowsBuild" 15 0 1
-        DisplayOutMenu " Version = $winV" 15 0 1
-        DisplayOutMenu " PC Type = $PCType" 15 0 1
-        DisplayOutMenu " Desktop/Laptop = $IsLaptop" 15 0 1
-        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1
-        DisplayOutMenu " ToS = $Accept_ToS" 15 0 1
-        DisplayOutMenu " Automated = $Automated" 15 0 1
-        DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1
-        DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 15 0 1
-        DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1
-        DisplayOutMenu " Show_Changed = $Show_Changed" 15 0 1
-        DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 15 0 1
-        DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 15 0 1
-        DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1
-        DisplayOutMenu " Build_Check = $Build_Check" 15 0 1
-        DisplayOutMenu " Args = $PassedArg" 15 0 1
-        DisplayOutMenu " ---------End---------" 15 0 1
+        DisplayOutMenu " Diagnostic Output" 15 0 1 1
+        DisplayOutMenu " Some may show as blank" 15 0 1 1
+        DisplayOutMenu " --------Start--------" 15 0 1 1
+        DisplayOutMenu " Script Version = $Script_Version" 15 0 1 1
+        DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1 1
+        DisplayOutMenu " Error Type = $ErrorDi" 13 0 1 1
+        DisplayOutMenu " Window = $WindowVersion" 15 0 1 1
+        DisplayOutMenu " Edition = $WindowsEdition" 15 0 1 1
+        DisplayOutMenu " Build = $WindowsBuild" 15 0 1 1
+        DisplayOutMenu " Version = $winV" 15 0 1 1
+        DisplayOutMenu " PC Type = $PCType" 15 0 1 1
+        DisplayOutMenu " Desktop/Laptop = $IsLaptop" 15 0 1 1
+        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1 1
+        DisplayOutMenu " ToS = $Accept_ToS" 15 0 1 1
+        DisplayOutMenu " Automated = $Automated" 15 0 1 1
+        DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1 1
+        DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 15 0 1 1
+        DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1 1
+        DisplayOutMenu " Show_Changed = $Show_Changed" 15 0 1 1
+        DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 15 0 1 1
+        DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 15 0 1 1
+        DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1 1
+        DisplayOutMenu " Build_Check = $Build_Check" 15 0 1 1
+        DisplayOutMenu " Args = $PassedArg" 15 0 1 1
+        DisplayOutMenu " ---------End---------" 15 0 1 1
         Write-Host ""
     }
 }
@@ -300,33 +298,33 @@ Function TOSDisplay {
     $BorderColor = 14
     If($Release_Type -ne "Stable") {
         $BorderColor = 15
-        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-        DisplayOutMenu "|                                                   |" $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-        DisplayOutMenu "|                                                   |" $BorderColor 0 1
+        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
     }
     If($OSType -ne 64) {
         $BorderColor = 15
-        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-        DisplayOutMenu "|                                                   |" $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-        DisplayOutMenu "|                                                   |" $BorderColor 0 1
+        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
     }
-    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
-    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
-    DisplayOutMenu "|                                                   |" $BorderColor 0 1
-    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-    DisplayOutMenu "|                                                   |" $BorderColor 0 1
-    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1
-    DisplayOutMenu "|                                                   |" $BorderColor 0 1
-    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
 }
 
 Function TOS {
@@ -385,29 +383,29 @@ Function LoadWebCSV {
 
 Function MenuDisplay ([Array]$ChToDisplay) {
     MenuLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[0] 11 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[0] 11 0 0 0 ;RightLine
     MenuLine
     MenuBlankLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[1] 2 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[1] 2 0 0 0 ;RightLine
     If($OSType -ne 64) {
         MenuBlankLine
-        LeftLine ;DisplayOutMenu " Settings are ment for x64. Use AT YOUR OWN RISK." 13 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu " Settings are ment for x64. Use AT YOUR OWN RISK." 13 0 0 0 ;RightLine
     }
     MenuBlankLine
     MenuLine
     MenuBlankLine
     For($i=2; $i -le 4; $i++) {
-        If(!($i -eq 4 -and $IsLaptop -eq "-Lap")) { LeftLine ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 ;RightLine } 
+        If(!($i -eq 4 -and $IsLaptop -eq "-Lap")) { LeftLine ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 0 ;RightLine } 
     }
-    LeftLine ;DisplayOutMenu $ChToDisplay[5] 13 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[5] 13 0 0 0 ;RightLine
     MenuBlankLine
     MenuLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[6] 15 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[7] 15 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[8] 15 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[6] 15 0 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[7] 15 0 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[8] 15 0 0 0 ;RightLine
     MenuLine
-    LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 ;DisplayOutMenu ("$ServiceDate" +(" "*(18-$ServiceDate.length))) 11 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 0 ;DisplayOutMenu ("$ServiceDate" +(" "*(18-$ServiceDate.length))) 11 0 0 0 ;RightLine
     MenuLine
 }
 
@@ -451,9 +449,9 @@ Function CopyrightDisplay {
     While($CopyrightDisplay -ne "Out") {
         Clear-Host
         MenuLine
-        LeftLine ;DisplayOutMenu $CopyrightItems[0] 11 0 0 ;RightLine
+        LeftLine ;DisplayOutMenu $CopyrightItems[0] 11 0 0 0 ;RightLine
         MenuLine
-        For($i=1; $i -lt $CopyrightItems.length; $i++) { LeftLine ;DisplayOutMenu $CopyrightItems[$i] 2 0 0 ;RightLine }
+        For($i=1; $i -lt $CopyrightItems.length; $i++) { LeftLine ;DisplayOutMenu $CopyrightItems[$i] 2 0 0 0 ;RightLine }
         MenuLine
         Write-Host ""
         $CopyrightDisplay = Read-Host "`nPress 'Enter' to continue"
@@ -524,7 +522,7 @@ Function ServiceSet ([String]$BVService) {
         $ServiceCurrType = (Get-Service $ServiceName).StartType
         $SrvCheck = ServiceCheck $ServiceName $ServiceType $ServiceCurrType
         If($SrvCheck -eq $True) {
-             $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
+            $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
             If($ServiceTypeNum -In 1..3) {
                 Set-Service $ServiceName -StartupType $ServiceType
             } ElseIf($ServiceTypeNum -eq 4) {
@@ -589,16 +587,16 @@ Function PreScriptCheck {
     If($WindowVersion -ne 10) {
         Error_Top_Display
         $ErrorDi = "Not Window 10"
-        LeftLine ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 ;RightLine
-        MenuBlankLine
-        LeftLine ;DisplayOutMenu " You are using Window " 2 0 0 ;DisplayOutMenu ("$WindowVersion"+(" "*(27-$WindowVersion.length))) 15 0 0 ;RightLine
+        LeftLineLog ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 1 ;RightLineLog
+        MenuBlankLineLog
+        LeftLineLog ;DisplayOutMenu " You are using Window " 2 0 0 1 ;DisplayOutMenu ("$WindowVersion"+(" "*(27-$WindowVersion.length))) 15 0 0 1 ;RightLineLog
         Error_Bottom
     }
 
     $ErrorDi = ""
     $EBCount = 0
     $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
-    $WinEdition =  $FullWinEdition.Split(' ')[-1]
+    $WinEdition = $FullWinEdition.Split(' ')[-1]
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
     If($WinEdition -eq "Home") {
@@ -636,38 +634,38 @@ Function PreScriptCheck {
 
     If($EBCount -ne 0) {
         Error_Top_Display
-        LeftLine ;DisplayOutMenu " Script won't run due to the following problem(s)" 2 0 0 ;RightLine
-        MenuBlankLine
-        MenuLine
+        LeftLineLog ;DisplayOutMenu " Script won't run due to the following problem(s)" 2 0 0 1 ;RightLineLog
+        MenuBlankLineLog
+        MenuLineLog
         If($EditionCheck -eq "Fail") {
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " $EBCount. Not a valid Windows Edition for this Script. " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 ;RightLine
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " You are using " 2 0 0;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.length))) 15 0 0 ;RightLine
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 1. Change " 2 0 0 ;DisplayOutMenu "Edition_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "= 1" 15 0 0 ; ;DisplayOutMenu " in script file   " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 2. Run Script with " 2 0 0 ;DisplayOutMenu "-sec" 15 0 0 ;DisplayOutMenu " argument                " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 3. Change " 2 0 0 ;DisplayOutMenu "Skip_Edition_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "=yes" 15 0 0 ; ;DisplayOutMenu " in bat file" 2 0 0 ;RightLine
-            MenuBlankLine
-            MenuLine
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " $EBCount. Not a valid Windows Edition for this Script. " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " You are using " 2 0 0 1;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.length))) 15 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "= 1" 15 0 0 1 ;DisplayOutMenu " in script file   " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Run Script with " 2 0 0 1 ;DisplayOutMenu "-sec" 15 0 0 1 ;DisplayOutMenu " argument                " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file" 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            MenuLineLog
         }
         If($BuildCheck -eq "Fail") {
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " $EBCount. Not a valid Build for this Script.           " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 ;RightLine
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " You are using Build " 2 0 0;DisplayOutMenu ("$BuildVer" +(" "*(24-$BuildVer.length))) 15 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " You are using Version " 2 0 0;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.length))) 15 0 0 ;RightLine
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 1. Change " 2 0 0 ;DisplayOutMenu "Build_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "= 1" 15 0 0 ; ;DisplayOutMenu " in script file     " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 2. Run Script with " 2 0 0 ;DisplayOutMenu "-sbc" 15 0 0 ;DisplayOutMenu " argument                " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 3. Change " 2 0 0 ;DisplayOutMenu "Skip_Build_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "=yes" 15 0 0 ; ;DisplayOutMenu " in bat file  " 2 0 0 ;RightLine
-            MenuBlankLine
-            MenuLine
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " $EBCount. Not a valid Build for this Script.           " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " You are using Build " 2 0 0 1 ;DisplayOutMenu ("$BuildVer" +(" "*(24-$BuildVer.length))) 15 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " You are using Version " 2 0 0 1 ;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.length))) 15 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "= 1" 15 0 0 1 ; ;DisplayOutMenu " in script file     " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Run Script with " 2 0 0 1 ;DisplayOutMenu "-sbc" 15 0 0 1 ;DisplayOutMenu " argument                " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ; ;DisplayOutMenu " in bat file  " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            MenuLineLog
         }
         AutomatedExitCheck 1
     }
@@ -677,7 +675,14 @@ Function PreScriptCheck {
 Function VariousChecks {
     $ServiceFilePath = $filebase + "BlackViper.csv"
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-        LoadWebCSV
+        If($Service_Ver_Check -eq 0) {
+            If($MakeLog -eq 1) { Write-Output "Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
+            LoadWebCSV
+        } Else {
+            If($MakeLog -eq 1) { Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
+            DownloadFile $Service_Url $ServiceFilePath
+            [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+        }
         $Service_Ver_Check = 0
     }
     $Script:csv = Import-Csv $ServiceFilePath
@@ -692,6 +697,7 @@ Function VariousChecks {
                 $WebScriptVer = $($CSV_Ver[3].Version)
             }
             If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
+                If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
                 [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
             }
@@ -706,15 +712,15 @@ Function VariousChecks {
                 }
                 $WebScriptFilePath = $filebase + $DFilename
                 Clear-Host
-                MenuLine
-                LeftLine ;DisplayOutMenu "                  Update Found!                  " 13 0 0 ;RightLine
-                MenuLine
+                MenuLineLogLog
+                LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
+                MenuLineLog
+                MenuBlankLineLog
+                LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 1 ;RightLineLog
+                LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
+                LeftLineLog ;DisplayOutMenu "after download is complete.                       " 2 0 0 1 ;RightLineLog
                 MenuBlankLine
-                LeftLine ;DisplayOutMenu "Downloading version " 15 0 0 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 ;RightLine
-                LeftLine ;DisplayOutMenu "Will run " 15 0 0 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 ;RightLine
-                LeftLine ;DisplayOutMenu "after download is complete.                       " 2 0 0 ;RightLine
-                MenuBlankLine
-                MenuLine
+                MenuLineLog
                 DownloadFile $Script_Url $WebScriptFilePath
                 $UpArg = ""
                 If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atos" }
@@ -733,22 +739,22 @@ Function VariousChecks {
         } Else {
             Error_Top_Display
             $ErrorDi = "No Internet"
-            LeftLine ;DisplayOutMenu " Update Failed Because no internet was detected. " 2 0 0 ;RightLine
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " Tested by pinging github.com                    " 2 0 0 ;RightLine
-            MenuBlankLine
-            LeftLine ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 1. Change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "= 1" 15 0 0 ; ;DisplayOutMenu " in script file  " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 2. Run Script with " 2 0 0 ;DisplayOutMenu "-sic" 15 0 0 ;DisplayOutMenu " argument                " 2 0 0 ;RightLine
-            LeftLine ;DisplayOutMenu " 3. Change " 2 0 0 ;DisplayOutMenu "Internet_Check" 15 0 0 ;DisplayOutMenu " to " 2 0 0 ;DisplayOutMenu "=no" 15 0 0 ; ;DisplayOutMenu " in bat file     " 2 0 0 ;RightLine
-            MenuBlankLine
-            MenuLine
+            LeftLineLog ;DisplayOutMenu " Update Failed Because no internet was detected. " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " Tested by pinging github.com                    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "= 1" 15 0 0 1 ; ;DisplayOutMenu " in script file  " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Run Script with " 2 0 0 1 ;DisplayOutMenu "-sic" 15 0 0 1 ;DisplayOutMenu " argument                " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=no" 15 0 0 1 ; ;DisplayOutMenu " in bat file     " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            MenuLineLog
             If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-                MenuBlankLine
-                LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and the script" 2 0 0 ;RightLine
-                LeftLine ;DisplayOutMenu "can't run w/o it.      " 2 0 0 ;RightLine
-                MenuBlankLine
-                MenuLine
+                MenuBlankLineLog
+                LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and the script" 2 0 0 1 ;RightLineLog
+                LeftLineLog ;DisplayOutMenu "can't run w/o it.      " 2 0 0 1 ;RightLineLog
+                MenuBlankLineLog
+                MenuLineLog
                 AutomatedExitCheck 1
             } Else {
                 AutomatedExitCheck 0
@@ -765,9 +771,9 @@ Function ScriptPreStart {
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         $ErrorDi = "Missing File BlackViper.csv -ScriptPreStart"
         Error_Top_Display
-        LeftLine ;DisplayOutMenu "The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 ;RightLine
-        LeftLine ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 ;RightLine
-        Error_Bottom
+        LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
+        Error_BottomLog
     }
     If($argsUsed -eq 2) {
         If($Automated -eq 0 -or $Accept_ToS -eq 0) {
@@ -784,11 +790,11 @@ Function ScriptPreStart {
     } Else {
         $ErrorDi = "Unknown -ScriptPreStart"
         Error_Top_Display
-        LeftLine ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 ;RightLine
-        LeftLine ;DisplayOutMenu "to me, with Subject of 'Unknown Error', thanks.  " 2 0 0 ;RightLine
-        LeftLine ;DisplayOutMenu " E-mail - Madbomb122@gmail.com                   " 2 0 0 ;RightLine
-        LeftLine ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 ;RightLine
-        Error_Bottom
+        LeftLineLog ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "to me, with Subject of 'Unknown Error', thanks.  " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu " E-mail - Madbomb122@gmail.com                   " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 1 ;RightLineLog
+        Error_BottomLog
         DiagnosticCheck 1
         AutomatedExitCheck 1
     }
@@ -863,17 +869,17 @@ Function ArgCheck {
     If($argsUsed -eq 3 -and $Automated -eq 1) {
         Error_Top_Display
         $ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
-        LeftLine ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 ;RightLine
-        LeftLine ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 ;RightLine
-        Error_Bottom
+        LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
+        Error_BottomLog
     }
-	If($MakeLog -eq 1) {
-	    $Script:LogFile = $filebase + $LogName
-	    If(Test-Path $LogFile) {
-		    $Time = Get-Date -Format g
+    If($MakeLog -eq 1) {
+        $Script:LogFile = $filebase + $LogName
+        If(Test-Path $LogFile) {
+            $Time = Get-Date -Format g
             Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
         }
-	}
+    }
 }
 
 #--------------------------------------------------------------------------
