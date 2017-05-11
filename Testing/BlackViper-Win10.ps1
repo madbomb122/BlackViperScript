@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "1.5"
-$Script_Date = "05-10-2017"
+$Script_Date = "05-11-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -200,11 +200,10 @@ Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int
 }
 
 Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
+    If($MakeLog -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -Append }
     If($TxtColor -le 15) {
-        If($MakeLog -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append }
         Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
     } Else {
-        If($MakeLog -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append }
         Write-Host $TxtToDisplay
     }
 }
@@ -514,6 +513,11 @@ Function ServiceSet ([String]$BVService) {
     $CurrServices = Get-Service
     Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
     Write-Host "-------------------------------"
+    If($MakeLog -eq 1) {
+        Write-Output "" 4>&1 | Out-File -filepath $LogFile -Append 
+        Write-Output "List of Services" 4>&1 | Out-File -filepath $LogFile -Append 
+        Write-Output "-------------------------------" 4>&1 | Out-File -filepath $LogFile -Append 
+    }
     Foreach($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
@@ -540,7 +544,10 @@ Function ServiceSet ([String]$BVService) {
             DisplayOut $DispTemp  13 0
         }
     }
-
+    If($MakeLog -eq 1) { 
+        Write-Output "-------------------------------" 4>&1 | Out-File -filepath $LogFile -Append 
+        Write-Output "Service Changed..." 4>&1 | Out-File -filepath $LogFile -Append 
+    }
     Write-Host "-------------------------------"
     Write-Host "Service Changed..."
     AutomatedExitCheck 1
@@ -773,7 +780,7 @@ Function ScriptPreStart {
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
-        Error_BottomLog
+        Error_Bottom
     }
     If($argsUsed -eq 2) {
         If($Automated -eq 0 -or $Accept_ToS -eq 0) {
@@ -794,7 +801,7 @@ Function ScriptPreStart {
         LeftLineLog ;DisplayOutMenu "to me, with Subject of 'Unknown Error', thanks.  " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu " E-mail - Madbomb122@gmail.com                   " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 1 ;RightLineLog
-        Error_BottomLog
+        Error_Bottom
         DiagnosticCheck 1
         AutomatedExitCheck 1
     }
@@ -871,7 +878,7 @@ Function ArgCheck {
         $ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
         LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
-        Error_BottomLog
+        Error_Bottom
     }
     If($MakeLog -eq 1) {
         $Script:LogFile = $filebase + $LogName
