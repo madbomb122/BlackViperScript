@@ -6,7 +6,7 @@
 - [X] Ability to use argument/switch on bat file instead of editing it
 
 # Working/Testing on (In Testing Script)
-- [ ] Log file (will show errors, services changed, etc).. (starting to work on, not working atm)
+- [ ] Log file (will show notices, errors, & services changed)
 
 # Might add
 - [ ] Ability to set ALL services back to default (not just ones changed by script)
