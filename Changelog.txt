@@ -1,4 +1,13 @@
 -----------------------------------------------------------------------------------
+1.5 (05-11-2017)
+
+Added ability to have a log file (Logs Notices, Errors, & Services changed)
+Added Argument/Switch for log
+
+ Switches       Description of Switch
+  -log           Saves a log file (Script.log by default)
+
+-----------------------------------------------------------------------------------
 1.4 (05-10-2017)
 
 Fixed error in script was causing safe and tweaked option to not change services
@@ -26,7 +35,7 @@ Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
   -sic           (Skips Internet Check)
   -usc           (Checks for Update to Script file before running)
   -use           (Checks for Update to Service file before running)
-  -diag          (Shows some diagnostic information)
+  -diag          (Shows diagnostic info)
 
 -----------------------------------------------------------------------------------
 1.1 (04-23-2017)
