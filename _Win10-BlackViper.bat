@@ -4,11 +4,12 @@
 :: Change Option to = one of the listed options (mostly yes or no)
 
 Set Black_Viper=0
-:: 0 = Shows Script Menu
+:: 0 = Run with Menu
 :: 1 = Run with Windows Default Service Configuration
-:: 2 = Run with Black Viper Safe Service Configuration
-:: 3 = Run with Black Viper Tweaked Service Configuration
+:: 2 = Run with Black Viper Safe
+:: 3 = Run with Black Viper Tweaked
 
+:: Change these to yes or no
 Set Accept_ToS=no
 :: no = See ToS
 :: yes = Skip ToS (You accepted it)
@@ -18,9 +19,8 @@ Set Automated=no
 :: yes = Close on - User input, On Errors, or End of Script
 :: yes, Implies that you accept the "ToS"
 
-:: Update Checks
-:: If update is found it will Auto-download and use that (with your settings)
-:: Options, yes - no
+:: Update Checks   
+:: If update is found it will Auto-download and use that (with your settings)       
 Set Script=no
 Set Service=no
 Set Internet_Check=yes 
@@ -28,12 +28,14 @@ Set Internet_Check=yes
 
 :: Skip Script Check
 :: SKIP AT YOUR OWN RISK
-:: Options, yes - no
 Set Skip_Build_Check=no
 Set Skip_Edition_Check=no
 
-:: Diagnostic Output (Stop automation on errors)
-:: Options, yes - no
+:: Log file
+Set Log=no
+Set LogFile=Script.log
+
+:: Diagnostic Output (Wont run script)
 Set Diagnostic=no
 
 ::----------------------------------------------------------------------
@@ -69,6 +71,7 @@ If /i not "%*"=="" (
         If /i %%i==-tweaked Set Black_Viper=3
         If /i %%i==-diag Set Diagnostic=yes
         If /i %%i==-Set Set SetArg=yes
+        If /i %%i==-log Set Log=Yes
     )
 )
 
@@ -96,6 +99,8 @@ If /i %Service%==yes Set Run_Option=!Run_Option! -use
 If /i %Automated%==yes Set Run_Option=!Run_Option! -auto
 
 If /i %Diagnostic%==yes Set Run_Option=!Run_Option! -diag
+
+If /i %Log%==yes Set Run_Option=!Run_Option! -log %LogFile%
 
 echo "Running !Script_File!"
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path! !Run_Option!"' -Verb RunAs}";
