@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "1.5"
-$Script_Date = "05-11-2017"
+$Script_Date = "05-10-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -249,7 +249,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
         DisplayOutMenu " Diagnostic Output" 15 0 1 1
-        DisplayOutMenu " Some may show as blank" 15 0 1 1
+        DisplayOutMenu " Some items may be blank" 15 0 1 1
         DisplayOutMenu " --------Start--------" 15 0 1 1
         DisplayOutMenu " Script Version = $Script_Version" 15 0 1 1
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1 1
@@ -461,7 +461,7 @@ Function CopyrightDisplay {
 
 $CopyrightItems = @(
 '                    Copyright                    ',
-' Services Configuration                          ',
+' Black Viper Services Configuration              ',
 ' Copyright (c) 1999-2017                         ',
 ' Charles "Black Viper" Sparks                    ',
 '                                                 ',
@@ -505,7 +505,7 @@ $ServicesTypeList = @(
     'Automatic'  #4 -Automatic (Delayed Start)
 )
 
-$Script:Black_Viper = 0         #0-Menu, 1-Default, 2-Safe, 3-Tweaked
+$Script:Black_Viper = 0
 $Script:argsUsed = 0
 
 Function ServiceSet ([String]$BVService) {
@@ -557,10 +557,8 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type, [string]$C_Type) {
     If(Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
         If($S_Type -ne $C_Type) {
             $ReturnV = $True
-            If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
-                # Has to be removed or cant change service from disabled to anything else (Known Bug)
-                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force
-            }
+            # Has to be removed or cant change service from disabled to anything else (Known Bug)
+            If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
         } Else {
             $ReturnV = $False
         }
@@ -640,11 +638,13 @@ Function PreScriptCheck {
     }
 
     If($EBCount -ne 0) {
+       $EBCount=0
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu " Script won't run due to the following problem(s)" 2 0 0 1 ;RightLineLog
         MenuBlankLineLog
         MenuLineLog
         If($EditionCheck -eq "Fail") {
+            $EBCount++
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " $EBCount. Not a valid Windows Edition for this Script. " 2 0 0 1 ;RightLineLog
             LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
@@ -660,6 +660,7 @@ Function PreScriptCheck {
             MenuLineLog
         }
         If($BuildCheck -eq "Fail") {
+            $EBCount++
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " $EBCount. Not a valid Build for this Script.           " 2 0 0 1 ;RightLineLog
             LeftLineLog ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 1 ;RightLineLog
@@ -866,9 +867,7 @@ Function ArgCheck {
                     $Script:Diagnostic = 1
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
-                    If(!($PassedArg[$i+1].StartsWith("-"))){
-                        $Script:LogName = $PassedArg[$i+1]
-                    }
+                    If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] }
                 }
             }
         }
@@ -882,10 +881,8 @@ Function ArgCheck {
     }
     If($MakeLog -eq 1) {
         $Script:LogFile = $filebase + $LogName
-        If(Test-Path $LogFile) {
-            $Time = Get-Date -Format g
-            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
-        }
+        $Time = Get-Date -Format g
+        Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
     }
 }
 
