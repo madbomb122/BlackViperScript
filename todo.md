@@ -4,9 +4,10 @@
 - [X] Ability to check for script and/or service update using argument then run script with desired command
 - [X] Ability to bypass Build, Edition, Internet check using arugment
 - [X] Ability to use argument/switch on bat file instead of editing it
+- [X] Log file (will show notices, errors, & services changed)
 
 # Working/Testing on (In Testing Script)
-- [ ] Log file (will show notices, errors, & services changed)
+Nothing ATM
 
 # Might add
 - [ ] Ability to set ALL services back to default (not just ones changed by script)
