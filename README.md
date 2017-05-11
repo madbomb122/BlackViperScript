@@ -68,10 +68,11 @@ Use one of the following Methods you can
 | -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alt `-set tweaked` or `-set 3` |
 | -sec      | Skips Edition Check (Home/Pro)                                                 | **USE AT YOUR OWN RISK**             |
 | -sbc      | Skips Build Check  (Creator's Update)                                          | **USE AT YOUR OWN RISK**             |
-| -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      | 
-| -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found | 
-| -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found | 
-| -diag     | Shows some diagnostic information on error messages                            | **Stops automation** | 
+| -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      |
+| -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found |
+| -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found |
+| -diag     | Shows some diagnostic information on error messages                            | **Stops automation** |
+| -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
