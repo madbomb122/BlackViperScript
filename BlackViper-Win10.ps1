@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "1.5"
-$Script_Date = "05-11-2017"
+$Script_Date = "05-12-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -692,7 +692,7 @@ Function VariousChecks {
         }
         $Service_Ver_Check = 0
     }
-    $Script:csv = Import-Csv $ServiceFilePath
+    [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
     If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
         If(InternetCheck) {
             $VersionFile = $TempFolder + "\Temp.csv"
@@ -770,7 +770,7 @@ Function VariousChecks {
     }
     $ServiceVersion = ($csv[0]."Def-Home")
     $ServiceDate = ($csv[0]."Def-Pro")
-    $csvtemp.RemoveAt(0)
+    $csv.RemoveAt(0)
     ScriptPreStart
 }
 
@@ -810,7 +810,7 @@ Function ScriptPreStart {
 Function ArgCheck {
     $Script:IsLaptop = LaptopCheck
     If ($PassedArg.length -gt 0) {
-        For($i=0; $i -le $PassedArg.length; $i++) {
+        For($i=0; $i -lt $PassedArg.length; $i++) {
             $ArgVal = $PassedArg[$i]
             If($ArgVal.StartsWith("-")){
                 $ArgVal = $PassedArg[$i].ToLower()
