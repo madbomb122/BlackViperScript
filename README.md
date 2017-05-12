@@ -105,6 +105,9 @@ Examples: <br />
 **Q:** Who do I contact about the Service Configurations or an issue with the configuration? <br />
 **A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper himself.
 
+**Q:** Why does you script not change the service *BLAH*? <br />
+**A:** This script will only change services that are changed from the win default to Black Viper's Safe/Tweaked.
+
 **Q:** I have an issue with the script, what do I do? <br />
 **A:** Post it as an issue using github's issues tab up top.
 
