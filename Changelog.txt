@@ -1,6 +1,7 @@
 -----------------------------------------------------------------------------------
-1.5 (05-11-2017)
+1.5 (05-12-2017)
 
+Minor Fixes (didnt affect using script)
 Added ability to have a log file (Logs Notices, Errors, & Services changed)
 Added Argument/Switch for log
 
