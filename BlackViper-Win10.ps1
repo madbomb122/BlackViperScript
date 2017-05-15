@@ -11,8 +11,7 @@
 #
 $Script_Version = "1.6"
 $Script_Date = "05-14-2017"
-#$Release_Type = "Stable"
-$Release_Type = "Testing"
+$Release_Type = "Stable"
 ##########
 
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
