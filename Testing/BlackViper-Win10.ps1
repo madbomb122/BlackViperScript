@@ -244,7 +244,6 @@ Function DiagnosticCheck ([int]$Bypass) {
     If($Release_Type -ne "Stable" -or $Bypass -eq 1 -or $Diagnostic -eq 1) {
         $WindowVersion = [Environment]::OSVersion.Version.Major
         $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
-        $WindowsEdition =  $FullWinEdition.Split(' ')[-1]
         $WindowsBuild = [Environment]::OSVersion.Version.build
         $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
@@ -255,7 +254,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1 1
         DisplayOutMenu " Error Type = $ErrorDi" 13 0 1 1
         DisplayOutMenu " Window = $WindowVersion" 15 0 1 1
-        DisplayOutMenu " Edition = $WindowsEdition" 15 0 1 1
+        DisplayOutMenu " Edition = $FullWinEdition" 15 0 1 1
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1 1
         DisplayOutMenu " Version = $winV" 15 0 1 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1 1
@@ -511,13 +510,8 @@ $Script:argsUsed = 0
 Function ServiceSet ([String]$BVService) {
     Clear-Host
     $CurrServices = Get-Service
-    Write-Host "Changing Service Please wait..." -ForegroundColor Red -BackgroundColor Black
-    Write-Host "-------------------------------"
-    If($MakeLog -eq 1) {
-        Write-Output "" 4>&1 | Out-File -filepath $LogFile -Append 
-        Write-Output "List of Services" 4>&1 | Out-File -filepath $LogFile -Append 
-        Write-Output "-------------------------------" 4>&1 | Out-File -filepath $LogFile -Append 
-    }
+    DisplayOut  "Changing Service Please wait..." 14 0
+    DisplayOut  "-------------------------------" 14 0
     Foreach($item in $csv) {
         $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
@@ -544,12 +538,8 @@ Function ServiceSet ([String]$BVService) {
             DisplayOut $DispTemp  13 0
         }
     }
-    If($MakeLog -eq 1) { 
-        Write-Output "-------------------------------" 4>&1 | Out-File -filepath $LogFile -Append 
-        Write-Output "Service Changed..." 4>&1 | Out-File -filepath $LogFile -Append 
-    }
-    Write-Host "-------------------------------"
-    Write-Host "Service Changed..."
+    DisplayOut  "-------------------------------" 14 0
+    DisplayOut  "Service Changed..." 14 0
     AutomatedExitCheck 1
 }
 
@@ -741,6 +731,7 @@ Function VariousChecks {
                 If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
                 If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
                 If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
+                If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
                 Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
                 Exit
             }
@@ -868,6 +859,9 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
                     If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] }
+                } ElseIf($ArgVal -eq "-logc") {
+                    $Script:MakeLog = 2
+                    If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] }
                 }
             }
         }
@@ -883,6 +877,10 @@ Function ArgCheck {
         $Script:LogFile = $filebase + $LogName
         $Time = Get-Date -Format g
         Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
+    } ElseIf($MakeLog -eq 2) {
+        Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append 
+        $Script:LogFile = $filebase + $LogName
+        $MakeLog = 1
     }
 }
 
