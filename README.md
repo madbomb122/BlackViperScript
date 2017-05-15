@@ -23,7 +23,7 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 <br />
 
 **_Need Files_** <br />
-`BlackViper-Win10.ps1`* (Script) <br />
+`BlackViper-Win10.ps1` (Script) <br />
 `BlackViper.csv` (Service Configurations) <br />
 
 **Recommended Files** <br />
@@ -33,9 +33,9 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 **Note:**
 **AT YOUR OWN RISK** <br />
 **1. Run the script on x32 w/o changing settings (But shows a warning)** <br />
-**2. Change variable at bottom of script to skip the check for** <br />
-**---A. Home/Pro** *($Script:Edition_Check)* <br />
-**---B. Creator's Update** *($Script:Build_Check)* <br />
+**2. Skip the check for** <br />
+**---A. Home/Pro** *(`$Script:Edition_Check` variable in script or use `-sec` switch)* <br />
+**---B. Creator's Update** *(`$Script:Build_Check` variable in script or use `-sbc` switch)* <br />
 
 # How to Use/Run
 Download/Save the following files <br />
