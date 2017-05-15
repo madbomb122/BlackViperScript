@@ -35,7 +35,7 @@ Set Skip_Edition_Check=no
 Set Log=no
 Set LogFile=Script.log
 
-:: Diagnostic Output (Wont run script)
+:: Diagnostic Output
 Set Diagnostic=no
 
 ::----------------------------------------------------------------------
