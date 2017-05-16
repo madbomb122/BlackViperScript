@@ -36,7 +36,6 @@ NcdAutoSetup,2,2,2,2,1
 CscService,0,2,1,1,1
 SEMgrSvc,2,2,1,1,1
 PhoneSvc,2,2,1,1,1
-RmSvc,2,2,1,2,1
 SessionEnv,2,2,2,2,1
 TermService,2,2,2,2,1
 UmRdpService,2,2,2,2,1
