@@ -47,7 +47,6 @@ SensorService,2,2,1,2,1
 ScDeviceEnum,2,2,1,1,1
 SCPolicySvc,2,2,1,1,1
 SNMPTRAP,2,2,1,1,1
-StorSvc,2,2,2,2,2
 TabletInputService,2,2,1,2,1
 WebClient,2,2,2,2,1
 WFDSConSvc,2,2,1,2,1
