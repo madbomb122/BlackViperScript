@@ -4,6 +4,11 @@
 NOTHING ATM
 
 -----------------------------------------------------------------------------------
+1.7 (05-17-2017)
+
+Fixed a bug with switch `-set safe` not setting correctly
+
+-----------------------------------------------------------------------------------
 1.6 (05-14-2017)
 
 Fixed a bug with logging that caused it to not continue to log after script update
