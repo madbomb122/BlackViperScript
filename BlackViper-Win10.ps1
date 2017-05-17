@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.6"
-$Script_Date = "05-14-2017"
+$Script_Version = "1.7"
+$Script_Date = "05-17-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -814,7 +814,7 @@ Function ArgCheck {
                     If($PasVal -eq 1 -or "default") {
                        $Script:Black_Viper = 1
                        $Script:argsUsed = 2
-                    } ElseIf($ArgVal -eq "safe") {
+                    } ElseIf($PasVal -eq "safe") {
                         $Script:Black_Viper = 2
                         $Script:argsUsed = 2
                     } ElseIf($PasVal -eq 3 -or "tweaked") {
