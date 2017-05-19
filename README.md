@@ -1,3 +1,8 @@
+Please visit this poll and vote if I should add this option (Having an option to change ALL services not just the ones different from Default to Safe/Tweaked).. https://goo.gl/ORrCbm
+
+Example: the ActiveX Installer service is Manual across the board (the script does not touch this), with the added option it will change the service to Manual no matter what option you pick (if it isnt set to manual)
+
+
 **Current Version** <br />
 **Script:** `1.7` (May 17, 2017) <br />
 **Service:** `1.2` (May 16, 2017) <br />
