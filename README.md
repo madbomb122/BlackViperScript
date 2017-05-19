@@ -1,7 +1,7 @@
 # NOTICE
 Please visit this poll and vote if I should add this option (Having an option to change ALL services not just the ones different from Default to Safe/Tweaked).. https://goo.gl/ORrCbm
 
-**Example:** the ActiveX Installer service is Manual across the board (the script does not touch this), with the added option it will give you the option to change ever services like this to it's default or just ones that are different from Default to Safe/Tweaked
+**Example:** the ActiveX Installer service is Manual across the board (the script does not touch this), with the added option it will give you the option to change every services like this to it's default or just ones that are different from Default to Safe/Tweaked
 
 
 **Current Version** <br />
