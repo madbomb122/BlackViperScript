@@ -12,4 +12,4 @@ Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
-- [ ] Ability to set ALL services back to default (not just ones changed by script)
+- [ ] Ability to set ALL services when you select default, safe or tweaked (not just ones changed by script)
