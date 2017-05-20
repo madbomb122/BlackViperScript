@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------
-1.? (0?-??-2017)
+2.0 (05-19-2017)
 
-NOTHING ATM
+Changed script to support new switch and added feature
+
+Added switch
+ Switches       Description of Switch
+  -All           Every windows services will change
+  -Min           Just the services differant from the default
 
 -----------------------------------------------------------------------------------
 1.7 (05-17-2017)
