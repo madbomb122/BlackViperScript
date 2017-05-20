@@ -2,7 +2,7 @@
 Ability to have ALL Services changed or just the Minimum Services
 
 **All is every windows services will change**<br />
-**Minimum is just the services differant from the default**
+**Minimum is just the services different from the default**
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
