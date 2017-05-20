@@ -6,7 +6,7 @@ Changed script to support new switch and added feature
 Added switch
  Switches       Description of Switch
   -All           Every windows services will change
-  -Min           Just the services differant from the default
+  -Min           Just the services different from the default
 
 -----------------------------------------------------------------------------------
 1.7 (05-17-2017)
