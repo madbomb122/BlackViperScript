@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "1.7"
-$Script_Date = "05-17-2017"
+$Script_Version = "2.0"
+$Script_Date = "05-19-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -260,6 +260,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " PC Type = $PCType" 15 0 1 1
         DisplayOutMenu " Desktop/Laptop = $IsLaptop" 15 0 1 1
         DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1 1
+        DisplayOutMenu " All/Min = $All_or_Min" 15 0 1 1        
         DisplayOutMenu " ToS = $Accept_ToS" 15 0 1 1
         DisplayOutMenu " Automated = $Automated" 15 0 1 1
         DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1 1
@@ -339,8 +340,8 @@ Function TOS {
         Switch($TOS.ToLower()) {
             n {Exit}
             no {Exit}
-            y {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper}; $Black_Viper_Input = "Out"}
-            yes {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper}; $Black_Viper_Input = "Out"}
+            y {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper $All_or_Min}; $Black_Viper_Input = "Out"}
+            yes {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper $All_or_Min}; $Black_Viper_Input = "Out"}
             default {$Invalid = 1}
         }
     }
@@ -391,16 +392,18 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     }
     MenuBlankLine
     MenuLine
-    MenuBlankLine
-    For($i=2; $i -le 4; $i++) {
-        If(!($i -eq 4 -and $IsLaptop -eq "-Lap")) { LeftLine ;DisplayOutMenu $ChToDisplay[$i] 14 0 0 0 ;RightLine } 
+    LeftLine ;DisplayOutMenu $ChToDisplay[2] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[3] 14 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[4] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[5] 14 0 0 ;RightLine
+    For($i=6; $i -lt 14; $i++) {
+        If(!($i -eq 4 -and $IsLaptop -eq "-Lap")) {LeftLine ;DisplayOutMenu $ChToDisplay[$i] 2 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i+1] 2 0 0 ;RightLine }
+        $i++
     }
-    LeftLine ;DisplayOutMenu $ChToDisplay[5] 13 0 0 0 ;RightLine
-    MenuBlankLine
     MenuLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[6] 15 0 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[7] 15 0 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[8] 15 0 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[14] 13 0 0 0 ;RightLine
+    MenuLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[15] 15 0 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[16] 15 0 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[17] 15 0 0 0 ;RightLine
     MenuLine
     LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 0 ;RightLine
     LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 0 ;DisplayOutMenu ("$ServiceDate" +(" "*(18-$ServiceDate.length))) 11 0 0 0 ;RightLine
@@ -418,10 +421,13 @@ Function Black_Viper_Input {
             $Invalid = 0
         }
         $Black_Viper_Input = Read-Host "`nChoice"
-        switch($Black_Viper_Input.ToLower()) {
-            1 {Black_Viper_Set 1; $Black_Viper_Input = "Out"}
-            2 {Black_Viper_Set 2; $Black_Viper_Input = "Out"}
-            3 {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
+        switch -regex ($Black_Viper_Input) {
+            "1A" {Black_Viper_Set 1 "-Full"; $Black_Viper_Input = "Out"}
+            "2A" {Black_Viper_Set 2 "-Full"; $Black_Viper_Input = "Out"}
+            "3A" {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3 "-Full"; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
+            "1M" {Black_Viper_Set 1 "-Min"; $Black_Viper_Input = "Out"}
+            "2M" {Black_Viper_Set 2 "-Min"; $Black_Viper_Input = "Out"}
+            "3M" {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3 "-Min"; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
             C {CopyrightDisplay}
             M {Openwebsite "https://github.com/madbomb122/"}
             B {Openwebsite "http://www.blackviper.com/"}
@@ -434,9 +440,12 @@ Function Black_Viper_Input {
 $BlackViperDisItems = @(
 "      Black Viper's Service Configurations       ",
 "Settings based on Black Viper's Configurations.  ",
-'1. Default                                       ',
-'2. Safe                                          ',
-'3. Tweaked                                       ',
+'                       ','                       ',
+'   All Services        ','   Minimum Services    ',
+' 1A. Default           ',' 1M. Default           ',
+' 2A. Safe              ',' 2M. Safe              ',
+' 3A. Tweaked           ',' 3M. Tweaked           ',
+'                       ','                       ',
 'Q. Quit (No changes)                             ',
 'C. Display Copyright                             ',
 "M. Go to Madbomb122's Github                     ",
@@ -556,13 +565,13 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type, [string]$C_Type) {
     Return $ReturnV
 }
 
-Function Black_Viper_Set ([Int]$BVOpt) {
+Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
     If($BVOpt -eq 1) {
-        ServiceSet ("Def"+$WinEdition)
+        ServiceSet ("Def"+$WinEdition+$FullMin)
     } ElseIf($BVOpt -eq 2) {
-        ServiceSet ("Safe"+$IsLaptop)
+        ServiceSet ("Safe"+$IsLaptop+$FullMin)
     } ElseIf($BVOpt -eq 3) {
-        ServiceSet ("Tweaked"+$IsLaptop)
+        ServiceSet ("Tweaked"+$IsLaptop+$FullMin)
     }
 }
 
@@ -760,8 +769,8 @@ Function VariousChecks {
             }
         }
     }
-    $ServiceVersion = ($csv[0]."Def-Home")
-    $ServiceDate = ($csv[0]."Def-Pro")
+    $ServiceVersion = ($csv[0]."Def-Home-Full")
+    $ServiceDate = ($csv[0]."Def-Home-Min")
     $csv.RemoveAt(0)
     ScriptPreStart
 }
@@ -778,7 +787,7 @@ Function ScriptPreStart {
         If($Automated -eq 0 -or $Accept_ToS -eq 0) {
             TOS
         } Else {
-            Black_Viper_Set $Black_Viper
+            Black_Viper_Set $Black_Viper $All_or_Min
         }
     } ElseIf($Accept_ToS -eq 1) {
         Black_Viper_Input
@@ -841,6 +850,10 @@ Function ArgCheck {
                     }
                 } ElseIf($ArgVal -eq "-sbc") {
                     $Script:Build_Check = 1
+                } ElseIf($ArgVal -eq "-all") {
+                    $Script:All_or_Min = "-all"
+                } ElseIf($ArgVal -eq "-min") {
+                    $Script:All_or_Min = "-min"
                 } ElseIf($ArgVal -eq "-sec") {
                     $Script:Edition_Check = 1
                 } ElseIf($ArgVal -eq "-sic") {
@@ -850,7 +863,7 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-use") {
                     $Script:Service_Ver_Check = 1
                 } ElseIf($ArgVal -eq "-atos") {
-                    $Script:Accept_ToS = 1
+                    $Script:Accept_ToS = "Accepted"
                 } ElseIf($ArgVal -eq "-auto") {
                     $Script:Automated = 1
                     $Script:Accept_ToS = 1
