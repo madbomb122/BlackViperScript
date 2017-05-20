@@ -1,7 +1,7 @@
 # Currently Testing
 Ability to have ALL Services changed or just the Minimum Services
 
-**All is every windows services will change**
+**All is every windows services will change**<br />
 **Minimum is just the services differant from the default**
 
 # About Testing Version
