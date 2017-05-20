@@ -1,5 +1,5 @@
 ServiceName,Def-Home-Full,Def-Home-Min,Def-Pro-Full,Def-Pro-Min,Safe-Desk-Full,Safe-Desk-Min,Safe-Lap-Full,Safe-Lap-Min,Tweaked-Desk-Full,Tweaked-Desk-Min
-ServiceVersion,1.3,May-19-2017,0,0,0,0,0,0,0,0
+ServiceVersion,2.0,May-19-2017,0,0,0,0,0,0,0,0
 AxInstSV,2,0,2,0,2,0,2,0,2,0
 AJRouter,2,2,2,2,2,2,2,2,1,1
 AppReadiness,2,0,2,0,2,0,2,0,2,0
