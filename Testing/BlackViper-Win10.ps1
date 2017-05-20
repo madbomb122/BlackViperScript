@@ -515,6 +515,7 @@ $ServicesTypeList = @(
 
 $Script:Black_Viper = 0
 $Script:argsUsed = 0
+$Script:All_or_Min = "-min"
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
@@ -741,6 +742,11 @@ Function VariousChecks {
                 If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
                 If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
                 If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
+                If($All_or_Min -eq "-all") { 
+                    $UpArg = $UpArg + "-all" 
+                } Else {
+                    $UpArg = $UpArg + "-min"
+                }
                 Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
                 Exit
             }
