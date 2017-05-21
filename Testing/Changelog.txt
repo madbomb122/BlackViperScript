@@ -1,18 +1,19 @@
 -----------------------------------------------------------------------------------
-2.0 (05-19-2017)
+2.0 (05-21-2017)
 
-Improved speed of script
+Fixed problem with the -atos switch (accept ToS) not setting properly
 Changed script to support new switch and added feature
 
 Added switch
  Switches       Description of Switch
-  -All           Every windows services will change
-  -Min           Just the services different from the default
+  -all           Every windows services will change
+  -min           Just the services different from the default to safe/tweaked list
+  -baf           File of all the services before and after the script `Services-Before.log` and `Services-After.log`
 
 -----------------------------------------------------------------------------------
 1.7 (05-17-2017)
 
-Fixed a bug with switch `-set safe` not setting correctly
+Fixed a bug with switch `set -safe` not setting correctly
 
 -----------------------------------------------------------------------------------
 1.6 (05-14-2017)
