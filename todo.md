@@ -8,8 +8,8 @@
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
-Nothing ATM
+- [ ] Ability to set ALL services when you select default, safe or tweaked (instead of just those different from default to safe/tweaked)
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
-- [ ] Ability to set ALL services when you select default, safe or tweaked (not just ones changed by script)
+
