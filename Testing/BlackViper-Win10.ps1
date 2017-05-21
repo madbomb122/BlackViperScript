@@ -566,6 +566,13 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
             $ReturnV = $C_Type
             # Has to be removed or cant change service from disabled to anything else (Known Bug)
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
+            If($S_Name -eq 'NetTcpPortSharing') { 
+			    If(Get-Service -Name "NetMsmqActivator" -and Get-Service -Name "NetPipeActivator" -and Get-Service -Name "NetTcpActivator"){ 
+                    $ReturnV = "Manual"
+				} Else {
+                    $ReturnV = $False
+				}
+			}
         } Else {
             $ReturnV = "Already"
         }
