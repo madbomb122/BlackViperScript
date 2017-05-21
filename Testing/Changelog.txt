@@ -1,6 +1,7 @@
 -----------------------------------------------------------------------------------
 2.0 (05-19-2017)
 
+Improved speed of script
 Changed script to support new switch and added feature
 
 Added switch
