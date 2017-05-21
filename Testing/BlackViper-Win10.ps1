@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "2.0"
-$Script_Date = "05-19-2017"
+$Script_Date = "05-20-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -523,45 +523,54 @@ Function ServiceSet ([String]$BVService) {
     DisplayOut  "Changing Service Please wait..." 14 0
     DisplayOut  "-------------------------------" 14 0
     Foreach($item in $csv) {
-        $ServiceName = $($item.ServiceName)
         $ServiceTypeNum = $($item.$BVService)
-        If($ServiceName -like "*_*"){ $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*")) }
-        $ServiceType = $ServicesTypeList[$ServiceTypeNum]
-        $ServiceCurrType = (Get-Service $ServiceName).StartType
-        $SrvCheck = ServiceCheck $ServiceName $ServiceType $ServiceCurrType
-        If($SrvCheck -eq $True) {
-            $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
-            If($ServiceTypeNum -In 1..3) {
-                Set-Service $ServiceName -StartupType $ServiceType
-            } ElseIf($ServiceTypeNum -eq 4) {
-                $DispTemp = "$DispTemp (Delayed Start)"
-                Set-Service $ServiceName -StartupType $ServiceType
-                $RegPath = "HKLM\System\CurrentControlSet\Services\"+($ServiceName)
-                Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWORD -Value 1
+        $ServiceName = $($item.ServiceName)
+        If($ServiceTypeNum -eq 0 -and $Show_Skipped -eq 1) {
+            $DispTemp = "Skipping $ServiceName"
+            DisplayOut $DispTemp  14 0
+            $ServiceCurrType = "Skipp"
+        } ElseIf($ServiceTypeNum -ne 0) {
+            If($ServiceName -like "*_*"){ $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*")) }
+            $ServiceType = $ServicesTypeList[$ServiceTypeNum]
+            $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
+			if($ServiceName -is [system.array]){ $ServiceName = $ServiceName[0]}
+            If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
+                $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
+                If($ServiceTypeNum -In 1..3) {
+                    Set-Service $ServiceName -StartupType $ServiceType
+                } ElseIf($ServiceTypeNum -eq 4) {
+                    $DispTemp = "$DispTemp (Delayed Start)"
+                    Set-Service $ServiceName -StartupType $ServiceType
+                    $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
+                    Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
+                }
+                If($Show_Changed -eq 1){ DisplayOut $DispTemp  11 0 }
+            } ElseIf($ServiceCurrType -eq "Already" -and $Show_Already_Set -eq 1) {
+                $DispTemp = "$ServiceName is already $ServiceType"
+                DisplayOut $DispTemp  15 0
+            } ElseIf($ServiceCurrType -eq $False -and $Show_Non_Installed -eq 1) {
+                $DispTemp = "No service with name $ServiceName"
+                DisplayOut $DispTemp  13 0
             }
-            If($Show_Changed -eq 1){ DisplayOut $DispTemp  11 0 }
-        } ElseIf($SrvCheck -eq $False -and $Show_Already_Set -eq 1) {
-            $DispTemp = "$ServiceName is already $ServiceType"
-            DisplayOut $DispTemp  15 0
-        } ElseIf($Show_Non_Installed -eq 1) {
-            $DispTemp = "No service with name $ServiceName"
-            DisplayOut $DispTemp  13 0
-        }
+		}
     }
     DisplayOut  "-------------------------------" 14 0
     DisplayOut  "Service Changed..." 14 0
     AutomatedExitCheck 1
 }
 
-Function ServiceCheck ([string]$S_Name, [string]$S_Type, [string]$C_Type) {
-    If(Get-WmiObject -Class Win32_Service -Filter "Name='$S_Name'" ) {
+Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
+    If(Get-Service -Name "$S_Name"){
+        $C_Type = (Get-Service $S_Name).StartType
         If($S_Type -ne $C_Type) {
-            $ReturnV = $True
+            $ReturnV = $C_Type
             # Has to be removed or cant change service from disabled to anything else (Known Bug)
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
         } Else {
-            $ReturnV = $False
+            $ReturnV = "Already"
         }
+    } Else {
+        $ReturnV = $False
     }
     Return $ReturnV
 }
@@ -743,7 +752,7 @@ Function VariousChecks {
                 If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
                 If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
                 If($All_or_Min -eq "-all") { 
-                    $UpArg = $UpArg + "-all" 
+                    $UpArg = $UpArg + "-full" 
                 } Else {
                     $UpArg = $UpArg + "-min"
                 }
@@ -857,7 +866,7 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-sbc") {
                     $Script:Build_Check = 1
                 } ElseIf($ArgVal -eq "-all") {
-                    $Script:All_or_Min = "-all"
+                    $Script:All_or_Min = "-full"
                 } ElseIf($ArgVal -eq "-min") {
                     $Script:All_or_Min = "-min"
                 } ElseIf($ArgVal -eq "-sec") {
@@ -943,6 +952,9 @@ $Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
 
 $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
+								
+$Script:Show_Skipped = 0        #0 = Dont Show Skipped Services
+                                #1 = Show Skipped Services
 #--------------------------------
 
 #----CHANGE AT YOUR OWN RISK!----
