@@ -1,15 +1,11 @@
 # To Do/Done
-- [X] Ability to use a switch to skip menu and run script with desired setting
-- [X] Support for various/multi argument
-- [X] Ability to check for script and/or service update using argument then run script with desired command
-- [X] Ability to bypass Build, Edition, Internet check using arugment
-- [X] Ability to use argument/switch on bat file instead of editing it
 - [X] Log file (will show notices, errors, & services changed)
+- [X] Ability to set ALL services when you select default, safe or tweaked (instead of just those different from default to safe/tweaked)
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
-- [ ] Ability to set ALL services when you select default, safe or tweaked (instead of just those different from default to safe/tweaked)
+Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
-
+Nothing ATM
