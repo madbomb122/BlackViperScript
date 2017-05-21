@@ -1,6 +1,8 @@
 **Current Version** <br />
-**Script:** `1.7` (May 17, 2017) <br />
-**Service:** `1.2` (May 16, 2017) <br />
+**Script:** `2.0` (May 21, 2017) <br />
+**Service:** `2.0` (May 21, 2017) <br />
+
+**Note: Script/Service files wont work with older versions due to big changes**
 
 # Description
 Easy to use Script that can set Windows 10 services based on Black Viper's Service Configurations. <br />
@@ -67,6 +69,8 @@ Use one of the following Methods you can
 | -default  | Runs the script with Services to Default Configuration                         | Alt `-set default` or `-set 1` |
 | -safe     | Runs the script with Services to Black Viper's Safe Configuration              | Alt `-set safe` or `-set 2`    |
 | -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alt `-set tweaked` or `-set 3` |
+| -all      | Every windows services will change                                             |   |
+| -min      | Just the services different from the default to safe/tweaked list              |   |
 | -sec      | Skips Edition Check (Home/Pro)                                                 | **USE AT YOUR OWN RISK**             |
 | -sbc      | Skips Build Check (Creator's Update)                                           | **USE AT YOUR OWN RISK**             |
 | -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      |
@@ -74,6 +78,7 @@ Use one of the following Methods you can
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found |
 | -diag     | Shows some diagnostic information on error messages                            | **Stops automation** |
 | -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
+| -baf      | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log` |
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
@@ -107,7 +112,7 @@ Examples: <br />
 **A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper himself.
 
 **Q:** Why does you script not change the service *BLAH*? <br />
-**A:** This script will only change services that are changed from the win default to Black Viper's Safe/Tweaked.
+**A:** You didnt select the All option, it's not a default windows service, cant be changed, or some other good reason.
 
 **Q:** I have an issue with the script, what do I do? <br />
 **A:** Post it as an issue using github's issues tab up top.
