@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "2.0"
-$Script_Date = "05-20-2017"
+$Script_Date = "05-21-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -520,20 +520,26 @@ $Script:All_or_Min = "-min"
 Function ServiceSet ([String]$BVService) {
     Clear-Host
     $CurrServices = Get-Service
+    If($LogBeforeAfter -eq 1){
+        $BeforeLog = $filebase +"Services-Before.log"
+        Get-WmiObject -Class Win32_Service | select DisplayName, StartMode | Out-File $BeforeLog
+    }
+
+# Log file will be in same directory as script named `Services-Before.log` and `Services-After.log`
     DisplayOut  "Changing Service Please wait..." 14 0
-    DisplayOut  "-------------------------------" 14 0
+    DisplayOut  "Service_Name - Current -> Change_To" 14 0
+    DisplayOut  "-------------------------------------" 14 0
     Foreach($item in $csv) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
         If($ServiceTypeNum -eq 0 -and $Show_Skipped -eq 1) {
             $DispTemp = "Skipping $ServiceName"
             DisplayOut $DispTemp  14 0
-            $ServiceCurrType = "Skipp"
         } ElseIf($ServiceTypeNum -ne 0) {
             If($ServiceName -like "*_*"){ $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*")) }
             $ServiceType = $ServicesTypeList[$ServiceTypeNum]
             $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
-			if($ServiceName -is [system.array]){ $ServiceName = $ServiceName[0]}
+            if($ServiceName -is [system.array]){ $ServiceName = $ServiceName[0]}
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
                 $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
                 If($ServiceTypeNum -In 1..3) {
@@ -552,10 +558,14 @@ Function ServiceSet ([String]$BVService) {
                 $DispTemp = "No service with name $ServiceName"
                 DisplayOut $DispTemp  13 0
             }
-		}
+        }
     }
-    DisplayOut  "-------------------------------" 14 0
+    DisplayOut  "-------------------------------------" 14 0
     DisplayOut  "Service Changed..." 14 0
+    If($LogBeforeAfter -eq 1){
+        $AfterLog = $filebase +"Services-After.log"
+        Get-WmiObject -Class Win32_Service | select DisplayName, StartMode | Out-File $AfterLog
+    }
     AutomatedExitCheck 1
 }
 
@@ -567,12 +577,12 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
             # Has to be removed or cant change service from disabled to anything else (Known Bug)
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
             If($S_Name -eq 'NetTcpPortSharing') { 
-			    If(Get-Service -Name "NetMsmqActivator" -and Get-Service -Name "NetPipeActivator" -and Get-Service -Name "NetTcpActivator"){ 
+                If(Get-Service -Name "NetMsmqActivator" -and Get-Service -Name "NetPipeActivator" -and Get-Service -Name "NetTcpActivator"){ 
                     $ReturnV = "Manual"
-				} Else {
+                } Else {
                     $ReturnV = $False
-				}
-			}
+                }
+            }
         } Else {
             $ReturnV = "Already"
         }
@@ -757,6 +767,7 @@ Function VariousChecks {
                 If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
                 If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
                 If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
+                If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
                 If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
                 If($All_or_Min -eq "-all") { 
                     $UpArg = $UpArg + "-full" 
@@ -806,12 +817,12 @@ Function ScriptPreStart {
         Error_Bottom
     }
     If($argsUsed -eq 2) {
-        If($Automated -eq 0 -or $Accept_ToS -eq 0) {
+        If($Automated -eq 0 -and $Accept_ToS -eq 0) {
             TOS
         } Else {
             Black_Viper_Set $Black_Viper $All_or_Min
         }
-    } ElseIf($Accept_ToS -eq 1) {
+    } ElseIf($Accept_ToS -ne 0) {
         Black_Viper_Input
     } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
         TOS
@@ -885,15 +896,17 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-use") {
                     $Script:Service_Ver_Check = 1
                 } ElseIf($ArgVal -eq "-atos") {
-                    $Script:Accept_ToS = "Accepted"
+                    $Script:Accept_ToS = "Accepted-Switch"
                 } ElseIf($ArgVal -eq "-auto") {
                     $Script:Automated = 1
-                    $Script:Accept_ToS = 1
+                    $Script:Accept_ToS = "Accepted-Automated-Switch"
                 } ElseIf($ArgVal -eq "-diag") {
                     $Script:Diagnostic = 1
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
                     If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] }
+                } ElseIf($ArgVal -eq "-baf") {
+                    $Script:LogBeforeAfter = 1
                 } ElseIf($ArgVal -eq "-logc") {
                     $Script:MakeLog = 2
                     If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] }
@@ -936,6 +949,10 @@ $Script:MakeLog = 0             #0 = Dont make a log file
 # Log file will be in same directory as script named `Script.log` (default)
 
 $Script:LogName = "Script.log"  #Name of log file (you can change it)
+
+$Script:LogBeforeAfter = 0      #0 = Dont make a file of all the services before and after the script
+                                #1 = Make a file of all the services before and after the script
+# File will be in same directory as script named `Services-Before.log` and `Services-After.log`
 #--------------------------------
 
 #--------Update Variables-------
@@ -959,7 +976,7 @@ $Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
 
 $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
-								
+                                
 $Script:Show_Skipped = 0        #0 = Dont Show Skipped Services
                                 #1 = Show Skipped Services
 #--------------------------------
