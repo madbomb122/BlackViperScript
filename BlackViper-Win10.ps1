@@ -526,7 +526,8 @@ Function ServiceSet ([String]$BVService) {
 
 # Log file will be in same directory as script named `Services-Before.log` and `Services-After.log`
     DisplayOut  "Changing Service Please wait..." 14 0
-    DisplayOut  "-------------------------------" 14 0
+    DisplayOut  "Service_Name - Current -> Change_To" 14 0
+    DisplayOut  "-------------------------------------" 14 0
     Foreach($item in $csv) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
@@ -558,7 +559,7 @@ Function ServiceSet ([String]$BVService) {
             }
         }
     }
-    DisplayOut  "-------------------------------" 14 0
+    DisplayOut  "-------------------------------------" 14 0
     DisplayOut  "Service Changed..." 14 0
     If($LogBeforeAfter -eq 1){
         $AfterLog = $filebase +"Services-After.log"
