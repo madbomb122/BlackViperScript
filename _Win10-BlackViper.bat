@@ -9,6 +9,10 @@ Set Black_Viper=0
 :: 2 = Run with Black Viper Safe
 :: 3 = Run with Black Viper Tweaked
 
+Set All_or_Min=Min
+:: all = Changes all windows services
+:: min = Changes just the services that are different from default to tweaked/safe
+
 :: Change these to yes or no
 Set Accept_ToS=no
 :: no = See ToS
@@ -35,7 +39,11 @@ Set Skip_Edition_Check=no
 Set Log=no
 Set LogFile=Script.log
 
-:: Diagnostic Output
+Set Log_Before_After=no
+:: Make a file of all the services before and after the script
+:: File will be in same directory as script named `Services-Before.log` and `Services-After.log`
+
+:: Diagnostic Output (Dont use unless asked)
 Set Diagnostic=no
 
 ::----------------------------------------------------------------------
@@ -72,6 +80,7 @@ If /i not "%*"=="" (
         If /i %%i==-diag Set Diagnostic=yes
         If /i %%i==-Set Set SetArg=yes
         If /i %%i==-log Set Log=Yes
+        If /i %%i==-baf Set Log_Before_After=yes
     )
 )
 
@@ -86,6 +95,9 @@ If /i %Black_Viper%==safe Set Run_Option=!Run_Option! -safe
 If /i %Black_Viper%==3 Set Run_Option=!Run_Option! -tweaked
 If /i %Black_Viper%==tweaked Set Run_Option=!Run_Option! -tweaked
 
+If /i %All_or_Min%==All Set Run_Option=!Run_Option! -all
+If /i %All_or_Min%==Min Set Run_Option=!Run_Option! -min
+
 If /i %Skip_Build_Check%==yes Set Run_Option=!Run_Option! -sbc
 
 If /i %Skip_Edition_Check%==yes Set Run_Option=!Run_Option! -sec
@@ -99,6 +111,8 @@ If /i %Service%==yes Set Run_Option=!Run_Option! -use
 If /i %Automated%==yes Set Run_Option=!Run_Option! -auto
 
 If /i %Diagnostic%==yes Set Run_Option=!Run_Option! -diag
+
+If /i %Log_Before_After%==yes Set Run_Option=!Run_Option! -baf
 
 If /i %Log%==yes Set Run_Option=!Run_Option! -log %LogFile%
 
