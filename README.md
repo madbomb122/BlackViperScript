@@ -90,12 +90,16 @@ Examples: <br />
 ******
 
 # FAQ
-**Q:** Do you accept any donations? <br />
-**A:** Not for this script, I'd rather you donate to Black Viper than me since his configurations take alot of effort to do. <br />
-**NOTE:** http://www.blackviper.com/support-bv/
 
 **Q:** The script file looks all messy in notepad, How do i view it? <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
+
+**Q:** Do you accept any donations? <br />
+**A:** I'd rather you donate to Black Viper... but if you would like to donate to me I accept amazon giftcards (email it to me). <br />
+**NOTE:** http://www.blackviper.com/support-bv/
+
+**Q:** How can I contact you? <br />
+**A:** You can email me @ madbomb122@gmail.com, if it's an issue please post under issue
 
 **Q:** The script wont run, can you help me? <br />
 **A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.
@@ -104,9 +108,6 @@ Examples: <br />
 **A:** By default windows blocks ps1 scripts, you can use one of the following <br />
          1. Use the bat file to run the script (recommended) <br />
          2. On an admin powershell console `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted` <br />	 
-
-**Q:** How can I contact you? <br />
-**A:** You can email me @ madbomb122@gmail.com, if it's an issue please post under issue
 
 **Q:** Who do I contact about the Service Configurations or an issue with the configuration? <br />
 **A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper himself.
