@@ -146,7 +146,9 @@ Examples: <br />
 **A:** No, my file is not the same. <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
-**A:** Yes, edit the file `BlackViper.csv` and put it in the proper format <br />
+**A:** Yes, to add/remove edit the file `BlackViper.csv` <br />
+---to remove a service remove the line or put something to change service name, other than symbols (# is fime) <br />
+---to add put it in the proper format <br />
 **Note:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)` <br />
 
 **Q:** I have a suggestion for the script, how do i suggest it? <br />
