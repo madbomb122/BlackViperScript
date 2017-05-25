@@ -62,9 +62,9 @@ $Release_Type = "Testing"
 
     AT YOUR OWN RISK YOU CAN 
         1. Run the script on x32 w/o changing settings (But shows a warning) 
-        2. Change variable at bottom of script to skip the check for 
-           A. Home/Pro ($Script:Edition_Check)
-           B. Creator's Update ($Script:Build_Check)
+        2. Skip the check for 
+            A. Home/Pro ($Script:Edition_Check variable bottom of script or use -sec switch) 
+            B. Creator's Update ($Script:Build_Check variable bottom of script or use -sbc switch) 
 
 .BASIC USAGE
   Run script with powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
@@ -79,24 +79,13 @@ $Release_Type = "Testing"
 .ADVANCED USAGE
  One of the following Methods...
   1. Edit values at bottom of the script then run script
-  2. Edit bat file and ru
+  2. Edit bat file and run
   3. Run the script with one of these arguments/switches (space between multiple)
 
 -- Basic Switches --
  Switches       Description of Switch
   -atos          (Accepts ToS)
-  -auto          (Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script)
-  
---Update Switches--
- Switches       Description of Switch
-  -usc           (Checks for Update to Script file before running)
-  -use           (Checks for Update to Service file before running)
-  -sic           (Skips Internet Check)
-  
---AT YOUR OWN RISK Switches--
- Switches       Description of Switch
-  -sec           (Skips Edition Check)
-  -sbc           (Skips Build Check)
+  -auto          (Implies -Atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script)
 
 -- Service Configuration Switches --
  Switches       Description of Switch
@@ -109,11 +98,27 @@ $Release_Type = "Testing"
   -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
   -Set 3          ^Same as Above
   -Set tweaked    ^Same as Above
+
+-- Service Choice Switches --
+  -all           (Every windows services will change)
+  -min           (Just the services different from the default to safe/tweaked list)
+
+--Update Switches--
+ Switches       Description of Switch
+  -usc           (Checks for Update to Script file before running)
+  -use           (Checks for Update to Service file before running)
+  -sic           (Skips Internet Check)
   
+--AT YOUR OWN RISK Switches--
+ Switches       Description of Switch
+  -sec           (Skips Edition Check)
+  -sbc           (Skips Build Check)
+
 -- Misc Switches --
  Switches       Description of Switch
-  -diag          (Shows diagnostic information)
-
+  -diag          (Shows diagnostic information, Dont use unless asked, Stops -auto)
+  -log           (Makes a log file Script.log)
+  -baf           (File of Services before and after the script)
 --------------------------------------------------------------------------------#>
 
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -129,7 +134,7 @@ $Release_Type = "Testing"
 # Pre-Script -Start
 ##########
 
-If($Release_Type -eq "Stable") { $ErrorActionPreference= 'silentlycontinue' }
+If($Release_Type -eq "Stable") { $ErrorActionPreference = 'silentlycontinue' }
 
 $Global:PassedArg = $args
 $Global:filebase = $PSScriptRoot + "\"
@@ -211,8 +216,7 @@ Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
 Function  AutomatedExitCheck ([int]$ExitBit) {
     If ($Automated -ne 1) {
         Write-Host ""
-        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
-        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+        Read-Host -Prompt "Press Any key to Close..."
     }
     If ($ExitBit -eq 1) { Exit }
 }
@@ -230,14 +234,13 @@ Function Error_Bottom {
     MenuLineLog
     MenuBlankLineLog
     If($Diagnostic -eq 1) {
-        DiagnosticCheck 1
+        DiagnosticCheck 0
         Write-Host ""
-        Write-Host "Press Any key to Close..." -ForegroundColor White -BackgroundColor Black
-        $key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+        Read-Host -Prompt "Press Any key to Close..."
         Exit
+    } Else {
+        AutomatedExitCheck 1
     }
-    AutomatedExitCheck 1
-    
 }
 
 Function DiagnosticCheck ([int]$Bypass) {
@@ -245,18 +248,18 @@ Function DiagnosticCheck ([int]$Bypass) {
         $WindowVersion = [Environment]::OSVersion.Version.Major
         $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
         $WindowsBuild = [Environment]::OSVersion.Version.build
-        $winV = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
+        $WinVer = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
         DisplayOutMenu " Diagnostic Output" 15 0 1 1
         DisplayOutMenu " Some items may be blank" 15 0 1 1
         DisplayOutMenu " --------Start--------" 15 0 1 1
         DisplayOutMenu " Script Version = $Script_Version" 15 0 1 1
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1 1
-        DisplayOutMenu " Error Type = $ErrorDi" 13 0 1 1
+        DisplayOutMenu " Error = $ErrorDi" 13 0 1 1
         DisplayOutMenu " Window = $WindowVersion" 15 0 1 1
         DisplayOutMenu " Edition = $FullWinEdition" 15 0 1 1
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1 1
-        DisplayOutMenu " Version = $winV" 15 0 1 1
+        DisplayOutMenu " Version = $WinVer" 15 0 1 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1 1
         DisplayOutMenu " Desktop/Laptop = $IsLaptop" 15 0 1 1
         DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1 1
@@ -285,6 +288,15 @@ Function LaptopCheck {
     }
 }
 
+Function ShowInvalid ([Int]$InvalidA) {
+    If($InvalidA -eq 1) {
+        Write-Host ""
+        Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
+        Return 0
+    }
+    Return 0
+}
+
 ##########
 # Multi Use Functions -End
 ##########
@@ -294,6 +306,7 @@ Function LaptopCheck {
 ##########
 
 Function TOSDisplay {
+    Clear-Host
     $BorderColor = 14
     If($Release_Type -ne "Stable") {
         $BorderColor = 15
@@ -329,13 +342,8 @@ Function TOSDisplay {
 Function TOS {
     $TOS = 'X'
     while($TOS -ne "Out") {
-        Clear-Host
         TOSDisplay
-        If($Invalid -eq 1) {
-            Write-Host ""
-            Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
-            $Invalid = 0
-        }
+        $Invalid = ShowInvalid $Invalid
         $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
         Switch($TOS.ToLower()) {
             n {Exit}
@@ -363,11 +371,7 @@ Function LoadWebCSV {
         LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
         MenuBlankLine
         MenuLine
-        If($Invalid -eq 1) {
-            Write-Host ""
-            Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
-            $Invalid = 0
-        }
+        $Invalid = ShowInvalid $Invalid
         $LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
         Switch($LoadWebCSV.ToLower()) {
             n {Exit}
@@ -381,6 +385,7 @@ Function LoadWebCSV {
 }
 
 Function MenuDisplay ([Array]$ChToDisplay) {
+    Clear-Host
     MenuLine
     LeftLine ;DisplayOutMenu $ChToDisplay[0] 11 0 0 0 ;RightLine
     MenuLine
@@ -413,13 +418,8 @@ Function MenuDisplay ([Array]$ChToDisplay) {
 Function Black_Viper_Input {
     $Black_Viper_Input = 'X'
     while($Black_Viper_Input -ne "Out") {
-        Clear-Host
         MenuDisplay $BlackViperDisItems
-        If($Invalid -eq 1) {
-            Write-Host ""
-            Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
-            $Invalid = 0
-        }
+        $Invalid = ShowInvalid $Invalid
         $Black_Viper_Input = Read-Host "`nChoice"
         switch -regex ($Black_Viper_Input) {
             "1A" {Black_Viper_Set 1 "-Full"; $Black_Viper_Input = "Out"}
@@ -452,18 +452,16 @@ $BlackViperDisItems = @(
 "B. Go to Black Viper's Website                   ")
 
 Function CopyrightDisplay {
-    $CopyrightDisplay = 'X'
-    While($CopyrightDisplay -ne "Out") {
-        Clear-Host
-        MenuLine
-        LeftLine ;DisplayOutMenu $CopyrightItems[0] 11 0 0 0 ;RightLine
-        MenuLine
-        For($i=1; $i -lt $CopyrightItems.length; $i++) { LeftLine ;DisplayOutMenu $CopyrightItems[$i] 2 0 0 0 ;RightLine }
-        MenuLine
-        Write-Host ""
-        $CopyrightDisplay = Read-Host "`nPress 'Enter' to continue"
-        Switch($CopyrightDisplay) { default {$CopyrightDisplay = "Out"} }
-    }
+    Clear-Host
+    MenuLine
+    LeftLine ;DisplayOutMenu $CopyrightItems[0] 11 0 0 0 ;RightLine
+    MenuLine
+    For($i=1; $i -lt $CopyrightItems.length-1; $i++) { LeftLine ;DisplayOutMenu $CopyrightItems[$i] 2 0 0 0 ;RightLine }
+    MenuLine
+    LeftLine ;DisplayOutMenu $CopyrightItems[$CopyrightItems.length-1] 13 0 0 0 ;RightLine
+    MenuLine
+    Write-Host ""
+    Read-Host -Prompt "Press any key to Go back to Menu"
     Return
 }
 
@@ -503,7 +501,8 @@ $CopyrightItems = @(
 ' IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,    ',
 ' ARISING FROM, OUT OF OR IN CONNECTION WITH THE  ',
 ' SOFTWARE OR THE USE OR OTHER DEALINGS IN THE    ',
-' SOFTWARE.                                       ')
+' SOFTWARE.                                       ',
+"Press any key to go back to menu                 ")
 
 $ServicesTypeList = @(
     '',          #0 -None (Not Installed, Default Only)
@@ -517,18 +516,20 @@ $Script:Black_Viper = 0
 $Script:argsUsed = 0
 $Script:All_or_Min = "-min"
 
+Function ServiceBA ([String]$ServiceBA) {
+    If($LogBeforeAfter -eq 1){
+        $ServiceBAFile = $filebase + $ServiceBA
+        Get-WmiObject -Class Win32_Service | select DisplayName, StartMode | Out-File $ServiceBAFile
+    }
+}
+
 Function ServiceSet ([String]$BVService) {
     Clear-Host
     $CurrServices = Get-Service
-    If($LogBeforeAfter -eq 1){
-        $BeforeLog = $filebase +"Services-Before.log"
-        Get-WmiObject -Class Win32_Service | select DisplayName, StartMode | Out-File $BeforeLog
-    }
-
-# Log file will be in same directory as script named `Services-Before.log` and `Services-After.log`
-    DisplayOut  "Changing Service Please wait..." 14 0
-    DisplayOut  "Service_Name - Current -> Change_To" 14 0
-    DisplayOut  "-------------------------------------" 14 0
+    ServiceBA "Services-Before.log"
+    DisplayOut "Changing Service Please wait..." 14 0
+    DisplayOut "Service_Name - Current -> Change_To" 14 0
+    DisplayOut "-------------------------------------" 14 0
     Foreach($item in $csv) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
@@ -560,12 +561,9 @@ Function ServiceSet ([String]$BVService) {
             }
         }
     }
-    DisplayOut  "-------------------------------------" 14 0
-    DisplayOut  "Service Changed..." 14 0
-    If($LogBeforeAfter -eq 1){
-        $AfterLog = $filebase +"Services-After.log"
-        Get-WmiObject -Class Win32_Service | select DisplayName, StartMode | Out-File $AfterLog
-    }
+    DisplayOut "-------------------------------------" 14 0
+    DisplayOut "Service Changed..." 14 0
+    ServiceBA "Services-After.log"
     AutomatedExitCheck 1
 }
 
@@ -573,23 +571,22 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
     If(Get-Service -Name "$S_Name"){
         $C_Type = (Get-Service $S_Name).StartType
         If($S_Type -ne $C_Type) {
-            $ReturnV = $C_Type
             # Has to be removed or cant change service from disabled to anything else (Known Bug)
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
             If($S_Name -eq 'NetTcpPortSharing') { 
                 If(Get-Service -Name "NetMsmqActivator" -and Get-Service -Name "NetPipeActivator" -and Get-Service -Name "NetTcpActivator"){ 
-                    $ReturnV = "Manual"
+                    Return "Manual"
                 } Else {
-                    $ReturnV = $False
+                    Return $False
                 }
             }
+            Return $C_Type
         } Else {
-            $ReturnV = "Already"
+            Return "Already"
         }
     } Else {
-        $ReturnV = $False
+        Return $False
     }
-    Return $ReturnV
 }
 
 Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
@@ -626,10 +623,12 @@ Function PreScriptCheck {
 
     $ErrorDi = ""
     $EBCount = 0
+
     $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
     $WinEdition = $FullWinEdition.Split(' ')[-1]
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
+
     If($WinEdition -eq "Home") {
         $WinEdition = "-Home"
     } ElseIf($WinEdition -eq "Pro" -or $Edition_Check -eq 1) {
@@ -645,13 +644,13 @@ Function PreScriptCheck {
     # 14393 = Anniversary Update
     # 10586 = First Major Update
     # 10240 = First Release
-    
+
     $Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
     # 1703 = Creator's Update
     # 1607 = Anniversary Update
     # 1511 = First Major Update
     # 1507 = First Release
-    
+
     If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) {
         If($EditionCheck -eq "Fail") {
             $ErrorDi += " & Build"
@@ -705,7 +704,7 @@ Function PreScriptCheck {
     }
     VariousChecks
 }
-    
+
 Function VariousChecks {
     $ServiceFilePath = $filebase + "BlackViper.csv"
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
@@ -737,11 +736,12 @@ Function VariousChecks {
             }
             $SV=[Int]$Script_Version
             If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
+                $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer
                 If($Release_Type -eq "Stable") {
-                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + ".ps1"
+                    $DFilename += ".ps1"
                     $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
                 } Else {
-                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "-Testing.ps1"
+                    $DFilename += "-Testing.ps1"
                     $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
                 }
                 $WebScriptFilePath = $filebase + $DFilename
