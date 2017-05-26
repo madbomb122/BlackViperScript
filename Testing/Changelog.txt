@@ -1,4 +1,10 @@
 -----------------------------------------------------------------------------------
+2.1 (05-26-2017)
+
+Various in script improvements
+Fixed a check for what startup type `NetTcpPortSharing` should be (it depends on if other service exists)
+
+-----------------------------------------------------------------------------------
 2.0 (05-21-2017)
 
 Fixed problem with the -atos switch (accept ToS) not setting properly
