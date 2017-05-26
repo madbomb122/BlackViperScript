@@ -523,7 +523,7 @@ Function ServiceBA ([String]$ServiceBA) {
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
-    $Script:CurrServices = Get-Service | select name, StartType
+    $Script:CurrServices = Get-Service | select name
     ServiceBA "Services-Before.log"
     DisplayOut "Changing Service Please wait..." 14 0
     DisplayOut "Service_Name - Current -> Change_To" 14 0
@@ -535,7 +535,6 @@ Function ServiceSet ([String]$BVService) {
             $DispTemp = "Skipping $ServiceName"
             DisplayOut $DispTemp  14 0
         } ElseIf($ServiceTypeNum -ne 0) {
-            #($CurrServices -match $S_Name).StartType
             If($ServiceName -like "*_*"){ $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
             $ServiceType = $ServicesTypeList[$ServiceTypeNum]
             $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
@@ -567,8 +566,8 @@ Function ServiceSet ([String]$BVService) {
 }
 
 Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
-    If($CurrServices.Name -contains $S_Name){
-        $C_Type = ($CurrServices -match $S_Name).StartType
+    If($CurrServices.Name -like $S_Name){
+        $C_Type = (Get-Service $S_Name).StartType
         If($S_Type -ne $C_Type) {
             # Has to be removed or cant change service from disabled to anything else (Known Bug)
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
