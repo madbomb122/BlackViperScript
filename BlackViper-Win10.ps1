@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.0"
-$Script_Date = "05-24-2017"
+$Script_Version = "2.1"
+$Script_Date = "05-26-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -147,6 +147,7 @@ If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::
 $TempFolder = $env:Temp
 $ForBuild = 15063
 $ForVer = 1703
+$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 
 $Version_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
 $Service_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
@@ -291,7 +292,6 @@ Function ShowInvalid ([Int]$InvalidA) {
     If($InvalidA -eq 1) {
         Write-Host ""
         Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
-        Return 0
     }
     Return 0
 }
@@ -405,9 +405,7 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     MenuLine
     LeftLine ;DisplayOutMenu $ChToDisplay[14] 13 0 0 0 ;RightLine
     MenuLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[15] 15 0 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[16] 15 0 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[17] 15 0 0 0 ;RightLine
+    For($i=15; $i -lt 18; $i++) { LeftLine ;DisplayOutMenu $ChToDisplay[$i] 15 0 0 0 ;RightLine }
     MenuLine
     LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 0 ;RightLine
     LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 0 ;DisplayOutMenu ("$ServiceDate" +(" "*(18-$ServiceDate.length))) 11 0 0 0 ;RightLine
@@ -518,13 +516,13 @@ $Script:All_or_Min = "-min"
 Function ServiceBA ([String]$ServiceBA) {
     If($LogBeforeAfter -eq 1){
         $ServiceBAFile = $filebase + $ServiceBA
-        Get-WmiObject -Class Win32_Service | select DisplayName, StartMode | Out-File $ServiceBAFile
+        Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
     }
 }
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
-    $CurrServices = Get-Service
+    $Script:CurrServices = Get-Service | select Name, StartType
     ServiceBA "Services-Before.log"
     DisplayOut "Changing Service Please wait..." 14 0
     DisplayOut "Service_Name - Current -> Change_To" 14 0
@@ -536,7 +534,7 @@ Function ServiceSet ([String]$BVService) {
             $DispTemp = "Skipping $ServiceName"
             DisplayOut $DispTemp  14 0
         } ElseIf($ServiceTypeNum -ne 0) {
-            If($ServiceName -like "*_*"){ $ServiceName = $CurrServices -like (-join($ServiceName.replace('?',''),"*")) }
+            If($ServiceName -like "*_*"){ $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
             $ServiceType = $ServicesTypeList[$ServiceTypeNum]
             $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
             if($ServiceName -is [system.array]){ $ServiceName = $ServiceName[0]}
@@ -567,13 +565,14 @@ Function ServiceSet ([String]$BVService) {
 }
 
 Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
-    If(Get-Service -Name "$S_Name"){
-        $C_Type = (Get-Service $S_Name).StartType
+    If($CurrServices | Where Name -eq $S_Name){
+        $C_Type = ($CurrServices | Where Name -eq $S_Name).StartType
         If($S_Type -ne $C_Type) {
             # Has to be removed or cant change service from disabled to anything else (Known Bug)
-            If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
-            If($S_Name -eq 'NetTcpPortSharing') { 
-                If(Get-Service -Name "NetMsmqActivator" -and Get-Service -Name "NetPipeActivator" -and Get-Service -Name "NetTcpActivator"){ 
+            If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
+                If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
+            } ElseIf($S_Name -eq 'NetTcpPortSharing') {
+                If($CurrServices.Name | where {$_ -contains $NetTCP}){
                     Return "Manual"
                 } Else {
                     Return $False
