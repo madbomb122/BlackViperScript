@@ -517,13 +517,13 @@ $Script:All_or_Min = "-min"
 Function ServiceBA ([String]$ServiceBA) {
     If($LogBeforeAfter -eq 1){
         $ServiceBAFile = $filebase + $ServiceBA
-        Get-Service | select DisplayName, StartType | Out-File $ServiceBAFile
+        Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
     }
 }
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
-    $Script:CurrServices = Get-Service | select name
+    $Script:CurrServices = Get-Service | select Name, StartType
     ServiceBA "Services-Before.log"
     DisplayOut "Changing Service Please wait..." 14 0
     DisplayOut "Service_Name - Current -> Change_To" 14 0
@@ -566,15 +566,14 @@ Function ServiceSet ([String]$BVService) {
 }
 
 Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
-    If($CurrServices.Name -like $S_Name){
-        $C_Type = (Get-Service $S_Name).StartType
+    If($CurrServices | Where Name -eq $S_Name){
+        $C_Type = ($CurrServices | Where Name -eq $S_Name).StartType
         If($S_Type -ne $C_Type) {
             # Has to be removed or cant change service from disabled to anything else (Known Bug)
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
                 If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
-            }
-            If($S_Name -eq 'NetTcpPortSharing') {
-                If($CurrServices.Name | where {$_-contains $NetTCP}){
+            } ElseIf($S_Name -eq 'NetTcpPortSharing') {
+                If($CurrServices.Name | where {$_ -contains $NetTCP}){
                     Return "Manual"
                 } Else {
                     Return $False
