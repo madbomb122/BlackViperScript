@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.1"
-$Script_Date = "05-26-2017"
+$Script_Version = "2.2"
+$Script_Date = "05-29-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -514,7 +514,7 @@ $Script:argsUsed = 0
 $Script:All_or_Min = "-min"
 
 Function ServiceBA ([String]$ServiceBA) {
-    If($LogBeforeAfter -eq 1){
+    If($LogBeforeAfter -eq 1) {
         $ServiceBAFile = $filebase + $ServiceBA
         Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
     }
@@ -522,22 +522,22 @@ Function ServiceBA ([String]$ServiceBA) {
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
-    $Script:CurrServices = Get-Service | select Name, StartType
+    $Script:CurrServices = Get-Service | Select Name, StartType
     ServiceBA "Services-Before.log"
     DisplayOut "Changing Service Please wait..." 14 0
     DisplayOut "Service_Name - Current -> Change_To" 14 0
     DisplayOut "-------------------------------------" 14 0
-    Foreach($item in $csv) {
+    ForEach($item In $csv) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
         If($ServiceTypeNum -eq 0 -and $Show_Skipped -eq 1) {
             $DispTemp = "Skipping $ServiceName"
             DisplayOut $DispTemp  14 0
         } ElseIf($ServiceTypeNum -ne 0) {
-            If($ServiceName -like "*_*"){ $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
+            If($ServiceName -like "*_*") { $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
             $ServiceType = $ServicesTypeList[$ServiceTypeNum]
             $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
-            if($ServiceName -is [system.array]){ $ServiceName = $ServiceName[0]}
+            If($ServiceName -is [system.array]) { $ServiceName = $ServiceName[0] }
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
                 $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
                 If($ServiceTypeNum -In 1..3) {
@@ -548,7 +548,7 @@ Function ServiceSet ([String]$BVService) {
                     $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
                     Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
                 }
-                If($Show_Changed -eq 1){ DisplayOut $DispTemp  11 0 }
+                If($Show_Changed -eq 1) { DisplayOut $DispTemp  11 0 }
             } ElseIf($ServiceCurrType -eq "Already" -and $Show_Already_Set -eq 1) {
                 $DispTemp = "$ServiceName is already $ServiceType"
                 DisplayOut $DispTemp  15 0
@@ -565,14 +565,14 @@ Function ServiceSet ([String]$BVService) {
 }
 
 Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
-    If($CurrServices | Where Name -eq $S_Name){
+    If($CurrServices | Where Name -eq $S_Name) {
         $C_Type = ($CurrServices | Where Name -eq $S_Name).StartType
         If($S_Type -ne $C_Type) {
-            # Has to be removed or cant change service from disabled to anything else (Known Bug)
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
+                # Has to be removed or cant change service from disabled (Known Bug)
                 If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
             } ElseIf($S_Name -eq 'NetTcpPortSharing') {
-                If($CurrServices.Name | where {$_ -contains $NetTCP}){
+                If($CurrServices.Name | where {$_ -contains $NetTCP}) {
                     Return "Manual"
                 } Else {
                     Return $False
@@ -727,7 +727,7 @@ Function VariousChecks {
             } Else {
                 $WebScriptVer = $($CSV_Ver[3].Version)
             }
-            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home")) {
+            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
                 [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
@@ -844,7 +844,7 @@ Function ArgCheck {
     If ($PassedArg.length -gt 0) {
         For($i=0; $i -lt $PassedArg.length; $i++) {
             $ArgVal = $PassedArg[$i]
-            If($ArgVal.StartsWith("-")){
+            If($ArgVal.StartsWith("-")) {
                 $ArgVal = $PassedArg[$i].ToLower()
                 <#If($ArgVal -eq "-set" -and $PassedArg[($i+1)] -In 1..3) {
                     $Script:Black_Viper = $PassedArg[($i+1)]
@@ -902,12 +902,12 @@ Function ArgCheck {
                     $Script:Diagnostic = 1
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
-                    If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] }
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
                 } ElseIf($ArgVal -eq "-baf") {
                     $Script:LogBeforeAfter = 1
                 } ElseIf($ArgVal -eq "-logc") {
                     $Script:MakeLog = 2
-                    If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] }
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
                 }
             }
         }
