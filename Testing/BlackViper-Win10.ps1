@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.2"
-$Script_Date = "05-29-2017"
+$Script_Version = "2.3"
+$Script_Date = "05-30-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -518,11 +518,16 @@ Function ServiceBA ([String]$ServiceBA) {
     If($LogBeforeAfter -eq 1) {
         $ServiceBAFile = $filebase + $ServiceBA
         Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
-    }
+    } ElseIf($LogBeforeAfter -eq 2) {
+        $TMPServices = Get-Service | Select DisplayName, StartType
+		Write-Output "Services" 4>&1 | Out-File -filepath $LogFile -Append 
+		Write-Output $TMPServices 4>&1 | Out-File -filepath $LogFile -Append 
+	}
 }
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
+    If($LogBeforeAfter -eq 1) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
     ServiceBA "Services-Before.log"
     DisplayOut "Changing Service Please wait..." 14 0
@@ -542,16 +547,19 @@ Function ServiceSet ([String]$BVService) {
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
                 $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
                 If($ServiceTypeNum -In 1..3) {
-                    Set-Service $ServiceName -StartupType $ServiceType
+                    If($Dry_Run -ne 1) { Set-Service $ServiceName -StartupType $ServiceType }
                 } ElseIf($ServiceTypeNum -eq 4) {
                     $DispTemp = "$DispTemp (Delayed Start)"
-                    Set-Service $ServiceName -StartupType $ServiceType
-                    $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
-                    Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
+                    If($Dry_Run -ne 1) {
+                        Set-Service $ServiceName -StartupType $ServiceType
+                        $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
+                        Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
+                    }
                 }
                 If($Show_Changed -eq 1) { DisplayOut $DispTemp  11 0 }
             } ElseIf($ServiceCurrType -eq "Already" -and $Show_Already_Set -eq 1) {
                 $DispTemp = "$ServiceName is already $ServiceType"
+                If($ServiceTypeNum -eq 4) { $DispTemp += " (Delayed Start)" }
                 DisplayOut $DispTemp  15 0
             } ElseIf($ServiceCurrType -eq $False -and $Show_Non_Installed -eq 1) {
                 $DispTemp = "No service with name $ServiceName"
@@ -767,6 +775,9 @@ Function VariousChecks {
                 If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
                 If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
                 If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
+                If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
+                If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+                If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
                 If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
                 If($All_or_Min -eq "-all") { 
                     $UpArg = $UpArg + "-full" 
@@ -901,6 +912,7 @@ Function ArgCheck {
                     $Script:Accept_ToS = "Accepted-Automated-Switch"
                 } ElseIf($ArgVal -eq "-diag") {
                     $Script:Diagnostic = 1
+                    $Script:Automated = 0
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
                     If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
@@ -909,6 +921,27 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-logc") {
                     $Script:MakeLog = 2
                     If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
+                } ElseIf($ArgVal -eq "-dry") {
+                    $Script:Dry_Run = 1
+                    $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
+                    $Script:Show_Non_Installed = 1
+                    $Script:Show_Skipped = 1
+                } ElseIf($ArgVal -eq "-snis") {
+                    $Script:Show_Non_Installed = 1
+                } ElseIf($ArgVal -eq "-sss") {
+                    $Script:Show_Skipped = 1
+                } ElseIf($ArgVal -eq "-devl") {
+                    $Script:MakeLog = 1
+                    $Script:LogFile = $filebase + "Ddev-Logs.log"
+                    $Script:Diagnostic = 1
+                    $Script:Automated = 0
+                    $Script:LogBeforeAfter = 2
+                    $Script:Dry_Run = 1
+                    $Script:Accept_ToS = "Accepted-Dev-Switch"
+                    $Script:Show_Non_Installed = 1
+                    $Script:Show_Skipped = 1
+                    $Script:Show_Changed = 1
+                    $Script:Show_Already_Set = 1
                 }
             }
         }
@@ -990,6 +1023,14 @@ $Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
 
 $Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
                                 #1 = Allows you to run on Non-Creator's Update
+#--------------------------------
+
+#--------Dev Mode Variables-------
+$Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
+                                #1 = Shows diagnostic information, Dont use unless asked, Stops -auto
+
+$Script:Dry_Run = 0             #0 = Runs script normaly
+                                #1 = Runs script but shows what will be changed
 #--------------------------------------------------------------------------
 
 #Starts the script (Do not change)
