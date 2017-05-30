@@ -1,6 +1,8 @@
 -----------------------------------------------------------------------------------
 2.3 (05-26-2017)
 
+Added a Dry Run mode (used to see what changes will be done)
+
 Added switch
  Switches       Description of Switch
   -snis          Shows not installed services (that can be changed)
