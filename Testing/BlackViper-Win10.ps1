@@ -778,9 +778,10 @@ Function VariousChecks {
                 If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
                 If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
                 If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
+                If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
                 If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
-                If($All_or_Min -eq "-all") { 
-                    $UpArg = $UpArg + "-full" 
+                If($All_or_Min -eq "-full") { 
+                    $UpArg = $UpArg + "-all" 
                 } Else {
                     $UpArg = $UpArg + "-min"
                 }
@@ -931,20 +932,23 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-sss") {
                     $Script:Show_Skipped = 1
                 } ElseIf($ArgVal -eq "-devl") {
-                    $Script:MakeLog = 1
-                    $Script:LogFile = $filebase + "Ddev-Logs.log"
-                    $Script:Diagnostic = 1
-                    $Script:Automated = 0
-                    $Script:LogBeforeAfter = 2
-                    $Script:Dry_Run = 1
-                    $Script:Accept_ToS = "Accepted-Dev-Switch"
-                    $Script:Show_Non_Installed = 1
-                    $Script:Show_Skipped = 1
-                    $Script:Show_Changed = 1
-                    $Script:Show_Already_Set = 1
+                    $Script:DevLog = 1
                 }
             }
         }
+    }
+    If($DevLog -eq 1) {
+        $Script:MakeLog = 1
+        $Script:LogName = "Ddev-Logs.log"
+        $Script:Diagnostic = 1
+        $Script:Automated = 0
+        $Script:LogBeforeAfter = 2
+        $Script:Dry_Run = 1
+        $Script:Accept_ToS = "Accepted-Dev-Switch"
+        $Script:Show_Non_Installed = 1
+        $Script:Show_Skipped = 1
+        $Script:Show_Changed = 1
+        $Script:Show_Already_Set = 1
     }
     If($argsUsed -eq 3 -and $Automated -eq 1) {
         Error_Top_Display
@@ -976,6 +980,9 @@ $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of
                                 #1 = Close on - User input, On Errors, or End of Script
 # Automated = 1, Implies that you accept the "ToS"
 
+$Script:Dry_Run = 0             #0 = Runs script normaly
+                                #1 = Runs script but shows what will be changed
+
 $Script:MakeLog = 0             #0 = Dont make a log file
                                 #1 = Make a log file
 # Log file will be in same directory as script named `Script.log` (default)
@@ -988,6 +995,7 @@ $Script:LogBeforeAfter = 0      #0 = Dont make a file of all the services before
 #--------------------------------
 
 #--------Update Variables-------
+# Function = Option             #Choices
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 #Note: If found will Auto download and runs that
@@ -1026,11 +1034,13 @@ $Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
 #--------------------------------
 
 #--------Dev Mode Variables-------
+# Best not to use these unless asked to (these stop automated)
+# Function = Option             #Choices
 $Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
-                                #1 = Shows diagnostic information, Dont use unless asked, Stops -auto
+                                #1 = Shows diagnostic information
 
-$Script:Dry_Run = 0             #0 = Runs script normaly
-                                #1 = Runs script but shows what will be changed
+$Script:DevLog = 0              #0 = Doesn't make a Dev Log
+                                #1 = Makes a log files.. with what services change, before and after for services, and diagnostic info 
 #--------------------------------------------------------------------------
 
 #Starts the script (Do not change)
