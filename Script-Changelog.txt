@@ -1,4 +1,15 @@
 -----------------------------------------------------------------------------------
+2.3 (06-02-2017)
+
+Added a Dry Run mode (used to see what changes will be done)
+
+Added switch
+ Switches       Description of Switch
+  -snis          Shows not installed services (that can be changed)
+  -dry           Runs script but shows what will be changed
+  -devl          Used to make a log file that is ment to be sent to me
+
+-----------------------------------------------------------------------------------
 2.2 (05-29-2017)
 
 Fixed bug in service update check
