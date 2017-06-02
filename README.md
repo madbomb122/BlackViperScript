@@ -80,8 +80,8 @@ Use one of the following Methods you can
 | -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
 | -baf      | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log` |
 | -snis      | Shows not installed services (that can be changed)                    |  |
-| -dry       | Runs script and shows what will be changed if ran normaly                   |  |
-| -devl      | Makes a log file with various Diagnostic information                    |  |
+| -dry       | Runs script and shows what will be changed if ran normaly                   | **No Services are changes** |
+| -devl      | Makes a log file with various Diagnostic information                    | **No Services are changes** |
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
