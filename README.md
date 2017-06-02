@@ -81,7 +81,7 @@ Use one of the following Methods you can
 | -baf      | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log` |
 | -snis      | Shows not installed services (that can be changed)                    |  |
 | -dry       | Runs script and shows what will be changed if ran normaly                   |  |
-| -devl      | Creates a log file that is used to help me diagnose some problems                    | **DO NOT USE UNLESS ASKED** |
+| -devl      | Makes a log file with various Diagnostic information                    |  |
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
