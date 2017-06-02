@@ -1,6 +1,5 @@
 # Currently Testing (Read Notes)
-Adding some switches (see changelog) <br/>
-Added a Dry Run (used to see what changes will be done)
+Nothing ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
