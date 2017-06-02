@@ -1,5 +1,5 @@
 **Current Version** <br />
-**Script:** `2.2` (May 29, 2017) <br />
+**Script:** `2.3` (June 02, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 **Note: The 2.0+ Script/Service files wont work with versions older than 2.0 due to big changes**
@@ -79,6 +79,9 @@ Use one of the following Methods you can
 | -diag     | Shows some diagnostic information on error messages                            | **Stops automation** |
 | -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
 | -baf      | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log` |
+| -snis      | Shows not installed services (that can be changed)                    |  |
+| -dry       | Runs script and shows what will be changed if ran normaly                   |  |
+| -devl      | Creates a log file that is used to help me diagnose some problems                    | **DO NOT USE UNLESS ASKED** |
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
