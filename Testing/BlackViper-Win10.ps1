@@ -516,20 +516,25 @@ $Script:All_or_Min = "-min"
 
 Function ServiceBA ([String]$ServiceBA) {
     If($LogBeforeAfter -eq 1) {
-        $ServiceBAFile = $filebase + $ServiceBA
+        $ServiceBAFile = $filebase + $ServiceBA + ".log"
         Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
     } ElseIf($LogBeforeAfter -eq 2) {
         $TMPServices = Get-Service | Select DisplayName, StartType
-        Write-Output "Services" 4>&1 | Out-File -filepath $LogFile -Append 
-        Write-Output $TMPServices 4>&1 | Out-File -filepath $LogFile -Append 
+        Write-Output " " 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "$ServiceBA -Start" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output $TMPServices 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "$ServiceBA -End" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output " " 4>&1 | Out-File -filepath $LogFile -Append
     }
 }
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
-    If($LogBeforeAfter -eq 1) { DiagnosticCheck 1 }
+    If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
-    ServiceBA "Services-Before.log"
+    ServiceBA "Services-Before"
     DisplayOut "Changing Service Please wait..." 14 0
     DisplayOut "Service_Name - Current -> Change_To" 14 0
     DisplayOut "-------------------------------------" 14 0
@@ -569,7 +574,7 @@ Function ServiceSet ([String]$BVService) {
     }
     DisplayOut "-------------------------------------" 14 0
     DisplayOut "Service Changed..." 14 0
-    ServiceBA "Services-After.log"
+    ServiceBA "Services-After"
     AutomatedExitCheck 1
 }
 
