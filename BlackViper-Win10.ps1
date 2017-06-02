@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.2"
-$Script_Date = "05-29-2017"
+$Script_Version = "2.3"
+$Script_Date = "06-02-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -515,15 +515,25 @@ $Script:All_or_Min = "-min"
 
 Function ServiceBA ([String]$ServiceBA) {
     If($LogBeforeAfter -eq 1) {
-        $ServiceBAFile = $filebase + $ServiceBA
+        $ServiceBAFile = $filebase + $ServiceBA + ".log"
         Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
+    } ElseIf($LogBeforeAfter -eq 2) {
+        $TMPServices = Get-Service | Select DisplayName, StartType
+        Write-Output " " 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "$ServiceBA -Start" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output $TMPServices 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "$ServiceBA -End" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output " " 4>&1 | Out-File -filepath $LogFile -Append
     }
 }
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
+    If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
-    ServiceBA "Services-Before.log"
+    ServiceBA "Services-Before"
     DisplayOut "Changing Service Please wait..." 14 0
     DisplayOut "Service_Name - Current -> Change_To" 14 0
     DisplayOut "-------------------------------------" 14 0
@@ -541,16 +551,19 @@ Function ServiceSet ([String]$BVService) {
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
                 $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
                 If($ServiceTypeNum -In 1..3) {
-                    Set-Service $ServiceName -StartupType $ServiceType
+                    If($Dry_Run -ne 1) { Set-Service $ServiceName -StartupType $ServiceType }
                 } ElseIf($ServiceTypeNum -eq 4) {
                     $DispTemp = "$DispTemp (Delayed Start)"
-                    Set-Service $ServiceName -StartupType $ServiceType
-                    $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
-                    Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
+                    If($Dry_Run -ne 1) {
+                        Set-Service $ServiceName -StartupType $ServiceType
+                        $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
+                        Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
+                    }
                 }
                 If($Show_Changed -eq 1) { DisplayOut $DispTemp  11 0 }
             } ElseIf($ServiceCurrType -eq "Already" -and $Show_Already_Set -eq 1) {
                 $DispTemp = "$ServiceName is already $ServiceType"
+                If($ServiceTypeNum -eq 4) { $DispTemp += " (Delayed Start)" }
                 DisplayOut $DispTemp  15 0
             } ElseIf($ServiceCurrType -eq $False -and $Show_Non_Installed -eq 1) {
                 $DispTemp = "No service with name $ServiceName"
@@ -560,7 +573,7 @@ Function ServiceSet ([String]$BVService) {
     }
     DisplayOut "-------------------------------------" 14 0
     DisplayOut "Service Changed..." 14 0
-    ServiceBA "Services-After.log"
+    ServiceBA "Services-After"
     AutomatedExitCheck 1
 }
 
@@ -676,9 +689,10 @@ Function PreScriptCheck {
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
             LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "= 1" 15 0 0 1 ;DisplayOutMenu " in script file   " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 2. Run Script with " 2 0 0 1 ;DisplayOutMenu "-sec" 15 0 0 1 ;DisplayOutMenu " argument                " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 3. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file" 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file    " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file" 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sec" 15 0 0 1 ;DisplayOutMenu " argument    " 2 0 0 1 ;RightLineLog
+
             MenuBlankLineLog
             MenuLineLog
         }
@@ -692,9 +706,9 @@ Function PreScriptCheck {
             LeftLineLog ;DisplayOutMenu " You are using Version " 2 0 0 1 ;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.length))) 15 0 0 1 ;RightLineLog
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "= 1" 15 0 0 1 ; ;DisplayOutMenu " in script file     " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 2. Run Script with " 2 0 0 1 ;DisplayOutMenu "-sbc" 15 0 0 1 ;DisplayOutMenu " argument                " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 3. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ; ;DisplayOutMenu " in bat file  " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file      " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file  " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sbc" 15 0 0 1 ;DisplayOutMenu " argument    " 2 0 0 1 ;RightLineLog
             MenuBlankLineLog
             MenuLineLog
         }
@@ -766,9 +780,13 @@ Function VariousChecks {
                 If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
                 If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
                 If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
+                If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
+                If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+                If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
+                If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
                 If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
-                If($All_or_Min -eq "-all") { 
-                    $UpArg = $UpArg + "-full" 
+                If($All_or_Min -eq "-full") { 
+                    $UpArg = $UpArg + "-all" 
                 } Else {
                     $UpArg = $UpArg + "-min"
                 }
@@ -783,9 +801,9 @@ Function VariousChecks {
             LeftLineLog ;DisplayOutMenu " Tested by pinging github.com                    " 2 0 0 1 ;RightLineLog
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "= 1" 15 0 0 1 ; ;DisplayOutMenu " in script file  " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 2. Run Script with " 2 0 0 1 ;DisplayOutMenu "-sic" 15 0 0 1 ;DisplayOutMenu " argument                " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 3. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=no" 15 0 0 1 ; ;DisplayOutMenu " in bat file     " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file   " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=no" 15 0 0 1 ;DisplayOutMenu " in bat file     " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sic" 15 0 0 1 ;DisplayOutMenu " argument    " 2 0 0 1 ;RightLineLog
             MenuBlankLineLog
             MenuLineLog
             If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
@@ -900,6 +918,7 @@ Function ArgCheck {
                     $Script:Accept_ToS = "Accepted-Automated-Switch"
                 } ElseIf($ArgVal -eq "-diag") {
                     $Script:Diagnostic = 1
+                    $Script:Automated = 0
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
                     If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
@@ -908,9 +927,33 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-logc") {
                     $Script:MakeLog = 2
                     If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
+                } ElseIf($ArgVal -eq "-dry") {
+                    $Script:Dry_Run = 1
+                    $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
+                    $Script:Show_Non_Installed = 1
+                    $Script:Show_Skipped = 1
+                } ElseIf($ArgVal -eq "-snis") {
+                    $Script:Show_Non_Installed = 1
+                } ElseIf($ArgVal -eq "-sss") {
+                    $Script:Show_Skipped = 1
+                } ElseIf($ArgVal -eq "-devl") {
+                    $Script:DevLog = 1
                 }
             }
         }
+    }
+    If($DevLog -eq 1) {
+        $Script:MakeLog = 1
+        $Script:LogName = "Ddev-Logs.log"
+        $Script:Diagnostic = 1
+        $Script:Automated = 0
+        $Script:LogBeforeAfter = 2
+        $Script:Dry_Run = 1
+        $Script:Accept_ToS = "Accepted-Dev-Switch"
+        $Script:Show_Non_Installed = 1
+        $Script:Show_Skipped = 1
+        $Script:Show_Changed = 1
+        $Script:Show_Already_Set = 1
     }
     If($argsUsed -eq 3 -and $Automated -eq 1) {
         Error_Top_Display
@@ -942,6 +985,9 @@ $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of
                                 #1 = Close on - User input, On Errors, or End of Script
 # Automated = 1, Implies that you accept the "ToS"
 
+$Script:Dry_Run = 0             #0 = Runs script normaly
+                                #1 = Runs script but shows what will be changed
+
 $Script:MakeLog = 0             #0 = Dont make a log file
                                 #1 = Make a log file
 # Log file will be in same directory as script named `Script.log` (default)
@@ -954,6 +1000,7 @@ $Script:LogBeforeAfter = 0      #0 = Dont make a file of all the services before
 #--------------------------------
 
 #--------Update Variables-------
+# Function = Option             #Choices
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 #Note: If found will Auto download and runs that
@@ -989,6 +1036,16 @@ $Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
 
 $Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
                                 #1 = Allows you to run on Non-Creator's Update
+#--------------------------------
+
+#--------Dev Mode Variables-------
+# Best not to use these unless asked to (these stop automated)
+# Function = Option             #Choices
+$Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
+                                #1 = Shows diagnostic information
+
+$Script:DevLog = 0              #0 = Doesn't make a Dev Log
+                                #1 = Makes a log files.. with what services change, before and after for services, and diagnostic info 
 #--------------------------------------------------------------------------
 
 #Starts the script (Do not change)
