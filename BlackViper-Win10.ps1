@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.3"
-$Script_Date = "06-02-2017"
+$Script_Version = "2.4"
+$Script_Date = "06-06-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -385,6 +385,7 @@ Function LoadWebCSV {
 
 Function MenuDisplay ([Array]$ChToDisplay) {
     Clear-Host
+    If($Diagnostic -eq 2) { DiagnosticCheck 1 }
     MenuLine
     LeftLine ;DisplayOutMenu $ChToDisplay[0] 11 0 0 0 ;RightLine
     MenuLine
@@ -399,7 +400,7 @@ Function MenuDisplay ([Array]$ChToDisplay) {
     LeftLine ;DisplayOutMenu $ChToDisplay[2] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[3] 14 0 0 ;RightLine
     LeftLine ;DisplayOutMenu $ChToDisplay[4] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[5] 14 0 0 ;RightLine
     For($i=6; $i -lt 14; $i++) {
-        If(!($i -eq 4 -and $IsLaptop -eq "-Lap")) {LeftLine ;DisplayOutMenu $ChToDisplay[$i] 2 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i+1] 2 0 0 ;RightLine }
+        If(!($i -eq 10 -and $IsLaptop -eq "-Lap")) {LeftLine ;DisplayOutMenu $ChToDisplay[$i] 2 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i+1] 2 0 0 ;RightLine }
         $i++
     }
     MenuLine
@@ -918,6 +919,9 @@ Function ArgCheck {
                     $Script:Accept_ToS = "Accepted-Automated-Switch"
                 } ElseIf($ArgVal -eq "-diag") {
                     $Script:Diagnostic = 1
+                    $Script:Automated = 0
+                } ElseIf($ArgVal -eq "-diagt") {
+                    $Script:Diagnostic = 2
                     $Script:Automated = 0
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
