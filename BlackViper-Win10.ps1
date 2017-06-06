@@ -254,6 +254,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Some items may be blank" 15 0 1 1
         DisplayOutMenu " --------Start--------" 15 0 1 1
         DisplayOutMenu " Script Version = $Script_Version" 15 0 1 1
+        DisplayOutMenu " Release Type = $Release_Type" 15 0 1 1
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1 1
         DisplayOutMenu " Error = $ErrorDi" 13 0 1 1
         DisplayOutMenu " Window = $WindowVersion" 15 0 1 1
