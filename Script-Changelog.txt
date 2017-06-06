@@ -1,4 +1,9 @@
 -----------------------------------------------------------------------------------
+2.3 (06-06-2017)
+
+Fixed Tweaked option for laptop showing in Menu in script (Shouldn't be showing)
+
+-----------------------------------------------------------------------------------
 2.3 (06-02-2017)
 
 Added a Dry Run mode (used to see what changes will be done)
