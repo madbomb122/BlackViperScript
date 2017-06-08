@@ -921,7 +921,7 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-sech") {
                     $Script:Edition_Check = "Home"
                 } ElseIf($ArgVal -eq "-sec") {
-                    $Script:Edition_Check = "Home"
+                    $Script:Edition_Check = "Pro"
                 } ElseIf($ArgVal -eq "-sic") {
                     $Script:Internet_Check = 1
                 } ElseIf($ArgVal -eq "-usc") {
