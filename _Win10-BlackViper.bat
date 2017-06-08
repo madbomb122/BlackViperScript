@@ -1,4 +1,6 @@
 @ECHO OFF
+:: Last Updated on June 8th, 2017
+
 :: Instructions
 :: Bat, Script MUST be in same Folder
 :: Change Option to = one of the listed options (mostly yes or no)
@@ -33,7 +35,11 @@ Set Internet_Check=yes
 :: Skip Script Check
 :: SKIP AT YOUR OWN RISK
 Set Skip_Build_Check=no
+
 Set Skip_Edition_Check=no
+:: no = Dont skip Edition Check
+:: Pro = Skips Edition Check and Sets Edition as Pro
+:: Home = Skips Edition Check and Sets Edition as Home
 
 :: Log file
 Set Log=no
@@ -73,7 +79,9 @@ If /i not "%*"=="" (
         If /i %%i==-use Set Service=yes
         If /i %%i==-sic Set Internet_Check=yes
         If /i %%i==-sbc Set Skip_Build_Check=yes
-        If /i %%i==-sec Set Skip_Edition_Check=yes
+        If /i %%i==-sec Set Skip_Edition_Check=Pro
+        If /i %%i==-secp Set Skip_Edition_Check=Pro
+        If /i %%i==-sech Set Skip_Edition_Check=Home
         If /i %%i==-default Set Black_Viper=1
         If /i %%i==-safe Set Black_Viper=2
         If /i %%i==-tweaked Set Black_Viper=3
@@ -100,7 +108,8 @@ If /i %All_or_Min%==Min Set Run_Option=!Run_Option! -min
 
 If /i %Skip_Build_Check%==yes Set Run_Option=!Run_Option! -sbc
 
-If /i %Skip_Edition_Check%==yes Set Run_Option=!Run_Option! -sec
+If /i %Skip_Edition_Check%==Pro Set Run_Option=!Run_Option! -secp
+If /i %Skip_Edition_Check%==Home Set Run_Option=!Run_Option! -sech
 
 If /i %Internet_Check%==no Set Run_Option=!Run_Option! -sic
 
