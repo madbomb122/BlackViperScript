@@ -2,6 +2,10 @@
 2.5 (06-08-2017)
 
 Added check for French edition for Home edition (Famille)
+Added/Changed Switch for -sec
+  -sec           Skips Edition check by Setting Edition as Pro
+  -secp          Skips Edition check by Setting Edition as Pro
+  -sech          Skips Edition check by Setting Edition as Home
 
 -----------------------------------------------------------------------------------
 2.4 (06-06-2017)
