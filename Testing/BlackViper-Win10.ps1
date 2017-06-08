@@ -9,7 +9,7 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.5"
+$Script_Version = "2.4"
 $Script_Date = "06-08-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -172,6 +172,15 @@ $colors = @(
     "red",          #13
     "white",        #14
     "yellow"        #15
+)
+
+$ProEditions = @(
+    "Pro"      #English
+)
+
+$HomeEditions = @(
+    "Home",    #English
+    "Famille"  #French
 )
 
 ##########
@@ -643,9 +652,9 @@ Function PreScriptCheck {
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
 
-    If($WinEdition -eq "Home" -or $WinEdition -eq "Famille") {
+    If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home") {
         $WinEdition = "-Home"
-    } ElseIf($WinEdition -eq "Pro" -or $Edition_Check -eq 1) {
+    } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro") {
         $WinEdition = "-Pro"
     } Else {
         $ErrorDi = "Edition"
@@ -776,7 +785,8 @@ Function VariousChecks {
                 If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
                 If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                
                 If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
-                If($Edition_Check -eq 1) { $UpArg = $UpArg + "-sec" }
+                If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
+                If($Edition_Check -eq "Pro") { $UpArg = $UpArg + "-secp" }
                 If($Build_Check -eq 1) { $UpArg = $UpArg + "-sbc" }
                 If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
                 If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
@@ -906,8 +916,12 @@ Function ArgCheck {
                     $Script:All_or_Min = "-full"
                 } ElseIf($ArgVal -eq "-min") {
                     $Script:All_or_Min = "-min"
+                } ElseIf($ArgVal -eq "-secp") {
+                    $Script:Edition_Check = "Pro"
+                } ElseIf($ArgVal -eq "-sech") {
+                    $Script:Edition_Check = "Home"
                 } ElseIf($ArgVal -eq "-sec") {
-                    $Script:Edition_Check = 1
+                    $Script:Edition_Check = "Home"
                 } ElseIf($ArgVal -eq "-sic") {
                     $Script:Internet_Check = 1
                 } ElseIf($ArgVal -eq "-usc") {
@@ -1038,7 +1052,8 @@ $Script:Internet_Check = 0      #0 = Checks if you have internet by doing a ping
                                 #1 = Bypass check if your pings are blocked
 
 $Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
-                                #1 = Allows you to run on non Home/Pro
+                                #"Pro" = Set Edition as Pro (Needs "s)
+                                #"Home" = Set Edition as Home (Needs "s)
 
 $Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
                                 #1 = Allows you to run on Non-Creator's Update
