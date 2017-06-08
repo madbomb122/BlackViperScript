@@ -1,5 +1,10 @@
 -----------------------------------------------------------------------------------
-2.3 (06-06-2017)
+2.5 (06-08-2017)
+
+Added check for French edition for Home edition (Famille)
+
+-----------------------------------------------------------------------------------
+2.4 (06-06-2017)
 
 Fixed Tweaked option for laptop showing in Menu in script (Shouldn't be showing)
 
