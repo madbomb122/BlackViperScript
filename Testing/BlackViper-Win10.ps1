@@ -111,7 +111,9 @@ $Release_Type = "Testing"
   
 --AT YOUR OWN RISK Switches--
  Switches       Description of Switch
-  -sec           (Skips Edition Check)
+  -sec           (Skips Edition check by Setting Edition as Pro)
+  -secp          (Skips Edition check by Setting Edition as Pro)
+  -sech          (Skips Edition check by Setting Edition as Home)
   -sbc           (Skips Build Check)
 
 -- Misc Switches --
@@ -699,11 +701,15 @@ Function PreScriptCheck {
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " You are using " 2 0 0 1;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.length))) 15 0 0 1 ;RightLineLog
             MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " If you are using Home or Pro, Please contact me " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " with what Edition you are using and what it says" 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
             LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
             LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file    " 2 0 0 1 ;RightLineLog
             LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file" 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sec" 15 0 0 1 ;DisplayOutMenu " argument    " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-secp" 15 0 0 1 ;DisplayOutMenu " argument   " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 4. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sech" 15 0 0 1 ;DisplayOutMenu " argument   " 2 0 0 1 ;RightLineLog
 
             MenuBlankLineLog
             MenuLineLog
