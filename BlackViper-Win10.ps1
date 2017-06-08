@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.4"
-$Script_Date = "06-06-2017"
+$Script_Version = "2.5"
+$Script_Date = "06-08-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -642,7 +642,7 @@ Function PreScriptCheck {
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
 
-    If($WinEdition -eq "Home") {
+    If($WinEdition -eq "Home" -or $WinEdition -eq "Famille") {
         $WinEdition = "-Home"
     } ElseIf($WinEdition -eq "Pro" -or $Edition_Check -eq 1) {
         $WinEdition = "-Pro"
