@@ -109,6 +109,9 @@ Examples: <br />
 **Q:** The script wont run, can you help me? <br />
 **A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.
 
+**Q:** Please E-Mail me if you are getting an Edition error when running Home/Pro? <br />
+**A:** E-Mail me what your edition is and what edition it says you are using, so I can add it to the list, Until then use -secp (for Pro) or -sech (for Home), Thanks.
+
 **Q:** The script window closes or gives an error saying script is blocked, what do i do? <br />
 **A:** By default windows blocks ps1 scripts, you can use one of the following <br />
          1. Use the bat file to run the script (recommended) <br />
