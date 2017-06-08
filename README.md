@@ -65,23 +65,25 @@ Use one of the following Methods you can
 |   Switch  | Description                                                                    | Notes                            |
 | :-------- | :------------------------------------------------------------------------------| :------------------------------- |
 | -atos     | Accepts the ToS                                                                |                                  |
-| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                    |
+| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                |
 | -default  | Runs the script with Services to Default Configuration                         | Alt `-set default` or `-set 1` |
 | -safe     | Runs the script with Services to Black Viper's Safe Configuration              | Alt `-set safe` or `-set 2`    |
 | -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alt `-set tweaked` or `-set 3` |
 | -all      | Every windows services will change                                             |   |
 | -min      | Just the services different from the default to safe/tweaked list              |   |
-| -sec      | Skips Edition Check (Home/Pro)                                                 | **USE AT YOUR OWN RISK**             |
-| -sbc      | Skips Build Check (Creator's Update)                                           | **USE AT YOUR OWN RISK**             |
+| -sec      | Skips Edition Check (Home/Pro)                                                 | **USE AT YOUR OWN RISK**        |
+| -secp     | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**        |
+| -sech     | Skips Edition Check (Home/Pro), Sets edition as Home                           | **USE AT YOUR OWN RISK**        |
+| -sbc      | Skips Build Check (Creator's Update)                                           | **USE AT YOUR OWN RISK**        |
 | -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      |
 | -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found |
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found |
-| -snis      | Shows not installed services (that can be changed)                    |  |
+| -snis      | Shows not installed services (that can be changed)                             |  |
 | -diag     | Shows some diagnostic information on error messages                            | **Stops automation** |
 | -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
 | -baf      | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log` |
-| -dry       | Runs script and shows what will be changed if ran normaly                   | **No Services are changes** |
-| -devl      | Makes a log file with various Diagnostic information                    | **No Services are changes** |
+| -dry       | Runs script and shows what will be changed if ran normaly                     | **No Services are changes** |
+| -devl      | Makes a log file with various Diagnostic information                          | **No Services are changes** |
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
