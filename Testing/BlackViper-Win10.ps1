@@ -9,7 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.6"
+$Script_Version = "2.7"
+$Minor_Version = "0"
 $Script_Date = "06-17-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -268,12 +269,13 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Some items may be blank" 15 0 1 1
         DisplayOutMenu " --------Start--------" 15 0 1 1
         DisplayOutMenu " Script Version = $Script_Version" 15 0 1 1
+        DisplayOutMenu " Script Minor Version = $Minor_Version" 15 0 1 1
         DisplayOutMenu " Release Type = $Release_Type" 15 0 1 1
         DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1 1
         DisplayOutMenu " Error = $ErrorDi" 13 0 1 1
         DisplayOutMenu " Window = $WindowVersion" 15 0 1 1
         DisplayOutMenu " Edition = $FullWinEdition" 15 0 1 1
-        DisplayOutMenu " Edition # = $WinSku" 15 0 1 1		
+        DisplayOutMenu " Edition SKU# = $WinSku" 15 0 1 1
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1 1
         DisplayOutMenu " Version = $WinVer" 15 0 1 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1 1
@@ -765,8 +767,10 @@ Function VariousChecks {
             $CSV_Ver = Import-Csv $VersionFile
             If($Release_Type -eq "Stable") {
                 $WebScriptVer = $($CSV_Ver[0].Version)
+                $WebScriptMinorVer =  $($CSV_Ver[0].Minor-Version)
             } Else {
                 $WebScriptVer = $($CSV_Ver[3].Version)
+                $WebScriptMinorVer =  $($CSV_Ver[3].Minor-Version)
             }
             If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
@@ -775,51 +779,53 @@ Function VariousChecks {
             }
             $SV=[Int]$Script_Version
             If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
-                $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer
-                If($Release_Type -eq "Stable") {
-                    $DFilename += ".ps1"
-                    $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
-                } Else {
-                    $DFilename += "-Testing.ps1"
-                    $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
+                If($WebScriptMinorVer -gt $Minor_Version) {
+                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer
+                    If($Release_Type -eq "Stable") {
+                        $DFilename += ".ps1"
+                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+                    } Else {
+                        $DFilename += "-Testing.ps1"
+                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
+                    }
+                    $WebScriptFilePath = $filebase + $DFilename
+                    Clear-Host
+                    MenuLineLogLog
+                    LeftLineLog ;DisplayOutMenu "                      Update Found!                      " 13 0 0 1 ;RightLineLog
+                    MenuLineLog
+                    MenuBlankLineLog
+                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "after download is complete.                           " 2 0 0 1 ;RightLineLog
+                    MenuBlankLine
+                    MenuLineLog
+                    DownloadFile $Script_Url $WebScriptFilePath
+                    $UpArg = ""
+                    If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atos" }
+                    If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
+                    If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                    
+                    If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
+                    If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
+                    If($Edition_Check -eq "Pro") { $UpArg = $UpArg + "-secp" }
+                    If($Build_Check -eq 1) { $UpArg = $UpArg + "-sbc" }
+                    If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
+                    If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
+                    If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
+                    If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
+                    If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
+                    If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
+                    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+                    If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
+                    If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
+                    If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
+                    If($All_or_Min -eq "-full") { 
+                        $UpArg = $UpArg + "-all" 
+                    } Else {
+                        $UpArg = $UpArg + "-min"
+                    }
+                    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
+                    Exit
                 }
-                $WebScriptFilePath = $filebase + $DFilename
-                Clear-Host
-                MenuLineLogLog
-                LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
-                MenuLineLog
-                MenuBlankLineLog
-                LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 1 ;RightLineLog
-                LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
-                LeftLineLog ;DisplayOutMenu "after download is complete.                       " 2 0 0 1 ;RightLineLog
-                MenuBlankLine
-                MenuLineLog
-                DownloadFile $Script_Url $WebScriptFilePath
-                $UpArg = ""
-                If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atos" }
-                If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
-                If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                
-                If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
-                If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
-                If($Edition_Check -eq "Pro") { $UpArg = $UpArg + "-secp" }
-                If($Build_Check -eq 1) { $UpArg = $UpArg + "-sbc" }
-                If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
-                If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
-                If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
-                If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
-                If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
-                If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
-                If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
-                If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
-                If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
-                If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
-                If($All_or_Min -eq "-full") { 
-                    $UpArg = $UpArg + "-all" 
-                } Else {
-                    $UpArg = $UpArg + "-min"
-                }
-                Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
-                Exit
             }
         } Else {
             Error_Top_Display
