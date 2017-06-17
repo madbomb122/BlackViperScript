@@ -8,4 +8,5 @@ Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
-Nothing ATM
+- [ ] Ability to load custom service file
+- [ ] Ability to Save current service settings (if you need to undo changes done by script)
