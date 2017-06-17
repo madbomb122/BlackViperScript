@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.5"
-$Script_Date = "06-08-2017"
+$Script_Version = "2.6"
+$Script_Date = "06-17-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -177,7 +177,8 @@ $colors = @(
 )
 
 $ProEditions = @(
-    "Pro"      #English
+    "Pro",           #English
+    "Professionnel"  #French
 )
 
 $HomeEditions = @(
@@ -262,6 +263,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         $WindowsBuild = [Environment]::OSVersion.Version.build
         $WinVer = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
         $PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
+        $WinSku = (Get-WmiObject Win32_OperatingSystem).OperatingSystemSKU
         DisplayOutMenu " Diagnostic Output" 15 0 1 1
         DisplayOutMenu " Some items may be blank" 15 0 1 1
         DisplayOutMenu " --------Start--------" 15 0 1 1
@@ -271,6 +273,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Error = $ErrorDi" 13 0 1 1
         DisplayOutMenu " Window = $WindowVersion" 15 0 1 1
         DisplayOutMenu " Edition = $FullWinEdition" 15 0 1 1
+        DisplayOutMenu " Edition # = $WinSku" 15 0 1 1		
         DisplayOutMenu " Build = $WindowsBuild" 15 0 1 1
         DisplayOutMenu " Version = $WinVer" 15 0 1 1
         DisplayOutMenu " PC Type = $PCType" 15 0 1 1
@@ -649,14 +652,19 @@ Function PreScriptCheck {
     $ErrorDi = ""
     $EBCount = 0
 
+    $WinSku = (Get-WmiObject Win32_OperatingSystem).OperatingSystemSKU
+    #48 = Pro
+    #100 = Home (Single Language)
+    #101 = Home
+
     $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
     $WinEdition = $FullWinEdition.Split(' ')[-1]
     #Pro = Microsoft Windows 10 Pro
     #Home = Microsoft Windows 10 Home
 
-    If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home") {
+    If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home" -or $WinSku -eq 100 -or $WinSku -eq 101) {
         $WinEdition = "-Home"
-    } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro") {
+    } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro" -or $WinSku -eq 48) {
         $WinEdition = "-Pro"
     } Else {
         $ErrorDi = "Edition"
@@ -700,6 +708,7 @@ Function PreScriptCheck {
             LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " You are using " 2 0 0 1;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.length))) 15 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " SKU # " 2 0 0 1;DisplayOutMenu ("$WinSku" +(" "*(42-$WinSku.length))) 15 0 0 1 ;RightLineLog
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " If you are using Home or Pro, Please contact me " 2 0 0 1 ;RightLineLog
             LeftLineLog ;DisplayOutMenu " with what Edition you are using and what it says" 2 0 0 1 ;RightLineLog
