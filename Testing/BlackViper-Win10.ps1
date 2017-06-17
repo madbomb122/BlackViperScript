@@ -548,7 +548,32 @@ Function ServiceBA ([String]$ServiceBA) {
     }
 }
 
-Function ServiceSet ([String]$BVService) {
+Function Save_Service{    
+    $AllService = Get-Service | Select Name, StartType
+	$SaveService = @()
+ 
+    foreach ($Service in $AllService) {
+        $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
+        If("$($Service.StartType)" -eq "Disabled") {
+            $StartType = 1
+        } ElseIf("$($Service.StartType)" -eq "Manual") {
+            $StartType = 2
+        } ElseIf("$($Service.StartType)" -eq "Automatic") {
+            If($exists -eq 1){
+                $StartType = 4
+            } Else {
+                $StartType = 3
+            }
+        }
+		$Object = New-Object -TypeName PSObject
+        Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $Service.Name
+        Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $StartType
+        $SaveService += $Object
+    }
+    $SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
+}
+
+Function ServiceSetBV ([String]$BVService) {
     Clear-Host
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
@@ -621,11 +646,11 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
 
 Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
     If($BVOpt -eq 1) {
-        ServiceSet ("Def"+$WinEdition+$FullMin)
+        ServiceSetBV ("Def"+$WinEdition+$FullMin)
     } ElseIf($BVOpt -eq 2) {
-        ServiceSet ("Safe"+$IsLaptop+$FullMin)
+        ServiceSetBV ("Safe"+$IsLaptop+$FullMin)
     } ElseIf($BVOpt -eq 3) {
-        ServiceSet ("Tweaked"+$IsLaptop+$FullMin)
+        ServiceSetBV ("Tweaked"+$IsLaptop+$FullMin)
     }
 }
 
@@ -655,14 +680,14 @@ Function PreScriptCheck {
     $EBCount = 0
 
     $WinSku = (Get-WmiObject Win32_OperatingSystem).OperatingSystemSKU
-    #48 = Pro
-    #100 = Home (Single Language)
-    #101 = Home
+    #  48 = Pro
+    # 100 = Home (Single Language)
+    # 101 = Home
 
     $FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
     $WinEdition = $FullWinEdition.Split(' ')[-1]
-    #Pro = Microsoft Windows 10 Pro
-    #Home = Microsoft Windows 10 Home
+    #  Pro = Microsoft Windows 10 Pro
+    # Home = Microsoft Windows 10 Home
 
     If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home" -or $WinSku -eq 100 -or $WinSku -eq 101) {
         $WinEdition = "-Home"
@@ -766,12 +791,12 @@ Function VariousChecks {
             DownloadFile $Version_Url $VersionFile
             $CSV_Ver = Import-Csv $VersionFile
             If($Release_Type -eq "Stable") {
-                $WebScriptVer = $($CSV_Ver[0].Version)
-                $WebScriptMinorVer =  $($CSV_Ver[0].Minor-Version)
+                $CSVLine = 0
             } Else {
-                $WebScriptVer = $($CSV_Ver[3].Version)
-                $WebScriptMinorVer =  $($CSV_Ver[3].Minor-Version)
+                $CSVLine = 3
             }
+            $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
+            $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
             If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
