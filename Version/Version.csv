@@ -1,4 +1,4 @@
-Name,Version
-Script (Stable),2.6
-Service,2.0
-Script (Testing),2.6
+Name,Version,Minor-Version
+Script (Stable),2.6,0
+Service,2.0,0
+Script (Testing),2.6,0
