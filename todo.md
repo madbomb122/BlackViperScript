@@ -4,9 +4,9 @@
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
-Nothing ATM
+- [ ] Ability to Save current service settings (if you need to undo changes done by script)
+- [ ] Ability to load custom service file
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
-- [ ] Ability to load custom service file
-- [ ] Ability to Save current service settings (if you need to undo changes done by script)
+- [ ] A Gui for the Script, for when the script is runned w/o automation
