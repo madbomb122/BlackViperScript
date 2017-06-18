@@ -576,7 +576,7 @@ Function Save_Service {
 
 Function ServiceSetBV ([String]$BVService) {
     Clear-Host
-    If($BackupServiceConfig -eq 1) { Save_Service )
+    If($BackupServiceConfig -eq 1) { Save_Service }
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
     ServiceBA "Services-Before"
