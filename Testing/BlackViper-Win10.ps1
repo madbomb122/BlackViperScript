@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.7"
-$Minor_Version = "0"
-$Script_Date = "06-17-2017"
+$Script_Version = "2.6"
+$Minor_Version = "2"
+$Script_Date = "06-18-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
