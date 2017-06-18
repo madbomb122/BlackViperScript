@@ -548,7 +548,8 @@ Function ServiceBA ([String]$ServiceBA) {
     }
 }
 
-Function Save_Service{    
+Function Save_Service {   
+    $ServiceSavePath = $Global:filebase + $env:computername + "-Service-Backup.csv"
     $AllService = Get-Service | Select Name, StartType
 	$SaveService = @()
  
@@ -575,6 +576,7 @@ Function Save_Service{
 
 Function ServiceSetBV ([String]$BVService) {
     Clear-Host
+    If($BackupServiceConfig -eq 1) { Save_Service )
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
     ServiceBA "Services-Before"
@@ -819,8 +821,8 @@ Function VariousChecks {
                     LeftLineLog ;DisplayOutMenu "                      Update Found!                      " 13 0 0 1 ;RightLineLog
                     MenuLineLog
                     MenuBlankLineLog
-                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$WebScriptVer"    +(" "*(29-$WebScriptVer.length))) 11 0 0 1 ;RightLineLog
-                    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename"    +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$WebScriptVer" +(" "*(29-$WebScriptVer.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
                     LeftLineLog ;DisplayOutMenu "after download is complete.                           " 2 0 0 1 ;RightLineLog
                     MenuBlankLine
                     MenuLineLog
@@ -884,7 +886,15 @@ Function VariousChecks {
 }
 
 Function ScriptPreStart {
-    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+    If($LoadServiceConfig -eq 1) {
+        $Script:FullServicePath = $Global:filebase + $ServiceConfigFile
+        If(!(Test-Path $FullServicePath -PathType Leaf)) {
+            $ErrorDi = "Missing File $ServiceConfigFile"
+            Error_Top_Display
+            LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu ("$ServiceConfigFile" +(" "*(28-$DFilename.length))) 15 0 0 1 ;DisplayOutMenu " is missing." 2 0 0 1 ;RightLineLog
+            Error_Bottom
+		}
+	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         $ErrorDi = "Missing File BlackViper.csv -ScriptPreStart"
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
@@ -958,6 +968,14 @@ Function ArgCheck {
                     }
                 } ElseIf($ArgVal -eq "-sbc") {
                     $Script:Build_Check = 1
+                } ElseIf($ArgVal -eq "-bcsc") {
+                    $Script:BackupServiceConfig = 1
+                } ElseIf($ArgVal -eq "-lcsc") {
+                    $Script:LoadServiceConfig = 1
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
+                        $Script:ServiceConfigFile = $PassedArg[$i+1] 
+                        $i++
+                    }
                 } ElseIf($ArgVal -eq "-all") {
                     $Script:All_or_Min = "-full"
                 } ElseIf($ArgVal -eq "-min") {
@@ -987,12 +1005,18 @@ Function ArgCheck {
                     $Script:Automated = 0
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
+                        $Script:LogName = $PassedArg[$i+1] 
+                        $i++
+                    }
                 } ElseIf($ArgVal -eq "-baf") {
                     $Script:LogBeforeAfter = 1
                 } ElseIf($ArgVal -eq "-logc") {
                     $Script:MakeLog = 2
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] }
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
+                        $Script:LogName = $PassedArg[$i+1] 
+                        $i++
+                    }
                 } ElseIf($ArgVal -eq "-dry") {
                     $Script:Dry_Run = 1
                     $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
@@ -1050,6 +1074,10 @@ $Script:Accept_ToS = 0          #0 = See ToS
 $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script
                                 #1 = Close on - User input, On Errors, or End of Script
 # Automated = 1, Implies that you accept the "ToS"
+
+$Script:BackupServiceConfig = 0 #0 = Dont backup Your Current Service Configuration before services are changes
+                                #1 = Backup Your Current Service Configuration before services are changes
+# Filename will be "(ComputerName)-Service-Backup.csv"
 
 $Script:Dry_Run = 0             #0 = Runs script normaly
                                 #1 = Runs script but shows what will be changed
