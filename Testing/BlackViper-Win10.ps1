@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "2.6"
-$Minor_Version = "2"
-$Script_Date = "06-18-2017"
+$Minor_Version = "3"
+$Script_Date = "06-19-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -365,8 +365,24 @@ Function TOS {
         Switch($TOS.ToLower()) {
             n {Exit}
             no {Exit}
-            y {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper $All_or_Min}; $Black_Viper_Input = "Out"}
-            yes {If($Black_Viper -eq 0) {Black_Viper_Input} Else {Black_Viper_Set $Black_Viper $All_or_Min}; $Black_Viper_Input = "Out"}
+            y { If($LoadServiceConfig -eq 1) {
+                    ServiceSet "StartType"
+                } ElseIf($Black_Viper -eq 0) {
+                    Black_Viper_Input
+                } Else {
+                    Black_Viper_Set $Black_Viper $All_or_Min
+                }
+                $Black_Viper_Input = "Out"
+            }
+            yes { If($LoadServiceConfig -eq 1) {
+                    ServiceSet "StartType"
+                } ElseIf($Black_Viper -eq 0) {
+                    Black_Viper_Input
+                } Else {
+                    Black_Viper_Set $Black_Viper $All_or_Min
+                }
+                $Black_Viper_Input = "Out"
+            }
             default {$Invalid = 1}
         }
     }
@@ -518,7 +534,7 @@ $CopyrightItems = @(
 ' ARISING FROM, OUT OF OR IN CONNECTION WITH THE  ',
 ' SOFTWARE OR THE USE OR OTHER DEALINGS IN THE    ',
 ' SOFTWARE.                                       ',
-"Press any key to go back to menu                 ")
+'Press any key to go back to menu                 ')
 
 $ServicesTypeList = @(
     '',          #0 -None (Not Installed, Default Only)
@@ -551,7 +567,7 @@ Function ServiceBA ([String]$ServiceBA) {
 Function Save_Service {   
     $ServiceSavePath = $Global:filebase + $env:computername + "-Service-Backup.csv"
     $AllService = Get-Service | Select Name, StartType
-	$SaveService = @()
+    $SaveService = @()
  
     foreach ($Service in $AllService) {
         $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
@@ -566,7 +582,7 @@ Function Save_Service {
                 $StartType = 3
             }
         }
-		$Object = New-Object -TypeName PSObject
+        $Object = New-Object -TypeName PSObject
         Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $Service.Name
         Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $StartType
         $SaveService += $Object
@@ -574,13 +590,17 @@ Function Save_Service {
     $SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
 }
 
-Function ServiceSetBV ([String]$BVService) {
+Function ServiceSet ([String]$BVService) {
     Clear-Host
     If($BackupServiceConfig -eq 1) { Save_Service }
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
     ServiceBA "Services-Before"
-    DisplayOut "Changing Service Please wait..." 14 0
+    If($Dry_Run -ne 1) {
+        DisplayOut "Changing Service Please wait..." 14 0
+    } Else {
+        DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0
+    }
     DisplayOut "Service_Name - Current -> Change_To" 14 0
     DisplayOut "-------------------------------------" 14 0
     ForEach($item In $csv) {
@@ -618,7 +638,11 @@ Function ServiceSetBV ([String]$BVService) {
         }
     }
     DisplayOut "-------------------------------------" 14 0
-    DisplayOut "Service Changed..." 14 0
+    If($Dry_Run -ne 1) {
+        DisplayOut "Service Changed..." 14 0
+    } Else {
+        DisplayOut "List of Service Done..." 14 0
+    }
     ServiceBA "Services-After"
     AutomatedExitCheck 1
 }
@@ -648,11 +672,11 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
 
 Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
     If($BVOpt -eq 1) {
-        ServiceSetBV ("Def"+$WinEdition+$FullMin)
+        ServiceSet ("Def"+$WinEdition+$FullMin)
     } ElseIf($BVOpt -eq 2) {
-        ServiceSetBV ("Safe"+$IsLaptop+$FullMin)
+        ServiceSet ("Safe"+$IsLaptop+$FullMin)
     } ElseIf($BVOpt -eq 3) {
-        ServiceSetBV ("Tweaked"+$IsLaptop+$FullMin)
+        ServiceSet ("Tweaked"+$IsLaptop+$FullMin)
     }
 }
 
@@ -774,17 +798,28 @@ Function PreScriptCheck {
 }
 
 Function VariousChecks {
-    $ServiceFilePath = $filebase + "BlackViper.csv"
-    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-        If($Service_Ver_Check -eq 0) {
-            If($MakeLog -eq 1) { Write-Output "Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
-            LoadWebCSV
-        } Else {
-            If($MakeLog -eq 1) { Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
-            DownloadFile $Service_Url $ServiceFilePath
-            [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+    If($LoadServiceConfig -eq 1) {
+        $ServiceFilePath = $filebase + $ServiceConfigFile
+        If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+            $ErrorDi = "Missing File $ServiceConfigFile"
+            Error_Top_Display
+            LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu ("$ServiceConfigFile" +(" "*(28-$DFilename.length))) 15 0 0 1 ;DisplayOutMenu " is missing." 2 0 0 1 ;RightLineLog
+            Error_Bottom
         }
         $Service_Ver_Check = 0
+    } Else {
+        $ServiceFilePath = $filebase + "BlackViper.csv"
+        If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+            If($Service_Ver_Check -eq 0) {
+                If($MakeLog -eq 1) { Write-Output "Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
+                LoadWebCSV
+            } Else {
+                If($MakeLog -eq 1) { Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
+                DownloadFile $Service_Url $ServiceFilePath
+                [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+            }
+            $Service_Ver_Check = 0
+        }
     }
     [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
     If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
@@ -886,33 +921,35 @@ Function VariousChecks {
 }
 
 Function ScriptPreStart {
-    If($LoadServiceConfig -eq 1) {
-        $Script:FullServicePath = $Global:filebase + $ServiceConfigFile
-        If(!(Test-Path $FullServicePath -PathType Leaf)) {
-            $ErrorDi = "Missing File $ServiceConfigFile"
-            Error_Top_Display
-            LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu ("$ServiceConfigFile" +(" "*(28-$DFilename.length))) 15 0 0 1 ;DisplayOutMenu " is missing." 2 0 0 1 ;RightLineLog
-            Error_Bottom
-		}
-	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
         $ErrorDi = "Missing File BlackViper.csv -ScriptPreStart"
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
         Error_Bottom
-    }
+    } 
     If($argsUsed -eq 2) {
         If($Automated -eq 0 -and $Accept_ToS -eq 0) {
             TOS
+        } ElseIf($LoadServiceConfig -eq 1) {
+            ServiceSet "StartType"
         } Else {
             Black_Viper_Set $Black_Viper $All_or_Min
         }
     } ElseIf($Accept_ToS -ne 0) {
-        Black_Viper_Input
+        If($LoadServiceConfig -eq 1) {
+            ServiceSet "StartType"
+        } Else {
+            Black_Viper_Input
+        }
     } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
         TOS
     } ElseIf($Automated -eq 1) {
-        Black_Viper_Input
+        If($LoadServiceConfig -eq 1) {
+            ServiceSet "StartType"
+        } Else {
+            Black_Viper_Input
+        }
     } Else {
         $ErrorDi = "Unknown -ScriptPreStart"
         Error_Top_Display
