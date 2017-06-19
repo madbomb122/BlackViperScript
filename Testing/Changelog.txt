@@ -1,7 +1,9 @@
 -----------------------------------------------------------------------------------
-2.7 (06-17-2017)
+2.6.3 (06-19-2017)
 
 Adding Minor Version number
+Added Ability to load service configuration
+Added Ability to save current running service configuration
 
 -----------------------------------------------------------------------------------
 2.6 (06-17-2017)
