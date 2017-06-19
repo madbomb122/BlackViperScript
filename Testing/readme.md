@@ -1,8 +1,8 @@
 # Currently Testing (Read Notes)
 Adding Minor Version Number -Done <br />
 
-Ability to Save Current Service Settings (incase you need to restore it) -Added (In Testing) <br />
-Ability to load File with Service Settings -Not added Yet <br />
+Ability to Save Current Service Settings (incase you need to restore it) -(In Testing) <br />
+Ability to load File with Service Settings -(In Testing) <br />
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
