@@ -5,6 +5,12 @@ Adding Minor Version number
 Added Ability to load service configuration
 Added Ability to save current running service configuration
 
+Added switch
+ Switches         Description of Switch
+  -lcsc File.csv   Loads Custom Service Configuration, File.csv = Name of your backup/custom file
+  -bcsc            Backup Current Service Configuration
+  -snis            Show not installed Services
+  -sss             Show Skipped Services
 -----------------------------------------------------------------------------------
 2.6 (06-17-2017)
 
