@@ -99,6 +99,7 @@ $Release_Type = "Testing"
   -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
   -Set 3          ^Same as Above
   -Set tweaked    ^Same as Above
+  -lcsc File.csv (Loads Custom Service Configuration, File.csv = Name of your backup/custom file)
 
 -- Service Choice Switches --
   -all           (Every windows services will change)
@@ -119,9 +120,13 @@ $Release_Type = "Testing"
 
 -- Misc Switches --
  Switches       Description of Switch
-  -diag          (Shows diagnostic information, Dont use unless asked, Stops -auto)
+  -dry           (Runs the script and shows what services will be changed)
+  -diag          (Shows diagnostic information, Stops -auto)
   -log           (Makes a log file Script.log)
   -baf           (File of Services before and after the script)
+  -bcsc          (Backup Current Service Configuration)
+  -snis          (Show not installed Services)
+  -sss           (Show Skipped Services)
 --------------------------------------------------------------------------------#>
 
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -393,7 +398,7 @@ Function TOS {
 # TOS -End
 ##########
 
-#Check if you want to download the missing Service setting file
+# Check if you want to download the missing Service setting file
 Function LoadWebCSV {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
@@ -671,7 +676,9 @@ Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
 }
 
 Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
-    If($BVOpt -eq 1) {
+    If($LoadServiceConfig -eq 1) {
+        ServiceSet "StartType"
+    } ElseIf($BVOpt -eq 1) {
         ServiceSet ("Def"+$WinEdition+$FullMin)
     } ElseIf($BVOpt -eq 2) {
         ServiceSet ("Safe"+$IsLaptop+$FullMin)
@@ -863,8 +870,8 @@ Function VariousChecks {
                     MenuLineLog
                     DownloadFile $Script_Url $WebScriptFilePath
                     $UpArg = ""
-                    If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atos" }
                     If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
+                    If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atosu" }
                     If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                    
                     If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
                     If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
@@ -885,6 +892,10 @@ Function VariousChecks {
                     } Else {
                         $UpArg = $UpArg + "-min"
                     }
+                    If($LoadServiceConfig -eq 1) { $UpArg = $UpArg + "-lcsc $ServiceConfigFile" }
+                    If($BackupServiceConfig -eq 1) { $UpArg = $UpArg + "-bcsc" }
+                    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+                    If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
                     Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
                     Exit
                 }
@@ -927,12 +938,10 @@ Function ScriptPreStart {
         LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
         Error_Bottom
-    } 
+    }
     If($argsUsed -eq 2) {
         If($Automated -eq 0 -and $Accept_ToS -eq 0) {
             TOS
-        } ElseIf($LoadServiceConfig -eq 1) {
-            ServiceSet "StartType"
         } Else {
             Black_Viper_Set $Black_Viper $All_or_Min
         }
@@ -1031,6 +1040,8 @@ Function ArgCheck {
                     $Script:Service_Ver_Check = 1
                 } ElseIf($ArgVal -eq "-atos") {
                     $Script:Accept_ToS = "Accepted-Switch"
+                } ElseIf($ArgVal -eq "-atosu") {
+                    $Script:Accept_ToS = "Accepted-Update"
                 } ElseIf($ArgVal -eq "-auto") {
                     $Script:Automated = 1
                     $Script:Accept_ToS = "Accepted-Automated-Switch"
@@ -1180,5 +1191,5 @@ $Script:DevLog = 0              #0 = Doesn't make a Dev Log
                                 #1 = Makes a log files.. with what services change, before and after for services, and diagnostic info 
 #--------------------------------------------------------------------------
 
-#Starts the script (Do not change)
+# Starts the script (Do not change)
 PreScriptCheck
