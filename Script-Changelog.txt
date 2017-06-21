@@ -1,4 +1,18 @@
 -----------------------------------------------------------------------------------
+2.7.0 (06-21-2017)
+
+Fixed a bug with Version check not working on test version
+
+Adding Minor Version number
+Added Ability to load service configuration
+Added Ability to save current running service configuration
+
+Added switch
+ Switches         Description of Switch
+  -lcsc File.csv   Loads Custom Service Configuration, File.csv = Name of your backup/custom file
+  -bcsc            Backup Current Service Configuration
+
+-----------------------------------------------------------------------------------
 2.6 (06-17-2017)
 
 Added check for French edition for Pro edition (Professionnel)
