@@ -1,5 +1,5 @@
 **Current Version** <br />
-**Script:** `2.7` (June 21, 2017) <br />
+**Script:** `2.7.0` (June 21, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 **Note: The 2.0+ Script/Service files wont work with versions older than 2.0 due to big changes**
