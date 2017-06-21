@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "2.6"
-$Minor_Version = "3"
-$Script_Date = "06-19-2017"
+$Minor_Version = "4"
+$Script_Date = "06-20-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -73,8 +73,8 @@ $Release_Type = "Testing"
   
   Then Use the Menu Provided and
   Select the desired Services Configuration
-    1. Default 
-    2. Safe (Recommended Option) 
+    1. Default
+    2. Safe (Recommended Option)
     3. Tweaked (Not supported for laptop ATM)
 
 .ADVANCED USAGE
@@ -83,12 +83,12 @@ $Release_Type = "Testing"
   2. Edit bat file and run
   3. Run the script with one of these arguments/switches (space between multiple)
 
--- Basic Switches --
+--Basic Switches--
  Switches       Description of Switch
   -atos          (Accepts ToS)
-  -auto          (Implies -Atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script)
+  -auto          (Implies -atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script)
 
--- Service Configuration Switches --
+--Service Configuration Switches--
  Switches       Description of Switch
   -default       (Runs the script with Services to Default Configuration)
   -Set 1          ^Same as Above
@@ -101,7 +101,7 @@ $Release_Type = "Testing"
   -Set tweaked    ^Same as Above
   -lcsc File.csv (Loads Custom Service Configuration, File.csv = Name of your backup/custom file)
 
--- Service Choice Switches --
+--Service Choice Switches--
   -all           (Every windows services will change)
   -min           (Just the services different from the default to safe/tweaked list)
 
@@ -118,7 +118,7 @@ $Release_Type = "Testing"
   -sech          (Skips Edition check by Setting Edition as Home)
   -sbc           (Skips Build Check)
 
--- Misc Switches --
+--Misc Switches--
  Switches       Description of Switch
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
@@ -211,7 +211,7 @@ Function LeftLine { DisplayOutMenu "| " 14 0 0 0 }
 Function RightLine { DisplayOutMenu " |" 14 0 1 0 }
 
 Function Openwebsite ([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
-Function DownloadFile ([String]$Url, [String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
+Function DownloadFile ([String]$Url,[String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 
 Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine,[int]$LogOut) {
     If($NewLine -eq 0) {
@@ -549,8 +549,8 @@ $ServicesTypeList = @(
     'Automatic'  #4 -Automatic (Delayed Start)
 )
 
-$Script:Black_Viper = 0
 $Script:argsUsed = 0
+$Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
 
 Function ServiceBA ([String]$ServiceBA) {
@@ -570,34 +570,70 @@ Function ServiceBA ([String]$ServiceBA) {
 }
 
 Function Save_Service {   
+    $Skip_Services = @(
+        "PimIndexMaintenanceSvc_",
+        "DevicesFlowUserSvc_",
+        "UserDataSvc_",
+        "UnistoreSvc_",
+        "WpnUserService_",
+        "AppXSVC",
+        "BrokerInfrastructure",
+        "ClipSVC",
+        "CoreMessagingRegistrar",
+        "DcomLaunch",
+        "EntAppSvc",
+        "gpsvc",
+        "LSM",
+        "NgcSvc",
+        "NgcCtnrSvc",
+        "RpcSs",
+        "RpcEptMapper",
+        "sppsvc",
+        "StateRepository",
+        "SystemEventsBroker",
+        "Schedule",
+        "tiledatamodelsvc",
+        "WdNisSvc",
+        "SecurityHealthService",
+        "msiserver",
+        "Sense",
+        "WdNisSvc",
+        "WinDefend"
+    )
+    $ServiceEnd = get-service "*_*" | Select Name
+    $ServiceEnd = $ServiceEnd[0].Name.split('_')[1]
+    for($i=0;$i -ne 5;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
+
     $ServiceSavePath = $Global:filebase + $env:computername + "-Service-Backup.csv"
     $AllService = Get-Service | Select Name, StartType
+    
     $SaveService = @()
  
     foreach ($Service in $AllService) {
-        $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
-        If("$($Service.StartType)" -eq "Disabled") {
-            $StartType = 1
-        } ElseIf("$($Service.StartType)" -eq "Manual") {
-            $StartType = 2
-        } ElseIf("$($Service.StartType)" -eq "Automatic") {
-            If($exists -eq 1){
-                $StartType = 4
-            } Else {
-                $StartType = 3
+        If(!($Skip_Services -contains $Service.Name)) {
+            $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
+            If("$($Service.StartType)" -eq "Disabled") {
+                $StartType = 1
+            } ElseIf("$($Service.StartType)" -eq "Manual") {
+                $StartType = 2
+            } ElseIf("$($Service.StartType)" -eq "Automatic") {
+                If($exists -eq 1){
+                    $StartType = 4
+                } Else {
+                    $StartType = 3
+                }
             }
+            $Object = New-Object -TypeName PSObject
+            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $Service.Name
+            Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $StartType
+            $SaveService += $Object
         }
-        $Object = New-Object -TypeName PSObject
-        Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $Service.Name
-        Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $StartType
-        $SaveService += $Object
     }
     $SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
 }
 
 Function ServiceSet ([String]$BVService) {
     Clear-Host
-    If($BackupServiceConfig -eq 1) { Save_Service }
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
     ServiceBA "Services-Before"
@@ -652,7 +688,7 @@ Function ServiceSet ([String]$BVService) {
     AutomatedExitCheck 1
 }
 
-Function ServiceCheck ([string]$S_Name, [string]$S_Type) {
+Function ServiceCheck ([string]$S_Name,[string]$S_Type) {
     If($CurrServices | Where Name -eq $S_Name) {
         $C_Type = ($CurrServices | Where Name -eq $S_Name).StartType
         If($S_Type -ne $C_Type) {
@@ -805,6 +841,7 @@ Function PreScriptCheck {
 }
 
 Function VariousChecks {
+    If($BackupServiceConfig -eq 1) { Save_Service }
     If($LoadServiceConfig -eq 1) {
         $ServiceFilePath = $filebase + $ServiceConfigFile
         If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
@@ -849,7 +886,7 @@ Function VariousChecks {
             $SV=[Int]$Script_Version
             If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
                 If($WebScriptMinorVer -gt $Minor_Version) {
-                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer
+                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "." + $WebScriptMinorVer
                     If($Release_Type -eq "Stable") {
                         $DFilename += ".ps1"
                         $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
@@ -945,7 +982,7 @@ Function ScriptPreStart {
         } Else {
             Black_Viper_Set $Black_Viper $All_or_Min
         }
-    } ElseIf($Accept_ToS -ne 0) {
+    } ElseIf($Accept_ToS -ne 0 -or $Automated -eq 1) {
         If($LoadServiceConfig -eq 1) {
             ServiceSet "StartType"
         } Else {
@@ -953,12 +990,6 @@ Function ScriptPreStart {
         }
     } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
         TOS
-    } ElseIf($Automated -eq 1) {
-        If($LoadServiceConfig -eq 1) {
-            ServiceSet "StartType"
-        } Else {
-            Black_Viper_Input
-        }
     } Else {
         $ErrorDi = "Unknown -ScriptPreStart"
         Error_Top_Display
@@ -1026,12 +1057,10 @@ Function ArgCheck {
                     $Script:All_or_Min = "-full"
                 } ElseIf($ArgVal -eq "-min") {
                     $Script:All_or_Min = "-min"
-                } ElseIf($ArgVal -eq "-secp") {
+                } ElseIf($ArgVal -eq "-secp" -or $ArgVal -eq "-sec") {
                     $Script:Edition_Check = "Pro"
                 } ElseIf($ArgVal -eq "-sech") {
                     $Script:Edition_Check = "Home"
-                } ElseIf($ArgVal -eq "-sec") {
-                    $Script:Edition_Check = "Pro"
                 } ElseIf($ArgVal -eq "-sic") {
                     $Script:Internet_Check = 1
                 } ElseIf($ArgVal -eq "-usc") {
@@ -1051,14 +1080,14 @@ Function ArgCheck {
                 } ElseIf($ArgVal -eq "-diagt") {
                     $Script:Diagnostic = 2
                     $Script:Automated = 0
+                } ElseIf($ArgVal -eq "-baf") {
+                    $Script:LogBeforeAfter = 1
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
                     If(!($PassedArg[$i+1].StartsWith("-"))) { 
                         $Script:LogName = $PassedArg[$i+1] 
                         $i++
                     }
-                } ElseIf($ArgVal -eq "-baf") {
-                    $Script:LogBeforeAfter = 1
                 } ElseIf($ArgVal -eq "-logc") {
                     $Script:MakeLog = 2
                     If(!($PassedArg[$i+1].StartsWith("-"))) { 
@@ -1100,14 +1129,16 @@ Function ArgCheck {
         LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
         Error_Bottom
     }
-    If($MakeLog -eq 1) {
+    If($MakeLog -ne 0) {
         $Script:LogFile = $filebase + $LogName
         $Time = Get-Date -Format g
-        Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
-    } ElseIf($MakeLog -eq 2) {
-        Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append 
-        $Script:LogFile = $filebase + $LogName
-        $MakeLog = 1
+        If($MakeLog -eq 2) {
+            Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append 
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile -NoNewline -Append 
+            $MakeLog = 1
+        } Else {
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
+        }
     }
 }
 
@@ -1142,7 +1173,6 @@ $Script:LogBeforeAfter = 0      #0 = Dont make a file of all the services before
 #--------------------------------
 
 #--------Update Variables-------
-# Function = Option             #Choices
 $Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 #Note: If found will Auto download and runs that
@@ -1154,7 +1184,6 @@ $Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
 #--------------------------------
 
 #--------Display Variables-------
-# Function = Option             #Choices
 $Script:Show_Changed = 1        #0 = Dont Show Changed Services
                                 #1 = Show Changed Services
 
@@ -1169,7 +1198,6 @@ $Script:Show_Skipped = 0        #0 = Dont Show Skipped Services
 #--------------------------------
 
 #----CHANGE AT YOUR OWN RISK!----
-# Function = Option             #Choices
 $Script:Internet_Check = 0      #0 = Checks if you have internet by doing a ping to github.com
                                 #1 = Bypass check if your pings are blocked
 
@@ -1183,7 +1211,6 @@ $Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
 
 #--------Dev Mode Variables-------
 # Best not to use these unless asked to (these stop automated)
-# Function = Option             #Choices
 $Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
                                 #1 = Shows diagnostic information
 
