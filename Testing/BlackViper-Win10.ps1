@@ -9,8 +9,8 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.6"
-$Minor_Version = "5"
+$Script_Version = "2.7"
+$Minor_Version = "0"
 $Script_Date = "06-21-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -869,20 +869,27 @@ Function VariousChecks {
             $VersionFile = $env:Temp + "\Temp.csv"
             DownloadFile $Version_Url $VersionFile
             $CSV_Ver = Import-Csv $VersionFile
-            If($Release_Type -eq "Stable") {
-                $CSVLine = 0
-            } Else {
-                $CSVLine = 2
-            }
-            $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
             If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
                 [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
             }
-            If($Script_Ver_Check -eq 1 -and $WebScriptVer -ge $Script_Version) {
+            If($Script_Ver_Check -eq 1) {
+                If($Release_Type -eq "Stable") {
+                    $CSVLine = 0
+                } Else {
+                    $CSVLine = 2
+                }
+                $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
                 $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
-                If($WebScriptMinorVer -gt $Minor_Version) {
+                If($WebScriptVer -gt $Script_Version) {
+                    $Script_Update = "True"
+                } ElseIf($WebScriptVer -eq $Script_Version -and $WebScriptMinorVer -gt $Minor_Version) {
+                    $Script_Update = "True"
+                } Else {
+                    $Script_Update = "False"
+                }
+                If($Script_Update -eq "True") {
                     $FullVer = "$WebScriptVer.$WebScriptMinorVer"
                     $DFilename = "BlackViper-Win10-Ver." + $FullVer
                     If($Release_Type -eq "Stable") {
@@ -898,7 +905,7 @@ Function VariousChecks {
                     LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
                     MenuLineLog
                     MenuBlankLineLog
-                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(30-$FullVer.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(29-$FullVer.length))) 11 0 0 1 ;RightLineLog
                     LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
                     LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
                     MenuBlankLine
