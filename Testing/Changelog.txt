@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-2.6.4 (06-20-2017)
+2.6.4 (06-21-2017)
 
 Adding Minor Version number
 Added Ability to load service configuration
@@ -10,8 +10,7 @@ Added switch
   -lcsc File.csv   Loads Custom Service Configuration, File.csv = Name of your backup/custom file
   -bcsc            Backup Current Service Configuration
   -snis            Show not installed Services
-  -sss             Show Skipped Services
-  
+
 -----------------------------------------------------------------------------------
 2.6 (06-17-2017)
 
