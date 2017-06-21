@@ -71,6 +71,8 @@ Use one of the following Methods you can
 | -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alt `-set tweaked` or `-set 3` |
 | -all      | Every windows services will change                                             |   |
 | -min      | Just the services different from the default to safe/tweaked list              |   |
+| -bcsc     | Backup Current Service Configuration                      | Filename will be `COMPUTERNAME-Service-Backup.csv`   |
+| -lcsc File.csv | Loads Custom Service Configuration                             | File.csv = Name of your backup/custom file |
 | -sec      | Skips Edition Check (Home/Pro)                                                 | **USE AT YOUR OWN RISK**        |
 | -secp     | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**        |
 | -sech     | Skips Edition Check (Home/Pro), Sets edition as Home                           | **USE AT YOUR OWN RISK**        |
@@ -78,14 +80,15 @@ Use one of the following Methods you can
 | -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      |
 | -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found |
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found |
-| -snis      | Shows not installed services (that can be changed)                             |  |
+| -snis     | Shows not installed services (that can be changed)                             |  |
 | -diag     | Shows some diagnostic information on error messages                            | **Stops automation** |
 | -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
-| -baf      | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log` |
-| -dry       | Runs script and shows what will be changed if ran normaly                     | **No Services are changes** |
-| -devl      | Makes a log file with various Diagnostic information                          | **No Services are changes** |
+| -baf      | File of all the services before and after the script                 | `Services-Before.log` and `Services-After.log`    |
+| -dry      | Runs script and shows what will be changed if ran normaly                     | **No Services are changes** |
+| -devl     | Makes a log file with various Diagnostic information                          | **No Services are changes** |
 
 Examples: <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv` <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -atos -use -set 2` <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec` <br />
