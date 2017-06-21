@@ -11,7 +11,7 @@
 #
 $Script_Version = "2.6"
 $Minor_Version = "4"
-$Script_Date = "06-20-2017"
+$Script_Date = "06-21-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -89,7 +89,6 @@ $Release_Type = "Testing"
   -auto          (Implies -atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script)
 
 --Service Configuration Switches--
- Switches       Description of Switch
   -default       (Runs the script with Services to Default Configuration)
   -Set 1          ^Same as Above
   -Set default    ^Same as Above
@@ -106,27 +105,23 @@ $Release_Type = "Testing"
   -min           (Just the services different from the default to safe/tweaked list)
 
 --Update Switches--
- Switches       Description of Switch
   -usc           (Checks for Update to Script file before running)
   -use           (Checks for Update to Service file before running)
-  -sic           (Skips Internet Check)
+  -sic           (Skips Internet Check, if you cant ping github.com for some reason)
   
 --AT YOUR OWN RISK Switches--
- Switches       Description of Switch
   -sec           (Skips Edition check by Setting Edition as Pro)
   -secp          (Skips Edition check by Setting Edition as Pro)
   -sech          (Skips Edition check by Setting Edition as Home)
   -sbc           (Skips Build Check)
 
 --Misc Switches--
- Switches       Description of Switch
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
   -log           (Makes a log file Script.log)
-  -baf           (File of Services before and after the script)
+  -baf           (Log File of Services Configuration Before and After the script)
   -bcsc          (Backup Current Service Configuration)
   -snis          (Show not installed Services)
-  -sss           (Show Skipped Services)
 --------------------------------------------------------------------------------#>
 
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -325,7 +320,7 @@ Function ShowInvalid ([Int]$InvalidA) {
 ##########
 
 ##########
-# TOS -Start
+# TOS/Copyright -Start
 ##########
 
 Function TOSDisplay {
@@ -395,100 +390,6 @@ Function TOS {
     Return
 }
 
-##########
-# TOS -End
-##########
-
-# Check if you want to download the missing Service setting file
-Function LoadWebCSV {
-    $LoadWebCSV = 'X'
-    while($LoadWebCSV -ne "Out") {
-        Error_Top_Display
-        $ErrorDi = "Missing File BlackViper.csv -LoadCSV"
-        LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing.             " 2 0 0 ;RightLine
-        MenuBlankLine
-        LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
-        MenuBlankLine
-        MenuLine
-        $Invalid = ShowInvalid $Invalid
-        $LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
-        Switch($LoadWebCSV.ToLower()) {
-            n {Exit}
-            no {Exit}
-            y {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
-            yes {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
-            default {$Invalid = 1}
-        }
-    }
-    Return
-}
-
-Function MenuDisplay ([Array]$ChToDisplay) {
-    Clear-Host
-    If($Diagnostic -eq 2) { DiagnosticCheck 1 }
-    MenuLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[0] 11 0 0 0 ;RightLine
-    MenuLine
-    MenuBlankLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[1] 2 0 0 0 ;RightLine
-    If($OSType -ne 64) {
-        MenuBlankLine
-        LeftLine ;DisplayOutMenu " Settings are ment for x64. Use AT YOUR OWN RISK." 13 0 0 0 ;RightLine
-    }
-    MenuBlankLine
-    MenuLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[2] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[3] 14 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[4] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[5] 14 0 0 ;RightLine
-    For($i=6; $i -lt 14; $i++) {
-        If(!($i -eq 10 -and $IsLaptop -eq "-Lap")) {LeftLine ;DisplayOutMenu $ChToDisplay[$i] 2 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i+1] 2 0 0 ;RightLine }
-        $i++
-    }
-    MenuLine
-    LeftLine ;DisplayOutMenu $ChToDisplay[14] 13 0 0 0 ;RightLine
-    MenuLine
-    For($i=15; $i -lt 18; $i++) { LeftLine ;DisplayOutMenu $ChToDisplay[$i] 15 0 0 0 ;RightLine }
-    MenuLine
-    LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 0 ;RightLine
-    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 0 ;DisplayOutMenu ("$ServiceDate" +(" "*(18-$ServiceDate.length))) 11 0 0 0 ;RightLine
-    MenuLine
-}
-
-Function Black_Viper_Input {
-    $Black_Viper_Input = 'X'
-    while($Black_Viper_Input -ne "Out") {
-        MenuDisplay $BlackViperDisItems
-        $Invalid = ShowInvalid $Invalid
-        $Black_Viper_Input = Read-Host "`nChoice"
-        switch -regex ($Black_Viper_Input) {
-            "1A" {Black_Viper_Set 1 "-Full"; $Black_Viper_Input = "Out"}
-            "2A" {Black_Viper_Set 2 "-Full"; $Black_Viper_Input = "Out"}
-            "3A" {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3 "-Full"; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
-            "1M" {Black_Viper_Set 1 "-Min"; $Black_Viper_Input = "Out"}
-            "2M" {Black_Viper_Set 2 "-Min"; $Black_Viper_Input = "Out"}
-            "3M" {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3 "-Min"; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
-            C {CopyrightDisplay}
-            M {Openwebsite "https://github.com/madbomb122/"}
-            B {Openwebsite "http://www.blackviper.com/"}
-            Q {Exit}
-            default {$Invalid = 1}
-        }
-    }
-}
-
-$BlackViperDisItems = @(
-"      Black Viper's Service Configurations       ",
-"Settings based on Black Viper's Configurations.  ",
-'                       ','                       ',
-'   All Services        ','   Minimum Services    ',
-' 1A. Default           ',' 1M. Default           ',
-' 2A. Safe              ',' 2M. Safe              ',
-' 3A. Tweaked           ',' 3M. Tweaked           ',
-'                       ','                       ',
-'Q. Quit (No changes)                             ',
-'C. Display Copyright                             ',
-"M. Go to Madbomb122's Github                     ",
-"B. Go to Black Viper's Website                   ")
-
 Function CopyrightDisplay {
     Clear-Host
     MenuLine
@@ -542,8 +443,101 @@ $CopyrightItems = @(
 ' SOFTWARE.                                       ',
 'Press any key to go back to menu                 ')
 
+##########
+# TOS/Copyright -End
+##########
+
+# Check if you want to download the missing Service setting file
+Function LoadWebCSV {
+    $LoadWebCSV = 'X'
+    while($LoadWebCSV -ne "Out") {
+        Error_Top_Display
+        $ErrorDi = "Missing File BlackViper.csv -LoadCSV"
+        LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing.             " 2 0 0 ;RightLine
+        MenuBlankLine
+        LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
+        MenuBlankLine
+        MenuLine
+        $Invalid = ShowInvalid $Invalid
+        $LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
+        Switch($LoadWebCSV.ToLower()) {
+            n {Exit}
+            no {Exit}
+            y {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
+            yes {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
+            default {$Invalid = 1}
+        }
+    }
+    Return
+}
+
+Function MenuDisplay ([Array]$ChToDisplay) {
+    Clear-Host
+    If($Diagnostic -eq 2) { DiagnosticCheck 1 }
+    MenuLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[0] 11 0 0 0 ;RightLine
+    MenuLine
+    MenuBlankLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[1] 2 0 0 0 ;RightLine
+    If($OSType -ne 64) {
+        MenuBlankLine
+        LeftLine ;DisplayOutMenu " Settings are ment for x64. Use AT YOUR OWN RISK." 13 0 0 0 ;RightLine
+    }
+    MenuBlankLine
+    MenuLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[2] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[3] 14 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[4] 14 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[5] 14 0 0 ;RightLine
+    For($i=6; $i -lt 14; $i+=2) {
+        If(!($i -eq 10 -and $IsLaptop -eq "-Lap")) {LeftLine ;DisplayOutMenu $ChToDisplay[$i] 2 0 0 ;DisplayOutMenu " | " 14 0 0 ;DisplayOutMenu $ChToDisplay[$i+1] 2 0 0 ;RightLine }
+    }
+    MenuLine
+    LeftLine ;DisplayOutMenu $ChToDisplay[14] 13 0 0 0 ;RightLine
+    MenuLine
+    For($i=15; $i -lt 18; $i++) { LeftLine ;DisplayOutMenu $ChToDisplay[$i] 15 0 0 0 ;RightLine }
+    MenuLine
+    LeftLine ;DisplayOutMenu "Script Version: " 15 0 0 0 ;DisplayOutMenu ("$Script_Version ($Script_Date)"+(" "*(30-$Script_Version.length - $Script_Date.length))) 11 0 0 0 ;RightLine
+    LeftLine ;DisplayOutMenu "Services File last updated on: " 15 0 0 0 ;DisplayOutMenu ("$ServiceDate" +(" "*(18-$ServiceDate.length))) 11 0 0 0 ;RightLine
+    MenuLine
+}
+
+Function Black_Viper_Input {
+    $Black_Viper_Input = 'X'
+    while($Black_Viper_Input -ne "Out") {
+        MenuDisplay $BlackViperDisItems
+        $Invalid = ShowInvalid $Invalid
+        $Black_Viper_Input = Read-Host "`nChoice"
+        switch -regex ($Black_Viper_Input) {
+            "1A" {Black_Viper_Set 1 "-Full"; $Black_Viper_Input = "Out"}
+            "2A" {Black_Viper_Set 2 "-Full"; $Black_Viper_Input = "Out"}
+            "3A" {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3 "-Full"; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
+            "1M" {Black_Viper_Set 1 "-Min"; $Black_Viper_Input = "Out"}
+            "2M" {Black_Viper_Set 2 "-Min"; $Black_Viper_Input = "Out"}
+            "3M" {If($IsLaptop -ne "-Lap") {Black_Viper_Set 3 "-Min"; $Black_Viper_Input = "Out"} Else {$Invalid = 1}}
+            C {CopyrightDisplay}
+            M {Openwebsite "https://github.com/madbomb122/"}
+            B {Openwebsite "http://www.blackviper.com/"}
+            Q {Exit}
+            default {$Invalid = 1}
+        }
+    }
+}
+
+$BlackViperDisItems = @(
+"      Black Viper's Service Configurations       ",
+"Settings based on Black Viper's Configurations.  ",
+'                       ','                       ',
+'   All Services        ','   Minimum Services    ',
+' 1A. Default           ',' 1M. Default           ',
+' 2A. Safe              ',' 2M. Safe              ',
+' 3A. Tweaked           ',' 3M. Tweaked           ',
+'                       ','                       ',
+'Q. Quit (No changes)                             ',
+'C. Display Copyright                             ',
+"M. Go to Madbomb122's Github                     ",
+"B. Go to Black Viper's Website                   ")
+
 $ServicesTypeList = @(
-    '',          #0 -None (Not Installed, Default Only)
+    '',          #0 -None (Not Installed, Skip)
     'Disabled',  #1 -Disable
     'Manual',    #2 -Manual
     'Automatic', #3 -Automatic
@@ -553,6 +547,7 @@ $ServicesTypeList = @(
 $Script:argsUsed = 0
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
+$Script:Show_Skipped = 0
 
 Function ServiceBA ([String]$ServiceBA) {
     If($LogBeforeAfter -eq 1) {
@@ -612,20 +607,22 @@ Function Save_Service {
  
     foreach ($Service in $AllService) {
         If(!($Skip_Services -contains $Service.Name)) {
-            $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
             If("$($Service.StartType)" -eq "Disabled") {
                 $StartType = 1
             } ElseIf("$($Service.StartType)" -eq "Manual") {
                 $StartType = 2
             } ElseIf("$($Service.StartType)" -eq "Automatic") {
+                $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
                 If($exists -eq 1){
                     $StartType = 4
                 } Else {
                     $StartType = 3
                 }
             }
+            $ServiceName = $Service.Name
+            If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
             $Object = New-Object -TypeName PSObject
-            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $Service.Name
+            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
             Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $StartType
             $SaveService += $Object
         }
@@ -995,7 +992,7 @@ Function ScriptPreStart {
         $ErrorDi = "Unknown -ScriptPreStart"
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 1 ;RightLineLog
-        LeftLineLog ;DisplayOutMenu "to me, with Subject of 'Unknown Error', thanks.  " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "to me, with Subject of 'Unknown Error', Thanks.  " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu " E-mail - Madbomb122@gmail.com                   " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 1 ;RightLineLog
         Error_Bottom
@@ -1112,7 +1109,7 @@ Function ArgCheck {
     }
     If($DevLog -eq 1) {
         $Script:MakeLog = 1
-        $Script:LogName = "Ddev-Logs.log"
+        $Script:LogName = "Dev-Log.log"
         $Script:Diagnostic = 1
         $Script:Automated = 0
         $Script:LogBeforeAfter = 2
@@ -1193,9 +1190,6 @@ $Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
 
 $Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
                                 #1 = Show Services not present
-                                
-$Script:Show_Skipped = 0        #0 = Dont Show Skipped Services
-                                #1 = Show Skipped Services
 #--------------------------------
 
 #----CHANGE AT YOUR OWN RISK!----
