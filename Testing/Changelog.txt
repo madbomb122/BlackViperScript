@@ -1,5 +1,7 @@
 -----------------------------------------------------------------------------------
-2.6.4 (06-21-2017)
+2.6.5 (06-21-2017)
+
+Fixed a bug with Version check not working on test version
 
 Adding Minor Version number
 Added Ability to load service configuration
