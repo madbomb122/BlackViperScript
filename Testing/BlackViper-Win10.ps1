@@ -866,26 +866,25 @@ Function VariousChecks {
         If(InternetCheck) {
             $VersionFile = $env:Temp + "\Temp.csv"
             DownloadFile $Version_Url $VersionFile
-            $CSV_Temp = Get-Content $VersionFile
+            $CSV_Ver = Import-Csv $VersionFile
             If($Release_Type -eq "Stable") {
-                $CSVLine = 1
+                $CSVLine = 0
             } Else {
-                $CSVLine = 3
+                $CSVLine = 2
             }
-            $ScriptVerTmp = $CSV_Temp[$CSVLine].Split(",")
-            $ServiceVerTmp = $CSV_Temp[2].Split(",")
-            $WebServiceVer = $ServiceVerTmp[1]
-            $WebScriptVer = $ScriptVerTmp[1]
-            $WebScriptMinorVer =  $ScriptVerTmp[2]
-            If($Service_Ver_Check -eq 1 -and $WebServiceVer -gt $($csv[0]."Def-Home-Full")) {
+            $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
+            $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
+            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
                 [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
             }
             $SV=[Int]$Script_Version
             If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
-                If($WebScriptMinorVer -gt $Minor_Version) {
-                    $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "." + $WebScriptMinorVer
+                $MV=[Int]$Script_Version
+                If($WebScriptMinorVer -gt $MV) {
+                    $FullVer = $WebScriptVer + "." + $WebScriptMinorVer
+                    $DFilename = "BlackViper-Win10-Ver." + $FullVer
                     If($Release_Type -eq "Stable") {
                         $DFilename += ".ps1"
                         $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
@@ -899,7 +898,7 @@ Function VariousChecks {
                     LeftLineLog ;DisplayOutMenu "                      Update Found!                      " 13 0 0 1 ;RightLineLog
                     MenuLineLog
                     MenuBlankLineLog
-                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$WebScriptVer" +(" "*(29-$WebScriptVer.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer"+ +(" "*(29-$$FullVer.length))) 11 0 0 1 ;RightLineLog
                     LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
                     LeftLineLog ;DisplayOutMenu "after download is complete.                           " 2 0 0 1 ;RightLineLog
                     MenuBlankLine
