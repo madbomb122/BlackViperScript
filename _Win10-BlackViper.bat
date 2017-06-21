@@ -1,5 +1,5 @@
 @ECHO OFF
-:: Last Updated on June 8th, 2017
+:: Last Updated on June 21th, 2017
 
 :: Instructions
 :: Bat, Script MUST be in same Folder
@@ -24,6 +24,17 @@ Set Automated=no
 :: no = Pause on - User input, On Errors, or End of Script
 :: yes = Close on - User input, On Errors, or End of Script
 :: yes, Implies that you accept the "ToS"
+
+Set Backup_Current_Service_Conf=no
+:: no = Dont backup Your Current Service Configuration before services are changes
+:: yes = Backup Your Current Service Configuration before services are changes
+:: Filename will be "(ComputerName)-Service-Backup.csv"
+
+Set Load_Custom_Service_Config=no
+:: no = Use the default Black Viper Service Configuration
+:: yes = Use a Custom/Backup Service Configuration 
+Set Service_Config_File=Computername-Service-Backup.csv
+:: Set filename if being used otherwise ignore
 
 :: Update Checks   
 :: If update is found it will Auto-download and use that (with your settings)       
@@ -60,6 +71,9 @@ Set Script_Path=%Script_Directory%%Script_File%
 
 :: DO NOT CHANGE ANYTHING PAST THIS LINE
 ::----------------------------------------------------------------------
+
+echo %~dp0
+
 SETLOCAL ENABLEDELAYEDEXPANSION
 
 If /i not "%*"=="" (
@@ -73,6 +87,14 @@ If /i not "%*"=="" (
             If /i %%i==3 Set Black_Viper=3
             Set SetArg=no
         )
+        If /i !LoadServiceArg!==yes (
+            Set Service_Config_File=%%i
+            Set LoadServiceArg=no
+        )
+        If /i %%i==-Set Set SetArg=yes
+        If /i %%i==-lcsc Set LoadServiceArg=yes
+
+        If /i %%i==-bcsc Set Backup_Current_Service_Conf=yes
         If /i %%i==-atos Set Accept_ToS=yes
         If /i %%i==-auto Set Automated=yes
         If /i %%i==-usc Set Script=yes
@@ -86,7 +108,6 @@ If /i not "%*"=="" (
         If /i %%i==-safe Set Black_Viper=2
         If /i %%i==-tweaked Set Black_Viper=3
         If /i %%i==-diag Set Diagnostic=yes
-        If /i %%i==-Set Set SetArg=yes
         If /i %%i==-log Set Log=Yes
         If /i %%i==-baf Set Log_Before_After=yes
     )
@@ -106,6 +127,10 @@ If /i %Black_Viper%==tweaked Set Run_Option=!Run_Option! -tweaked
 If /i %All_or_Min%==All Set Run_Option=!Run_Option! -all
 If /i %All_or_Min%==Min Set Run_Option=!Run_Option! -min
 
+If /i %Backup_Current_Service_Conf%==yes Set Run_Option=!Run_Option! -bcsc
+
+If /i %Load_Custom_Service_Config%==yes Set Run_Option=!Run_Option! -lcsc %Service_Config_File%
+
 If /i %Skip_Build_Check%==yes Set Run_Option=!Run_Option! -sbc
 
 If /i %Skip_Edition_Check%==Pro Set Run_Option=!Run_Option! -secp
@@ -124,6 +149,7 @@ If /i %Diagnostic%==yes Set Run_Option=!Run_Option! -diag
 If /i %Log_Before_After%==yes Set Run_Option=!Run_Option! -baf
 
 If /i %Log%==yes Set Run_Option=!Run_Option! -log %LogFile%
+
 
 echo "Running !Script_File!"
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path! !Run_Option!"' -Verb RunAs}";
