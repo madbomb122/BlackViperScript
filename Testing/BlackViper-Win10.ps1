@@ -158,8 +158,9 @@ $ForBuild = 15063
 $ForVer = 1703
 $NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 
-$Version_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Version/Version.csv"
-$Service_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper.csv"
+$URL_Base = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/"
+$Version_Url = $URL_Base + "Version/Version.csv"
+$Service_Url = $URL_Base + "BlackViper.csv"
 
 If([System.Environment]::Is64BitProcess) { $OSType = 64 }
 
@@ -696,7 +697,7 @@ Function ServiceCheck ([string]$S_Name,[string]$S_Type) {
                 # Has to be removed or cant change service from disabled (Known Bug)
                 If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
             } ElseIf($S_Name -eq 'NetTcpPortSharing') {
-                If($CurrServices.Name | where {$_ -contains $NetTCP}) {
+                If($NetTCP -contains $CurrServices.Name) {
                     Return "Manual"
                 } Else {
                     Return $False
@@ -889,10 +890,10 @@ Function VariousChecks {
                     $DFilename = "BlackViper-Win10-Ver." + $WebScriptVer + "." + $WebScriptMinorVer
                     If($Release_Type -eq "Stable") {
                         $DFilename += ".ps1"
-                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/BlackViper-Win10.ps1"
+                        $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
                     } Else {
                         $DFilename += "-Testing.ps1"
-                        $Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Win10.ps1"
+                        $Script_Url = $URL_Base + "Testing/BlackViper-Win10.ps1"
                     }
                     $WebScriptFilePath = $filebase + $DFilename
                     Clear-Host
