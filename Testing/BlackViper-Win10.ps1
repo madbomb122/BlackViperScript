@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "2.6"
-$Minor_Version = "4"
+$Minor_Version = "5"
 $Script_Date = "06-21-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -148,7 +148,6 @@ If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::
     Exit
 }
 
-$TempFolder = $env:Temp
 $ForBuild = 15063
 $ForVer = 1703
 $NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
@@ -547,7 +546,6 @@ $ServicesTypeList = @(
 $Script:argsUsed = 0
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
-$Script:Show_Skipped = 0
 
 Function ServiceBA ([String]$ServiceBA) {
     If($LogBeforeAfter -eq 1) {
@@ -866,17 +864,20 @@ Function VariousChecks {
     [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
     If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
         If(InternetCheck) {
-            $VersionFile = $TempFolder + "\Temp.csv"
+            $VersionFile = $env:Temp + "\Temp.csv"
             DownloadFile $Version_Url $VersionFile
-            $CSV_Ver = Import-Csv $VersionFile
+            $CSV_Temp = Get-Content $VersionFile
             If($Release_Type -eq "Stable") {
-                $CSVLine = 0
+                $CSVLine = 1
             } Else {
                 $CSVLine = 3
             }
-            $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
-            $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
-            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
+            $ScriptVerTmp = $CSV_Temp[$CSVLine].Split(",")
+            $ServiceVerTmp = $CSV_Temp[2].Split(",")
+            $WebServiceVer = $ServiceVerTmp[1]
+            $WebScriptVer = $ScriptVerTmp[1]
+            $WebScriptMinorVer =  $ScriptVerTmp[2]
+            If($Service_Ver_Check -eq 1 -and $WebServiceVer -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
                 [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
@@ -1099,8 +1100,6 @@ Function ArgCheck {
                     $Script:Show_Skipped = 1
                 } ElseIf($ArgVal -eq "-snis") {
                     $Script:Show_Non_Installed = 1
-                } ElseIf($ArgVal -eq "-sss") {
-                    $Script:Show_Skipped = 1
                 } ElseIf($ArgVal -eq "-devl") {
                     $Script:DevLog = 1
                 }
