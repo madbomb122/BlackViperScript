@@ -108,19 +108,21 @@ $Release_Type = "Testing"
   -usc           (Checks for Update to Script file before running)
   -use           (Checks for Update to Service file before running)
   -sic           (Skips Internet Check, if you cant ping github.com for some reason)
+
+--Log Switches--
+  -log           (Makes a log file Script.log)
+  -baf           (Log File of Services Configuration Before and After the script)
   
 --AT YOUR OWN RISK Switches--
-  -sec           (Skips Edition check by Setting Edition as Pro)
-  -secp          (Skips Edition check by Setting Edition as Pro)
-  -sech          (Skips Edition check by Setting Edition as Home)
+  -sec           (Skips Edition Check by Setting Edition as Pro)
+  -secp           ^Same as Above
+  -sech          (Skips Edition Check by Setting Edition as Home)
   -sbc           (Skips Build Check)
 
 --Misc Switches--
+  -bcsc          (Backup Current Service Configuration)
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
-  -log           (Makes a log file Script.log)
-  -baf           (Log File of Services Configuration Before and After the script)
-  -bcsc          (Backup Current Service Configuration)
   -snis          (Show not installed Services)
 --------------------------------------------------------------------------------#>
 
@@ -873,17 +875,15 @@ Function VariousChecks {
                 $CSVLine = 2
             }
             $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
-            $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
             If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
                 [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
             }
-            $SV=[Int]$Script_Version
-            If($Script_Ver_Check -eq 1 -and $WebScriptVer -gt $SV) {
-                $MV=[Int]$Script_Version
-                If($WebScriptMinorVer -gt $MV) {
-                    $FullVer = $WebScriptVer + "." + $WebScriptMinorVer
+            If($Script_Ver_Check -eq 1 -and $WebScriptVer -ge $Script_Version) {
+                $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
+                If($WebScriptMinorVer -gt $Minor_Version) {
+                    $FullVer = "$WebScriptVer.$WebScriptMinorVer"
                     $DFilename = "BlackViper-Win10-Ver." + $FullVer
                     If($Release_Type -eq "Stable") {
                         $DFilename += ".ps1"
@@ -894,13 +894,13 @@ Function VariousChecks {
                     }
                     $WebScriptFilePath = $filebase + $DFilename
                     Clear-Host
-                    MenuLineLogLog
-                    LeftLineLog ;DisplayOutMenu "                      Update Found!                      " 13 0 0 1 ;RightLineLog
+                    MenuLineLog
+                    LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
                     MenuLineLog
                     MenuBlankLineLog
-                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer"+ +(" "*(29-$$FullVer.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(30-$FullVer.length))) 11 0 0 1 ;RightLineLog
                     LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
-                    LeftLineLog ;DisplayOutMenu "after download is complete.                           " 2 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
                     MenuBlankLine
                     MenuLineLog
                     DownloadFile $Script_Url $WebScriptFilePath
