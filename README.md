@@ -1,5 +1,5 @@
-**I Need Help.. I'm Working on a GUI for the script (BlackViper-Gui.ps1 in Testing folder) and I need comments, opinions, etc if I should even add the gui or just abandon it.  <br />
-Please note it's not a functional version of the script it's just a GUI.**
+**I Need Help.. I'm Working on a GUI for the script (BlackViper-Gui.ps1 in Testing folder).. <br />
+I need comments on it (Please leave comments in the Issues under the topic "Comment on GUI (Testing/BlackViper-Gui.ps1)", Thanks). <br />**
 
 **Current Version** <br />
 **Script:** `2.7.0` (June 21, 2017) <br />
