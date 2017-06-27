@@ -1,6 +1,3 @@
-**I Need Help.. I'm Working on a GUI for the script (`Testing/BlackViper-Gui.ps1`).. <br />
-I need comments on it (Please leave comments in the Issues under the topic "*Comment on GUI (Testing/BlackViper-Gui.ps1)*", Thanks). <br />**
-
 **Current Version** <br />
 **Script:** `2.7.0` (June 21, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
