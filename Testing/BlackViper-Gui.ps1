@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "2.8"
+$Script_Version = "3.0"
 $Minor_Version = "0"
-$Script_Date = "06-28-2017"
+$Script_Date = "06-29-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -672,7 +672,7 @@ Function Gui-Start {
         $WPF_EditionConfig.IsEnabled = $true
     }
 
-    If($All_or_Min = "-full"){
+    If($All_or_Min -eq "-full"){
         $WPF_RadioAll.IsChecked = $true
         $WPF_RadioMin.IsChecked = $false
     } Else {
