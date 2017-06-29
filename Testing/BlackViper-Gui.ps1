@@ -234,11 +234,8 @@ Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
 }
 
 Function  AutomatedExitCheck ([int]$ExitBit) {
-    If ($Automated -ne 1) {
-        Write-Host ""
-        Read-Host -Prompt "Press Any key to Close..."
-    }
-    If ($ExitBit -eq 1) { Exit }
+    If($Automated -ne 1) { Read-Host -Prompt "`nPress Any key to Close..." }
+    If($ExitBit -eq 1) { Exit }
 }
 
 Function Error_Top_Display {
@@ -255,8 +252,7 @@ Function Error_Bottom {
     MenuBlankLineLog
     If($Diagnostic -eq 1) {
         DiagnosticCheck 0
-        Write-Host ""
-        Read-Host -Prompt "Press Any key to Close..."
+        Read-Host -Prompt "`nPress Any key to Close..."
         Exit
     } Else {
         AutomatedExitCheck 1
@@ -300,16 +296,12 @@ Function DiagnosticCheck ([int]$Bypass) {
 
 Function LaptopCheck {
     $Script:PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
-
     If($PCType -ne 2) { Return "-Desk" }
     Return "-Lap"
 }
 
 Function ShowInvalid ([Int]$InvalidA) {
-    If($InvalidA -eq 1) {
-        Write-Host ""
-        Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
-    }
+    If($InvalidA -eq 1) { Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline }
     Return 0
 }
 
@@ -364,30 +356,23 @@ Function TOS {
         Switch($TOS.ToLower()) {
             n {Exit}
             no {Exit}
-            y { $Script:Accept_ToS = "Accepted-Script"
-                If($LoadServiceConfig -eq 1) {
-                    ServiceSet "StartType"
-                } ElseIf($Black_Viper -eq 0) {
-                    Gui-Start
-                } Else {
-                    Black_Viper_Set $Black_Viper $All_or_Min
-                }
-                $TOS = "Out"
-            }
-            yes { $Script:Accept_ToS = "Accepted-Script"
-                If($LoadServiceConfig -eq 1) {
-                    ServiceSet "StartType"
-                } ElseIf($Black_Viper -eq 0) {
-                    Gui-Start
-                } Else {
-                    Black_Viper_Set $Black_Viper $All_or_Min
-                }
-                $TOS = "Out"
-            }
+            y  { $TOS = "Out" ; TOSyes }
+            yes { $TOS = "Out" ; TOSyes }
             default {$Invalid = 1}
         }
     }
     Return
+}
+
+Function TOSyes {
+    $Script:Accept_ToS = "Accepted-Script"
+    If($LoadServiceConfig -eq 1) {
+        ServiceSet "StartType"
+    } ElseIf($Black_Viper -eq 0) {
+        Gui-Start
+    } Else {
+        Black_Viper_Set $Black_Viper $All_or_Min
+    }
 }
 
 ##########
@@ -399,86 +384,71 @@ Function TOS {
 ##########
 
 Function Gui-Start {
-    $inputXML = @'
-    <Window
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            Title="Black Viper Service Configuration Script By: MadBomb122" Height="343" Width="463" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" ResizeMode="NoResize" BorderBrush="Black" Background="White" WindowStyle="ThreeDBorderWindow">
-        <Window.Effect>
-            <DropShadowEffect/>
-        </Window.Effect>
-        <Grid>
-            <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,137,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-            <Label Content="Log Options" HorizontalAlignment="Left" Margin="197,138,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-            <Label Content="Misc Options" HorizontalAlignment="Left" Margin="4,199,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-            <Label Content="Service Version:" HorizontalAlignment="Left" Margin="245,276,0,0" VerticalAlignment="Top" Height="25"/>
-            <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
-            <Button x:Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="258,210,0,0" VerticalAlignment="Top" Width="168" Height="35" FontWeight="Bold"/>
-            <Button x:Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
-            <Button x:Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="149,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
-            <Button x:Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="298,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
-            <CheckBox x:Name="DryrunCB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="9,222,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
-            <CheckBox x:Name="BeforeAndAfterCB" Content="Services Before and After" HorizontalAlignment="Left" Margin="202,160,0,0" VerticalAlignment="Top" Height="15" Width="157"/>
-            <CheckBox x:Name="AlreadySetCB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,160,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
-            <CheckBox x:Name="NotInstalledCB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,175,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
-            <CheckBox x:Name="ScriptLogCB" Content="Script Log:" HorizontalAlignment="Left" Margin="202,175,0,0" VerticalAlignment="Top" Height="15" Width="75"/>
-            <CheckBox x:Name="BackupServiceCB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
-            <TextBox x:Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
-            <TextBox x:Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="334,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
-            <TextBox x:Name="Release_Type_Txt" HorizontalAlignment="Left" Height="24" Margin="195,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
-            <TextBox x:Name="LogNameInput" HorizontalAlignment="Left" Height="19" Margin="279,174,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="147" IsEnabled="False"/>
-            <TabControl Height="137" Margin="0,-1,0,0" VerticalAlignment="Top">
-                <TabItem x:Name="Black_Viper_Conf_Tab" Header="Black Viper Services" Margin="-2,0,2,0">
-                    <Grid Background="#FFE5E5E5">
-                        <Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,65,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
-                        <ComboBox x:Name="ServiceConfig" HorizontalAlignment="Left" Margin="139,68,0,0" VerticalAlignment="Top" Width="118" Height="23"/>
-                        <RadioButton x:Name="RadioAll" Content="All -Change All Services" HorizontalAlignment="Left" Margin="5,26,0,0" VerticalAlignment="Top" IsChecked="True"/>
-                        <RadioButton x:Name="RadioMin" Content="Min -Change Services that are Differant from Default to Safe/Tweaked" HorizontalAlignment="Left" Margin="5,41,0,0" VerticalAlignment="Top"/>
-                        <Label Content="Black Viper Configuration Options (BV Services Only)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,3,0,0" FontWeight="Bold"/>
-                        <Label x:Name="CustomNote" Content="*Note: Configure in next tab" HorizontalAlignment="Left" Margin="255,65,0,0" VerticalAlignment="Top" Width="170" Height="27" FontWeight="Bold"/>
-                    </Grid>
-                </TabItem>
-                <TabItem x:Name="Custom_Conf_Tab" Header="Custom Services" Margin="-2,0,2,0">
-                    <Grid Background="#FFE5E5E5">
-                        <Button x:Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="9,17,0,0" VerticalAlignment="Top" Width="66" Height="22"/>
-                        <TextBox x:Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="23" Margin="9,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411"/>
-                        <Label Content="Config File (Path+File):" HorizontalAlignment="Left" Margin="4,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                        <Label Content="Browse or Type in Path/File or Browse for file" HorizontalAlignment="Left" Margin="145,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                    </Grid>
-                </TabItem>
-                <TabItem x:Name="Various_Checks_Tab" Header="Various Check" Margin="-2,0,2,0">
-                    <Grid Background="#FFE5E5E5">
-                        <CheckBox x:Name="ScriptUpdateCB" Content="Script Update*" HorizontalAlignment="Left" Margin="9,42,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
-                        <CheckBox x:Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="9,27,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
-                        <CheckBox x:Name="InternetCheckCB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="9,57,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
-                        <CheckBox x:Name="BuildCheckCB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="203,27,0,0" VerticalAlignment="Top" Height="15" Width="111"/>
-                        <CheckBox x:Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="203,42,0,0" VerticalAlignment="Top" Height="15" Width="161"/>
-                        <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="363,39,0,0" VerticalAlignment="Top" Width="61" Height="23" IsEnabled="False"/>
-                        <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="3,66,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                        <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,0,0" FontWeight="Bold"/>
-                        <Label Content="Misc Checks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="198,4,0,0" FontWeight="Bold"/>
-                    </Grid>
-                </TabItem>
-                <TabItem x:Name="Dev_Option_Tab" Header="Dev Option/Contact" Margin="-2,0,2,0">
-                    <Grid Background="#FFE5E5E5">
-                        <CheckBox x:Name="DiagnosticCB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-                        <CheckBox x:Name="DevLogCB" Content="Dev Log" HorizontalAlignment="Left" Margin="9,33,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-                        <Button x:Name="EMail" Content="e-mail Madbomb122" HorizontalAlignment="Left" Margin="9,55,0,0" VerticalAlignment="Top" Width="118"/>
-                        <Label Content="e-mail: Madbomb122@gmail.com" HorizontalAlignment="Left" Margin="200,44,0,0" VerticalAlignment="Top"/>
-                        <Label Content="If your having problems email me" HorizontalAlignment="Left" Margin="200,10,0,0" VerticalAlignment="Top" Width="190"/>
-                        <Label Content="with a 'dev log' if asked to." HorizontalAlignment="Left" Margin="200,27,0,0" VerticalAlignment="Top"/>
-                        <Label Content="&lt;--" HorizontalAlignment="Left" Margin="175,26,0,0" VerticalAlignment="Top"/>
-                    </Grid>
-                </TabItem>
-            </TabControl>
-            <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,136,0,0" Stroke="Black" VerticalAlignment="Top"/>
-            <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
-            <Rectangle Fill="#FFB6B6B6" Margin="0,304,0,0" Stroke="Black" Height="10" VerticalAlignment="Top"/>
-            <Rectangle Fill="#FFB6B6B6" Margin="447,0,0,0" Stroke="Black" HorizontalAlignment="Left" Width="10"/>
-            <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
-            <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="25" Margin="243,280,0,0" Stroke="Black" VerticalAlignment="Top" Width="1"/>
-        </Grid>
-    </Window>
+$inputXML = @'
+<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    Title="Black Viper Service Configuration Script By: MadBomb122" Height="343" Width="463" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" ResizeMode="NoResize" BorderBrush="Black" Background="White" WindowStyle="ThreeDBorderWindow">
+    <Window.Effect> <DropShadowEffect/> </Window.Effect> <Grid>
+    <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,137,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+    <Label Content="Log Options" HorizontalAlignment="Left" Margin="197,138,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+    <Label Content="Misc Options" HorizontalAlignment="Left" Margin="4,199,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+    <Label Content="Service Version:" HorizontalAlignment="Left" Margin="245,276,0,0" VerticalAlignment="Top" Height="25"/>
+    <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
+    <Button x:Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="258,210,0,0" VerticalAlignment="Top" Width="168" Height="35" FontWeight="Bold"/>
+    <Button x:Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
+    <Button x:Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="149,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
+    <Button x:Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="298,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
+    <CheckBox x:Name="DryrunCB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="9,222,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
+    <CheckBox x:Name="BeforeAndAfterCB" Content="Services Before and After" HorizontalAlignment="Left" Margin="202,160,0,0" VerticalAlignment="Top" Height="15" Width="157"/>
+    <CheckBox x:Name="AlreadySetCB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,160,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
+    <CheckBox x:Name="NotInstalledCB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,175,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
+    <CheckBox x:Name="ScriptLogCB" Content="Script Log:" HorizontalAlignment="Left" Margin="202,175,0,0" VerticalAlignment="Top" Height="15" Width="75"/>
+    <CheckBox x:Name="BackupServiceCB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
+    <TextBox x:Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
+    <TextBox x:Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="334,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
+    <TextBox x:Name="Release_Type_Txt" HorizontalAlignment="Left" Height="24" Margin="195,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
+    <TextBox x:Name="LogNameInput" HorizontalAlignment="Left" Height="19" Margin="279,174,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="147" IsEnabled="False"/>
+    <TabControl Height="137" Margin="0,-1,0,0" VerticalAlignment="Top">
+        <TabItem x:Name="Black_Viper_Conf_Tab" Header="Black Viper Services" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
+            <Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,65,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
+            <ComboBox x:Name="ServiceConfig" HorizontalAlignment="Left" Margin="139,68,0,0" VerticalAlignment="Top" Width="118" Height="23"/>
+            <RadioButton x:Name="RadioAll" Content="All -Change All Services" HorizontalAlignment="Left" Margin="5,26,0,0" VerticalAlignment="Top" IsChecked="True"/>
+            <RadioButton x:Name="RadioMin" Content="Min -Change Services that are Differant from Default to Safe/Tweaked" HorizontalAlignment="Left" Margin="5,41,0,0" VerticalAlignment="Top"/>
+            <Label Content="Black Viper Configuration Options (BV Services Only)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,3,0,0" FontWeight="Bold"/>
+            <Label x:Name="CustomNote" Content="*Note: Configure in next tab" HorizontalAlignment="Left" Margin="255,65,0,0" VerticalAlignment="Top" Width="170" Height="27" FontWeight="Bold"/> </Grid>
+        </TabItem>
+        <TabItem x:Name="Custom_Conf_Tab" Header="Custom Services" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
+            <Button x:Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="9,17,0,0" VerticalAlignment="Top" Width="66" Height="22"/>
+            <TextBox x:Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="23" Margin="9,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411"/>
+            <Label Content="Config File (Path+File):" HorizontalAlignment="Left" Margin="4,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+            <Label Content="Browse or Type in Path/File or Browse for file" HorizontalAlignment="Left" Margin="145,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/> </Grid>
+        </TabItem>
+        <TabItem x:Name="Various_Checks_Tab" Header="Various Check" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
+            <CheckBox x:Name="ScriptUpdateCB" Content="Script Update*" HorizontalAlignment="Left" Margin="9,42,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
+            <CheckBox x:Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="9,27,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
+            <CheckBox x:Name="InternetCheckCB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="9,57,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
+            <CheckBox x:Name="BuildCheckCB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="203,27,0,0" VerticalAlignment="Top" Height="15" Width="111"/>
+            <CheckBox x:Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="203,42,0,0" VerticalAlignment="Top" Height="15" Width="161" IsChecked="True"/>
+            <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="363,39,0,0" VerticalAlignment="Top" Width="61" Height="23"/>
+            <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="3,66,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+            <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,0,0" FontWeight="Bold"/>
+            <Label Content="Misc Checks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="198,4,0,0" FontWeight="Bold"/> </Grid>
+        </TabItem>
+        <TabItem x:Name="Dev_Option_Tab" Header="Dev Option/Contact" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
+            <CheckBox x:Name="DiagnosticCB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+            <CheckBox x:Name="DevLogCB" Content="Dev Log" HorizontalAlignment="Left" Margin="9,33,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+            <Button x:Name="EMail" Content="e-mail Madbomb122" HorizontalAlignment="Left" Margin="9,55,0,0" VerticalAlignment="Top" Width="118"/>
+            <Label Content="e-mail: Madbomb122@gmail.com" HorizontalAlignment="Left" Margin="200,44,0,0" VerticalAlignment="Top"/>
+            <Label Content="If your having problems email me" HorizontalAlignment="Left" Margin="200,10,0,0" VerticalAlignment="Top" Width="190"/>
+            <Label Content="with a 'dev log' if asked to." HorizontalAlignment="Left" Margin="200,27,0,0" VerticalAlignment="Top"/>
+            <Label Content="&lt;--" HorizontalAlignment="Left" Margin="175,26,0,0" VerticalAlignment="Top"/> </Grid>
+        </TabItem>
+    </TabControl>
+    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,136,0,0" Stroke="Black" VerticalAlignment="Top"/>
+    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
+    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
+    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="25" Margin="243,280,0,0" Stroke="Black" VerticalAlignment="Top" Width="1"/> </Grid>
+</Window>
 '@ 
     
     $inputXML = $inputXML -replace "x:N",'N'
@@ -519,15 +489,10 @@ Function Gui-Start {
         If($WPF_EditionCheckCB.IsChecked) {
             $temp = $WPF_EditionConfig.SelectedItem.ToString()
             $Script:Edition_Check = $temp.split(':')[1]
-        } Else {
-            $Script:Edition_Check = 0
         }
 
         If($WPF_ScriptLogCB.IsChecked) { 
-            $Script:MakeLog = 1
             $Script:LogName = $WPF_LogNameInput.Text
-        } Else {
-            $Script:MakeLog = 0
         }
 
         $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
@@ -559,15 +524,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK')
     })
 
-    $WPF_ScriptLogCB.Add_Checked({
-        $Script:MakeLog = 1
-        $WPF_LogNameInput.IsEnabled = $true
-    })
-
-    $WPF_ScriptLogCB.Add_UnChecked({
-        $Script:MakeLog = 0
-        $WPF_LogNameInput.IsEnabled = $false
-    })
+    $WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
+    $WPF_ScriptLogCB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $true })
+    $WPF_ScriptLogCB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $false })
 
     $WPF_EditionCheckCB.Add_Checked({
         $Script:Edition_Check = 1
@@ -623,23 +582,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         $WPF_LogNameInput.IsEnabled = $false
     }
 
-    $WPF_EditionCheckCB.IsChecked = $false
-    $WPF_EditionConfig.IsEnabled = $false
     $WPF_EditionConfig.SelectedIndex = 1
     If($Edition_Check -eq 1 -or $Edition_Check -eq "Pro") {
-        $WPF_EditionCheckCB.IsChecked = $true
-        $WPF_EditionConfig.IsEnabled = $true
     } ElseIf($Edition_Check -eq "Home") {
         $WPF_EditionConfig.SelectedIndex = 0
-        $WPF_EditionCheckCB.IsChecked = $true
-        $WPF_EditionConfig.IsEnabled = $true
+    } Else {
+        $WPF_EditionCheckCB.IsChecked = $false
+        $WPF_EditionConfig.IsEnabled = $false
     }
 
     If($All_or_Min -eq "-full"){
         $WPF_RadioAll.IsChecked = $true
-        $WPF_RadioMin.IsChecked = $false
     } Else {
-        $WPF_RadioAll.IsChecked = $false
         $WPF_RadioMin.IsChecked = $true
     }
 
@@ -652,19 +606,32 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Function RunDisableCheck {
     $tempfail = 0
+    $temp1 = ""
+    $temp2 = ""
     If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home" -or $WinSku -IN 100..101) {
     } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro" -or $WinSku -eq 48) {
     } Else {
-        $tempfail = 1
+        $temp1 = "Edition"
+        $tempfail++
     }
 
-    If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) { $tempfail = 1 }
+    If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) { $tempfail++ ; $temp2 = "Build" }
     
-    If($tempfail -eq 1) {
+    If($tempfail -ne 0) {
+        $Buttontxt = "Run Disabled Due to `n"
+        If($temp1 -ne "" -and $temp2 -ne "") {
+            $Buttontxt += $temp1 + " & " + $temp2
+        } Else {
+            If($temp1 -ne "") { $Buttontxt += $temp1 }
+            If($temp2 -ne "") { $Buttontxt += $temp2 }
+        }
         $WPF_RunScriptButton.IsEnabled = $false
+        $Buttontxt += " Check"
     } Else {
+        $Buttontxt = "Run Script"
         $WPF_RunScriptButton.IsEnabled = $true
     }
+    $WPF_RunScriptButton.content = $Buttontxt
 }
 
 ##########
@@ -700,8 +667,7 @@ Function ServiceBA ([String]$ServiceBA) {
         Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
     } ElseIf($LogBeforeAfter -eq 2) {
         $TMPServices = Get-Service | Select DisplayName, StartType
-        Write-Output " " 4>&1 | Out-File -filepath $LogFile -Append
-        Write-Output "$ServiceBA -Start" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "`n$ServiceBA -Start" 4>&1 | Out-File -filepath $LogFile -Append
         Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
         Write-Output $TMPServices 4>&1 | Out-File -filepath $LogFile -Append
         Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
@@ -891,8 +857,8 @@ Function CreateLog {
         $Script:LogFile = $filebase + $LogName
         $Time = Get-Date -Format g
         If($MakeLog -eq 2) {
-            Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append 
-            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile -NoNewline -Append 
+            Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile -NoNewline -Append
             $MakeLog = 1
         } Else {
             Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
@@ -1103,7 +1069,7 @@ Function PreScriptCheck {
     }
 
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-        $ErrorDi = "Missing File BlackViper.csv -"
+        $ErrorDi = "Missing File BlackViper.csv"
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
