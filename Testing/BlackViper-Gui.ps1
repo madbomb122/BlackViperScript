@@ -1,0 +1,1394 @@
+##########
+# Win10 Black Viper Service Configuration Script
+#
+# Black Viper's Service Configurations
+#  Author: Charles "Black Viper" Sparks
+# Website: http://www.blackviper.com/
+#
+# Script + Menu By
+#  Author: Madbomb122
+# Website: https://github.com/madbomb122/BlackViperScript/
+#
+$Script_Version = "2.8"
+$Minor_Version = "0"
+$Script_Date = "06-28-2017"
+#$Release_Type = "Stable"
+$Release_Type = "Testing"
+##########
+
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!                                                !!!!!!
+## !!!!!!               SAFE TO EDIT ITEM                !!!!!!
+## !!!!!!              AT BOTTOM OF SCRIPT               !!!!!!
+## !!!!!!                                                !!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+<#--------------------------------------------------------------------------------
+    Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
+
+    The MIT License (MIT)
+
+    Copyright (c) 2017 Madbomb122 - Black Viper Service Script
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+--------------------------------------------------------------------------------#>
+
+<#--------------------------------------------------------------------------------
+.Prerequisite to run script
+    System: Windows 10 x64
+    Edition: Home or Pro     (Can run on other Edition AT YOUR OWN RISK)
+    Build: Creator's Update  (Can run on other Build AT YOUR OWN RISK)
+    Files: This script and 'BlackViper.csv' (Service Configurations)
+
+.DESCRIPTION
+    Script that can set services based on Black Viper's Service Configurations. 
+
+    AT YOUR OWN RISK YOU CAN 
+        1. Run the script on x32 w/o changing settings (But shows a warning) 
+        2. Skip the check for 
+            A. Home/Pro ($Script:Edition_Check variable bottom of script or use -sec switch) 
+            B. Creator's Update ($Script:Build_Check variable bottom of script or use -sbc switch) 
+
+.BASIC USAGE
+  Run script with powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
+  or Use bat file provided
+  
+  Then Use the Menu Provided and
+  Select the desired Services Configuration
+    1. Default
+    2. Safe (Recommended Option)
+    3. Tweaked (Not supported for laptop ATM)
+
+.ADVANCED USAGE
+ One of the following Methods...
+  1. Edit values at bottom of the script then run script
+  2. Edit bat file and run
+  3. Run the script with one of these arguments/switches (space between multiple)
+
+--Basic Switches--
+ Switches       Description of Switch
+  -atos          (Accepts ToS)
+  -auto          (Implies -atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script)
+
+--Service Configuration Switches--
+  -default       (Runs the script with Services to Default Configuration)
+  -Set 1          ^Same as Above
+  -Set default    ^Same as Above
+  -safe          (Runs the script with Services to Black Viper's Safe Configuration)
+  -Set 2          ^Same as Above
+  -Set safe       ^Same as Above
+  -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
+  -Set 3          ^Same as Above
+  -Set tweaked    ^Same as Above
+  -lcsc File.csv (Loads Custom Service Configuration, File.csv = Name of your backup/custom file)
+
+--Service Choice Switches--
+  -all           (Every windows services will change)
+  -min           (Just the services different from the default to safe/tweaked list)
+
+--Update Switches--
+  -usc           (Checks for Update to Script file before running)
+  -use           (Checks for Update to Service file before running)
+  -sic           (Skips Internet Check, if you cant ping github.com for some reason)
+
+--Log Switches--
+  -log           (Makes a log file Script.log)
+  -baf           (Log File of Services Configuration Before and After the script)
+  
+--AT YOUR OWN RISK Switches--
+  -sec           (Skips Edition Check by Setting Edition as Pro)
+  -secp           ^Same as Above
+  -sech          (Skips Edition Check by Setting Edition as Home)
+  -sbc           (Skips Build Check)
+
+--Misc Switches--
+  -bcsc          (Backup Current Service Configuration)
+  -dry           (Runs the script and shows what services will be changed)
+  -diag          (Shows diagnostic information, Stops -auto)
+  -snis          (Show not installed Services)
+--------------------------------------------------------------------------------#>
+
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!                                                !!!!!!
+## !!!!!!                    CAUTION                     !!!!!!
+## !!!!!!          DO NOT EDIT PAST THIS POINT           !!!!!!
+## !!!!!!                                                !!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+##########
+# Pre-Script -Start
+##########
+
+If($Release_Type -eq "Stable") { $ErrorActionPreference = 'silentlycontinue' }
+
+$Global:PassedArg = $args
+$Global:filebase = $PSScriptRoot + "\"
+
+# Ask for elevated permissions if required
+If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator")) {
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $PassedArg" -Verb RunAs
+    Exit
+}
+
+$URL_Base = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/"
+$Version_Url = $URL_Base + "Version/Version.csv"
+$Service_Url = $URL_Base + "BlackViper.csv"
+
+If([System.Environment]::Is64BitProcess) { $OSType = 64 }
+
+$colors = @(
+    "black",        #0
+    "blue",         #1
+    "cyan",         #2
+    "darkblue",     #3
+    "darkcyan",     #4
+    "darkgray",     #5
+    "darkgreen",    #6
+    "darkmagenta",  #7
+    "darkred",      #8
+    "darkyellow",   #9
+    "gray",         #10
+    "green",        #11
+    "magenta",      #12
+    "red",          #13
+    "white",        #14
+    "yellow"        #15
+)
+
+$ProEditions = @(
+    "Pro",           #English
+    "Professionnel"  #French
+)
+
+$HomeEditions = @(
+    "Home",    #English
+    "Famille"  #French
+)
+
+##########
+# Pre-Script -End
+##########
+
+##########
+# Multi Use Functions -Start
+##########
+
+Function MenuBlankLineLog { DisplayOutMenu "|                                                   |" 14 0 1 1 }
+Function MenuLineLog { DisplayOutMenu "|---------------------------------------------------|" 14 0 1 1 }
+Function LeftLineLog { DisplayOutMenu "| " 14 0 0 1 }
+Function RightLineLog { DisplayOutMenu " |" 14 0 1 1 }
+
+Function MenuBlankLine { DisplayOutMenu "|                                                   |" 14 0 1 0 }
+Function MenuLine { DisplayOutMenu "|---------------------------------------------------|" 14 0 1 0 }
+Function LeftLine { DisplayOutMenu "| " 14 0 0 0 }
+Function RightLine { DisplayOutMenu " |" 14 0 1 0 }
+
+Function OpenWebsite ([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
+Function DownloadFile ([String]$Url,[String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
+
+Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine,[int]$LogOut) {
+    If($NewLine -eq 0) {
+        If($MakeLog -eq 1 -and $LogOut -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -NoNewline -Append }
+        Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
+    } Else {
+        If($MakeLog -eq 1 -and $LogOut -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -Append }
+        Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
+    }
+}
+
+Function DisplayOut ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor) {
+    If($MakeLog -eq 1) { Write-Output $TxtToDisplay 4>&1 | Out-File -filepath $LogFile -Append }
+    If($TxtColor -le 15) {
+        Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
+    } Else {
+        Write-Host $TxtToDisplay
+    }
+}
+
+Function  AutomatedExitCheck ([int]$ExitBit) {
+    If ($Automated -ne 1) {
+        Write-Host ""
+        Read-Host -Prompt "Press Any key to Close..."
+    }
+    If ($ExitBit -eq 1) { Exit }
+}
+
+Function Error_Top_Display {
+    Clear-Host
+    DiagnosticCheck 0
+    MenuLineLog
+    LeftLineLog ;DisplayOutMenu "                      Error                      " 13 0 0 1 ;RightLineLog
+    MenuLineLog
+    MenuBlankLineLog
+}
+
+Function Error_Bottom {
+    MenuLineLog
+    MenuBlankLineLog
+    If($Diagnostic -eq 1) {
+        DiagnosticCheck 0
+        Write-Host ""
+        Read-Host -Prompt "Press Any key to Close..."
+        Exit
+    } Else {
+        AutomatedExitCheck 1
+    }
+}
+
+Function DiagnosticCheck ([int]$Bypass) {
+    If($Release_Type -ne "Stable" -or $Bypass -eq 1 -or $Diagnostic -eq 1) {
+        DisplayOutMenu " Diagnostic Output" 15 0 1 1
+        DisplayOutMenu " Some items may be blank" 15 0 1 1
+        DisplayOutMenu " --------Start--------" 15 0 1 1
+        DisplayOutMenu " Script Version = $Script_Version" 15 0 1 1
+        DisplayOutMenu " Script Minor Version = $Minor_Version" 15 0 1 1
+        DisplayOutMenu " Release Type = $Release_Type" 15 0 1 1
+        DisplayOutMenu " Services Version = $ServiceVersion" 15 0 1 1
+        DisplayOutMenu " Error = $ErrorDi" 13 0 1 1
+        DisplayOutMenu " Window = $WindowVersion" 15 0 1 1
+        DisplayOutMenu " Edition = $FullWinEdition" 15 0 1 1
+        DisplayOutMenu " Edition SKU# = $WinSku" 15 0 1 1
+        DisplayOutMenu " Build = $BuildVer" 15 0 1 1
+        DisplayOutMenu " Version = $Win10Ver" 15 0 1 1
+        DisplayOutMenu " PC Type = $PCType" 15 0 1 1
+        DisplayOutMenu " Desktop/Laptop = $IsLaptop" 15 0 1 1
+        DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1 1
+        DisplayOutMenu " All/Min = $All_or_Min" 15 0 1 1        
+        DisplayOutMenu " ToS = $Accept_ToS" 15 0 1 1
+        DisplayOutMenu " Automated = $Automated" 15 0 1 1
+        DisplayOutMenu " Script_Ver_Check = $Script_Ver_Check" 15 0 1 1
+        DisplayOutMenu " Service_Ver_Check = $Service_Ver_Check" 15 0 1 1
+        DisplayOutMenu " Internet_Check = $Internet_Check" 15 0 1 1
+        DisplayOutMenu " Show_Changed = $Show_Changed" 15 0 1 1
+        DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 15 0 1 1
+        DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 15 0 1 1
+        DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1 1
+        DisplayOutMenu " Build_Check = $Build_Check" 15 0 1 1
+        DisplayOutMenu " Args = $PassedArg" 15 0 1 1
+        DisplayOutMenu " ---------End---------" 15 0 1 1
+        Write-Host ""
+    }
+}
+
+Function LaptopCheck {
+    If($PCType -ne 2) { Return "-Desk" }
+    Return "-Lap"
+}
+
+Function ShowInvalid ([Int]$InvalidA) {
+    If($InvalidA -eq 1) {
+        Write-Host ""
+        Write-Host "Invalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline
+    }
+    Return 0
+}
+
+Function NeededCheckVars {
+    $Script:WindowVersion = [Environment]::OSVersion.Version.Major
+    If($WindowVersion -ne 10) {
+        Error_Top_Display
+        $ErrorDi = "Not Window 10"
+        LeftLineLog ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 1 ;RightLineLog
+        MenuBlankLineLog
+        LeftLineLog ;DisplayOutMenu " You are using Window " 2 0 0 1 ;DisplayOutMenu ("$WindowVersion"+(" "*(27-$WindowVersion.length))) 15 0 0 1 ;RightLineLog
+        Error_Bottom
+    }
+
+    $Script:PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
+
+    $Script:WinSku = (Get-WmiObject Win32_OperatingSystem).OperatingSystemSKU
+    #  48 = Pro
+    # 100 = Home (Single Language)
+    # 101 = Home
+
+    $Script:FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
+    $Script:WinEdition = $FullWinEdition.Split(' ')[-1]
+    #  Pro = Microsoft Windows 10 Pro
+    # Home = Microsoft Windows 10 Home
+
+    $Script:ForBuild = 15063
+    $Script:BuildVer = [Environment]::OSVersion.Version.build
+    # 15063 = Creator's Update
+    # 14393 = Anniversary Update
+    # 10586 = First Major Update
+    # 10240 = First Release
+
+    $Script:ForVer = 1703
+    $Script:Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).releaseId
+    # 1703 = Creator's Update
+    # 1607 = Anniversary Update
+    # 1511 = First Major Update
+    # 1507 = First Release
+}
+
+##########
+# Multi Use Functions -End
+##########
+
+##########
+# TOS -Start
+##########
+
+Function TOSDisplay {
+    Clear-Host
+    $BorderColor = 14
+    If($Release_Type -ne "Stable") {
+        $BorderColor = 15
+        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    }
+    If($OSType -ne 64) {
+        $BorderColor = 15
+        DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+        DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    }
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
+    DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+    DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+}
+
+Function TOS {
+    $TOS = 'X'
+    while($TOS -ne "Out") {
+        TOSDisplay
+        $Invalid = ShowInvalid $Invalid
+        $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
+        Switch($TOS.ToLower()) {
+            n {Exit}
+            no {Exit}
+            y { $Script:Accept_ToS = "Accepted-Script"
+                If($LoadServiceConfig -eq 1) {
+                    ServiceSet "StartType"
+                } ElseIf($Black_Viper -eq 0) {
+                    Gui-Start
+                } Else {
+                    Black_Viper_Set $Black_Viper $All_or_Min
+                }
+                $TOS = "Out"
+            }
+            yes { $Script:Accept_ToS = "Accepted-Script"
+                If($LoadServiceConfig -eq 1) {
+                    ServiceSet "StartType"
+                } ElseIf($Black_Viper -eq 0) {
+                    Gui-Start
+                } Else {
+                    Black_Viper_Set $Black_Viper $All_or_Min
+                }
+                $TOS = "Out"
+            }
+            default {$Invalid = 1}
+        }
+    }
+    Return
+}
+
+##########
+# TOS -End
+##########
+
+##########
+# XNL -Start
+##########
+
+$inputXML = @'
+<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Black Viper Service Configuration Script By: MadBomb122" Height="337" Width="463" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" ResizeMode="NoResize" BorderBrush="Black" Background="White">
+    <Window.Effect>
+        <DropShadowEffect/>
+    </Window.Effect>
+    <Grid>
+        <CheckBox x:Name="DryrunCB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="9,222,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
+        <CheckBox x:Name="BeforeAndAfterCB" Content="Services Before and After" HorizontalAlignment="Left" Margin="202,160,0,0" VerticalAlignment="Top" Height="15" Width="157"/>
+        <CheckBox x:Name="AlreadySetCB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,160,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
+        <CheckBox x:Name="NotInstalledCB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,175,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
+        <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,137,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Label Content="Log Options" HorizontalAlignment="Left" Margin="197,138,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <CheckBox x:Name="ScriptLogCB" Content="Script Log:" HorizontalAlignment="Left" Margin="202,175,0,0" VerticalAlignment="Top" Height="15" Width="75"/>
+        <Label Content="Misc Options" HorizontalAlignment="Left" Margin="4,199,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <Button x:Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="258,210,0,0" VerticalAlignment="Top" Width="168" Height="35" FontWeight="Bold"/>
+        <CheckBox x:Name="BackupServiceCB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
+        <TabControl Height="137" Margin="0,-1,0,0" VerticalAlignment="Top">
+            <TabItem x:Name="Black_Viper_Conf_Tab" Header="Black Viper Services" Margin="-2,0,2,0">
+                <Grid Background="#FFE5E5E5">
+                    <Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,65,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
+                    <ComboBox x:Name="ServiceConfig" HorizontalAlignment="Left" Margin="139,68,0,0" VerticalAlignment="Top" Width="118" Height="23"/>
+                    <RadioButton x:Name="RadioAll" Content="All -Change All Services" HorizontalAlignment="Left" Margin="5,26,0,0" VerticalAlignment="Top" IsChecked="True"/>
+                    <RadioButton x:Name="RadioMin" Content="Min -Change Services that are Differant from Default to Safe/Tweaked" HorizontalAlignment="Left" Margin="5,41,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Black Viper Configuration Options (BV Services Only)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,3,0,0" FontWeight="Bold"/>
+                    <Label x:Name="CustomNote" Content="*Note: Configure in next tab" HorizontalAlignment="Left" Margin="256,65,0,0" VerticalAlignment="Top" Width="170" Height="27" FontWeight="Bold"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="Custom_Conf_Tab" Header="Custom Services" Margin="-2,0,2,0">
+                <Grid Background="#FFE5E5E5">
+                    <Button x:Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="9,17,0,0" VerticalAlignment="Top" Width="66" Height="22" IsEnabled="False"/>
+                    <TextBox x:Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="23" Margin="9,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411" IsEnabled="False"/>
+                    <Label Content="Config File:" HorizontalAlignment="Left" Margin="4,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <Label Content="Type in Path/File or Browse for file" HorizontalAlignment="Left" Margin="100,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="Various_Checks_Tab" Header="Various Check" Margin="-2,0,2,0">
+                <Grid Background="#FFE5E5E5">
+                    <CheckBox x:Name="ScriptUpdateCB" Content="Script Update*" HorizontalAlignment="Left" Margin="9,42,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
+                    <CheckBox x:Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="9,27,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
+                    <CheckBox x:Name="InternetCheckCB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="9,57,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
+                    <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,0,0" FontWeight="Bold"/>
+                    <CheckBox x:Name="BuildCheckCB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="203,27,0,0" VerticalAlignment="Top" Height="15" Width="111"/>
+                    <CheckBox x:Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="203,42,0,0" VerticalAlignment="Top" Height="15" Width="161"/>
+                    <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="363,39,0,0" VerticalAlignment="Top" Width="61" Height="23" IsEnabled="False"/>
+                    <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="3,66,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <Label Content="Misc Checks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="198,4,0,0" FontWeight="Bold"/>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="Dev_Option_Tab" Header="Dev Option" Margin="-2,0,2,0">
+                <Grid Background="#FFE5E5E5">
+                    <CheckBox x:Name="DiagnosticCB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,11,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+                    <CheckBox x:Name="DevLogCB" Content="Dev Log" HorizontalAlignment="Left" Margin="9,26,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <TextBox x:Name="LogNameInput" HorizontalAlignment="Left" Height="19" Margin="279,174,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="147" IsEnabled="False"/>
+        <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,136,0,0" Stroke="Black" VerticalAlignment="Top"/>
+        <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
+        <Button x:Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
+        <Button x:Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="149,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
+        <Button x:Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="298,259,0,0" VerticalAlignment="Top" Width="149" FontStyle="Italic"/>
+        <Rectangle Fill="#FFFF9F9F" Margin="0,298,0,0" Stroke="Black" Height="10" VerticalAlignment="Top"/>
+        <Rectangle Fill="#FFFF9F9F" Margin="447,0,0,0" Stroke="Black" HorizontalAlignment="Left" Width="10"/>
+        <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
+        <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,274,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="18" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
+        <Label Content="Service Version:" HorizontalAlignment="Left" Margin="245,274,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="18" Margin="334,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
+        <TextBox x:Name="Release_Type_Txt" HorizontalAlignment="Left" Height="18" Margin="195,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
+        <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="18" Margin="243,280,0,0" Stroke="Black" VerticalAlignment="Top" Width="1"/>
+    </Grid>
+</Window>
+'@ 
+
+$inputXML = $inputXML -replace "x:N",'N'
+
+[void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+[xml]$XAML = $inputXML
+#Read XAML
+
+$reader=(New-Object System.Xml.XmlNodeReader $xaml) 
+$Form=[Windows.Markup.XamlReader]::Load( $reader )
+
+# Store XML Objects In PowerShell
+$xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name)}
+
+#===========================================================================
+# Actually make the objects work
+#===========================================================================
+
+# Button
+$WPF_btnOpenFile.Add_Click({
+    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+    $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $OpenFileDialog.initialDirectory = $filebase
+    $OpenFileDialog.filter = "CSV (*.csv)| *.csv"
+    $OpenFileDialog.ShowDialog() | Out-Null
+    $Script:ServiceConfigFile = $OpenFileDialog.filename
+    $WPF_LoadFileTxtBox.Text = $ServiceConfigFile
+})
+
+#$WPF_RunScriptButton.Add_Click({ })
+
+$WPF_RunScriptButton.Add_Click({
+    $Form.Close()
+    Pre-Start
+})
+
+# $Form.Add_FormClosing({ Exit })
+
+$WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
+$WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
+
+$CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
+
+The MIT License (MIT)
+
+Copyright (c) 2017 Madbomb122 - Black Viper Service Script
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'
+
+$WPF_CopyrightButton.Add_Click({
+    [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+    [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK')
+})
+
+# Check Box
+$WPF_ScriptLogCB.Add_Checked({
+    $Script:MakeLog = 1
+    $WPF_LogNameInput.IsEnabled = $true
+})
+
+$WPF_ScriptLogCB.Add_UnChecked({
+    $Script:MakeLog = 0
+    $WPF_LogNameInput.IsEnabled = $false
+})
+
+$WPF_EditionCheckCB.Add_Checked({
+    $Script:Edition_Check = 1
+    $WPF_EditionConfig.IsEnabled = $true
+    RunDisableCheck
+})
+
+$WPF_EditionCheckCB.Add_UnChecked({
+    $Script:Edition_Check = 0
+    $WPF_EditionConfig.IsEnabled = $false
+    RunDisableCheck
+})
+
+$WPF_BuildCheckCB.Add_Checked({
+    $Script:Build_Check = 1
+    RunDisableCheck
+})
+
+$WPF_BuildCheckCB.Add_UnChecked({
+    $Script:Build_Check = 0
+    RunDisableCheck
+})
+
+$Form.Add_Closing({ Return }) 
+
+Function Pre-Start {
+    $Script:RunScript = 1
+    If($WPF_RadioAll.IsChecked) { $Script:All_or_Min = "-full" } Else { $Script:All_or_Min = "-min" }
+    If($WPF_DryrunCB.IsChecked){$Script:Dry_Run = 1 } Else { $Script:Dry_Run = 0 }
+    If($WPF_BeforeAndAfterCB.IsChecked){ $Script:LogBeforeAfter = 1 } Else { $Script:LogBeforeAfter = 0 }
+    If($WPF_AlreadySetCB.IsChecked){ $Script:Show_Already_Set = 1 } Else { $Script:Show_Already_Set = 0 }
+    If($WPF_NotInstalledCB.IsChecked){ $Script:Show_Non_Installed = 1 } Else { $Script:Show_Non_Installed = 0 }
+    If($WPF_BackupServiceCB.IsChecked){ $Script:BackupServiceConfig = 1 } Else { $Script:BackupServiceConfig = 0 }
+    If($WPF_ScriptUpdateCB.IsChecked){ $Script:Script_Ver_Check = 1 } Else { $Script:Script_Ver_Check = 0 }
+    If($WPF_ServiceUpdateCB.IsChecked){ $Script:Service_Ver_Check = 1 } Else { $Script:Service_Ver_Check = 0 }
+    If($WPF_InternetCheckCB.IsChecked){ $Script:Internet_Check = 1 } Else { $Script:Internet_Check = 0 }
+    If($WPF_BuildCheckCB.IsChecked){ $Script:Build_Check = 1 } Else { $Script:Build_Check = 0 }
+    If($WPF_DiagnosticCB.IsChecked){ $Script:Diagnostic = 1 } Else { $Script:Diagnostic = 0 }
+    If($WPF_DevLogCB.IsChecked){ $Script:DevLog = 1 } Else { $Script:DevLog = 0 }
+
+    If($WPF_EditionCheckCB.IsChecked) {
+        $temp = $WPF_EditionConfig.SelectedItem.ToString()
+        $Script:Edition_Check = $temp.split(':')[1]
+    } Else {
+        $Script:Edition_Check = 0
+    }
+
+    If($WPF_ScriptLogCB.IsChecked) { 
+        $Script:MakeLog = 1
+        $Script:LogName = $WPF_LogNameInput.Text
+    } Else {
+        $Script:MakeLog = 0
+    }
+
+    $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
+    If($Black_Viper -eq $WPF_ServiceConfigLen) {
+        $Script:LoadServiceConfig = 1
+        $Script:Black_Viper = 0
+        $Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
+    }
+    Black_Viper_Set $Black_Viper $All_or_Min
+}
+
+Function Gui-Start {
+    $Script:RunScript = 0
+    $Script:WPFServiceConfigLen = 3
+    [void]$WPF_ServiceConfig.Items.Add("Default")
+    [void]$WPF_ServiceConfig.Items.Add("Safe")
+    If($IsLaptop -ne "-Lap") {
+        [void]$WPF_ServiceConfig.Items.Add("Tweaked")
+        $Script:WPFServiceConfigLen++
+    }
+    [void]$WPF_ServiceConfig.Items.Add("Custom Setting *")
+    $WPF_ServiceConfig.SelectedIndex = 0
+
+    [void]$WPF_EditionConfig.Items.Add("Home")
+    [void]$WPF_EditionConfig.Items.Add("Pro")
+
+    If($Dry_Run -eq 1) {$WPF_DryrunCB.IsChecked = $true }
+    If($LogBeforeAfter -eq 1) { $WPF_BeforeAndAfterCB.IsChecked = $true }
+    If($Show_Already_Set -eq 1) { $WPF_AlreadySetCB.IsChecked = $true }
+    If($Show_Non_Installed -eq 1) { $WPF_NotInstalledCB.IsChecked = $true }
+    If($BackupServiceConfig -eq 1) { $WPF_BackupServiceCB.IsChecked = $true }
+    If($Script_Ver_Check -eq 1) { $WPF_ScriptUpdateCB.IsChecked = $true }
+    If($Service_Ver_Check -eq 1) { $WPF_ServiceUpdateCB.IsChecked = $true }
+    If($Internet_Check -eq 1) { $WPF_InternetCheckCB.IsChecked = $true }
+    If($Build_Check -eq 1) { $WPF_BuildCheckCB.IsChecked = $true }
+    If($Diagnostic -eq 1) { $WPF_DiagnosticCB.IsChecked = $true }
+    If($DevLog -eq 1) { $WPF_DevLogCB.IsChecked = $true }
+    If($MakeLog -eq 1) { 
+        $WPF_ScriptLogCB.IsChecked = $true
+        $WPF_LogNameInput.IsEnabled = $true
+    } Else {
+        $WPF_LogNameInput.IsEnabled = $false
+    }
+
+    $WPF_EditionCheckCB.IsChecked = $false
+    $WPF_EditionConfig.IsEnabled = $false
+    $WPF_EditionConfig.SelectedIndex = 1
+    If($Edition_Check -eq 1 -or $Edition_Check -eq "Pro") {
+        $WPF_EditionCheckCB.IsChecked = $true
+        $WPF_EditionConfig.IsEnabled = $true
+    } ElseIf($Edition_Check -eq "Home") {
+        $WPF_EditionConfig.SelectedIndex = 0
+        $WPF_EditionCheckCB.IsChecked = $true
+        $WPF_EditionConfig.IsEnabled = $true
+    }
+
+    If($All_or_Min = "-full"){
+        $WPF_RadioAll.IsChecked = $true
+        $WPF_RadioMin.IsChecked = $false
+    } Else {
+        $WPF_RadioAll.IsChecked = $false
+        $WPF_RadioMin.IsChecked = $true
+    }
+
+    $WPF_LoadFileTxtBox.Text = $ServiceConfigFile
+    $WPF_LogNameInput.Text = $Script:LogName
+
+    RunDisableCheck
+    $Form.ShowDialog() | out-null
+}
+
+Function RunDisableCheck {
+    $tempfail = 0
+    If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home" -or $WinSku -IN 100..101) {
+    } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro" -or $WinSku -eq 48) {
+    } Else {
+        $tempfail = 1
+    }
+
+    If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) { $tempfail = 1 }
+    
+    If($tempfail -eq 1) {
+        $WPF_RunScriptButton.IsEnabled = $false
+    } Else {
+        $WPF_RunScriptButton.IsEnabled = $true
+    }
+}
+
+##########
+# XNL -End
+##########
+
+# Check if you want to download the missing Service setting file
+Function LoadWebCSV {
+    $LoadWebCSV = 'X'
+    while($LoadWebCSV -ne "Out") {
+        Error_Top_Display
+        $ErrorDi = "Missing File BlackViper.csv -LoadCSV"
+        LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing.             " 2 0 0 ;RightLine
+        MenuBlankLine
+        LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
+        MenuBlankLine
+        MenuLine
+        $Invalid = ShowInvalid $Invalid
+        $LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
+        Switch($LoadWebCSV.ToLower()) {
+            n {Exit}
+            no {Exit}
+            y {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
+            yes {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
+            default {$Invalid = 1}
+        }
+    }
+    Return
+}
+
+$ServicesTypeList = @(
+    '',          #0 -None (Not Installed, Skip)
+    'Disabled',  #1 -Disable
+    'Manual',    #2 -Manual
+    'Automatic', #3 -Automatic
+    'Automatic'  #4 -Automatic (Delayed Start)
+)
+
+$Script:BV_ArgUsed = 0
+$Script:Black_Viper = 0
+$Script:All_or_Min = "-min"
+$Script:RunScript = 2
+
+Function ServiceBA ([String]$ServiceBA) {
+    If($LogBeforeAfter -eq 1) {
+        $ServiceBAFile = $filebase + $ServiceBA + ".log"
+        Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
+    } ElseIf($LogBeforeAfter -eq 2) {
+        $TMPServices = Get-Service | Select DisplayName, StartType
+        Write-Output " " 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "$ServiceBA -Start" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output $TMPServices 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output "$ServiceBA -End" 4>&1 | Out-File -filepath $LogFile -Append
+        Write-Output " " 4>&1 | Out-File -filepath $LogFile -Append
+    }
+}
+
+Function Save_Service {   
+    $Skip_Services = @(
+        "PimIndexMaintenanceSvc_",
+        "DevicesFlowUserSvc_",
+        "UserDataSvc_",
+        "UnistoreSvc_",
+        "WpnUserService_",
+        "AppXSVC",
+        "BrokerInfrastructure",
+        "ClipSVC",
+        "CoreMessagingRegistrar",
+        "DcomLaunch",
+        "EntAppSvc",
+        "gpsvc",
+        "LSM",
+        "NgcSvc",
+        "NgcCtnrSvc",
+        "RpcSs",
+        "RpcEptMapper",
+        "sppsvc",
+        "StateRepository",
+        "SystemEventsBroker",
+        "Schedule",
+        "tiledatamodelsvc",
+        "WdNisSvc",
+        "SecurityHealthService",
+        "msiserver",
+        "Sense",
+        "WdNisSvc",
+        "WinDefend"
+    )
+    $ServiceEnd = get-service "*_*" | Select Name
+    $ServiceEnd = $ServiceEnd[0].Name.split('_')[1]
+    For($i=0;$i -ne 5;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
+
+    $ServiceSavePath = $filebase + $env:computername + "-Service-Backup.csv"
+    $AllService = Get-Service | Select Name, StartType
+    
+    $SaveService = @()
+ 
+    ForEach ($Service in $AllService) {
+        If(!($Skip_Services -contains $Service.Name)) {
+            If("$($Service.StartType)" -eq "Disabled") {
+                $StartType = 1
+            } ElseIf("$($Service.StartType)" -eq "Manual") {
+                $StartType = 2
+            } ElseIf("$($Service.StartType)" -eq "Automatic") {
+                $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
+                If($exists -eq 1){
+                    $StartType = 4
+                } Else {
+                    $StartType = 3
+                }
+            }
+            $ServiceName = $Service.Name
+            If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
+            $Object = New-Object -TypeName PSObject
+            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
+            Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $StartType
+            $SaveService += $Object
+        }
+    }
+    $SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
+}
+
+Function ServiceSet ([String]$BVService) {
+    Clear-Host
+    $NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
+    If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
+    $Script:CurrServices = Get-Service | Select Name, StartType
+    ServiceBA "Services-Before"
+    If($Dry_Run -ne 1) {
+        DisplayOut "Changing Service Please wait..." 14 0
+    } Else {
+        DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0
+    }
+    DisplayOut "Service_Name - Current -> Change_To" 14 0
+    DisplayOut "-------------------------------------" 14 0
+    ForEach($item In $csv) {
+        $ServiceTypeNum = $($item.$BVService)
+        $ServiceName = $($item.ServiceName)
+        If($ServiceTypeNum -eq 0 -and $Show_Skipped -eq 1) {
+            $DispTemp = "Skipping $ServiceName"
+            DisplayOut $DispTemp  14 0
+        } ElseIf($ServiceTypeNum -ne 0) {
+            If($ServiceName -like "*_*") { $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
+            $ServiceType = $ServicesTypeList[$ServiceTypeNum]
+            $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
+            If($ServiceName -is [system.array]) { $ServiceName = $ServiceName[0] }
+            If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
+                $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
+                If($ServiceTypeNum -In 1..3) {
+                    If($Dry_Run -ne 1) { Set-Service $ServiceName -StartupType $ServiceType }
+                } ElseIf($ServiceTypeNum -eq 4) {
+                    $DispTemp = "$DispTemp (Delayed Start)"
+                    If($Dry_Run -ne 1) {
+                        Set-Service $ServiceName -StartupType $ServiceType
+                        $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
+                        Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
+                    }
+                }
+                If($Show_Changed -eq 1) { DisplayOut $DispTemp  11 0 }
+            } ElseIf($ServiceCurrType -eq "Already" -and $Show_Already_Set -eq 1) {
+                $DispTemp = "$ServiceName is already $ServiceType"
+                If($ServiceTypeNum -eq 4) { $DispTemp += " (Delayed Start)" }
+                DisplayOut $DispTemp  15 0
+            } ElseIf($ServiceCurrType -eq $False -and $Show_Non_Installed -eq 1) {
+                $DispTemp = "No service with name $ServiceName"
+                DisplayOut $DispTemp  13 0
+            }
+        }
+    }
+    DisplayOut "-------------------------------------" 14 0
+    If($Dry_Run -ne 1) {
+        DisplayOut "Service Changed..." 14 0
+    } Else {
+        DisplayOut "List of Service Done..." 14 0
+    }
+    ServiceBA "Services-After"
+    AutomatedExitCheck 1
+}
+
+Function ServiceCheck ([string]$S_Name,[string]$S_Type) {
+    If($CurrServices | Where Name -eq $S_Name) {
+        $C_Type = ($CurrServices | Where Name -eq $S_Name).StartType
+        If($S_Type -ne $C_Type) {
+            If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
+                # Has to be removed or cant change service from disabled (Known Bug)
+                If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
+            } ElseIf($S_Name -eq 'NetTcpPortSharing') {
+                If($NetTCP -contains $CurrServices.Name) { Return "Manual" }
+                Return $False
+            }
+            Return $C_Type
+        }
+        Return "Already"
+    }
+    Return $False
+}
+
+Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
+    PreScriptCheck
+    If($LoadServiceConfig -eq 1) {
+        ServiceSet "StartType"
+    } ElseIf($BVOpt -eq 1) {
+        ServiceSet ("Def"+$WinEdition+$FullMin)
+    } ElseIf($BVOpt -eq 2) {
+        ServiceSet ("Safe"+$IsLaptop+$FullMin)
+    } ElseIf($BVOpt -eq 3) {
+        ServiceSet ("Tweaked"+$IsLaptop+$FullMin)
+    }
+}
+
+Function InternetCheck {
+    If($Internet_Check -eq 1) {
+        Return $true
+    } ElseIf(!(Test-Connection -computer github.com -count 1 -quiet)) {
+        Return $false
+    }
+    Return $true
+}
+
+Function PreScriptCheck {
+    If($RunScript -eq 0) { Exit }
+    $ErrorDi = ""
+    $EBCount = 0
+
+    If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home" -or $WinSku -IN 100..101) {
+        $Script:WinEdition = "-Home"
+    } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro" -or $WinSku -eq 48) {
+        $Script:WinEdition = "-Pro"
+    } Else {
+        $ErrorDi = "Edition"
+        $EditionCheck = "Fail"
+        $EBCount++
+    }
+
+    If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) {
+        If($EditionCheck -eq "Fail") {
+            $ErrorDi += " & Build"
+        } Else {
+            $ErrorDi = "Build"
+        }
+        $ErrorDi += " Check Failed"
+        $BuildCheck = "Fail"
+        $EBCount++
+    }
+
+    If($EBCount -ne 0) {
+       $EBCount=0
+        Error_Top_Display
+        LeftLineLog ;DisplayOutMenu " Script won't run due to the following problem(s)" 2 0 0 1 ;RightLineLog
+        MenuBlankLineLog
+        MenuLineLog
+        If($EditionCheck -eq "Fail") {
+            $EBCount++
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " $EBCount. Not a valid Windows Edition for this Script. " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " You are using " 2 0 0 1;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.length))) 15 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " SKU # " 2 0 0 1;DisplayOutMenu ("$WinSku" +(" "*(42-$WinSku.length))) 15 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " If you are using Home or Pro, Please contact me " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " with what Edition you are using and what it says" 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file    " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Edition_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file" 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-secp" 15 0 0 1 ;DisplayOutMenu " argument   " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 4. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sech" 15 0 0 1 ;DisplayOutMenu " argument   " 2 0 0 1 ;RightLineLog
+
+            MenuBlankLineLog
+            MenuLineLog
+        }
+        If($BuildCheck -eq "Fail") {
+            $EBCount++
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " $EBCount. Not a valid Build for this Script.           " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " You are using Build " 2 0 0 1 ;DisplayOutMenu ("$BuildVer" +(" "*(24-$BuildVer.length))) 15 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " You are using Version " 2 0 0 1 ;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.length))) 15 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file      " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Skip_Build_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file  " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sbc" 15 0 0 1 ;DisplayOutMenu " argument    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            MenuLineLog
+        }
+        AutomatedExitCheck 1
+    }
+    If($BackupServiceConfig -eq 1) { Save_Service }
+    VariousChecks
+}
+
+Function VariousChecks {
+    If($LoadServiceConfig -eq 1) {
+        $ServiceFilePath = $filebase + $ServiceConfigFile
+        If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+            $ErrorDi = "Missing File $ServiceConfigFile"
+            Error_Top_Display
+            LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu ("$ServiceConfigFile" +(" "*(28-$DFilename.length))) 15 0 0 1 ;DisplayOutMenu " is missing." 2 0 0 1 ;RightLineLog
+            Error_Bottom
+        }
+        $Service_Ver_Check = 0
+    } Else {
+        $ServiceFilePath = $filebase + "BlackViper.csv"
+        If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+            If($Service_Ver_Check -eq 0) {
+                If($MakeLog -eq 1) { Write-Output "Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
+                LoadWebCSV
+            } Else {
+                If($MakeLog -eq 1) { Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -filepath $LogFile }
+                DownloadFile $Service_Url $ServiceFilePath
+            }
+            $Service_Ver_Check = 0
+        }
+    }
+    [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+    If($Script_Ver_Check -eq 1 -or $Service_Ver_Check -eq 1) {
+        If(InternetCheck) {
+            $VersionFile = $env:Temp + "\Temp.csv"
+            DownloadFile $Version_Url $VersionFile
+            $CSV_Ver = Import-Csv $VersionFile
+            If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
+                If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
+                DownloadFile $Service_Url $ServiceFilePath
+                [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+            }
+            If($Script_Ver_Check -eq 1) {
+                If($Release_Type -eq "Stable") {
+                    $CSVLine = 0
+                } Else {
+                    $CSVLine = 2
+                }
+                $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
+                $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
+                If($WebScriptVer -gt $Script_Version) {
+                    $Script_Update = "True"
+                } ElseIf($WebScriptVer -eq $Script_Version -and $WebScriptMinorVer -gt $Minor_Version) {
+                    $Script_Update = "True"
+                } Else {
+                    $Script_Update = "False"
+                }
+                If($Script_Update -eq "True") {
+                    $FullVer = "$WebScriptVer.$WebScriptMinorVer"
+                    $DFilename = "BlackViper-Win10-Ver." + $FullVer
+                    If($Release_Type -eq "Stable") {
+                        $DFilename += ".ps1"
+                        $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
+                    } Else {
+                        $DFilename += "-Testing.ps1"
+                        $Script_Url = $URL_Base + "Testing/BlackViper-Win10.ps1"
+                    }
+                    $WebScriptFilePath = $filebase + $DFilename
+                    Clear-Host
+                    MenuLineLog
+                    LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
+                    MenuLineLog
+                    MenuBlankLineLog
+                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(29-$FullVer.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
+                    LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
+                    MenuBlankLine
+                    MenuLineLog
+                    DownloadFile $Script_Url $WebScriptFilePath
+                    $UpArg = ""
+                    If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
+                    If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atosu" }
+                    If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                    
+                    If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
+                    If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
+                    If($Edition_Check -eq "Pro") { $UpArg = $UpArg + "-secp" }
+                    If($Build_Check -eq 1) { $UpArg = $UpArg + "-sbc" }
+                    If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
+                    If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
+                    If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
+                    If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
+                    If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
+                    If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
+                    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+                    If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
+                    If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
+                    If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
+                    If($All_or_Min -eq "-full") { 
+                        $UpArg = $UpArg + "-all" 
+                    } Else {
+                        $UpArg = $UpArg + "-min"
+                    }
+                    If($LoadServiceConfig -eq 1) { $UpArg = $UpArg + "-lcsc $ServiceConfigFile" }
+                    If($BackupServiceConfig -eq 1) { $UpArg = $UpArg + "-bcsc" }
+                    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+                    If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
+                    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
+                    Exit
+                }
+            }
+        } Else {
+            Error_Top_Display
+            $ErrorDi = "No Internet"
+            LeftLineLog ;DisplayOutMenu " Update Failed Because no internet was detected. " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " Tested by pinging github.com                    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file   " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Internet_Check" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=no" 15 0 0 1 ;DisplayOutMenu " in bat file     " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu " 3. Run Script or Bat file with " 2 0 0 1 ;DisplayOutMenu "-sic" 15 0 0 1 ;DisplayOutMenu " argument    " 2 0 0 1 ;RightLineLog
+            MenuBlankLineLog
+            MenuLineLog
+            If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+                MenuBlankLineLog
+                LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and the script" 2 0 0 1 ;RightLineLog
+                LeftLineLog ;DisplayOutMenu "can't run w/o it.      " 2 0 0 1 ;RightLineLog
+                MenuBlankLineLog
+                MenuLineLog
+                AutomatedExitCheck 1
+            } Else {
+                AutomatedExitCheck 0
+            }
+        }
+    }
+    $ServiceVersion = ($csv[0]."Def-Home-Full")
+    $ServiceDate = ($csv[0]."Def-Home-Min")
+    $csv.RemoveAt(0)
+
+    If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+        $ErrorDi = "Missing File BlackViper.csv -"
+        Error_Top_Display
+        LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
+        Error_Bottom
+    }
+}
+
+Function ArgCheck {
+    $Script:IsLaptop = LaptopCheck
+    If ($PassedArg.length -gt 0) {
+        For($i=0; $i -lt $PassedArg.length; $i++) {
+            $ArgVal = $PassedArg[$i]
+            If($ArgVal.StartsWith("-")) {
+                $ArgVal = $PassedArg[$i].ToLower()
+                If($ArgVal -eq "-set") {
+                    $PasVal = $PassedArg[($i+1)]
+                    If($PasVal -eq 1 -or "default") {
+                       $Script:Black_Viper = 1
+                       $Script:BV_ArgUsed = 2
+                    } ElseIf($PasVal -eq "safe") {
+                        $Script:Black_Viper = 2
+                        $Script:BV_ArgUsed = 2
+                    } ElseIf($PasVal -eq 3 -or "tweaked") {
+                        If($IsLaptop -ne "-Lap") {
+                            $Script:Black_Viper = 3
+                            $Script:BV_ArgUsed = 2
+                        } Else {
+                            $Script:BV_ArgUsed = 1
+                        }
+                    }
+                } ElseIf($ArgVal -eq "-default") {
+                    $Script:Black_Viper = 1
+                    $Script:BV_ArgUsed = 2
+                } ElseIf($ArgVal -eq "-safe") {
+                    $Script:Black_Viper = 2
+                    $Script:BV_ArgUsed = 2
+                } ElseIf($ArgVal -eq "-tweaked") {
+                    If($IsLaptop -ne "-Lap") {
+                        $Script:Black_Viper = 3
+                        $Script:BV_ArgUsed = 2
+                    } Else {
+                        $Script:BV_ArgUsed = 3
+                    }
+                } ElseIf($ArgVal -eq "-sbc") {
+                    $Script:Build_Check = 1
+                } ElseIf($ArgVal -eq "-bcsc") {
+                    $Script:BackupServiceConfig = 1
+                } ElseIf($ArgVal -eq "-lcsc") {
+                    $Script:BV_ArgUsed = 3
+                    $Script:LoadServiceConfig = 1
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
+                        $Script:ServiceConfigFile = $PassedArg[$i+1] 
+                        $i++
+                    }
+                } ElseIf($ArgVal -eq "-all") {
+                    $Script:All_or_Min = "-full"
+                } ElseIf($ArgVal -eq "-min") {
+                    $Script:All_or_Min = "-min"
+                } ElseIf($ArgVal -eq "-secp" -or $ArgVal -eq "-sec") {
+                    $Script:Edition_Check = "Pro"
+                } ElseIf($ArgVal -eq "-sech") {
+                    $Script:Edition_Check = "Home"
+                } ElseIf($ArgVal -eq "-sic") {
+                    $Script:Internet_Check = 1
+                } ElseIf($ArgVal -eq "-usc") {
+                    $Script:Script_Ver_Check = 1
+                } ElseIf($ArgVal -eq "-use") {
+                    $Script:Service_Ver_Check = 1
+                } ElseIf($ArgVal -eq "-atos") {
+                    $Script:Accept_ToS = "Accepted-Switch"
+                } ElseIf($ArgVal -eq "-atosu") {
+                    $Script:Accept_ToS = "Accepted-Update"
+                } ElseIf($ArgVal -eq "-auto") {
+                    $Script:Automated = 1
+                    $Script:Accept_ToS = "Accepted-Automated-Switch"
+                } ElseIf($ArgVal -eq "-diag") {
+                    $Script:Diagnostic = 1
+                    $Script:Automated = 0
+                } ElseIf($ArgVal -eq "-diagt") {
+                    $Script:Diagnostic = 2
+                    $Script:Automated = 0
+                } ElseIf($ArgVal -eq "-baf") {
+                    $Script:LogBeforeAfter = 1
+                } ElseIf($ArgVal -eq "-log") {
+                    $Script:MakeLog = 1
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
+                        $Script:LogName = $PassedArg[$i+1] 
+                        $i++
+                    }
+                } ElseIf($ArgVal -eq "-logc") {
+                    $Script:MakeLog = 2
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
+                        $Script:LogName = $PassedArg[$i+1] 
+                        $i++
+                    }
+                } ElseIf($ArgVal -eq "-dry") {
+                    $Script:Dry_Run = 1
+                    $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
+                    $Script:Show_Non_Installed = 1
+                    $Script:Show_Skipped = 1
+                } ElseIf($ArgVal -eq "-snis") {
+                    $Script:Show_Non_Installed = 1
+                } ElseIf($ArgVal -eq "-devl") {
+                    $Script:DevLog = 1
+                }
+            }
+        }
+    }
+    If($BV_ArgUsed -eq 2){ $Script:RunScript = 1 }
+    If($DevLog -eq 1) {
+        $Script:MakeLog = 1
+        $Script:LogName = "Dev-Log.log"
+        $Script:Diagnostic = 1
+        $Script:Automated = 0
+        $Script:LogBeforeAfter = 2
+        $Script:Dry_Run = 1
+        $Script:Accept_ToS = "Accepted-Dev-Switch"
+        $Script:Show_Non_Installed = 1
+        $Script:Show_Skipped = 1
+        $Script:Show_Changed = 1
+        $Script:Show_Already_Set = 1
+    }
+    If($BV_ArgUsed -eq 1 -and $Automated -eq 1) {
+        Error_Top_Display
+        $ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
+        LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
+        Error_Bottom
+    }
+    If($MakeLog -ne 0) {
+        $Script:LogFile = $filebase + $LogName
+        $Time = Get-Date -Format g
+        If($MakeLog -eq 2) {
+            Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append 
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile -NoNewline -Append 
+            $MakeLog = 1
+        } Else {
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
+        }
+    }
+    If($BV_ArgUsed -eq 0 -and $Automated -eq 0) {
+        $ServiceFilePath = $filebase + "BlackViper.csv"
+        If(Test-Path $ServiceFilePath -PathType Leaf) {
+            $TMP = Import-Csv $ServiceFilePath
+            $ServiceVersion = ($TMP[0]."Def-Home-Full")
+            $ServiceDate = ($TMP[0]."Def-Home-Min")
+        } Else {
+            $ServiceVersion = "N/A"
+            $ServiceDate = ""
+        }
+    }
+
+    If($BV_ArgUsed -eq 2) {
+        If($Automated -eq 0 -and $Accept_ToS -eq 0) {
+            TOS
+        } Else {
+            Black_Viper_Set $Black_Viper $All_or_Min
+        }
+    } ElseIf($Accept_ToS -ne 0 -or $Automated -eq 1) {
+        If($LoadServiceConfig -eq 1) {
+            ServiceSet "StartType"
+        } Else {
+            Gui-Start
+        }
+    } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
+        TOS
+    } Else {
+        $ErrorDi = "Unknown -ScriptPreStart"
+        Error_Top_Display
+        LeftLineLog ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "to me, with Subject of 'Unknown Error', Thanks.  " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu " E-mail - Madbomb122@gmail.com                   " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 1 ;RightLineLog
+        Error_Bottom
+        DiagnosticCheck 1
+        AutomatedExitCheck 1
+    }
+}
+
+#--------------------------------------------------------------------------
+# Edit values (Option) to your preferance
+
+#----Safe to change Variables----
+# Function = Option             #Choices
+$Script:Accept_ToS = 0          #0 = See ToS
+                                #Anything else = Accept ToS
+
+$Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script
+                                #1 = Close on - User input, On Errors, or End of Script
+# Automated = 1, Implies that you accept the "ToS"
+
+$Script:BackupServiceConfig = 0 #0 = Dont backup Your Current Service Configuration before services are changes
+                                #1 = Backup Your Current Service Configuration before services are changes
+# Will be script's directory named "(ComputerName)-Service-Backup.csv"
+
+$Script:Dry_Run = 0             #0 = Runs script normaly
+                                #1 = Runs script but shows what will be changed
+
+$Script:MakeLog = 0             #0 = Dont make a log file
+                                #1 = Make a log file
+# Will be script's directory named `Script.log` (default)
+
+$Script:LogName = "Script.log"  #Name of log file (you can change it)
+
+$Script:LogBeforeAfter = 0      #0 = Dont make a file of all the services before and after the script
+                                #1 = Make a file of all the services before and after the script
+# Will be script's directory named `Services-Before.log` and `Services-After.log`
+#--------------------------------
+
+#--------Update Variables-------
+$Script:Script_Ver_Check = 0    #0 = Skip Check for update of Script File
+                                #1 = Check for update of Script File
+# Note: If found will Auto download and runs that
+# File name will be "BlackViper-Win10-Ver.(version#).ps1"
+
+$Script:Service_Ver_Check = 0   #0 = Skip Check for update of Service File
+                                #1 = Check for update of Service File
+# Note: If found will Auto download will be used
+#--------------------------------
+
+#--------Display Variables-------
+$Script:Show_Changed = 1        #0 = Dont Show Changed Services
+                                #1 = Show Changed Services
+
+$Script:Show_Already_Set = 1    #0 = Dont Show Already set Services
+                                #1 = Show Already set Services
+
+$Script:Show_Non_Installed = 0  #0 = Dont Show Services not present
+                                #1 = Show Services not present
+#--------------------------------
+
+#----CHANGE AT YOUR OWN RISK!----
+$Script:Internet_Check = 0      #0 = Checks if you have internet by doing a ping to github.com
+                                #1 = Bypass check if your pings are blocked
+
+$Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
+                                #"Pro" = Set Edition as Pro (Needs "s)
+                                #"Home" = Set Edition as Home (Needs "s)
+
+$Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
+                                #1 = Allows you to run on Non-Creator's Update
+#--------------------------------
+
+#--------Dev Mode Variables-------
+# Best not to use these unless asked to (these stop automated)
+$Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
+                                #1 = Shows diagnostic information
+
+$Script:DevLog = 0              #0 = Doesn't make a Dev Log
+                                #1 = Makes a log files.. with what services change, before and after for services, and diagnostic info 
+#--------------------------------------------------------------------------
+
+# Starts the script (Do not change)
+NeededCheckVars
+ArgCheck
