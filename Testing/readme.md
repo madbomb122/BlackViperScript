@@ -1,5 +1,5 @@
 # Currently Testing (Read Notes)
-If you want to try out the Black Viper Script GUI download **`BlackViper-Gui.ps1`** and **`_BlackViper - Gui.bat`** from this folder and **`BlackViper.csv`** from the base folder
+If you want to try out the Black Viper Script GUI download **`BlackViper-Gui.ps1`** and **`_BlackViper - Gui.bat`** from this folder and **`BlackViper.csv`** from the base folder (All switches/arg work)
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
