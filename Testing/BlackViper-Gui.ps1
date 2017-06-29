@@ -928,8 +928,38 @@ Function InternetCheck {
     Return $true
 }
 
+Function CreateLog {
+    If($DevLog -eq 1) {
+        $Script:MakeLog = 1
+        $Script:LogName = "Dev-Log.log"
+        $Script:Diagnostic = 1
+        $Script:Automated = 0
+        $Script:LogBeforeAfter = 2
+        $Script:Dry_Run = 1
+        $Script:Accept_ToS = "Accepted-Dev-Switch"
+        $Script:Show_Non_Installed = 1
+        $Script:Show_Skipped = 1
+        $Script:Show_Changed = 1
+        $Script:Show_Already_Set = 1
+    }
+
+    If($MakeLog -ne 0) {
+        $Script:LogFile = $filebase + $LogName
+        $Time = Get-Date -Format g
+        If($MakeLog -eq 2) {
+            Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append 
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile -NoNewline -Append 
+            $MakeLog = 1
+        } Else {
+            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
+        }
+    }
+}
+
 Function PreScriptCheck {
     If($RunScript -eq 0) { Exit }
+    CreateLog
+	
     $ErrorDi = ""
     $EBCount = 0
 
@@ -1246,36 +1276,13 @@ Function ArgCheck {
         }
     }
     If($BV_ArgUsed -eq 2){ $Script:RunScript = 1 }
-    If($DevLog -eq 1) {
-        $Script:MakeLog = 1
-        $Script:LogName = "Dev-Log.log"
-        $Script:Diagnostic = 1
-        $Script:Automated = 0
-        $Script:LogBeforeAfter = 2
-        $Script:Dry_Run = 1
-        $Script:Accept_ToS = "Accepted-Dev-Switch"
-        $Script:Show_Non_Installed = 1
-        $Script:Show_Skipped = 1
-        $Script:Show_Changed = 1
-        $Script:Show_Already_Set = 1
-    }
     If($BV_ArgUsed -eq 1 -and $Automated -eq 1) {
+        CreateLog
         Error_Top_Display
         $ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
         LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
         Error_Bottom
-    }
-    If($MakeLog -ne 0) {
-        $Script:LogFile = $filebase + $LogName
-        $Time = Get-Date -Format g
-        If($MakeLog -eq 2) {
-            Write-Output "Updated Script File running" 4>&1 | Out-File -filepath $LogFile -NoNewline -Append 
-            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile -NoNewline -Append 
-            $MakeLog = 1
-        } Else {
-            Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
-        }
     }
     If($BV_ArgUsed -eq 0 -and $Automated -eq 0) {
         $ServiceFilePath = $filebase + "BlackViper.csv"
@@ -1304,6 +1311,7 @@ Function ArgCheck {
     } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
         TOS
     } Else {
+        CreateLog
         $ErrorDi = "Unknown -ScriptPreStart"
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 1 ;RightLineLog
