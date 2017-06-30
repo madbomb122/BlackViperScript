@@ -8,7 +8,7 @@ Set Script_Path=%Script_Directory%%Script_File%
 
 :: DO NOT CHANGE ANYTHING PAST THIS LINE
 ::----------------------------------------------------------------------
-
+SETLOCAL ENABLEDELAYEDEXPANSION
 echo "Running !Script_File!"
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path!"' -Verb RunAs}";
 ENDLOCAL DISABLEDELAYEDEXPANSION
