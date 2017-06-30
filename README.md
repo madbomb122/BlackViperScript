@@ -1,4 +1,5 @@
-If you want to try out the Black Viper Script GUI download "`BlackViper-Gui.ps1`" and "`_BlackViper - Gui.bat`" from the Testing folder folder and `BlackViper.csv` from this folder (All switches/arg work)
+If you want to try out the Black Viper Script GUI download "`BlackViper-Gui.ps1`" and "`_BlackViper - Gui.bat`" from the Testing folder folder and `BlackViper.csv` from this folder (All switches/arg work) <br />
+^Please post any comments, issues or suggestion in the issues under `Comment on GUI (Testing/BlackViper-Gui.ps1)`
 
 **Current Version** <br />
 **Script:** `2.7.0` (June 21, 2017) <br />
