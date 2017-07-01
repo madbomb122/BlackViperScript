@@ -431,7 +431,7 @@ $inputXML = @'
             <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="375,39,0,0" VerticalAlignment="Top" Width="61" Height="23"/>
             <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="3,66,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
             <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,0,0" FontWeight="Bold"/>
-            <Label Content="Misc Checks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="210,4,0,0" FontWeight="Bold"/> </Grid>
+            <Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="210,4,0,0" FontWeight="Bold"/> </Grid>
         </TabItem>
         <TabItem x:Name="Dev_Option_Tab" Header="Dev Option/Contact" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
             <CheckBox x:Name="DiagnosticCB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
@@ -449,7 +449,7 @@ $inputXML = @'
     <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="25" Margin="243,280,0,0" Stroke="Black" VerticalAlignment="Top" Width="1"/> </Grid>
 </Window>
 '@
-    
+
     $inputXML = $inputXML -replace "x:N",'N'
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
     [xml]$XAML = $inputXML
@@ -465,15 +465,15 @@ $inputXML = @'
             $WPF_RadioMin.IsEnabled = $false
             $WPF_btnOpenFile.IsEnabled = $true
             $WPF_LoadFileTxtBox.IsEnabled = $true
-			$WPF_CustomNote1.Visibility = 'Visible'
-			$WPF_CustomNote2.Visibility = 'Visible'
+            $WPF_CustomNote1.Visibility = 'Visible'
+            $WPF_CustomNote2.Visibility = 'Visible'
         } Else {
             $WPF_RadioAll.IsEnabled = $true
             $WPF_RadioMin.IsEnabled = $true
             $WPF_btnOpenFile.IsEnabled = $false
             $WPF_LoadFileTxtBox.IsEnabled = $false
-			$WPF_CustomNote1.Visibility = 'Hidden'
-			$WPF_CustomNote2.Visibility = 'Hidden'
+            $WPF_CustomNote1.Visibility = 'Hidden'
+            $WPF_CustomNote2.Visibility = 'Hidden'
         }
     })
 
@@ -488,34 +488,23 @@ $inputXML = @'
     })
 
     $WPF_RunScriptButton.Add_Click({
-        $Form.Close()
         $Script:RunScript = 1
-        If($WPF_RadioAll.IsChecked) { $Script:All_or_Min = "-full" } Else { $Script:All_or_Min = "-min" }
-        If($WPF_DryrunCB.IsChecked){$Script:Dry_Run = 1 } Else { $Script:Dry_Run = 0 }
-        If($WPF_BeforeAndAfterCB.IsChecked){ $Script:LogBeforeAfter = 1 } Else { $Script:LogBeforeAfter = 0 }
-        If($WPF_AlreadySetCB.IsChecked){ $Script:Show_Already_Set = 1 } Else { $Script:Show_Already_Set = 0 }
-        If($WPF_NotInstalledCB.IsChecked){ $Script:Show_Non_Installed = 1 } Else { $Script:Show_Non_Installed = 0 }
-        If($WPF_BackupServiceCB.IsChecked){ $Script:BackupServiceConfig = 1 } Else { $Script:BackupServiceConfig = 0 }
-        If($WPF_ScriptUpdateCB.IsChecked){ $Script:Script_Ver_Check = 1 } Else { $Script:Script_Ver_Check = 0 }
-        If($WPF_ServiceUpdateCB.IsChecked){ $Script:Service_Ver_Check = 1 } Else { $Script:Service_Ver_Check = 0 }
-        If($WPF_InternetCheckCB.IsChecked){ $Script:Internet_Check = 1 } Else { $Script:Internet_Check = 0 }
-        If($WPF_BuildCheckCB.IsChecked){ $Script:Build_Check = 1 } Else { $Script:Build_Check = 0 }
-        If($WPF_DiagnosticCB.IsChecked){ $Script:Diagnostic = 1 } Else { $Script:Diagnostic = 0 }
-        If($WPF_DevLogCB.IsChecked){ $Script:DevLog = 1 } Else { $Script:DevLog = 0 }
-        If($WPF_ScriptLogCB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
-
-        If($WPF_EditionCheckCB.IsChecked) {
-            $temp = $WPF_EditionConfig.SelectedItem.ToString()
-            $Script:Edition_Check = $temp.split(':')[1]
-        }
-
         $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
         If($Black_Viper -eq $WPF_ServiceConfig.Items.Count) {
-            $Script:LoadServiceConfig = 1
-            $Script:Black_Viper = 0
             $Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
+            If(!(Test-Path $ServiceConfigFile -PathType Leaf)) {
+                [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+                [Windows.Forms.MessageBox]::Show("The File '$ServiceConfigFile' does not exist","Error", 'OK')
+                $Script:RunScript = 0
+            } Else {
+                $Script:LoadServiceConfig = 1
+                $Script:Black_Viper = 0
+
+            }
         }
-        Black_Viper_Set $Black_Viper $All_or_Min
+        If($RunScript -eq 1) {
+            Gui-Done
+        }
     })
 
     $WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
@@ -614,7 +603,7 @@ Function RunDisableCheck {
     }
 
     If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) { $tempfail++ ; $temp2 = "Build" }
-    
+
     If($tempfail -ne 0) {
         $Buttontxt = "Run Disabled Due to `n"
         If($temp1 -ne "" -and $temp2 -ne "") {
@@ -630,6 +619,25 @@ Function RunDisableCheck {
         $WPF_RunScriptButton.IsEnabled = $true
     }
     $WPF_RunScriptButton.content = $Buttontxt
+}
+
+Function Gui-Done {
+    $Form.Close()
+    If($WPF_RadioAll.IsChecked) { $Script:All_or_Min = "-full" } Else { $Script:All_or_Min = "-min" }
+    If($WPF_DryrunCB.IsChecked){$Script:Dry_Run = 1 } Else { $Script:Dry_Run = 0 }
+    If($WPF_BeforeAndAfterCB.IsChecked){ $Script:LogBeforeAfter = 1 } Else { $Script:LogBeforeAfter = 0 }
+    If($WPF_AlreadySetCB.IsChecked){ $Script:Show_Already_Set = 1 } Else { $Script:Show_Already_Set = 0 }
+    If($WPF_NotInstalledCB.IsChecked){ $Script:Show_Non_Installed = 1 } Else { $Script:Show_Non_Installed = 0 }
+    If($WPF_BackupServiceCB.IsChecked){ $Script:BackupServiceConfig = 1 } Else { $Script:BackupServiceConfig = 0 }
+    If($WPF_ScriptUpdateCB.IsChecked){ $Script:Script_Ver_Check = 1 } Else { $Script:Script_Ver_Check = 0 }
+    If($WPF_ServiceUpdateCB.IsChecked){ $Script:Service_Ver_Check = 1 } Else { $Script:Service_Ver_Check = 0 }
+    If($WPF_InternetCheckCB.IsChecked){ $Script:Internet_Check = 1 } Else { $Script:Internet_Check = 0 }
+    If($WPF_BuildCheckCB.IsChecked){ $Script:Build_Check = 1 } Else { $Script:Build_Check = 0 }
+    If($WPF_DiagnosticCB.IsChecked){ $Script:Diagnostic = 1 } Else { $Script:Diagnostic = 0 }
+    If($WPF_DevLogCB.IsChecked){ $Script:DevLog = 1 } Else { $Script:DevLog = 0 }
+    If($WPF_ScriptLogCB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
+    If($WPF_EditionCheckCB.IsChecked) { $Script:Edition_Check = $WPF_EditionConfig.Text }
+    Black_Viper_Set $Black_Viper $All_or_Min
 }
 
 ##########
