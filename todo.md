@@ -6,8 +6,8 @@
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
-Nothing ATM
+- [ ] A GUI for the Script, for when the script is runned w/o automation -Testing
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
-- [ ] A Gui for the Script, for when the script is runned w/o automation
+- [ ] Ability to select/deselect services to change (If I figure out how to in the GUI)
