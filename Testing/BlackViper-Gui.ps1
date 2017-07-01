@@ -11,7 +11,7 @@
 #
 $Script_Version = "3.0"
 $Minor_Version = "0"
-$Script_Date = "06-29-2017"
+$Script_Date = "07-01-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -188,7 +188,6 @@ $ServicesTypeList = @(
     'Automatic'  #4 -Automatic (Delayed Start)
 )
 
-$Script:BV_ArgUsed = 0
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
 $Script:RunScript = 2
@@ -415,24 +414,24 @@ $inputXML = @'
             <RadioButton x:Name="RadioAll" Content="All -Change All Services" HorizontalAlignment="Left" Margin="5,26,0,0" VerticalAlignment="Top" IsChecked="True"/>
             <RadioButton x:Name="RadioMin" Content="Min -Change Services that are Differant from Default to Safe/Tweaked" HorizontalAlignment="Left" Margin="5,41,0,0" VerticalAlignment="Top"/>
             <Label Content="Black Viper Configuration Options (BV Services Only)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,3,0,0" FontWeight="Bold"/>
-            <Label x:Name="CustomNote" Content="*Note: Configure in next tab" HorizontalAlignment="Left" Margin="255,65,0,0" VerticalAlignment="Top" Width="170" Height="27" FontWeight="Bold"/> </Grid>
+            <Label x:Name="CustomNote1" Content="*Note: Configure in " HorizontalAlignment="Left" Margin="257,65,0,0" VerticalAlignment="Top" Width="122" Height="27" FontWeight="Bold"/>
+            <Label x:Name="CustomNote2" Content="Custom Services tab" HorizontalAlignment="Left" Margin="269,80,0,0" VerticalAlignment="Top" Width="124" Height="27" FontWeight="Bold"/> </Grid>
         </TabItem>
         <TabItem x:Name="Custom_Conf_Tab" Header="Custom Services" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
             <Button x:Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="9,17,0,0" VerticalAlignment="Top" Width="66" Height="22"/>
             <TextBox x:Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="23" Margin="9,68,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="411"/>
-            <Label Content="Config File (Path+File):" HorizontalAlignment="Left" Margin="4,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-            <Label Content="Browse or Type in Path/File or Browse for file" HorizontalAlignment="Left" Margin="145,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/> </Grid>
+            <Label Content="Config File: Type in Path/File or Browse for file" HorizontalAlignment="Left" Margin="4,45,0,0" VerticalAlignment="Top" FontWeight="Bold"/> </Grid>
         </TabItem>
         <TabItem x:Name="Various_Checks_Tab" Header="Various Check" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
             <CheckBox x:Name="ScriptUpdateCB" Content="Script Update*" HorizontalAlignment="Left" Margin="9,42,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
             <CheckBox x:Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="9,27,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
             <CheckBox x:Name="InternetCheckCB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="9,57,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
-            <CheckBox x:Name="BuildCheckCB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="203,27,0,0" VerticalAlignment="Top" Height="15" Width="111"/>
-            <CheckBox x:Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="203,42,0,0" VerticalAlignment="Top" Height="15" Width="161" IsChecked="True"/>
-            <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="363,39,0,0" VerticalAlignment="Top" Width="61" Height="23"/>
+            <CheckBox x:Name="BuildCheckCB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="215,27,0,0" VerticalAlignment="Top" Height="15" Width="111"/>
+            <CheckBox x:Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="215,42,0,0" VerticalAlignment="Top" Height="15" Width="161" IsChecked="True"/>
+            <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="375,39,0,0" VerticalAlignment="Top" Width="61" Height="23"/>
             <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="3,66,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
             <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4,4,0,0" FontWeight="Bold"/>
-            <Label Content="Misc Checks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="198,4,0,0" FontWeight="Bold"/> </Grid>
+            <Label Content="Misc Checks" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="210,4,0,0" FontWeight="Bold"/> </Grid>
         </TabItem>
         <TabItem x:Name="Dev_Option_Tab" Header="Dev Option/Contact" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
             <CheckBox x:Name="DiagnosticCB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
@@ -449,7 +448,7 @@ $inputXML = @'
     <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
     <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="25" Margin="243,280,0,0" Stroke="Black" VerticalAlignment="Top" Width="1"/> </Grid>
 </Window>
-'@ 
+'@
     
     $inputXML = $inputXML -replace "x:N",'N'
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -459,6 +458,24 @@ $inputXML = @'
     $Form=[Windows.Markup.XamlReader]::Load( $reader )
 
     $xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name)}
+
+    $WPF_ServiceConfig.add_SelectionChanged({
+        If(($WPF_ServiceConfig.SelectedIndex+1) -eq $WPF_ServiceConfig.Items.Count) {
+            $WPF_RadioAll.IsEnabled = $false
+            $WPF_RadioMin.IsEnabled = $false
+            $WPF_btnOpenFile.IsEnabled = $true
+            $WPF_LoadFileTxtBox.IsEnabled = $true
+			$WPF_CustomNote1.Visibility = 'Visible'
+			$WPF_CustomNote2.Visibility = 'Visible'
+        } Else {
+            $WPF_RadioAll.IsEnabled = $true
+            $WPF_RadioMin.IsEnabled = $true
+            $WPF_btnOpenFile.IsEnabled = $false
+            $WPF_LoadFileTxtBox.IsEnabled = $false
+			$WPF_CustomNote1.Visibility = 'Hidden'
+			$WPF_CustomNote2.Visibility = 'Hidden'
+        }
+    })
 
     $WPF_btnOpenFile.Add_Click({
         [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
@@ -485,18 +502,15 @@ $inputXML = @'
         If($WPF_BuildCheckCB.IsChecked){ $Script:Build_Check = 1 } Else { $Script:Build_Check = 0 }
         If($WPF_DiagnosticCB.IsChecked){ $Script:Diagnostic = 1 } Else { $Script:Diagnostic = 0 }
         If($WPF_DevLogCB.IsChecked){ $Script:DevLog = 1 } Else { $Script:DevLog = 0 }
+        If($WPF_ScriptLogCB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
 
         If($WPF_EditionCheckCB.IsChecked) {
             $temp = $WPF_EditionConfig.SelectedItem.ToString()
             $Script:Edition_Check = $temp.split(':')[1]
         }
 
-        If($WPF_ScriptLogCB.IsChecked) { 
-            $Script:LogName = $WPF_LogNameInput.Text
-        }
-
         $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
-        If($Black_Viper -eq $WPF_ServiceConfigLen) {
+        If($Black_Viper -eq $WPF_ServiceConfig.Items.Count) {
             $Script:LoadServiceConfig = 1
             $Script:Black_Viper = 0
             $Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
@@ -527,6 +541,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     $WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
     $WPF_ScriptLogCB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $true })
     $WPF_ScriptLogCB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $false })
+    $WPF_BuildCheckCB.Add_Checked({ $Script:Build_Check = 1 ; RunDisableCheck })
+    $WPF_BuildCheckCB.Add_UnChecked({ $Script:Build_Check = 0 ; RunDisableCheck })
 
     $WPF_EditionCheckCB.Add_Checked({
         $Script:Edition_Check = 1
@@ -540,24 +556,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         RunDisableCheck
     })
 
-    $WPF_BuildCheckCB.Add_Checked({
-        $Script:Build_Check = 1
-        RunDisableCheck
-    })
-
-    $WPF_BuildCheckCB.Add_UnChecked({
-        $Script:Build_Check = 0
-        RunDisableCheck
-    })
-
     $Script:RunScript = 0
-    $Script:WPFServiceConfigLen = 3
     [void]$WPF_ServiceConfig.Items.Add("Default")
     [void]$WPF_ServiceConfig.Items.Add("Safe")
-    If($IsLaptop -ne "-Lap") {
-        [void]$WPF_ServiceConfig.Items.Add("Tweaked")
-        $Script:WPFServiceConfigLen++
-    }
+    If($IsLaptop -ne "-Lap") { [void]$WPF_ServiceConfig.Items.Add("Tweaked") }
     [void]$WPF_ServiceConfig.Items.Add("Custom Setting *")
     $WPF_ServiceConfig.SelectedIndex = 0
 
@@ -591,11 +593,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         $WPF_EditionConfig.IsEnabled = $false
     }
 
-    If($All_or_Min -eq "-full"){
-        $WPF_RadioAll.IsChecked = $true
-    } Else {
-        $WPF_RadioMin.IsChecked = $true
-    }
+    If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $true } Else { $WPF_RadioMin.IsChecked = $true }
 
     $WPF_LoadFileTxtBox.Text = $ServiceConfigFile
     $WPF_LogNameInput.Text = $Script:LogName
@@ -724,11 +722,7 @@ Function Save_Service {
                 $StartType = 2
             } ElseIf("$($Service.StartType)" -eq "Automatic") {
                 $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
-                If($exists -eq 1){
-                    $StartType = 4
-                } Else {
-                    $StartType = 3
-                }
+                If($exists -eq 1){ $StartType = 4 } Else { $StartType = 3 }
             }
             $ServiceName = $Service.Name
             If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
@@ -789,11 +783,7 @@ Function ServiceSet ([String]$BVService) {
         }
     }
     DisplayOut "-------------------------------------" 14 0
-    If($Dry_Run -ne 1) {
-        DisplayOut "Service Changed..." 14 0
-    } Else {
-        DisplayOut "List of Service Done..." 14 0
-    }
+    If($Dry_Run -ne 1) { DisplayOut "Service Changed..." 14 0 } Else { DisplayOut "List of Service Done..." 14 0 }
     ServiceBA "Services-After"
     AutomatedExitCheck 1
 }
@@ -830,11 +820,7 @@ Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
 }
 
 Function InternetCheck {
-    If($Internet_Check -eq 1) {
-        Return $true
-    } ElseIf(!(Test-Connection -computer github.com -count 1 -quiet)) {
-        Return $false
-    }
+    If($Internet_Check -eq 1) { Return $true } ElseIf(!(Test-Connection -computer github.com -count 1 -quiet)) { Return $false }
     Return $true
 }
 
@@ -884,11 +870,7 @@ Function PreScriptCheck {
     }
 
     If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) {
-        If($EditionCheck -eq "Fail") {
-            $ErrorDi += " & Build"
-        } Else {
-            $ErrorDi = "Build"
-        }
+        If($EditionCheck -eq "Fail") { $ErrorDi += " & Build" } Else { $ErrorDi = "Build" }
         $ErrorDi += " Check Failed"
         $BuildCheck = "Fail"
         $EBCount++
@@ -975,11 +957,7 @@ Function PreScriptCheck {
                 [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
             }
             If($Script_Ver_Check -eq 1) {
-                If($Release_Type -eq "Stable") {
-                    $CSVLine = 0
-                } Else {
-                    $CSVLine = 2
-                }
+                If($Release_Type -eq "Stable") { $CSVLine = 0 } Else { $CSVLine = 2 }
                 $WebScriptVer = $($CSV_Ver[$CSVLine].Version)
                 $WebScriptMinorVer =  $($CSV_Ver[$CSVLine].MinorVersion)
                 If($WebScriptVer -gt $Script_Version) {
@@ -1014,7 +992,7 @@ Function PreScriptCheck {
                     $UpArg = ""
                     If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
                     If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atosu" }
-                    If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }                    
+                    If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }
                     If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
                     If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
                     If($Edition_Check -eq "Pro") { $UpArg = $UpArg + "-secp" }
@@ -1029,11 +1007,7 @@ Function PreScriptCheck {
                     If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
                     If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
                     If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
-                    If($All_or_Min -eq "-full") { 
-                        $UpArg = $UpArg + "-all" 
-                    } Else {
-                        $UpArg = $UpArg + "-min"
-                    }
+                    If($All_or_Min -eq "-full") { $UpArg = $UpArg + "-all" } Else { $UpArg = $UpArg + "-min" }
                     If($LoadServiceConfig -eq 1) { $UpArg = $UpArg + "-lcsc $ServiceConfigFile" }
                     If($BackupServiceConfig -eq 1) { $UpArg = $UpArg + "-bcsc" }
                     If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
@@ -1125,10 +1099,7 @@ Function ArgsAndVarSet {
                 } ElseIf($ArgVal -eq "-lcsc") {
                     $Script:BV_ArgUsed = 3
                     $Script:LoadServiceConfig = 1
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
-                        $Script:ServiceConfigFile = $PassedArg[$i+1] 
-                        $i++
-                    }
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:ServiceConfigFile = $PassedArg[$i+1] ; $i++ }
                 } ElseIf($ArgVal -eq "-all") {
                     $Script:All_or_Min = "-full"
                 } ElseIf($ArgVal -eq "-min") {
@@ -1160,16 +1131,10 @@ Function ArgsAndVarSet {
                     $Script:LogBeforeAfter = 1
                 } ElseIf($ArgVal -eq "-log") {
                     $Script:MakeLog = 1
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
-                        $Script:LogName = $PassedArg[$i+1] 
-                        $i++
-                    }
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
                 } ElseIf($ArgVal -eq "-logc") {
                     $Script:MakeLog = 2
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { 
-                        $Script:LogName = $PassedArg[$i+1] 
-                        $i++
-                    }
+                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
                 } ElseIf($ArgVal -eq "-dry") {
                     $Script:Dry_Run = 1
                     $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
@@ -1226,7 +1191,7 @@ Function ArgsAndVarSet {
         LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
         Error_Bottom
     }
-    If($BV_ArgUsed -eq 0 -and $Automated -eq 0) {
+    If($BV_ArgUsed -eq $null -and $Automated -eq 0) {
         $ServiceFilePath = $filebase + "BlackViper.csv"
         If(Test-Path $ServiceFilePath -PathType Leaf) {
             $TMP = Import-Csv $ServiceFilePath
