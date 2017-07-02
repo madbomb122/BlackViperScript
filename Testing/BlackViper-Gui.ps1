@@ -11,7 +11,7 @@
 #
 $Script_Version = "3.0"
 $Minor_Version = "0"
-$Script_Date = "07-01-2017"
+$Script_Date = "July-01-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -389,7 +389,7 @@ $inputXML = @'
     Title="Black Viper Service Configuration Script By: MadBomb122" Height="343" Width="463" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" ResizeMode="NoResize" BorderBrush="Black" Background="White" WindowStyle="ThreeDBorderWindow">
     <Window.Effect> <DropShadowEffect/> </Window.Effect> <Grid>
     <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,137,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-    <Label Content="Log Options" HorizontalAlignment="Left" Margin="197,138,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+    <Label Content="Log Options" HorizontalAlignment="Left" Margin="197,137,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
     <Label Content="Misc Options" HorizontalAlignment="Left" Margin="4,199,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
     <Label Content="Service Version:" HorizontalAlignment="Left" Margin="245,276,0,0" VerticalAlignment="Top" Height="25"/>
     <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
@@ -403,9 +403,9 @@ $inputXML = @'
     <CheckBox x:Name="NotInstalledCB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,175,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
     <CheckBox x:Name="ScriptLogCB" Content="Script Log:" HorizontalAlignment="Left" Margin="202,175,0,0" VerticalAlignment="Top" Height="15" Width="75"/>
     <CheckBox x:Name="BackupServiceCB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,237,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
-    <TextBox x:Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
-    <TextBox x:Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="334,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
-    <TextBox x:Name="Release_Type_Txt" HorizontalAlignment="Left" Height="24" Margin="195,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
+    <TextBox x:Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="82,280,0,0" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
+    <TextBox x:Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="334,280,0,0" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="113" IsEnabled="False"/>
+    <TextBox x:Name="Release_Type_Txt" HorizontalAlignment="Left" Height="24" Margin="195,280,0,0" TextWrapping="Wrap" Text="T" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
     <TextBox x:Name="LogNameInput" HorizontalAlignment="Left" Height="19" Margin="279,174,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="147" IsEnabled="False"/>
     <TabControl Height="137" Margin="0,-1,0,0" VerticalAlignment="Top">
         <TabItem x:Name="Black_Viper_Conf_Tab" Header="Black Viper Services" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
@@ -566,6 +566,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     If($Build_Check -eq 1) { $WPF_BuildCheckCB.IsChecked = $true }
     If($Diagnostic -eq 1) { $WPF_DiagnosticCB.IsChecked = $true }
     If($DevLog -eq 1) { $WPF_DevLogCB.IsChecked = $true }
+    If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $true } Else { $WPF_RadioMin.IsChecked = $true }
     If($MakeLog -eq 1) { 
         $WPF_ScriptLogCB.IsChecked = $true
         $WPF_LogNameInput.IsEnabled = $true
@@ -582,10 +583,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         $WPF_EditionConfig.IsEnabled = $false
     }
 
-    If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $true } Else { $WPF_RadioMin.IsChecked = $true }
-
     $WPF_LoadFileTxtBox.Text = $ServiceConfigFile
-    $WPF_LogNameInput.Text = $Script:LogName
+    $WPF_LogNameInput.Text = $LogName
+    $WPF_Script_Ver_Txt.Text = "$Script_Version.$Minor_Version ($Script_Date)"
+    $WPF_Service_Ver_Txt.Text = "$ServiceVersion ($ServiceDate)"
+    $WPF_Release_Type_Txt.Text = $Release_Type
 
     RunDisableCheck
     $Form.ShowDialog() | out-null
@@ -1203,7 +1205,7 @@ Function ArgsAndVarSet {
             $ServiceVersion = ($TMP[0]."Def-Home-Full")
             $ServiceDate = ($TMP[0]."Def-Home-Min")
         } Else {
-            $ServiceVersion = "N/A"
+            $ServiceVersion = "Missing File"
             $ServiceDate = ""
         }
     }
