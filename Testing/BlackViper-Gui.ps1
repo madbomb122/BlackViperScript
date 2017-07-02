@@ -721,7 +721,6 @@ Function Save_Service {
     $AllService = Get-Service | Select Name, StartType
 
     $SaveService = @()
-
     ForEach ($Service in $AllService) {
         If(!($Skip_Services -contains $Service.Name)) {
             If("$($Service.StartType)" -eq "Disabled") {
@@ -749,11 +748,7 @@ Function ServiceSet ([String]$BVService) {
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     $Script:CurrServices = Get-Service | Select Name, StartType
     ServiceBA "Services-Before"
-    If($Dry_Run -ne 1) {
-        DisplayOut "Changing Service Please wait..." 14 0
-    } Else {
-        DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0
-    }
+    If($Dry_Run -ne 1) { DisplayOut "Changing Service Please wait..." 14 0 } Else { DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
     DisplayOut "Service_Name - Current -> Change_To" 14 0
     DisplayOut "-------------------------------------" 14 0
     ForEach($item In $csv) {
@@ -769,12 +764,10 @@ Function ServiceSet ([String]$BVService) {
             If($ServiceName -is [system.array]) { $ServiceName = $ServiceName[0] }
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
                 $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
-                If($ServiceTypeNum -In 1..3) {
-                    If($Dry_Run -ne 1) { Set-Service $ServiceName -StartupType $ServiceType }
-                } ElseIf($ServiceTypeNum -eq 4) {
-                    $DispTemp = "$DispTemp (Delayed Start)"
+                If($ServiceTypeNum -In 1..4 -and $Dry_Run -ne 1) { -Service $ServiceName -StartupType $ServiceType }
+                If($ServiceTypeNum -eq 4) {
+                    $DispTemp += " (Delayed Start)"
                     If($Dry_Run -ne 1) {
-                        Set-Service $ServiceName -StartupType $ServiceType
                         $RegPath = "HKLM:\System\CurrentControlSet\Services\"+($ServiceName)
                         Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
                     }
@@ -858,6 +851,54 @@ Function CreateLog {
             Write-Output "--Start of Log ($Time)--" | Out-File -filepath $LogFile
         }
     }
+}
+
+Function ScriptUpdateFun {
+    $FullVer = "$WebScriptVer.$WebScriptMinorVer"
+    $DFilename = "BlackViper-Win10-Ver." + $FullVer
+    If($Release_Type -eq "Stable") {
+        $DFilename += ".ps1"
+    } Else {
+        $DFilename += "-Testing.ps1"
+        $Script_Url = $URL_Base + "Testing/"
+    }
+    $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
+    $WebScriptFilePath = $filebase + $DFilename
+    Clear-Host
+    MenuLineLog
+    LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
+    MenuLineLog
+    MenuBlankLineLog
+    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(29-$FullVer.length))) 11 0 0 1 ;RightLineLog
+    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
+    LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
+    MenuBlankLine
+    MenuLineLog
+    DownloadFile $Script_Url $WebScriptFilePath
+    $UpArg = ""
+    If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
+    If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atosu" }
+    If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }
+    If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
+    If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
+    If($Edition_Check -eq "Pro") { $UpArg = $UpArg + "-secp" }
+    If($Build_Check -eq 1) { $UpArg = $UpArg + "-sbc" }
+    If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
+    If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
+    If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
+    If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
+    If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
+    If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
+    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+    If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
+    If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
+    If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
+    If($All_or_Min -eq "-full") { $UpArg = $UpArg + "-all" } Else { $UpArg = $UpArg + "-min" }
+    If($LoadServiceConfig -eq 1) { $UpArg = $UpArg + "-lcsc $ServiceConfigFile" }
+    If($BackupServiceConfig -eq 1) { $UpArg = $UpArg + "-bcsc" }
+    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
+    Exit
 }
 
 Function PreScriptCheck {
@@ -976,52 +1017,7 @@ Function PreScriptCheck {
                     $Script_Update = "False"
                 }
                 If($Script_Update -eq "True") {
-                    $FullVer = "$WebScriptVer.$WebScriptMinorVer"
-                    $DFilename = "BlackViper-Win10-Ver." + $FullVer
-                    If($Release_Type -eq "Stable") {
-                        $DFilename += ".ps1"
-                        $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
-                    } Else {
-                        $DFilename += "-Testing.ps1"
-                        $Script_Url = $URL_Base + "Testing/BlackViper-Win10.ps1"
-                    }
-                    $WebScriptFilePath = $filebase + $DFilename
-                    Clear-Host
-                    MenuLineLog
-                    LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
-                    MenuLineLog
-                    MenuBlankLineLog
-                    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(29-$FullVer.length))) 11 0 0 1 ;RightLineLog
-                    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.length))) 11 0 0 1 ;RightLineLog
-                    LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
-                    MenuBlankLine
-                    MenuLineLog
-                    DownloadFile $Script_Url $WebScriptFilePath
-                    $UpArg = ""
-                    If($Automated -eq 1) { $UpArg = $UpArg + "-auto" }
-                    If($Accept_ToS -ne 0) { $UpArg = $UpArg + "-atosu" }
-                    If($Service_Ver_Check -eq 1) { $UpArg = $UpArg + "-use" }
-                    If($Internet_Check -eq 1) { $UpArg = $UpArg + "-sic" }
-                    If($Edition_Check -eq "Home") { $UpArg = $UpArg + "-sech" }
-                    If($Edition_Check -eq "Pro") { $UpArg = $UpArg + "-secp" }
-                    If($Build_Check -eq 1) { $UpArg = $UpArg + "-sbc" }
-                    If($Black_Viper -eq 1) { $UpArg = $UpArg + "-default" }
-                    If($Black_Viper -eq 2) { $UpArg = $UpArg + "-safe" }
-                    If($Black_Viper -eq 3) { $UpArg = $UpArg + "-tweaked" }
-                    If($Diagnostic -eq 1) { $UpArg = $UpArg + "-diag" }
-                    If($LogBeforeAfter -eq 1) { $UpArg = $UpArg + "-baf" }
-                    If($Dry_Run -eq 1) { $UpArg = $UpArg + "-dry" }
-                    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
-                    If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
-                    If($DevLog -eq 1) { $UpArg = $UpArg + "-devl" }
-                    If($MakeLog -eq 1) { $UpArg = $UpArg + "-logc $LogName" }
-                    If($All_or_Min -eq "-full") { $UpArg = $UpArg + "-all" } Else { $UpArg = $UpArg + "-min" }
-                    If($LoadServiceConfig -eq 1) { $UpArg = $UpArg + "-lcsc $ServiceConfigFile" }
-                    If($BackupServiceConfig -eq 1) { $UpArg = $UpArg + "-bcsc" }
-                    If($Show_Non_Installed -eq 1) { $UpArg = $UpArg + "-snis" }
-                    If($Show_Skipped -eq 1) { $UpArg = $UpArg + "-sss" }
-                    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
-                    Exit
+                    ScriptUpdateFun
                 }
             }
         } Else {
@@ -1063,99 +1059,100 @@ Function PreScriptCheck {
     $csv.RemoveAt(0)
 }
 
-Function ArgsAndVarSet {
-    $Script:IsLaptop = LaptopCheck
-
-    If ($PassedArg.length -gt 0) {
-        For($i=0; $i -lt $PassedArg.length; $i++) {
-            $ArgVal = $PassedArg[$i]
-            If($ArgVal.StartsWith("-")) {
-                $ArgVal = $PassedArg[$i].ToLower()
-                If($ArgVal -eq "-set") {
-                    $PasVal = $PassedArg[($i+1)]
-                    If($PasVal -eq 1 -or "default") {
-                       $Script:Black_Viper = 1
-                       $Script:BV_ArgUsed = 2
-                    } ElseIf($PasVal -eq "safe") {
-                        $Script:Black_Viper = 2
-                        $Script:BV_ArgUsed = 2
-                    } ElseIf($PasVal -eq 3 -or "tweaked") {
-                        If($IsLaptop -ne "-Lap") {
-                            $Script:Black_Viper = 3
-                            $Script:BV_ArgUsed = 2
-                        } Else {
-                            $Script:BV_ArgUsed = 1
-                        }
-                    }
-                } ElseIf($ArgVal -eq "-default") {
-                    $Script:Black_Viper = 1
-                    $Script:BV_ArgUsed = 2
-                } ElseIf($ArgVal -eq "-safe") {
+Function GetArgs {
+    For($i=0; $i -lt $PassedArg.length; $i++) {
+        $ArgVal = $PassedArg[$i]
+        If($ArgVal.StartsWith("-")) {
+            $ArgVal = $PassedArg[$i].ToLower()
+            If($ArgVal -eq "-set") {
+                $PasVal = $PassedArg[($i+1)]
+                If($PasVal -eq 1 -or "default") {
+                   $Script:Black_Viper = 1
+                   $Script:BV_ArgUsed = 2
+                } ElseIf($PasVal -eq "safe") {
                     $Script:Black_Viper = 2
                     $Script:BV_ArgUsed = 2
-                } ElseIf($ArgVal -eq "-tweaked") {
+                } ElseIf($PasVal -eq 3 -or "tweaked") {
                     If($IsLaptop -ne "-Lap") {
                         $Script:Black_Viper = 3
                         $Script:BV_ArgUsed = 2
                     } Else {
-                        $Script:BV_ArgUsed = 3
+                        $Script:BV_ArgUsed = 1
                     }
-                } ElseIf($ArgVal -eq "-sbc") {
-                    $Script:Build_Check = 1
-                } ElseIf($ArgVal -eq "-bcsc") {
-                    $Script:BackupServiceConfig = 1
-                } ElseIf($ArgVal -eq "-lcsc") {
-                    $Script:BV_ArgUsed = 3
-                    $Script:LoadServiceConfig = 1
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:ServiceConfigFile = $PassedArg[$i+1] ; $i++ }
-                } ElseIf($ArgVal -eq "-all") {
-                    $Script:All_or_Min = "-full"
-                } ElseIf($ArgVal -eq "-min") {
-                    $Script:All_or_Min = "-min"
-                } ElseIf($ArgVal -eq "-secp" -or $ArgVal -eq "-sec") {
-                    $Script:Edition_Check = "Pro"
-                } ElseIf($ArgVal -eq "-sech") {
-                    $Script:Edition_Check = "Home"
-                } ElseIf($ArgVal -eq "-sic") {
-                    $Script:Internet_Check = 1
-                } ElseIf($ArgVal -eq "-usc") {
-                    $Script:Script_Ver_Check = 1
-                } ElseIf($ArgVal -eq "-use") {
-                    $Script:Service_Ver_Check = 1
-                } ElseIf($ArgVal -eq "-atos") {
-                    $Script:Accept_ToS = "Accepted-Switch"
-                } ElseIf($ArgVal -eq "-atosu") {
-                    $Script:Accept_ToS = "Accepted-Update"
-                } ElseIf($ArgVal -eq "-auto") {
-                    $Script:Automated = 1
-                    $Script:Accept_ToS = "Accepted-Automated-Switch"
-                } ElseIf($ArgVal -eq "-diag") {
-                    $Script:Diagnostic = 1
-                    $Script:Automated = 0
-                } ElseIf($ArgVal -eq "-diagt") {
-                    $Script:Diagnostic = 2
-                    $Script:Automated = 0
-                } ElseIf($ArgVal -eq "-baf") {
-                    $Script:LogBeforeAfter = 1
-                } ElseIf($ArgVal -eq "-log") {
-                    $Script:MakeLog = 1
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
-                } ElseIf($ArgVal -eq "-logc") {
-                    $Script:MakeLog = 2
-                    If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
-                } ElseIf($ArgVal -eq "-dry") {
-                    $Script:Dry_Run = 1
-                    $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
-                    $Script:Show_Non_Installed = 1
-                    $Script:Show_Skipped = 1
-                } ElseIf($ArgVal -eq "-snis") {
-                    $Script:Show_Non_Installed = 1
-                } ElseIf($ArgVal -eq "-devl") {
-                    $Script:DevLog = 1
                 }
+            } ElseIf($ArgVal -eq "-default") {
+                $Script:Black_Viper = 1
+                $Script:BV_ArgUsed = 2
+            } ElseIf($ArgVal -eq "-safe") {
+                $Script:Black_Viper = 2
+                $Script:BV_ArgUsed = 2
+            } ElseIf($ArgVal -eq "-tweaked") {
+                If($IsLaptop -ne "-Lap") {
+                    $Script:Black_Viper = 3
+                    $Script:BV_ArgUsed = 2
+                } Else {
+                    $Script:BV_ArgUsed = 3
+                }
+            } ElseIf($ArgVal -eq "-sbc") {
+                $Script:Build_Check = 1
+            } ElseIf($ArgVal -eq "-bcsc") {
+                $Script:BackupServiceConfig = 1
+            } ElseIf($ArgVal -eq "-lcsc") {
+                $Script:BV_ArgUsed = 3
+                $Script:LoadServiceConfig = 1
+                If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:ServiceConfigFile = $PassedArg[$i+1] ; $i++ }
+            } ElseIf($ArgVal -eq "-all") {
+                $Script:All_or_Min = "-full"
+            } ElseIf($ArgVal -eq "-min") {
+                $Script:All_or_Min = "-min"
+            } ElseIf($ArgVal -eq "-secp" -or $ArgVal -eq "-sec") {
+                $Script:Edition_Check = "Pro"
+            } ElseIf($ArgVal -eq "-sech") {
+                $Script:Edition_Check = "Home"
+            } ElseIf($ArgVal -eq "-sic") {
+                $Script:Internet_Check = 1
+            } ElseIf($ArgVal -eq "-usc") {
+                $Script:Script_Ver_Check = 1
+            } ElseIf($ArgVal -eq "-use") {
+                $Script:Service_Ver_Check = 1
+            } ElseIf($ArgVal -eq "-atos") {
+                $Script:Accept_ToS = "Accepted-Switch"
+            } ElseIf($ArgVal -eq "-atosu") {
+                $Script:Accept_ToS = "Accepted-Update"
+            } ElseIf($ArgVal -eq "-auto") {
+                $Script:Automated = 1
+                $Script:Accept_ToS = "Accepted-Automated-Switch"
+            } ElseIf($ArgVal -eq "-diag") {
+                $Script:Diagnostic = 1
+                $Script:Automated = 0
+            } ElseIf($ArgVal -eq "-diagt") {
+                $Script:Diagnostic = 2
+                $Script:Automated = 0
+            } ElseIf($ArgVal -eq "-baf") {
+                $Script:LogBeforeAfter = 1
+            } ElseIf($ArgVal -eq "-log") {
+                $Script:MakeLog = 1
+                If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
+            } ElseIf($ArgVal -eq "-logc") {
+                $Script:MakeLog = 2
+                If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
+            } ElseIf($ArgVal -eq "-dry") {
+                $Script:Dry_Run = 1
+                $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
+                $Script:Show_Non_Installed = 1
+                $Script:Show_Skipped = 1
+            } ElseIf($ArgVal -eq "-snis") {
+                $Script:Show_Non_Installed = 1
+            } ElseIf($ArgVal -eq "-devl") {
+                $Script:DevLog = 1
             }
         }
     }
+}
+
+Function ArgsAndVarSet {
+    $Script:IsLaptop = LaptopCheck
+    If ($PassedArg.length -gt 0) { GetArgs }
 
     $Script:WindowVersion = [Environment]::OSVersion.Version.Major
     If($WindowVersion -ne 10) {
