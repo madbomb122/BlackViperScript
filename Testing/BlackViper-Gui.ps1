@@ -741,15 +741,15 @@ Function ServiceSet ([String]$BVService) {
     ForEach($item In $csv) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
+        $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
         If($ServiceTypeNum -eq 0 -and $Show_Skipped -eq 1) {
-            $DispTemp = "Skipping $ServiceCommName ($ServiceName)"
+            If($ServiceCommName -ne $null) { $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else { $DispTemp = "Skipping $ServiceName" }
             DisplayOut $DispTemp  14 0
         } ElseIf($ServiceTypeNum -ne 0) {
             If($ServiceName -like "*_*") { $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
             $ServiceType = $ServicesTypeList[$ServiceTypeNum]
             $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
             If($ServiceName -is [system.array]) { $ServiceName = $ServiceName[0] }
-            $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
                 $DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
                 If($ServiceTypeNum -In 1..4 -and $Dry_Run -ne 1) { -Service $ServiceName -StartupType $ServiceType }
@@ -766,7 +766,7 @@ Function ServiceSet ([String]$BVService) {
                 If($ServiceTypeNum -eq 4) { $DispTemp += " (Delayed Start)" }
                 DisplayOut $DispTemp  15 0
             } ElseIf($ServiceCurrType -eq $False -and $Show_Non_Installed -eq 1) {
-                $DispTemp = "No service with name $ServiceName ($ServiceCommName)"
+                $DispTemp = "No service with name $ServiceName"
                 DisplayOut $DispTemp  13 0
             }
         }
