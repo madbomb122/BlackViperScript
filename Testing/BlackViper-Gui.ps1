@@ -1,5 +1,5 @@
 ##########
-# Win10 Black Viper Service Configuration Script
+# Win 10 Black Viper Service Configuration Script
 #
 # Black Viper's Service Configurations
 #  Author: Charles "Black Viper" Sparks
@@ -11,7 +11,7 @@
 #
 $Script_Version = "3.0"
 $Minor_Version = "0"
-$Script_Date = "July-03-2017"
+$Script_Date = "July-04-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -72,12 +72,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 .BASIC USAGE
   Run script with powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
   or Use bat file provided
-  
-  Then Use the Menu Provided and
-  Select the desired Services Configuration
-    1. Default
-    2. Safe (Recommended Option)
-    3. Tweaked (Not supported for laptop ATM)
+
+  Then Use the Gui and Select the desired Choices
 
 .ADVANCED USAGE
  One of the following Methods...
@@ -92,14 +88,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 --Service Configuration Switches--
   -default       (Runs the script with Services to Default Configuration)
-  -Set 1          ^Same as Above
-  -Set default    ^Same as Above
   -safe          (Runs the script with Services to Black Viper's Safe Configuration)
-  -Set 2          ^Same as Above
-  -Set safe       ^Same as Above
   -tweaked       (Runs the script with Services to Black Viper's Tweaked Configuration)
-  -Set 3          ^Same as Above
-  -Set tweaked    ^Same as Above
   -lcsc File.csv (Loads Custom Service Configuration, File.csv = Name of your backup/custom file)
 
 --Service Choice Switches--
@@ -187,6 +177,7 @@ $ServicesTypeList = @(
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
 $Script:RunScript = 2
+$Script:ErrorDi = ""
 
 ##########
 # Pre-Script -End
@@ -241,8 +232,8 @@ Function Error_Top_Display {
 }
 
 Function Error_Bottom {
-    MenuLineLog
     MenuBlankLineLog
+    MenuLineLog
     If($Diagnostic -eq 1) {
         DiagnosticCheck 0
         Read-Host -Prompt "`nPress Any key to Close..."
@@ -279,6 +270,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Show_Changed = $Show_Changed" 15 0 1 1
         DisplayOutMenu " Show_Already_Set = $Show_Already_Set" 15 0 1 1
         DisplayOutMenu " Show_Non_Installed = $Show_Non_Installed" 15 0 1 1
+        DisplayOutMenu " Show_Skipped = $Show_Skipped" 15 0 1 1
         DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1 1
         DisplayOutMenu " Build_Check = $Build_Check" 15 0 1 1
         DisplayOutMenu " Args = $PassedArg" 15 0 1 1
@@ -345,7 +337,7 @@ Function TOS {
         $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
         Switch($TOS.ToLower()) {
             { $_ -eq "n" -or $_ -eq "no" } {Exit ;Break }
-            { $_ -eq "y" -or $_ -eq "yes" } { $TOS = "Out" ; TOSyes ;Break }
+            { $_ -eq "y" -or $_ -eq "yes" } { $TOS = "Out" ;TOSyes ;Break }
             default {$Invalid = 1 ;Break }
         }
     }
@@ -354,6 +346,7 @@ Function TOS {
 
 Function TOSyes {
     $Script:Accept_ToS = "Accepted-Script"
+    $Script:RunScript = 1
     If($LoadServiceConfig -eq 1) {
         ServiceSet "StartType"
     } ElseIf($Black_Viper -eq 0) {
@@ -646,8 +639,8 @@ Function Gui-Done {
 Function LoadWebCSV {
     $LoadWebCSV = 'X'
     while($LoadWebCSV -ne "Out") {
+        $Script:ErrorDi = "Missing File BlackViper.csv -LoadCSV"
         Error_Top_Display
-        $ErrorDi = "Missing File BlackViper.csv -LoadCSV"
         LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing.             " 2 0 0 ;RightLine
         MenuBlankLine
         LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
@@ -669,7 +662,7 @@ Function ServiceBA ([String]$ServiceBA) {
         $ServiceBAFile = $filebase + $ServiceBA + ".log"
         Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
     } ElseIf($LogBeforeAfter -eq 2) {
-        $TMPServices = Get-Service | Select DisplayName, StartType
+        $TMPServices = Get-Service | Select DisplayName, Name, StartType
         Write-Output "`n$ServiceBA -Start" 4>&1 | Out-File -filepath $LogFile -Append
         Write-Output "-------------------------------------" 4>&1 | Out-File -filepath $LogFile -Append
         Write-Output $TMPServices 4>&1 | Out-File -filepath $LogFile -Append
@@ -740,7 +733,7 @@ Function ServiceSet ([String]$BVService) {
     Clear-Host
     $NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
-    $Script:CurrServices = Get-Service | Select Name, StartType
+    $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType
     ServiceBA "Services-Before"
     If($Dry_Run -ne 1) { DisplayOut "Changing Service Please wait..." 14 0 } Else { DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
     DisplayOut "Service_Name - Current -> Change_To" 14 0
@@ -749,15 +742,16 @@ Function ServiceSet ([String]$BVService) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
         If($ServiceTypeNum -eq 0 -and $Show_Skipped -eq 1) {
-            $DispTemp = "Skipping $ServiceName"
+            $DispTemp = "Skipping $ServiceCommName ($ServiceName)"
             DisplayOut $DispTemp  14 0
         } ElseIf($ServiceTypeNum -ne 0) {
             If($ServiceName -like "*_*") { $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
             $ServiceType = $ServicesTypeList[$ServiceTypeNum]
             $ServiceCurrType = ServiceCheck $ServiceName $ServiceType
             If($ServiceName -is [system.array]) { $ServiceName = $ServiceName[0] }
+            $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
-                $DispTemp = "$ServiceName - $ServiceCurrType -> $ServiceType"
+                $DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
                 If($ServiceTypeNum -In 1..4 -and $Dry_Run -ne 1) { -Service $ServiceName -StartupType $ServiceType }
                 If($ServiceTypeNum -eq 4) {
                     $DispTemp += " (Delayed Start)"
@@ -768,11 +762,11 @@ Function ServiceSet ([String]$BVService) {
                 }
                 If($Show_Changed -eq 1) { DisplayOut $DispTemp  11 0 }
             } ElseIf($ServiceCurrType -eq "Already" -and $Show_Already_Set -eq 1) {
-                $DispTemp = "$ServiceName is already $ServiceType"
+                $DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
                 If($ServiceTypeNum -eq 4) { $DispTemp += " (Delayed Start)" }
                 DisplayOut $DispTemp  15 0
             } ElseIf($ServiceCurrType -eq $False -and $Show_Non_Installed -eq 1) {
-                $DispTemp = "No service with name $ServiceName"
+                $DispTemp = "No service with name $ServiceName ($ServiceCommName)"
                 DisplayOut $DispTemp  13 0
             }
         }
@@ -895,8 +889,6 @@ Function ScriptUpdateFun {
 Function PreScriptCheck {
     If($RunScript -eq 0) { Exit }
     CreateLog
-
-    $ErrorDi = ""
     $EBCount = 0
 
     If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home" -or $WinSku -IN 100..101) {
@@ -904,14 +896,14 @@ Function PreScriptCheck {
     } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro" -or $WinSku -eq 48) {
         $Script:WinEdition = "-Pro"
     } Else {
-        $ErrorDi = "Edition"
+        $Script:ErrorDi = "Edition"
         $EditionCheck = "Fail"
         $EBCount++
     }
 
     If($BuildVer -lt $ForBuild -and $Build_Check -ne 1) {
-        If($EditionCheck -eq "Fail") { $ErrorDi += " & Build" } Else { $ErrorDi = "Build" }
-        $ErrorDi += " Check Failed"
+        If($EditionCheck -eq "Fail") { $Script:ErrorDi += " & Build" } Else { $Script:ErrorDi = "Build" }
+        $Script:ErrorDi += " Check Failed"
         $BuildCheck = "Fail"
         $EBCount++
     }
@@ -966,7 +958,7 @@ Function PreScriptCheck {
     If($LoadServiceConfig -eq 1) {
         $ServiceFilePath = $filebase + $ServiceConfigFile
         If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-            $ErrorDi = "Missing File $ServiceConfigFile"
+            $Script:ErrorDi = "Missing File $ServiceConfigFile"
             Error_Top_Display
             LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu ("$ServiceConfigFile" +(" "*(28-$DFilename.length))) 15 0 0 1 ;DisplayOutMenu " is missing." 2 0 0 1 ;RightLineLog
             Error_Bottom
@@ -1012,8 +1004,8 @@ Function PreScriptCheck {
                 }
             }
         } Else {
+            $Script:ErrorDi = "No Internet"
             Error_Top_Display
-            $ErrorDi = "No Internet"
             LeftLineLog ;DisplayOutMenu " Update Failed Because no internet was detected. " 2 0 0 1 ;RightLineLog
             MenuBlankLineLog
             LeftLineLog ;DisplayOutMenu " Tested by pinging github.com                    " 2 0 0 1 ;RightLineLog
@@ -1038,7 +1030,7 @@ Function PreScriptCheck {
     }
 
     If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-        $ErrorDi = "Missing File BlackViper.csv"
+        $Script:ErrorDi = "Missing File BlackViper.csv"
         Error_Top_Display
         LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
@@ -1054,44 +1046,33 @@ Function GetArgs {
     For($i=0; $i -lt $PassedArg.length; $i++) {
         If($PassedArg[$i].StartsWith("-")) {
             Switch($PassedArg[$i]) {
-            { $_ -eq "-secp" -or $_ -eq "-sec" } { $Script:Edition_Check = "Pro" ;Break }
             "-default" { $Script:Black_Viper = 1 ;$Script:BV_ArgUsed = 2 ;Break }
             "-safe" { $Script:Black_Viper = 2 ;$Script:BV_ArgUsed = 2;Break }
             "-tweaked" { If($IsLaptop -ne "-Lap") { $Script:Black_Viper = 3 ;$Script:BV_ArgUsed = 2 } Else { $Script:BV_ArgUsed = 3 } ;Break }
-            "-sech" { $Script:Edition_Check = "Home" ;Break }
-            "-sbc" { $Script:Build_Check = 1 ;Break }
-            "-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
             "-all" { $Script:All_or_Min = "-full" ;Break }
             "-min" { $Script:All_or_Min = "-min" ;Break }
+            "-log" { $Script:MakeLog = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ } ;Break }
+            "-logc" { $Script:MakeLog = 2 ;If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ } ;Break }
+            "-lcsc" { $Script:BV_ArgUsed = 3 ;$Script:LoadServiceConfig = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:ServiceConfigFile = $PassedArg[$i+1] ; $i++ } ;Break }
+            "-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
+            "-baf" { $Script:LogBeforeAfter = 1 ;Break }
+            "-snis" { $Script:Show_Non_Installed = 1 ;Break }
+            "-sss" { $Script:Show_Skipped = 1 ;Break }
             "-sic" { $Script:Internet_Check = 1 ;Break }
             "-usc" { $Script:Script_Ver_Check = 1 ;Break }
             "-use" { $Script:Service_Ver_Check = 1 ;Break }
             "-atos" { $Script:Accept_ToS = "Accepted-Switch" ;Break }
             "-atosu" { $Script:Accept_ToS = "Accepted-Update" ;Break }
             "-auto" { $Script:Automated = 1 ;$Script:Accept_ToS = "Accepted-Automated-Switch" ;Break }
+            "-dry" { $Script:Dry_Run = 1 ;$Script:Show_Non_Installed = 1 ;$Script:Show_Skipped = 1 ;Break }
             "-diag" { $Script:Diagnostic = 1 ;$Script:Automated = 0 ;Break }
             "-diagt" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break }
-            "-baf" { $Script:LogBeforeAfter = 1 ;Break }
-            "-snis" { $Script:Show_Non_Installed = 1 ;Break }
             "-devl" { $Script:DevLog = 1 ;Break }
-            "-dry" { $Script:Dry_Run = 1 ;$Script:Show_Non_Installed = 1 ;$Script:Show_Skipped = 1 ;Break }
-            default { MiscArg $PassedArg[$i] ;Break }
+            "-sbc" { $Script:Build_Check = 1 ;Break }
+            "-sech" { $Script:Edition_Check = "Home" ;Break }
+            { $_ -eq "-secp" -or $_ -eq "-sec" } { $Script:Edition_Check = "Pro" ;Break }
             }
         }
-    }
-}
-
-Function MiscArg([Char]$ArgVal) {
-    If($ArgVal -eq "-lcsc") {
-        $Script:BV_ArgUsed = 3
-        $Script:LoadServiceConfig = 1
-        If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:ServiceConfigFile = $PassedArg[$i+1] ; $i++ }
-    } ElseIf($ArgVal -eq "-log") {
-        $Script:MakeLog = 1
-        If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
-    } ElseIf($ArgVal -eq "-logc") {
-        $Script:MakeLog = 2
-        If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
     }
 }
 
@@ -1101,8 +1082,8 @@ Function ArgsAndVarSet {
 
     $Script:WindowVersion = [Environment]::OSVersion.Version.Major
     If($WindowVersion -ne 10) {
+        $Script:ErrorDi = "Not Window 10"
         Error_Top_Display
-        $ErrorDi = "Not Window 10"
         LeftLineLog ;DisplayOutMenu " Sorry, this Script supports Windows 10 ONLY.    " 2 0 0 1 ;RightLineLog
         MenuBlankLineLog
         LeftLineLog ;DisplayOutMenu " You are using Window " 2 0 0 1 ;DisplayOutMenu ("$WindowVersion"+(" "*(27-$WindowVersion.length))) 15 0 0 1 ;RightLineLog
@@ -1133,16 +1114,20 @@ Function ArgsAndVarSet {
     # 1511 = First Major Update
     # 1507 = First Release
 
-    If($BV_ArgUsed -eq 1 -and $Automated -eq 1) {
-        CreateLog
-        Error_Top_Display
-        $ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
-        LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
-        LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
-        Error_Bottom
+    If($BV_ArgUsed -eq 1) {
+	    If($Automated -eq 1) {
+            CreateLog
+            $Script:ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
+            Error_Top_Display
+            LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
+            Error_Bottom
+		} Else {
+            Gui-Start
+		}
     } ElseIf($BV_ArgUsed -IN 2..3) {
         $Script:RunScript = 1
-        If($Automated -eq 1 -or $Accept_ToS -ne 0) {
+        If($Accept_ToS -ne 0) {
             If($LoadServiceConfig -eq 1) {
                 ServiceSet "StartType"
             } Else {
@@ -1152,34 +1137,19 @@ Function ArgsAndVarSet {
             TOS
         }
     } ElseIf($Automated -eq 1) {
-        If($LoadServiceConfig -eq 1) {
-            ServiceSet "StartType"
-        } ElseIf($Black_Viper -IN 1..3) {
-            Black_Viper_Set $Black_Viper $All_or_Min
-        } Else {
-            Error_Top_Display
-            $ErrorDi = "Automated Selected, No Service Selected"
-            LeftLineLog ;DisplayOutMenu "Script is set to Automated and no Service        " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu "Configuration option was selected.               " 2 0 0 1 ;RightLineLog
-            Error_Bottom
-        }
-    } ElseIf($Automated -eq 0) {
+        CreateLog
+        $Script:ErrorDi = "Automated Selected, No Service Selected"
+        Error_Top_Display
+        LeftLineLog ;DisplayOutMenu "Script is set to Automated and no Service        " 2 0 0 1 ;RightLineLog
+        LeftLineLog ;DisplayOutMenu "Configuration option was selected.               " 2 0 0 1 ;RightLineLog
+        Error_Bottom
+    } Else {
         If($Accept_ToS -ne 0) {
+            $Script:RunScript = 1
             Gui-Start
         } Else {
             TOS
         }
-    } Else {
-        CreateLog
-        $ErrorDi = "Unknown -ScriptPreStart"
-        Error_Top_Display
-        LeftLineLog ;DisplayOutMenu "Unknown Error, Please send the Diagnostics Output" 2 0 0 1 ;RightLineLog
-        LeftLineLog ;DisplayOutMenu "to me, with Subject of 'Unknown Error', Thanks.  " 2 0 0 1 ;RightLineLog
-        LeftLineLog ;DisplayOutMenu " E-mail - Madbomb122@gmail.com                   " 2 0 0 1 ;RightLineLog
-        LeftLineLog ;DisplayOutMenu "Subject - Unkown Error                           " 2 0 0 1 ;RightLineLog
-        Error_Bottom
-        DiagnosticCheck 1
-        AutomatedExitCheck 1
     }
 }
 
