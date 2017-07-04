@@ -5,48 +5,52 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-# Script + Menu By
+# Script + Menu(GUI) By
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.0"
 $Minor_Version = "0"
-$Script_Date = "July-01-2017"
+$Script_Date = "July-03-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
 
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-## !!!!                                                !!!!
-## !!!!               SAFE TO EDIT ITEM                !!!!
-## !!!!              AT BOTTOM OF SCRIPT               !!!!
-## !!!!                                                !!!!
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!                                            !!
+## !!             SAFE TO EDIT ITEM              !!
+## !!            AT BOTTOM OF SCRIPT             !!
+## !!                                            !!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!                                            !!
+## !!                  CAUTION                   !!
+## !!        DO NOT EDIT PAST THIS POINT         !!
+## !!                                            !!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 <#--------------------------------------------------------------------------------
-    Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
+Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
-    The MIT License (MIT)
+The MIT License (MIT)
 
-    Copyright (c) 2017 Madbomb122 - Black Viper Service Script
+Copyright (c) 2017 Madbomb122 - Black Viper Service Script
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------#>
 
 <#--------------------------------------------------------------------------------
@@ -60,10 +64,10 @@ $Release_Type = "Testing"
  Script that can set services based on Black Viper's Service Configurations. 
 
  AT YOUR OWN RISK YOU CAN 
-    1. Run the script on x32 w/o changing settings (But shows a warning) 
-    2. Skip the check for 
-        A. Home/Pro ($Script:Edition_Check variable bottom of script or use -sec switch) 
-        B. Creator's Update ($Script:Build_Check variable bottom of script or use -sbc switch) 
+  1. Run the script on x32 w/o changing settings (But shows a warning) 
+  2. Skip the check for 
+      A. Home/Pro ($Script:Edition_Check variable bottom of script or use -sec switch) 
+      B. Creator's Update ($Script:Build_Check variable bottom of script or use -sbc switch) 
 
 .BASIC USAGE
   Run script with powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
@@ -123,14 +127,6 @@ $Release_Type = "Testing"
   -diag          (Shows diagnostic information, Stops -auto)
   -snis          (Show not installed Services)
 --------------------------------------------------------------------------------#>
-
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-## !!!!                                                !!!!
-## !!!!                    CAUTION                     !!!!
-## !!!!          DO NOT EDIT PAST THIS POINT           !!!!
-## !!!!                                                !!!!
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 ##########
 # Pre-Script -Start
 ##########
@@ -194,8 +190,6 @@ $Script:RunScript = 2
 
 ##########
 # Pre-Script -End
-##########
-
 ##########
 # Multi Use Functions -Start
 ##########
@@ -288,8 +282,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Edition_Check = $Edition_Check" 15 0 1 1
         DisplayOutMenu " Build_Check = $Build_Check" 15 0 1 1
         DisplayOutMenu " Args = $PassedArg" 15 0 1 1
-        DisplayOutMenu " ---------End---------" 15 0 1 1
-        Write-Host ""
+        DisplayOutMenu " ---------End---------`n" 15 0 1 1
     }
 }
 
@@ -306,8 +299,6 @@ Function ShowInvalid ([Int]$InvalidA) {
 
 ##########
 # Multi Use Functions -End
-##########
-
 ##########
 # TOS -Start
 ##########
@@ -353,11 +344,9 @@ Function TOS {
         $Invalid = ShowInvalid $Invalid
         $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
         Switch($TOS.ToLower()) {
-            n {Exit}
-            no {Exit}
-            y  { $TOS = "Out" ; TOSyes }
-            yes { $TOS = "Out" ; TOSyes }
-            default {$Invalid = 1}
+            { $_ -eq "n" -or $_ -eq "no" } {Exit ;Break }
+            { $_ -eq "y" -or $_ -eq "yes" } { $TOS = "Out" ; TOSyes ;Break }
+            default {$Invalid = 1 ;Break }
         }
     }
     Return
@@ -377,12 +366,20 @@ Function TOSyes {
 ##########
 # TOS -End
 ##########
-
-##########
 # GUI -Start
 ##########
 
 Function Gui-Start {
+    $TPath = $filebase + "BlackViper.csv"
+    If(Test-Path $TPath -PathType Leaf) {
+        $TMP = Import-Csv $TPath
+        $ServiceVersion = ($TMP[0]."Def-Home-Full")
+        $ServiceDate = ($TMP[0]."Def-Home-Min")
+    } Else {
+        $ServiceVersion = "Missing File"
+        $ServiceDate = ""
+    }
+
 $inputXML = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -507,6 +504,11 @@ $inputXML = @'
         }
     })
 
+    $WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
+    $WPF_ScriptLogCB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $true })
+    $WPF_ScriptLogCB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $false })
+    $WPF_BuildCheckCB.Add_Checked({ $Script:Build_Check = 1 ; RunDisableCheck })
+    $WPF_BuildCheckCB.Add_UnChecked({ $Script:Build_Check = 0 ; RunDisableCheck })
     $WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
     $WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
 
@@ -526,12 +528,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
         [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK')
     })
-
-    $WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
-    $WPF_ScriptLogCB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $true })
-    $WPF_ScriptLogCB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $false })
-    $WPF_BuildCheckCB.Add_Checked({ $Script:Build_Check = 1 ; RunDisableCheck })
-    $WPF_BuildCheckCB.Add_UnChecked({ $Script:Build_Check = 0 ; RunDisableCheck })
 
     $WPF_EditionCheckCB.Add_Checked({
         $Script:Edition_Check = 1
@@ -597,6 +593,7 @@ Function RunDisableCheck {
     $tempfail = 0
     $temp1 = ""
     $temp2 = ""
+
     If($HomeEditions -contains $WinEdition -or $Edition_Check -eq "Home" -or $WinSku -IN 100..101) {
     } ElseIf($ProEditions -contains $WinEdition -or $Edition_Check -eq "Pro" -or $WinSku -eq 48) {
     } Else {
@@ -659,11 +656,9 @@ Function LoadWebCSV {
         $Invalid = ShowInvalid $Invalid
         $LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
         Switch($LoadWebCSV.ToLower()) {
-            n {Exit}
-            no {Exit}
-            y {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
-            yes {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out"}
-            default {$Invalid = 1}
+            { $_ -eq "n" -or $_ -eq "no" } {Exit ;Break }
+            { $_ -eq "y" -or $_ -eq "yes" } {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out" ;Break }
+            default {$Invalid = 1 ;Break }
         }
     }
     Return
@@ -725,13 +720,10 @@ Function Save_Service {
     $SaveService = @()
     ForEach ($Service in $AllService) {
         If(!($Skip_Services -contains $Service.Name)) {
-            If("$($Service.StartType)" -eq "Disabled") {
-                $StartType = 1
-            } ElseIf("$($Service.StartType)" -eq "Manual") {
-                $StartType = 2
-            } ElseIf("$($Service.StartType)" -eq "Automatic") {
-                $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart
-                If($exists -eq 1){ $StartType = 4 } Else { $StartType = 3 }
+            Switch("$($Service.StartType)") {
+                "Disabled" {$StartType = 1 ;Break }
+                "Manual" {$StartType = 2 ;Break }
+                "Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart ;If($exists -eq 1){ $StartType = 4 } Else { $StartType = 3 } ;Break }
             }
             $ServiceName = $Service.Name
             If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
@@ -811,14 +803,11 @@ Function ServiceCheck ([string]$S_Name,[string]$S_Type) {
 
 Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
     PreScriptCheck
-    If($LoadServiceConfig -eq 1) {
-        ServiceSet "StartType"
-    } ElseIf($BVOpt -eq 1) {
-        ServiceSet ("Def"+$WinEdition+$FullMin)
-    } ElseIf($BVOpt -eq 2) {
-        ServiceSet ("Safe"+$IsLaptop+$FullMin)
-    } ElseIf($BVOpt -eq 3) {
-        ServiceSet ("Tweaked"+$IsLaptop+$FullMin)
+    Switch($BVOpt) {
+        {$LoadServiceConfig -eq 1} { ServiceSet "StartType" ;Break }
+        1 {ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
+        2 {ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
+        3 {ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
     }
 }
 
@@ -1063,92 +1052,46 @@ Function PreScriptCheck {
 
 Function GetArgs {
     For($i=0; $i -lt $PassedArg.length; $i++) {
-        $ArgVal = $PassedArg[$i]
-        If($ArgVal.StartsWith("-")) {
-            $ArgVal = $PassedArg[$i].ToLower()
-            If($ArgVal -eq "-set") {
-                $PasVal = $PassedArg[($i+1)]
-                If($PasVal -eq 1 -or "default") {
-                   $Script:Black_Viper = 1
-                   $Script:BV_ArgUsed = 2
-                } ElseIf($PasVal -eq "safe") {
-                    $Script:Black_Viper = 2
-                    $Script:BV_ArgUsed = 2
-                } ElseIf($PasVal -eq 3 -or "tweaked") {
-                    If($IsLaptop -ne "-Lap") {
-                        $Script:Black_Viper = 3
-                        $Script:BV_ArgUsed = 2
-                    } Else {
-                        $Script:BV_ArgUsed = 1
-                    }
-                }
-            } ElseIf($ArgVal -eq "-default") {
-                $Script:Black_Viper = 1
-                $Script:BV_ArgUsed = 2
-            } ElseIf($ArgVal -eq "-safe") {
-                $Script:Black_Viper = 2
-                $Script:BV_ArgUsed = 2
-            } ElseIf($ArgVal -eq "-tweaked") {
-                If($IsLaptop -ne "-Lap") {
-                    $Script:Black_Viper = 3
-                    $Script:BV_ArgUsed = 2
-                } Else {
-                    $Script:BV_ArgUsed = 3
-                }
-            } ElseIf($ArgVal -eq "-sbc") {
-                $Script:Build_Check = 1
-            } ElseIf($ArgVal -eq "-bcsc") {
-                $Script:BackupServiceConfig = 1
-            } ElseIf($ArgVal -eq "-lcsc") {
-                $Script:BV_ArgUsed = 3
-                $Script:LoadServiceConfig = 1
-                If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:ServiceConfigFile = $PassedArg[$i+1] ; $i++ }
-            } ElseIf($ArgVal -eq "-all") {
-                $Script:All_or_Min = "-full"
-            } ElseIf($ArgVal -eq "-min") {
-                $Script:All_or_Min = "-min"
-            } ElseIf($ArgVal -eq "-secp" -or $ArgVal -eq "-sec") {
-                $Script:Edition_Check = "Pro"
-            } ElseIf($ArgVal -eq "-sech") {
-                $Script:Edition_Check = "Home"
-            } ElseIf($ArgVal -eq "-sic") {
-                $Script:Internet_Check = 1
-            } ElseIf($ArgVal -eq "-usc") {
-                $Script:Script_Ver_Check = 1
-            } ElseIf($ArgVal -eq "-use") {
-                $Script:Service_Ver_Check = 1
-            } ElseIf($ArgVal -eq "-atos") {
-                $Script:Accept_ToS = "Accepted-Switch"
-            } ElseIf($ArgVal -eq "-atosu") {
-                $Script:Accept_ToS = "Accepted-Update"
-            } ElseIf($ArgVal -eq "-auto") {
-                $Script:Automated = 1
-                $Script:Accept_ToS = "Accepted-Automated-Switch"
-            } ElseIf($ArgVal -eq "-diag") {
-                $Script:Diagnostic = 1
-                $Script:Automated = 0
-            } ElseIf($ArgVal -eq "-diagt") {
-                $Script:Diagnostic = 2
-                $Script:Automated = 0
-            } ElseIf($ArgVal -eq "-baf") {
-                $Script:LogBeforeAfter = 1
-            } ElseIf($ArgVal -eq "-log") {
-                $Script:MakeLog = 1
-                If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
-            } ElseIf($ArgVal -eq "-logc") {
-                $Script:MakeLog = 2
-                If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
-            } ElseIf($ArgVal -eq "-dry") {
-                $Script:Dry_Run = 1
-                $Script:Accept_ToS = "Accepted-Dry_Run-Switch"
-                $Script:Show_Non_Installed = 1
-                $Script:Show_Skipped = 1
-            } ElseIf($ArgVal -eq "-snis") {
-                $Script:Show_Non_Installed = 1
-            } ElseIf($ArgVal -eq "-devl") {
-                $Script:DevLog = 1
+        If($PassedArg[$i].StartsWith("-")) {
+            Switch($PassedArg[$i]) {
+            { $_ -eq "-secp" -or $_ -eq "-sec" } { $Script:Edition_Check = "Pro" ;Break }
+            "-default" { $Script:Black_Viper = 1 ;$Script:BV_ArgUsed = 2 ;Break }
+            "-safe" { $Script:Black_Viper = 2 ;$Script:BV_ArgUsed = 2;Break }
+            "-tweaked" { If($IsLaptop -ne "-Lap") { $Script:Black_Viper = 3 ;$Script:BV_ArgUsed = 2 } Else { $Script:BV_ArgUsed = 3 } ;Break }
+            "-sech" { $Script:Edition_Check = "Home" ;Break }
+            "-sbc" { $Script:Build_Check = 1 ;Break }
+            "-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
+            "-all" { $Script:All_or_Min = "-full" ;Break }
+            "-min" { $Script:All_or_Min = "-min" ;Break }
+            "-sic" { $Script:Internet_Check = 1 ;Break }
+            "-usc" { $Script:Script_Ver_Check = 1 ;Break }
+            "-use" { $Script:Service_Ver_Check = 1 ;Break }
+            "-atos" { $Script:Accept_ToS = "Accepted-Switch" ;Break }
+            "-atosu" { $Script:Accept_ToS = "Accepted-Update" ;Break }
+            "-auto" { $Script:Automated = 1 ;$Script:Accept_ToS = "Accepted-Automated-Switch" ;Break }
+            "-diag" { $Script:Diagnostic = 1 ;$Script:Automated = 0 ;Break }
+            "-diagt" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break }
+            "-baf" { $Script:LogBeforeAfter = 1 ;Break }
+            "-snis" { $Script:Show_Non_Installed = 1 ;Break }
+            "-devl" { $Script:DevLog = 1 ;Break }
+            "-dry" { $Script:Dry_Run = 1 ;$Script:Show_Non_Installed = 1 ;$Script:Show_Skipped = 1 ;Break }
+            default { MiscArg $PassedArg[$i] ;Break }
             }
         }
+    }
+}
+
+Function MiscArg([Char]$ArgVal) {
+    If($ArgVal -eq "-lcsc") {
+        $Script:BV_ArgUsed = 3
+        $Script:LoadServiceConfig = 1
+        If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:ServiceConfigFile = $PassedArg[$i+1] ; $i++ }
+    } ElseIf($ArgVal -eq "-log") {
+        $Script:MakeLog = 1
+        If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
+    } ElseIf($ArgVal -eq "-logc") {
+        $Script:MakeLog = 2
+        If(!($PassedArg[$i+1].StartsWith("-"))) { $Script:LogName = $PassedArg[$i+1] ; $i++ }
     }
 }
 
@@ -1197,34 +1140,35 @@ Function ArgsAndVarSet {
         LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
         LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
         Error_Bottom
-    }
-    If($BV_ArgUsed -eq $null -and $Automated -eq 0) {
-        $ServiceFilePath = $filebase + "BlackViper.csv"
-        If(Test-Path $ServiceFilePath -PathType Leaf) {
-            $TMP = Import-Csv $ServiceFilePath
-            $ServiceVersion = ($TMP[0]."Def-Home-Full")
-            $ServiceDate = ($TMP[0]."Def-Home-Min")
-        } Else {
-            $ServiceVersion = "Missing File"
-            $ServiceDate = ""
-        }
-    }
-
-    If($BV_ArgUsed -eq 2) {
+    } ElseIf($BV_ArgUsed -IN 2..3) {
         $Script:RunScript = 1
-        If($Automated -eq 0 -and $Accept_ToS -eq 0) {
-            TOS
+        If($Automated -eq 1 -or $Accept_ToS -ne 0) {
+            If($LoadServiceConfig -eq 1) {
+                ServiceSet "StartType"
+            } Else {
+                Black_Viper_Set $Black_Viper $All_or_Min
+            }
         } Else {
-            Black_Viper_Set $Black_Viper $All_or_Min
+            TOS
         }
-    } ElseIf($Accept_ToS -ne 0 -or $Automated -eq 1) {
+    } ElseIf($Automated -eq 1) {
         If($LoadServiceConfig -eq 1) {
             ServiceSet "StartType"
+        } ElseIf($Black_Viper -IN 1..3) {
+            Black_Viper_Set $Black_Viper $All_or_Min
         } Else {
-            Gui-Start
+            Error_Top_Display
+            $ErrorDi = "Automated Selected, No Service Selected"
+            LeftLineLog ;DisplayOutMenu "Script is set to Automated and no Service        " 2 0 0 1 ;RightLineLog
+            LeftLineLog ;DisplayOutMenu "Configuration option was selected.               " 2 0 0 1 ;RightLineLog
+            Error_Bottom
         }
-    } ElseIf($Automated -eq 0 -or $Accept_ToS -eq 0) {
-        TOS
+    } ElseIf($Automated -eq 0) {
+        If($Accept_ToS -ne 0) {
+            Gui-Start
+        } Else {
+            TOS
+        }
     } Else {
         CreateLog
         $ErrorDi = "Unknown -ScriptPreStart"
@@ -1302,6 +1246,5 @@ $Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
 $Script:DevLog = 0              #0 = Doesn't make a Dev Log
                                 #1 = Makes a log files.. with what services change, before and after for services, and diagnostic info 
 #--------------------------------------------------------------------------
-
 # Starts the script (Do not change)
 ArgsAndVarSet
