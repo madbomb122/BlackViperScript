@@ -39,7 +39,7 @@ Function Generate-ServicesCB {
         $ServiceCommName = $item.DisplayName
 
             $ServiceCheckBoxCounter++
-            $DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
+            $DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType"
 
             $ServiceCheckBox = New-Object System.Windows.Forms.CheckBox        
             $ServiceCheckBox.UseVisualStyleBackColor = $True
