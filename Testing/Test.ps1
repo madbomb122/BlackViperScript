@@ -52,12 +52,6 @@ Function Generate-ServicesCB {
             $ServiceCheckBox.Name = $CBName
             $ServiceCheckBox.Checked = $true
 
-            $Object = New-Object -TypeName PSObject
-            Add-Member -InputObject $Object -memberType NoteProperty -name "CBName" -value $CBName
-            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
-            Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $ServiceType
-            $Script:ServiceCBList += $Object
-
             #Error is "You cannot call a method on a null-valued expression." on line under here 
             $WPF_ServicesCB_Tab.Controls.Add($ServiceCheckBox)
     }
