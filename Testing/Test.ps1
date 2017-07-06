@@ -34,6 +34,7 @@ Function Generate-ServicesCB {
     $ServiceCheckBoxCounter = 0
 
     ForEach($item In $CurrServices) {
+	    If($ServiceCheckBoxCounter -eq 2) { Break } #<-- To stop the Tons of error to display
         $ServiceType = $item.StartType
         $ServiceName = $item.Name
         $ServiceCommName = $item.DisplayName
@@ -52,8 +53,7 @@ Function Generate-ServicesCB {
             $ServiceCheckBox.Name = $CBName
             $ServiceCheckBox.Checked = $true
 
-            #Error is "You cannot call a method on a null-valued expression." on line under here 
-            $WPF_ServicesCB_Tab.Controls.Add($ServiceCheckBox)
+            $WPF_ServicesCB_Tab.Controls.Add($ServiceCheckBox) #<-- "You cannot call a method on a null-valued expression."
     }
 }
 
