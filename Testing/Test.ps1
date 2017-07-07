@@ -7,6 +7,7 @@ $inputXML = @"
         <TabControl x:Name="TabControl" Height="233" Margin="0,-1,0,0" VerticalAlignment="Top">
             <TabItem x:Name="ServicesCB_Tab" Header="Services" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,38,0,0"> <StackPanel x:Name="StackCBHere" Width="458" ScrollViewer.VerticalScrollBarVisibility="Auto" CanVerticallyScroll="True"/> </ScrollViewer>
+                <CheckBox x:Name="CustomCB" Content="Check Checker" HorizontalAlignment="Left" Margin="287,3,0,0" VerticalAlignment="Top" Width="158"/>
                 <Button x:Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="3,1,0,0" VerticalAlignment="Top" Width="76"/>
                 <Label x:Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top"/>
                 <Label x:Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,15,0,0"/>
@@ -25,7 +26,9 @@ $inputXML = @"
     $xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name)} 
 
     $WPF_LoadServicesButton.Add_Click({ Generate-ServicesCB })
- 
+    $WPF_CustomCB.Add_Checked({ $WPF_Display.text = "WPF_CustomCB IS Checked" })
+    $WPF_CustomCB.Add_UnChecked({ $WPF_Display.text = "WPF_CustomCB NOT Checked" })
+			
 Function Generate-ServicesCB {
     $WPF_LoadServicesButton.Visibility = 'Hidden'
     $WPF_ServiceClickLabel.Visibility = 'Hidden'
@@ -41,7 +44,7 @@ Function Generate-ServicesCB {
         $ServiceCommName = $item.DisplayName
 
             $DispTemp = "$ServiceCommName - $ServiceType"
-            $CBName = $ServiceName + "CB"
+            $CBName = "WPF_" + $ServiceName + "CB"
             $ServiceCheckBox = [System.Windows.Controls.CheckBox]::new()
             $ServiceCheckBox.Name = $CBName            
             $ServiceCheckBox.width = 450
