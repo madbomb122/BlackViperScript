@@ -654,22 +654,21 @@ Function Generate-Services {
 
     Switch($Black_Viper) {
         {$LoadServiceConfig -eq 1} { $BVService = "StartType" ;Break }
-        1 {($BVService="Def-"+$WinEdition+$FullMin) ;Break }
-        2 {($BVService="Safe-"+$IsLaptop+$FullMin) ;Break }
-        3 {($BVService="Tweaked-"+$IsLaptop+$FullMin) ;Break }
+        1 {($BVService="Def-"+$WinEdition+$FullMin) ;$BVSAlt = "Def-"+$WinEdition+"-Full" ;Break }
+        2 {($BVService="Safe-"+$IsLaptop+$FullMin) ;$BVSAlt = "Safe-"+$IsLaptop+"-Full";Break }
+        3 {($BVService="Tweaked-"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked-"+$IsLaptop+"-Full" ;Break }
     }
     If($LoadServiceConfig -eq 1) { $ServiceConfigFile = $WPF_LoadFileTxtBox.Text } Else { $ServiceFilePath = $filebase + "BlackViper.csv" }
     [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
 
-    $TempList = ForEach($item In $ServCB) {
+    ForEach($item In $ServCB) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
         If($ServiceName -like "*_*") { $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
-        $C_Type = ($CurrServices | Where Name -eq $S_Name).StartType
         If($CurrServices | Where Name -eq $ServiceName) { $ServiceCurrType = ($CurrServices | Where Name -eq $ServiceName).StartType } Else { $ServiceCurrType = $false} 
 
-        If($ServiceCurrType -ne $false -and $ServiceTypeNum -ne 0) {
-            $ServiceType = $ServicesTypeList[$ServiceTypeNum]
+        If($ServiceCurrType -ne $false) {
+            If($ServiceTypeNum -eq 0) { $ServiceTypeNum1 = $($item.$BVSAlt) ;$ServiceType = $ServicesTypeList[$ServiceTypeNum1] } Else { $ServiceType = $ServicesTypeList[$ServiceTypeNum] }
             If($ServiceName -is [system.array]) { $ServiceName = $ServiceName[0] }
             $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
             $DispTemp = "$ServiceCommName - $ServiceCurrType -> $ServiceType"
@@ -681,7 +680,7 @@ Function Generate-Services {
             $checkbox.width = 450
             $checkbox.height = 20
             $checkbox.Content = "$DispTemp"
-            $checkbox.IsChecked = $true
+            If($ServiceTypeNum -eq 0) { $checkbox.IsChecked = $false } Else { $checkbox.IsChecked = $true }
             $WPF_StackCBHere.AddChild($checkbox)
 
             $Object = New-Object -TypeName PSObject
@@ -692,7 +691,7 @@ Function Generate-Services {
             $ServiceCheckBoxCounter++
         }
     }
-    $WPF_LoadServicesButton.Text = "Refresh/Reload"
+    $WPF_LoadServicesButton.content = "Reload"
 }
 
 Function GetCustomBV {
