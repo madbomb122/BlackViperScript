@@ -6,13 +6,14 @@ $inputXML = @"
     <Grid>
         <TabControl x:Name="TabControl" Height="233" Margin="0,-1,0,0" VerticalAlignment="Top">
             <TabItem x:Name="ServicesCB_Tab" Header="Services" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
-                <Button x:Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="10,28,0,0" VerticalAlignment="Top" Width="76"/>
-                <ScrollBar HorizontalAlignment="Left" Margin="451,0,0,0" VerticalAlignment="Top" Height="205" Width="9"/>
-                <Label x:Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,2,0,0" VerticalAlignment="Top"/>
-                <Label x:Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
-                <Label x:Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="82,24,0,0" VerticalAlignment="Top"/> </Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,38,0,0"> <StackPanel x:Name="StackCBHere" Width="458" ScrollViewer.VerticalScrollBarVisibility="Auto" CanVerticallyScroll="True"/> </ScrollViewer>
+                <Button x:Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="3,1,0,0" VerticalAlignment="Top" Width="76"/>
+                <Label x:Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top"/>
+                <Label x:Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,15,0,0"/>
+                <Label x:Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/> </Grid>
             </TabItem>
         </TabControl>
+        <TextBox x:Name="Display" HorizontalAlignment="Left" Height="82" Margin="0,232,0,0" TextWrapping="Wrap" Text="Nothing" VerticalAlignment="Top" Width="481"/>
     </Grid>
 </Window>
 "@
@@ -24,7 +25,7 @@ $inputXML = @"
     $xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name)} 
 
     $WPF_LoadServicesButton.Add_Click({ Generate-ServicesCB })
-
+ 
 Function Generate-ServicesCB {
     $WPF_LoadServicesButton.Visibility = 'Hidden'
     $WPF_ServiceClickLabel.Visibility = 'Hidden'
@@ -34,27 +35,48 @@ Function Generate-ServicesCB {
     $ServiceCheckBoxCounter = 0
 
     ForEach($item In $CurrServices) {
-	    If($ServiceCheckBoxCounter -eq 2) { Break } #<-- To stop the Tons of error to display
         $ServiceType = $item.StartType
         $ServiceName = $item.Name
         $ServiceCommName = $item.DisplayName
 
-            $ServiceCheckBoxCounter++
-            $DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType"
-
-            $ServiceCheckBox = New-Object System.Windows.Forms.CheckBox        
-            $ServiceCheckBox.UseVisualStyleBackColor = $True
-            $ServiceCheckBox.Size = New-Object System.Drawing.Size(450,22)
-            $ServiceCheckBox.TabIndex = 2
-            $ServiceCheckBox.Text = "$DispTemp"
-            $ServiceCheckBox.Location = New-Object System.Drawing.Size(10,((($ServiceCheckBoxCounter - 1) * 17) + 5))
-
+            $DispTemp = "$ServiceCommName - $ServiceType"
             $CBName = $ServiceName + "CB"
-            $ServiceCheckBox.Name = $CBName
-            $ServiceCheckBox.Checked = $true
+            $ServiceCheckBox = [System.Windows.Controls.CheckBox]::new()
+            $ServiceCheckBox.Name = $CBName            
+            $ServiceCheckBox.width = 450
+            $ServiceCheckBox.height = 20
+            $ServiceCheckBox.Content = "$DispTemp"
+            $ServiceCheckBox.Add_Checked({ GetCustomBV })
+            $ServiceCheckBox.Add_UnChecked({ GetCustomBV })
+            $ServiceCheckBox.IsChecked = $true
+            $WPF_StackCBHere.AddChild($ServiceCheckBox)
 
-            $WPF_ServicesCB_Tab.Controls.Add($ServiceCheckBox) #<-- "You cannot call a method on a null-valued expression."
+            $Object = New-Object -TypeName PSObject
+            Add-Member -InputObject $Object -memberType NoteProperty -name "CBName" -value $CBName
+            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
+            Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $ServiceTypeNum
+            $Script:ServiceCBList += $Object
+            $ServiceCheckBoxCounter++
     }
+    $WPF_Display.text = "Done"
+    $Script:GenLoad = $true
+}
+
+Function GetCustomBV {
+    If($GenLoad -eq $true){
+        $Temp = ""
+        ForEach($item In $ServiceCBList) {
+            $Temp += "$($item.CBName) ="
+            If($($item.CBName).IsChecked -eq $false) {
+                $Temp += " NOT checked`n"
+            } ElseIf($($item.CBName).IsChecked -eq $true) {
+                $Temp += " IS checked`n"
+            } Else {
+                $Temp += " Unknown`n"
+            }
+        }
+    }
+    $WPF_Display.text = $Temp
 }
 
 $Form.ShowDialog()| Out-Null
