@@ -7,7 +7,8 @@
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
 - [ ] A GUI for the Script, for when the script is runned w/o automation -Testing
+- [ ] Ability to select/deselect services to change -Done
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
-- [ ] Ability to select/deselect services to change (If I figure out how to in the GUI)
+Nothing
