@@ -35,6 +35,7 @@ Function Generate-ServicesCB {
     $ServiceCheckBoxCounter = 0
 
     ForEach($item In $CurrServices) {
+        If($ServiceCheckBoxCounter -eq 4) { Break } #to stop loading soo many services for testing
         $ServiceType = $item.StartType
         $ServiceName = $item.Name
         $ServiceCommName = $item.DisplayName
