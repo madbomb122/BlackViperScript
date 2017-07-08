@@ -101,7 +101,7 @@ Examples: <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
 **Q:** Do you accept any donations? <br />
-**A:** I'd rather you donate to Black Viper... but if you would like to donate to me I accept amazon giftcards (email it to me). <br />
+**A:** I'd rather you donate to Black Viper... but if you would like to donate to me Please Contact me about donating. <br />
 **NOTE:** http://www.blackviper.com/support-bv/
 
 **Q:** How can I contact you? <br />
