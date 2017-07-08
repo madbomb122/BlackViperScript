@@ -64,9 +64,9 @@ Use one of the following Methods you can
 | :-------- | :------------------------------------------------------------------------------| :------------------------------- |
 | -atos     | Accepts the ToS                                                                |                                  |
 | -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                |
-| -default  | Runs the script with Services to Default Configuration                         | Alt `-set default` or `-set 1` |
-| -safe     | Runs the script with Services to Black Viper's Safe Configuration              | Alt `-set safe` or `-set 2`    |
-| -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           | Alt `-set tweaked` or `-set 3` |
+| -default  | Runs the script with Services to Default Configuration                         |   |
+| -safe     | Runs the script with Services to Black Viper's Safe Configuration              |   |
+| -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           |   |
 | -all      | Every windows services will change                                             |   |
 | -min      | Just the services different from the default to safe/tweaked list              |   |
 | -bcsc     | Backup Current Service Configuration                      | Filename will be `COMPUTERNAME-Service-Backup.csv`   |
@@ -88,10 +88,8 @@ Use one of the following Methods you can
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv` <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -atos -use -set 2` <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec` <br />
 `_Win10-BlackViper.bat -Set Default` <br />
-`_Win10-BlackViper.bat -atos -use -set 2` <br />
 `_Win10-BlackViper.bat -auto -use -tweaked -sec` <br />
 ******
 
