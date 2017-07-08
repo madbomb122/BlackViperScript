@@ -920,13 +920,9 @@ Function ScriptUpdateFun {
         $DFilename += ".ps1"
     } Else {
         $DFilename += "-Testing.ps1"
-		#TEMP
-        $DFilename = "BlackViper-Gui-Ver." + $FullVer + ".ps1"
         $Script_Url = $URL_Base + "Testing/"
     }
     $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
-	#TEMP
-	$Script_Url = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/Testing/BlackViper-Gui.ps1"
     $WebScriptFilePath = $filebase + $DFilename
     Clear-Host
     MenuLineLog
