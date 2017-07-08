@@ -1,8 +1,5 @@
-If you want to try out the Black Viper Script GUI download "`BlackViper-Gui.ps1`" and "`_BlackViper - Gui.bat`" from the Testing folder folder and `BlackViper.csv` from this folder (All switches/arg work) <br />
-^Please post any comments, issues or suggestion in the issues under `Comment on GUI (Testing/BlackViper-Gui.ps1)`
-
 **Current Version** <br />
-**Script:** `2.7.0` (June 21, 2017) <br />
+**Script:** `3.0.0` (July 8, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 **Note: The 2.0+ Script/Service files wont work with versions older than 2.0 due to big changes**
@@ -28,11 +25,11 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 <br />
 
 **_Need Files_** <br />
-`BlackViper-Win10.ps1` (Script) <br />
-`BlackViper.csv` (Service Configurations) <br />
+`BlackViper-Win10.ps1` (Script) -Size about `68.8 KB` <br />
+`BlackViper.csv` (Service Configurations) -Size about `6.54 KB`  <br />
 
 **Recommended Files** <br />
-`_Win10-BlackViper.bat` (To run script easier) <br /> 
+`_Win10-BlackViper.bat` (To run script easier) -Size about `5.24 KB`  <br /> 
 `README.md` (This Readme) <br />
 
 **Note:**
