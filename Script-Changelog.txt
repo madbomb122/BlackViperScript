@@ -1,4 +1,14 @@
 -----------------------------------------------------------------------------------
+3.0.0 (07-08-2017) - GUI
+
+Script now show Common Name and System when showing the output
+Can go to GUI even if not meeting build or edition requirements
+Changed the input to GUI with more options and easyer to use
+Removed all Switch for "-Set"
+Some various script improvements
+Ability to Deselect services to be changed
+
+-----------------------------------------------------------------------------------
 2.7.0 (06-21-2017)
 
 Fixed a bug with Version check not working on test version
