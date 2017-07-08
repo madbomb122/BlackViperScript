@@ -72,26 +72,13 @@ Set Script_Path=%Script_Directory%%Script_File%
 :: DO NOT CHANGE ANYTHING PAST THIS LINE
 ::----------------------------------------------------------------------
 
-echo %~dp0
-
 SETLOCAL ENABLEDELAYEDEXPANSION
-
 If /i not "%*"=="" (
     for %%i in (%*) do (
-        If /i !SetArg!==yes (
-            If /i %%i==default Set Black_Viper=1
-            If /i %%i==safe Set Black_Viper=2
-            If /i %%i==tweaked Set Black_Viper=3
-            If /i %%i==1 Set Black_Viper=1
-            If /i %%i==2 Set Black_Viper=2
-            If /i %%i==3 Set Black_Viper=3
-            Set SetArg=no
-        )
         If /i !LoadServiceArg!==yes (
             Set Service_Config_File=%%i
             Set LoadServiceArg=no
         )
-        If /i %%i==-Set Set SetArg=yes
         If /i %%i==-lcsc Set LoadServiceArg=yes
 
         If /i %%i==-bcsc Set Backup_Current_Service_Conf=yes
@@ -149,7 +136,6 @@ If /i %Diagnostic%==yes Set Run_Option=!Run_Option! -diag
 If /i %Log_Before_After%==yes Set Run_Option=!Run_Option! -baf
 
 If /i %Log%==yes Set Run_Option=!Run_Option! -log %LogFile%
-
 
 echo "Running !Script_File!"
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path! !Run_Option!"' -Verb RunAs}";
