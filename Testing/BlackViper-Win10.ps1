@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.0"
-$Minor_Version = "1"
-$Script_Date = "July-09-2017"
+$Minor_Version = "2"
+$Script_Date = "July-10-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -321,9 +321,9 @@ Function TOS {
         $Invalid = ShowInvalid $Invalid
         $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
         Switch($TOS.ToLower()) {
-            { $_ -eq "n" -or $_ -eq "no" } {Exit ;Break }
+            { $_ -eq "n" -or $_ -eq "no" } { Exit ;Break }
             { $_ -eq "y" -or $_ -eq "yes" } { $TOS = "Out" ;TOSyes ;Break }
-            default {$Invalid = 1 ;Break }
+            default { $Invalid = 1 ;Break }
         }
     }
     Return
@@ -356,7 +356,7 @@ Function Update-Window {
 
 Function Gui-Start {
     Clear-Host
-    DisplayOutMenu "Loading GUI, Please wait..." 15 0 1 0
+    DisplayOutMenu "Preparing GUI for Loading, Please wait..." 15 0 1 0
     $TPath = $filebase + "BlackViper.csv"
     If(Test-Path $TPath -PathType Leaf) {
         $TMP = Import-Csv $TPath
@@ -505,7 +505,7 @@ $inputXML = @"
     $WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
     $WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
     $WPF_LoadServicesButton.Add_Click({ Generate-Services })
-    $WPF_SaveCustomSrvButton.Add_Click({ Save_Service $csvTemp })
+    $WPF_SaveCustomSrvButton.Add_Click({ Save_Service $csvTemp ;[Windows.Forms.MessageBox]::Show("Custom Service file saved as '$filebase$env:computername-Custom-Service.csv'","File Saved", 'OK') })
 
     $CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
@@ -579,7 +579,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     RunDisableCheck
     Clear-Host
-    DisplayOutMenu "GUI Loaded" 14 0 1 0
+    DisplayOutMenu "Loading GUI" 14 0 1 0
     $Form.ShowDialog() | out-null
 }
 
@@ -645,9 +645,9 @@ Function Generate-Services {
 
     Switch($Black_Viper) {
         {$LoadServiceConfig -eq 1} { $BVService = "StartType" ;Break }
-        1 {($BVService="Def-"+$WinEdition+$FullMin) ;$BVSAlt = "Def-"+$WinEdition+"-Full" ;Break }
-        2 {($BVService="Safe-"+$IsLaptop+$FullMin) ;$BVSAlt = "Safe-"+$IsLaptop+"-Full";Break }
-        3 {($BVService="Tweaked-"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked-"+$IsLaptop+"-Full" ;Break }
+        1 { ($BVService="Def-"+$WinEdition+$FullMin) ;$BVSAlt = "Def-"+$WinEdition+"-Full" ;Break }
+        2 { ($BVService="Safe-"+$IsLaptop+$FullMin) ;$BVSAlt = "Safe-"+$IsLaptop+"-Full";Break }
+        3 { ($BVService="Tweaked-"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked-"+$IsLaptop+"-Full" ;Break }
     }
     If($LoadServiceConfig -eq 1) { $ServiceConfigFile = $WPF_LoadFileTxtBox.Text } Else { $ServiceFilePath = $filebase + "BlackViper.csv" }
     [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
@@ -721,8 +721,8 @@ Function LoadWebCSV {
         $Invalid = ShowInvalid $Invalid
         $LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
         Switch($LoadWebCSV.ToLower()) {
-            { $_ -eq "n" -or $_ -eq "no" } {Exit ;Break }
-            { $_ -eq "y" -or $_ -eq "yes" } {DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out" ;Break }
+            { $_ -eq "n" -or $_ -eq "no" } { Exit ;Break }
+            { $_ -eq "y" -or $_ -eq "yes" } { DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out" ;Break }
             default {$Invalid = 1 ;Break }
         }
     }
@@ -794,8 +794,8 @@ Function Save_Service ([Array]$SaveSrv) {
                 $StartType = $Service.StartType
             } Else {
                 Switch("$($Service.StartType)") {
-                    "Disabled" {$StartType = 1 ;Break }
-                    "Manual" {$StartType = 2 ;Break }
+                    "Disabled" { $StartType = 1 ;Break }
+                    "Manual" { $StartType = 2 ;Break }
                     "Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$($Service.Name)\").DelayedAutostart ;If($exists -eq 1){ $StartType = 4 } Else { $StartType = 3 } ;Break }
                 }
             }
@@ -815,7 +815,6 @@ Function ServiceSet ([String]$BVService) {
     $NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     If(!($CurrServices)) { $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
-    If(!($csv)) { write-host "WTF not here" ; read-host "P"}
     ServiceBA "Services-Before"
     If($Dry_Run -ne 1) { DisplayOut "Changing Service Please wait..." 14 0 } Else { DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
     DisplayOut "Service_Name - Current -> Change_To" 14 0
@@ -880,9 +879,9 @@ Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
     PreScriptCheck
     Switch($BVOpt) {
         {$LoadServiceConfig -eq 1 -or $LoadServiceConfig -eq 2} { ServiceSet "StartType" ;Break }
-        1 {ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
-        2 {ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
-        3 {ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
+        1 { ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
+        2 { ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
+        3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
     }
 }
 
@@ -922,12 +921,11 @@ Function CreateLog {
 Function ScriptUpdateFun {
     $FullVer = "$WebScriptVer.$WebScriptMinorVer"
     $DFilename = "BlackViper-Win10-Ver." + $FullVer
-    If($Release_Type -eq "Stable") {
-        $DFilename += ".ps1"
-    } Else {
-        $DFilename += "-Testing.ps1"
+    If($Release_Type -ne "Stable") {
+        $DFilename += "-Testing"
         $Script_Url = $URL_Base + "Testing/"
     }
+    $DFilename += ".ps1"
     $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
     $WebScriptFilePath = $filebase + $DFilename
     Clear-Host
@@ -1068,7 +1066,7 @@ Function PreScriptCheck {
             If($Service_Ver_Check -eq 1 -and $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
                 If($MakeLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -filepath $LogFile }
                 DownloadFile $Service_Url $ServiceFilePath
-                [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+                If($LoadServiceConfig -ne 2) { [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
             }
             If($Script_Ver_Check -eq 1) {
                 If($Release_Type -eq "Stable") { $CSVLine = 0 } Else { $CSVLine = 3 }
@@ -1298,7 +1296,6 @@ $Script:Edition_Check = 0       #0 = Check if Home or Pro Edition
 
 $Script:Build_Check = 0         #0 = Check Build (Creator's Update Minimum)
                                 #1 = Allows you to run on Non-Creator's Update
-
 #--------------------------------
 # Best not to use these unless asked to (these stop automated)
 $Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
