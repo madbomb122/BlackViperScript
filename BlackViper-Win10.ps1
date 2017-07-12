@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "3.0"
+$Script_Version = "3.1"
 $Minor_Version = "0"
-$Script_Date = "July-08-2017"
+$Script_Date = "July-12-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -826,7 +826,7 @@ Function ServiceSet ([String]$BVService) {
             If($ServiceName -is [system.array]) { $ServiceName = $ServiceName[0] }
             If($ServiceCurrType -ne $False -and $ServiceCurrType -ne "Already") {
                 $DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
-                If($ServiceTypeNum -In 1..4 -and $Dry_Run -ne 1) { -Service $ServiceName -StartupType $ServiceType }
+                If($ServiceTypeNum -In 1..4 -and $Dry_Run -ne 1) { Set-Service $ServiceName -StartupType $ServiceType }
                 If($ServiceTypeNum -eq 4) {
                     $DispTemp += " (Delayed Start)"
                     If($Dry_Run -ne 1) {
