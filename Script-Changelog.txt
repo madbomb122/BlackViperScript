@@ -1,4 +1,11 @@
 -----------------------------------------------------------------------------------
+3.1.0 (07-12-2017)
+
+Minor Visual changes in GUI
+Added ability to save service selection
+Fixed a bug that made services not change thanks to (bubbismith for posting issue)
+
+-----------------------------------------------------------------------------------
 3.0.0 (07-08-2017) - GUI
 
 Script now show Common Name and System when showing the output
