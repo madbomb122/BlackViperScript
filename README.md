@@ -99,8 +99,9 @@ Examples: <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
 **Q:** Do you accept any donations? <br />
-**A:** I'd rather you donate to Black Viper... but if you would like to donate to me Please Contact me about donating. <br />
+**A:** I'd rather you donate to Black Viper... but if you would like to donate to me Please Contact me about donating or pick an item from my amazon wishlist. <br />
 **NOTE:** http://www.blackviper.com/support-bv/
+**Wishlist:**https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/
 
 **Q:** How can I contact you? <br />
 **A:** You can email me @ madbomb122@gmail.com, if it's an issue please post under issue. Before contacting me make sure you have ALL the needed files and the size is right (Look above under requirements)
