@@ -106,6 +106,9 @@ Examples: <br />
 **Q:** How can I contact you? <br />
 **A:** You can email me @ madbomb122@gmail.com, if it's an issue please post under issue. Before contacting me make sure you have ALL the needed files and the size is right (Look above under requirements)
 
+**Q:** The Run button is disabled what do i do? <br />
+**A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).
+
 **Q:** The script wont run, can you help me? <br />
 **A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.
 
