@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.1"
-$Minor_Version = "1"
-$Script_Date = "July-19-2017"
+$Minor_Version = "2"
+$Script_Date = "July-26-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -398,19 +398,19 @@ $inputXML = @"
       <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
       <Label Content="Log Options" HorizontalAlignment="Left" Margin="4,128,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
       <Label Content="Misc Options" HorizontalAlignment="Left" Margin="4,67,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-      <CheckBox x:Name="DryrunCB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="9,90,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
-      <CheckBox x:Name="BeforeAndAfterCB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,150,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
-      <CheckBox x:Name="AlreadySetCB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
-      <CheckBox x:Name="NotInstalledCB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
+      <CheckBox x:Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="9,90,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
+      <CheckBox x:Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,150,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
+      <CheckBox x:Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
+      <CheckBox x:Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
       <CheckBox x:Name="ScriptLogCB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,166,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
-      <CheckBox x:Name="BackupServiceCB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,105,0,-11" VerticalAlignment="Top" Height="15" Width="218"/>
+      <CheckBox x:Name="BackupServiceConfig_CB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,105,0,-11" VerticalAlignment="Top" Height="15" Width="218"/>
       <TextBox x:Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,164,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
-      <CheckBox x:Name="ScriptUpdateCB" Content="Script Update*" HorizontalAlignment="Left" Margin="244,105,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
+      <CheckBox x:Name="ScriptVerCheck_CB" Content="Script Update*" HorizontalAlignment="Left" Margin="244,105,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
       <CheckBox x:Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="244,90,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
-      <CheckBox x:Name="InternetCheckCB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="244,120,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
+      <CheckBox x:Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="244,120,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
       <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="238,129,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
       <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="239,67,0,0" FontWeight="Bold"/>
-      <CheckBox x:Name="BuildCheckCB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="244,28,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
+      <CheckBox x:Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="244,28,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
       <CheckBox x:Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="244,43,0,0" VerticalAlignment="Top" Height="15" Width="160" IsChecked="True"/>
       <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="404,40,0,0" VerticalAlignment="Top" Width="60" Height="23"/>
       <Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="238,5,0,0" FontWeight="Bold"/>
@@ -427,8 +427,8 @@ $inputXML = @"
       <CheckBox x:Name="CustomBVCB" Content="Change Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/> </Grid>
     </TabItem>
     <TabItem x:Name="Dev_Option_Tab" Header="Dev Option/Contact" Margin="-2,0,2,0"> <Grid Background="#FFE5E5E5">
-      <CheckBox x:Name="DiagnosticCB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-      <CheckBox x:Name="DevLogCB" Content="Dev Log" HorizontalAlignment="Left" Margin="9,33,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+      <CheckBox x:Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+      <CheckBox x:Name="DevLog_CB" Content="Dev Log" HorizontalAlignment="Left" Margin="9,33,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
       <Button x:Name="EMail" Content="e-mail Madbomb122" HorizontalAlignment="Left" Margin="9,55,0,0" VerticalAlignment="Top" Width="123"/>
       <Label Content="If your having problems email me&#xD;&#xA;&#xD;&#xA;e-mail: Madbomb122@gmail.com" HorizontalAlignment="Left" Margin="200,10,0,0" VerticalAlignment="Top" Width="190"/>
       <Label Content="&lt;-- with a 'Dev Log' if asked to." HorizontalAlignment="Left" Margin="178,26,0,0" VerticalAlignment="Top"/> </Grid>
@@ -455,6 +455,8 @@ $inputXML = @"
     $PowerShell.runspace = $Runspace
     $Runspace.Open()
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+    
+    [System.Collections.ArrayList]$VarList = Get-Variable "WPF_*_CB"
 
     $WPF_ServiceConfig.add_SelectionChanged({
         If(($WPF_ServiceConfig.SelectedIndex+1) -eq $WPF_ServiceConfig.Items.Count) {
@@ -464,7 +466,7 @@ $inputXML = @"
             $WPF_LoadFileTxtBox.IsEnabled = $true
             For($i=1; $i -lt 4; $i++) { $(Get-Variable -Name "WPF_CustomNote$i" -ValueOnly).Visibility = 'Visible' }
             $WPF_LoadFileTxtBox.Visibility = 'Visible'
-            $WPF_btnOpenFile.Visibility = 'Visible'		
+            $WPF_btnOpenFile.Visibility = 'Visible'
         } Else {
             $WPF_RadioAll.IsEnabled = $true
             $WPF_RadioMin.IsEnabled = $true
@@ -472,7 +474,7 @@ $inputXML = @"
             $WPF_LoadFileTxtBox.IsEnabled = $false
             For($i=1; $i -lt 4; $i++) { $(Get-Variable -Name "WPF_CustomNote$i" -ValueOnly).Visibility = 'Hidden' }
             $WPF_LoadFileTxtBox.Visibility = 'Hidden'
-            $WPF_btnOpenFile.Visibility = 'Hidden'	
+            $WPF_btnOpenFile.Visibility = 'Hidden'
         }
     })
 
@@ -504,8 +506,8 @@ $inputXML = @"
     $WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
     $WPF_ScriptLogCB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $true })
     $WPF_ScriptLogCB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $false })
-    $WPF_BuildCheckCB.Add_Checked({ $Script:BuildCheck = 1 ; RunDisableCheck })
-    $WPF_BuildCheckCB.Add_UnChecked({ $Script:BuildCheck = 0 ; RunDisableCheck })
+    $WPF_BuildCheck_CB.Add_Checked({ $Script:BuildCheck = 1 ; RunDisableCheck })
+    $WPF_BuildCheck_CB.Add_UnChecked({ $Script:BuildCheck = 0 ; RunDisableCheck })
     $WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
     $WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
     $WPF_LoadServicesButton.Add_Click({ Generate-Services })
@@ -547,17 +549,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     [void]$WPF_EditionConfig.Items.Add("Home")
     [void]$WPF_EditionConfig.Items.Add("Pro")
 
-    If($DryRun -eq 1) {$WPF_DryrunCB.IsChecked = $true }
-    If($LogBeforeAfter -eq 1) { $WPF_BeforeAndAfterCB.IsChecked = $true }
-    If($ShowAlreadySet -eq 1) { $WPF_AlreadySetCB.IsChecked = $true }
-    If($ShowNonInstalled -eq 1) { $WPF_NotInstalledCB.IsChecked = $true }
-    If($BackupServiceConfig -eq 1) { $WPF_BackupServiceCB.IsChecked = $true }
-    If($ScriptVerCheck -eq 1) { $WPF_ScriptUpdateCB.IsChecked = $true }
-    If($ServiceVerCheck -eq 1) { $WPF_ServiceUpdateCB.IsChecked = $true }
-    If($InternetCheck -eq 1) { $WPF_InternetCheckCB.IsChecked = $true }
-    If($BuildCheck -eq 1) { $WPF_BuildCheckCB.IsChecked = $true }
-    If($Diagnostic -eq 1) { $WPF_DiagnosticCB.IsChecked = $true }
-    If($DevLog -eq 1) { $WPF_DevLogCB.IsChecked = $true }
+    ForEach($Var in $VarList) {
+        If($(Get-Variable -Name ($Var.Name.split('_')[1]) -ValueOnly) -eq 1){ $SetValue = $true } Else { $SetValue = $false }
+        $(Get-Variable -Name $Var.Name -ValueOnly).IsChecked = $SetValue
+    }
+
     If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $true } Else { $WPF_RadioMin.IsChecked = $true }
     If($MakeLog -eq 1) { 
         $WPF_ScriptLogCB.IsChecked = $true
@@ -619,18 +615,12 @@ Function RunDisableCheck {
 }
 
 Function Gui-Done {
+    ForEach($Var in $VarList) {
+        If($(Get-Variable -Name $Var.Name -ValueOnly).IsChecked){ $SetValue = 1 } Else { $SetValue = 0 }
+        Set-Variable -Name ($Var.Name.split('_')[1]) -Value $SetValue -scope Script
+    }
+
     If($WPF_RadioAll.IsChecked) { $Script:All_or_Min = "-full" } Else { $Script:All_or_Min = "-min" }
-    If($WPF_DryrunCB.IsChecked){$Script:DryRun = 1 } Else { $Script:DryRun = 0 }
-    If($WPF_BeforeAndAfterCB.IsChecked){ $Script:LogBeforeAfter = 1 } Else { $Script:LogBeforeAfter = 0 }
-    If($WPF_AlreadySetCB.IsChecked){ $Script:ShowAlreadySet = 1 } Else { $Script:ShowAlreadySet = 0 }
-    If($WPF_NotInstalledCB.IsChecked){ $Script:ShowNonInstalled = 1 } Else { $Script:ShowNonInstalled = 0 }
-    If($WPF_BackupServiceCB.IsChecked){ $Script:BackupServiceConfig = 1 } Else { $Script:BackupServiceConfig = 0 }
-    If($WPF_ScriptUpdateCB.IsChecked){ $Script:ScriptVerCheck = 1 } Else { $Script:ScriptVerCheck = 0 }
-    If($WPF_ServiceUpdateCB.IsChecked){ $Script:ServiceVerCheck = 1 } Else { $Script:ServiceVerCheck = 0 }
-    If($WPF_InternetCheckCB.IsChecked){ $Script:InternetCheck = 1 } Else { $Script:InternetCheck = 0 }
-    If($WPF_BuildCheckCB.IsChecked){ $Script:BuildCheck = 1 } Else { $Script:BuildCheck = 0 }
-    If($WPF_DiagnosticCB.IsChecked){ $Script:Diagnostic = 1 } Else { $Script:Diagnostic = 0 }
-    If($WPF_DevLogCB.IsChecked){ $Script:DevLog = 1 } Else { $Script:DevLog = 0 }
     If($WPF_ScriptLogCB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
     If($WPF_EditionCheckCB.IsChecked) { $Script:EditionCheck = $WPF_EditionConfig.Text }
     If($WPF_CustomBVCB.IsChecked) { GetCustomBV }
