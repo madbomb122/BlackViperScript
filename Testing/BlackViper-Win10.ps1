@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.1"
-$Minor_Version = "2"
-$Script_Date = "July-26-2017"
+$Minor_Version = "3"
+$Script_Date = "July-28-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -455,7 +455,6 @@ $inputXML = @"
     $PowerShell.runspace = $Runspace
     $Runspace.Open()
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-    
     [System.Collections.ArrayList]$VarList = Get-Variable "WPF_*_CB"
 
     $WPF_ServiceConfig.add_SelectionChanged({
@@ -688,8 +687,7 @@ Function GetCustomBV ([Int]$SaveCsv) {
     If($SaveCsv -eq 1) { $Script:LoadServiceConfig = 2 }
     [System.Collections.ArrayList]$Script:csvTemp = @()
     ForEach($item In $ServiceCBList) {
-        $Item1 = Get-Variable -Name $item.CBName -valueOnly
-        If($Item1.IsChecked) {
+        If($(Get-Variable -Name $item.CBName -ValueOnly).IsChecked) {
             $Object = New-Object -TypeName PSObject
             Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value ($item.ServiceName)
             Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value ($item.StartType)
@@ -719,8 +717,7 @@ Function LoadWebCSV {
             { $_ -eq "y" -or $_ -eq "yes" } { DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out" ;Break }
             default {$Invalid = 1 ;Break }
         }
-    }
-    Return
+    } Return
 }
 
 Function ServiceBA ([String]$ServiceBA) {
@@ -861,12 +858,9 @@ Function ServiceCheck ([string]$S_Name,[string]$S_Type) {
             } ElseIf($S_Name -eq 'NetTcpPortSharing') {
                 If($NetTCP -contains $CurrServices.Name) { Return "Manual" }
                 Return $False
-            }
-            Return $C_Type
-        }
-        Return "Already"
-    }
-    Return $False
+            } Return $C_Type
+        } Return "Already"
+    } Return $False
 }
 
 Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
@@ -879,10 +873,7 @@ Function Black_Viper_Set ([Int]$BVOpt,[String]$FullMin) {
     }
 }
 
-Function InternetCheck {
-    If($InternetCheck -eq 1) { Return $true } ElseIf(!(Test-Connection -computer github.com -count 1 -quiet)) { Return $false }
-    Return $true
-}
+Function InternetCheck { If($InternetCheck -eq 1) { Return $true } ElseIf(!(Test-Connection -computer github.com -count 1 -quiet)) { Return $false } Return $true }
 
 Function CreateLog {
     If($DevLog -eq 1) {
