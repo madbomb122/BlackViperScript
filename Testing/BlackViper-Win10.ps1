@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "3.1"
-$Minor_Version = "3"
-$Script_Date = "July-28-2017"
+$Script_Version = "3.2"
+$Minor_Version = "0"
+$Script_Date = "July-29-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -253,7 +253,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " ScriptVerCheck = $ScriptVerCheck" 15 0 1 1
         DisplayOutMenu " ServiceVerCheck = $ServiceVerCheck" 15 0 1 1
         DisplayOutMenu " InternetCheck = $InternetCheck" 15 0 1 1
-        DisplayOutMenu " Show_Changed = $Show_Changed" 15 0 1 1
+        DisplayOutMenu " ShowChanged = $ShowChanged" 15 0 1 1
         DisplayOutMenu " ShowAlreadySet = $ShowAlreadySet" 15 0 1 1
         DisplayOutMenu " ShowNonInstalled = $ShowNonInstalled" 15 0 1 1
         DisplayOutMenu " Show_Skipped = $Show_Skipped" 15 0 1 1
@@ -402,7 +402,7 @@ $inputXML = @"
       <CheckBox x:Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,150,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
       <CheckBox x:Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
       <CheckBox x:Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
-      <CheckBox x:Name="ScriptLogCB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,166,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
+      <CheckBox x:Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,166,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
       <CheckBox x:Name="BackupServiceConfig_CB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,105,0,-11" VerticalAlignment="Top" Height="15" Width="218"/>
       <TextBox x:Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,164,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
       <CheckBox x:Name="ScriptVerCheck_CB" Content="Script Update*" HorizontalAlignment="Left" Margin="244,105,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
@@ -411,7 +411,7 @@ $inputXML = @"
       <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="238,129,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
       <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="239,67,0,0" FontWeight="Bold"/>
       <CheckBox x:Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="244,28,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
-      <CheckBox x:Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="244,43,0,0" VerticalAlignment="Top" Height="15" Width="160" IsChecked="True"/>
+      <CheckBox x:Name="EditionCheck_CB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="244,43,0,0" VerticalAlignment="Top" Height="15" Width="160" IsChecked="True"/>
       <ComboBox x:Name="EditionConfig" HorizontalAlignment="Left" Margin="404,40,0,0" VerticalAlignment="Top" Width="60" Height="23"/>
       <Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="238,5,0,0" FontWeight="Bold"/>
       <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="210" Margin="236,-2,0,-3" Stroke="Black" VerticalAlignment="Top" Width="1"/> </Grid>
@@ -503,14 +503,15 @@ $inputXML = @"
     })
 
     $WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
-    $WPF_ScriptLogCB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $true })
-    $WPF_ScriptLogCB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $false })
-    $WPF_BuildCheck_CB.Add_Checked({ $Script:BuildCheck = 1 ; RunDisableCheck })
-    $WPF_BuildCheck_CB.Add_UnChecked({ $Script:BuildCheck = 0 ; RunDisableCheck })
+    $WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $true })
+    $WPF_ScriptLog_CB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $false })
+    $WPF_BuildCheck_CB.Add_Click({ RunDisableCheck })
+    $WPF_EditionCheck_CB.Add_Click({ RunDisableCheck })
     $WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
     $WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
     $WPF_LoadServicesButton.Add_Click({ Generate-Services })
     $WPF_SaveCustomSrvButton.Add_Click({ Save_Service $csvTemp ;[Windows.Forms.MessageBox]::Show("Custom Service file saved as '$filebase$env:computername-Custom-Service.csv'","File Saved", 'OK') })
+    $WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK') })
 
     $CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
@@ -523,20 +524,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'
-
-    $WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK') })
-
-    $WPF_EditionCheckCB.Add_Checked({
-        $Script:EditionCheck = 1
-        $WPF_EditionConfig.IsEnabled = $true
-        RunDisableCheck
-    })
-
-    $WPF_EditionCheckCB.Add_UnChecked({
-        $Script:EditionCheck = 0
-        $WPF_EditionConfig.IsEnabled = $false
-        RunDisableCheck
-    })
 
     $Script:RunScript = 0
     [void]$WPF_ServiceConfig.Items.Add("Default")
@@ -555,7 +542,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $true } Else { $WPF_RadioMin.IsChecked = $true }
     If($MakeLog -eq 1) { 
-        $WPF_ScriptLogCB.IsChecked = $true
+        $WPF_ScriptLog_CB.IsChecked = $true
         $WPF_LogNameInput.IsEnabled = $true
     } Else {
         $WPF_LogNameInput.IsEnabled = $false
@@ -566,7 +553,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     } ElseIf($EditionCheck -eq "Home") {
         $WPF_EditionConfig.SelectedIndex = 0
     } Else {
-        $WPF_EditionCheckCB.IsChecked = $false
+        $WPF_EditionCheck_CB.IsChecked = $false
         $WPF_EditionConfig.IsEnabled = $false
     }
 
@@ -583,6 +570,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 Function RunDisableCheck {
+    If($WPF_BuildCheck_CB.IsChecked) { $Script:BuildCheck = 1 } Else { $Script:BuildCheck = 0 }
+    If($WPF_EditionCheck_CB.IsChecked) { $Script:EditionCheck = 1 ;$WPF_EditionConfig.IsEnabled = $true } Else { $Script:EditionCheck = 0 ;$WPF_EditionConfig.IsEnabled = $false }
+
     $tempfail = 0
     $temp1 = ""
     $temp2 = ""
@@ -595,10 +585,9 @@ Function RunDisableCheck {
     }
 
     If($BuildVer -lt $ForBuild -and $BuildCheck -ne 1) { $tempfail++ ; $temp2 = "Build" }
-
     If($tempfail -ne 0) {
         $Buttontxt = "Run Disabled Due to "
-        If($temp1 -ne "" -and $temp2 -ne "") {
+        If($tempfail -eq 2) {
             $Buttontxt += $temp1 + " & " + $temp2
         } Else {
             If($temp1 -ne "") { $Buttontxt += $temp1 }
@@ -620,8 +609,8 @@ Function Gui-Done {
     }
 
     If($WPF_RadioAll.IsChecked) { $Script:All_or_Min = "-full" } Else { $Script:All_or_Min = "-min" }
-    If($WPF_ScriptLogCB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
-    If($WPF_EditionCheckCB.IsChecked) { $Script:EditionCheck = $WPF_EditionConfig.Text }
+    If($WPF_ScriptLog_CB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
+    If($WPF_EditionCheck_CB.IsChecked) { $Script:EditionCheck = $WPF_EditionConfig.Text }
     If($WPF_CustomBVCB.IsChecked) { GetCustomBV }
     $Form.Close()
     Black_Viper_Set $Black_Viper $All_or_Min
@@ -631,7 +620,6 @@ Function Generate-Services {
     If(!($CurrServices)) { $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
     [System.Collections.ArrayList]$Script:ServiceCBList = @()
     
-    $ServiceCheckBoxCounter = 0
     $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
     If($Black_Viper -eq $WPF_ServiceConfig.Items.Count) { $Script:LoadServiceConfig = 1 }
     If($WPF_RadioAll.IsChecked) { $FullMin = "-Full" } Else { $FullMin = "-Min" }
@@ -672,7 +660,6 @@ Function Generate-Services {
             Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
             Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $ServiceTypeNum
             $Script:ServiceCBList += $Object
-            $ServiceCheckBoxCounter++
         }
     }
     $WPF_ServiceClickLabel.Visibility = 'Hidden'
@@ -832,7 +819,7 @@ Function ServiceSet ([String]$BVService) {
                         Set-ItemProperty -Path $RegPath -Name "DelayedAutostart" -Type DWord -Value 1
                     }
                 }
-                If($Show_Changed -eq 1) { DisplayOut $DispTemp  11 0 }
+                If($ShowChanged -eq 1) { DisplayOut $DispTemp  11 0 }
             } ElseIf($ServiceCurrType -eq "Already" -and $ShowAlreadySet -eq 1) {
                 $DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
                 If($ServiceTypeNum -eq 4) { $DispTemp += " (Delayed Start)" }
@@ -856,8 +843,7 @@ Function ServiceCheck ([string]$S_Name,[string]$S_Type) {
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
                 If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
             } ElseIf($S_Name -eq 'NetTcpPortSharing') {
-                If($NetTCP -contains $CurrServices.Name) { Return "Manual" }
-                Return $False
+                If($NetTCP -contains $CurrServices.Name) { Return "Manual" } Return $False
             } Return $C_Type
         } Return "Already"
     } Return $False
@@ -886,7 +872,7 @@ Function CreateLog {
         $Script:AcceptToS = "Accepted-Dev-Switch"
         $Script:ShowNonInstalled = 1
         $Script:Show_Skipped = 1
-        $Script:Show_Changed = 1
+        $Script:ShowChanged = 1
         $Script:ShowAlreadySet = 1
     }
 
@@ -906,10 +892,7 @@ Function CreateLog {
 Function ScriptUpdateFun {
     $FullVer = "$WebScriptVer.$WebScriptMinorVer"
     $DFilename = "BlackViper-Win10-Ver." + $FullVer
-    If($Release_Type -ne "Stable") {
-        $DFilename += "-Testing"
-        $Script_Url = $URL_Base + "Testing/"
-    }
+    If($Release_Type -ne "Stable") { $DFilename += "-Testing" ;$Script_Url = $URL_Base + "Testing/" }
     $DFilename += ".ps1"
     $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
     $WebScriptFilePath = $filebase + $DFilename
@@ -1219,8 +1202,7 @@ Function ArgsAndVarSet {
         LeftLineLog ;DisplayOutMenu "Configuration option was selected.               " 2 0 0 1 ;RightLineLog
         Error_Bottom
     } Else {
-        If($AcceptToS -ne 0) {
-            $Script:RunScript = 1
+        If($AcceptToS -ne 0) { $Script:RunScript = 1
             Gui-Start
         } Else {
             TOS
@@ -1246,7 +1228,7 @@ $Script:BackupServiceConfig = 0 #0 = Dont backup Your Current Service Configurat
 $Script:DryRun = 0              #0 = Runs script normaly
                                 #1 = Runs script but shows what will be changed
 
-$Script:MakeLog = 0             #0 = Dont make a log file
+$Script:ScriptLog = 0           #0 = Dont make a log file
                                 #1 = Make a log file
 # Will be script's directory named `Script.log` (default)
 
@@ -1264,7 +1246,7 @@ $Script:ServiceVerCheck = 0     #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File
 # Note: If found will Auto download will be used
 
-$Script:Show_Changed = 1        #0 = Dont Show Changed Services
+$Script:ShowChanged = 1         #0 = Dont Show Changed Services
                                 #1 = Show Changed Services
 
 $Script:ShowAlreadySet = 1      #0 = Dont Show Already set Services
