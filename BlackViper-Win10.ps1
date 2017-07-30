@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.2"
-$Minor_Version = "0"
-$Script_Date = "July-29-2017"
+$Minor_Version = "1"
+$Script_Date = "July-30-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -549,7 +549,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     $WPF_EditionConfig.SelectedIndex = 1
     If($EditionCheck -eq 1 -or $EditionCheck -eq "Pro") {
+        $WPF_EditionCheck_CB.IsChecked = $true
     } ElseIf($EditionCheck -eq "Home") {
+        $WPF_EditionCheck_CB.IsChecked = $true
         $WPF_EditionConfig.SelectedIndex = 0
     } Else {
         $WPF_EditionCheck_CB.IsChecked = $false
@@ -1117,7 +1119,7 @@ Function GetArgs {
               "-devl" { $Script:DevLog = 1 ;Break }
               "-sbc" { $Script:BuildCheck = 1 ;Break }
               "-sech" { $Script:EditionCheck = "Home" ;Break }
-              { $_ -eq "-secp" -or $_ -eq "-sec" } { $Script:EditionCheck = "Pro" ;Break }
+              {$_ -eq "-secp" -or $_ -eq "-sec" } { $Script:EditionCheck = "Pro" ;Break }
             }
         }
     }
