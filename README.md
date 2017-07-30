@@ -1,5 +1,5 @@
 **Current Version** <br />
-**Script:** `3.2.0` (July 29, 2017) <br />
+**Script:** `3.2.1` (July 30, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 # Description
@@ -100,7 +100,7 @@ Examples: <br />
 
 **Q:** Do you accept any donations? <br />
 **A:** If you would like to donate to me Please Contact me about donating or pick an item from my amazon wishlist. Please also consider donating to Black Viper too. Thanks <br />
-**Wishlist:** https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/
+**Wishlist:** https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/ <br />
 **NOTE:** http://www.blackviper.com/support-bv/  <br />
 
 **Q:** How can I contact you? <br />
