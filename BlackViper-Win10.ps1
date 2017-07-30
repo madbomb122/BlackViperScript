@@ -430,7 +430,8 @@ $inputXML = @"
       <CheckBox x:Name="DevLog_CB" Content="Dev Log" HorizontalAlignment="Left" Margin="9,33,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
       <Button x:Name="EMail" Content="e-mail Madbomb122" HorizontalAlignment="Left" Margin="9,55,0,0" VerticalAlignment="Top" Width="123"/>
       <Label Content="If your having problems email me&#xD;&#xA;&#xD;&#xA;e-mail: Madbomb122@gmail.com" HorizontalAlignment="Left" Margin="200,10,0,0" VerticalAlignment="Top" Width="190"/>
-      <Label Content="&lt;-- with a 'Dev Log' if asked to." HorizontalAlignment="Left" Margin="178,26,0,0" VerticalAlignment="Top"/> </Grid>
+      <Label Content="&lt;-- with a 'Dev Log' if asked to." HorizontalAlignment="Left" Margin="178,26,0,0" VerticalAlignment="Top"/>
+      <Label Content="Before contacting me, make sure your&#xD;&#xA;question/problem isn't answered in the faqs." HorizontalAlignment="Left" Margin="9,81,0,0" VerticalAlignment="Top" FontWeight="Bold"/></Grid>
     </TabItem>
   </TabControl>
   <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,237,0,0" Stroke="Black" VerticalAlignment="Top"/>
