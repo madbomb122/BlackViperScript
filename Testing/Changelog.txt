@@ -1,4 +1,10 @@
 -----------------------------------------------------------------------------------
+3.3.0 (07-31-2017)
+
+Added some text in contact tab
+Fixed an issue with the -sec switch/argument and edition checkbox
+
+-----------------------------------------------------------------------------------
 3.2.0 (07-29-2017)
 
 Fixed a bug that didnt transfer custom selected services when script updated
