@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "3.2"
-$Minor_Version = "1"
-$Script_Date = "July-30-2017"
+$Script_Version = "3.3"
+$Minor_Version = "0"
+$Script_Date = "July-31-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -186,6 +186,7 @@ Function RightLine { DisplayOutMenu " |" 14 0 1 0 }
 
 Function OpenWebsite ([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile ([String]$Url,[String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
+Function ShowInvalid ([Int]$InvalidA) { If($InvalidA -eq 1) { Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
 
 Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine,[int]$LogOut) {
     If($NewLine -eq 0) {
@@ -255,7 +256,7 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " ShowChanged = $ShowChanged" 15 0 1 1
         DisplayOutMenu " ShowAlreadySet = $ShowAlreadySet" 15 0 1 1
         DisplayOutMenu " ShowNonInstalled = $ShowNonInstalled" 15 0 1 1
-        DisplayOutMenu " Show_Skipped = $Show_Skipped" 15 0 1 1
+        DisplayOutMenu " ShowSkipped = $ShowSkipped" 15 0 1 1
         DisplayOutMenu " EditionCheck = $EditionCheck" 15 0 1 1
         DisplayOutMenu " BuildCheck = $BuildCheck" 15 0 1 1
         DisplayOutMenu " Args = $PassedArg" 15 0 1 1
@@ -267,11 +268,6 @@ Function LaptopCheck {
     $Script:PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
     If($PCType -ne 2) { Return "-Desk" }
     Return "-Lap"
-}
-
-Function ShowInvalid ([Int]$InvalidA) {
-    If($InvalidA -eq 1) { Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline }
-    Return 0
 }
 
 ##########
@@ -351,11 +347,11 @@ Function Update-Window {
     Param ( $Control,  $Property, $Value, [switch]$AppendContent)
     If ($Property -eq "Close") { $syncHash.Window.Dispatcher.invoke([action]{$syncHash.Window.Close()},"Normal") ;Return }
     $form.Dispatcher.Invoke([action]{ If ($PSBoundParameters['AppendContent']) { $Control.AppendText($Value) } Else { $Control.$Property = $Value } }, "Normal")
-}  
+}
 
 Function Gui-Start {
     Clear-Host
-    DisplayOutMenu "Preparing GUI for Loading, Please wait..." 15 0 1 0
+    DisplayOutMenu "Preparing GUI, Please wait..." 15 0 1 0
     $TPath = $filebase + "BlackViper.csv"
     If(Test-Path $TPath -PathType Leaf) {
         $TMP = Import-Csv $TPath
@@ -573,7 +569,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Function RunDisableCheck {
     If($WPF_BuildCheck_CB.IsChecked) { $Script:BuildCheck = 1 } Else { $Script:BuildCheck = 0 }
-    If($WPF_EditionCheck_CB.IsChecked) { $Script:EditionCheck = 1 ;$WPF_EditionConfig.IsEnabled = $true } Else { $Script:EditionCheck = 0 ;$WPF_EditionConfig.IsEnabled = $false }
+    If($WPF_EditionCheck_CB.IsChecked) { $Script:EditionCheck = $WPF_EditionConfig.Text ;$WPF_EditionConfig.IsEnabled = $true } Else { $Script:EditionCheck = 0 ;$WPF_EditionConfig.IsEnabled = $false }
 
     $tempfail = 0
     $temp1 = ""
@@ -803,7 +799,7 @@ Function ServiceSet ([String]$BVService) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
         $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
-        If($ServiceTypeNum -eq 0 -and $Show_Skipped -eq 1) {
+        If($ServiceTypeNum -eq 0 -and $ShowSkipped -eq 1) {
             If($ServiceCommName -ne $null) { $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else { $DispTemp = "Skipping $ServiceName" }
             DisplayOut $DispTemp  14 0
         } ElseIf($ServiceTypeNum -ne 0) {
@@ -873,7 +869,7 @@ Function CreateLog {
         $Script:DryRun = 1
         $Script:AcceptToS = "Accepted-Dev-Switch"
         $Script:ShowNonInstalled = 1
-        $Script:Show_Skipped = 1
+        $Script:ShowSkipped = 1
         $Script:ShowChanged = 1
         $Script:ShowAlreadySet = 1
     }
@@ -924,7 +920,7 @@ Function ScriptUpdateFun {
     If($LogBeforeAfter -eq 1) { $UpArg += "-baf " }
     If($DryRun -eq 1) { $UpArg += "-dry " }
     If($ShowNonInstalled -eq 1) { $UpArg += "-snis " }
-    If($Show_Skipped -eq 1) { $UpArg += "-sss " }
+    If($ShowSkipped -eq 1) { $UpArg += "-sss " }
     If($DevLog -eq 1) { $UpArg += "-devl " }
     If($MakeLog -eq 1) { $UpArg += "-logc $LogName " }
     If($All_or_Min -eq "-full") { $UpArg += "-all " } Else { $UpArg += "-min " }
@@ -1107,14 +1103,14 @@ Function GetArgs {
               "-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
               "-baf" { $Script:LogBeforeAfter = 1 ;Break }
               "-snis" { $Script:ShowNonInstalled = 1 ;Break }
-              "-sss" { $Script:Show_Skipped = 1 ;Break }
+              "-sss" { $Script:ShowSkipped = 1 ;Break }
               "-sic" { $Script:InternetCheck = 1 ;Break }
               "-usc" { $Script:ScriptVerCheck = 1 ;Break }
               "-use" { $Script:ServiceVerCheck = 1 ;Break }
               "-atos" { $Script:AcceptToS = "Accepted-Switch" ;Break }
               "-atosu" { $Script:AcceptToS = "Accepted-Update" ;Break }
               "-auto" { $Script:Automated = 1 ;$Script:AcceptToS = "Accepted-Automated-Switch" ;Break }
-              "-dry" { $Script:DryRun = 1 ;$Script:ShowNonInstalled = 1 ;$Script:Show_Skipped = 1 ;Break }
+              "-dry" { $Script:DryRun = 1 ;$Script:ShowNonInstalled = 1 ;$Script:ShowSkipped = 1 ;Break }
               "-diag" { $Script:Diagnostic = 1 ;$Script:Automated = 0 ;Break }
               "-diagt" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break }
               "-devl" { $Script:DevLog = 1 ;Break }
