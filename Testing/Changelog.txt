@@ -5,8 +5,8 @@ Fixed a bug with the Service List Tab not loading checkboxes other than default
 Fixed a bug with saving services saving file incorrectly
 
 Known Bug/Issue for Service List Tab (ONLY)
---Problems switching from Custom Service to Blackviper
---Problems switching from Blackviper to Custom Service
+--Problems Loading Custom Service then reloading with Blackviper Service
+--Problems Loading Blackviper Service then reloading with Custom Service
 
 Disabled the ability to load Custom Service in Service List Tab till issue is resolved
 
