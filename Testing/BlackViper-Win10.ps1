@@ -10,7 +10,7 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.4"
-$Minor_Version = "2"
+$Minor_Version = "3"
 $Script_Date = "Aug-05-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -319,8 +319,7 @@ Function TOS {
             { $_ -eq "y" -or $_ -eq "yes" } { $TOS = "Out" ;TOSyes ;Break }
             default { $Invalid = 1 ;Break }
         }
-    }
-    Return
+    } Return
 }
 
 Function TOSyes {
@@ -461,21 +460,7 @@ $inputXML = @"
             For($i=1; $i -lt 4; $i++) { $(Get-Variable -Name "WPF_CustomNote$i" -ValueOnly).Visibility = 'Visible' }
             $WPF_LoadFileTxtBox.Visibility = 'Visible'
             $WPF_btnOpenFile.Visibility = 'Visible'
-
-            If(!($ServicesGenerated)){
-                $WPF_ServiceClickLabel.Visibility = 'Visible'
-                $WPF_ServiceClickLabel.content = 'Disabled for Custom Services due to problems'
-            }
-            $WPF_LoadServicesButton.content = "Disabled"
-            $WPF_LoadServicesButton.IsEnabled = $false
         } Else {
-            If($ServicesGenerated){
-                $WPF_ServiceClickLabel.Visibility = 'Hidden'
-                $WPF_LoadServicesButton.content = "Reload"
-            } Else {
-                $WPF_ServiceClickLabel.content = '<---Click to load Service List'
-                $WPF_LoadServicesButton.content = "Load Services"
-            }
             $WPF_LoadServicesButton.IsEnabled = $true
             $WPF_RadioAll.IsEnabled = $true
             $WPF_RadioMin.IsEnabled = $true
@@ -630,7 +615,7 @@ Function Gui-Done {
 }
 
 Function Generate-Services {
-#    $removecb = $false
+    $removecb = $false
     If($ServicesGenerated){ $Tmp = $BVService ;$removecb = $true }
     If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
     
@@ -639,7 +624,7 @@ Function Generate-Services {
     If($WPF_RadioAll.IsChecked){ $FullMin = "-Full" } Else { $FullMin = "-Min" }
 
     Switch($Black_Viper){
-        #{$LoadServiceConfig -eq 1} { $Script:BVService = "StartType" ;Break }
+        {$LoadServiceConfig -eq 1} { $Script:BVService = "StartType" ;Break }
         1 { ($Script:BVService="Def-"+$WinEdition+$FullMin) ;$BVSAlt = "Def-"+$WinEdition+"-Full" ;Break }
         2 { ($Script:BVService="Safe"+$IsLaptop+$FullMin) ;$BVSAlt = "Safe"+$IsLaptop+"-Full";Break }
         3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
@@ -647,12 +632,10 @@ Function Generate-Services {
     If($LoadServiceConfig -eq 1){ $ServiceFilePath = $WPF_LoadFileTxtBox.Text } Else { $ServiceFilePath = $filebase + "BlackViper.csv" }
     [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
 
-<#
     If($removecb) {
-          If($Tmp -ne $Script:BVService){ If($Tmp -eq "StartType" -or $Script:BVService -eq "StartType"){ If($removecb){ $WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $false } } }
+        If($Tmp -ne $BVService){ If($Tmp -eq "StartType" -or $Script:BVService -eq "StartType"){ If($removecb){ $WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $false } } }
         $removecb = $false
     }
-#>
 
     [System.Collections.ArrayList]$Script:ServiceCBList = @()
     ForEach($item In $ServCB) {
@@ -667,16 +650,16 @@ Function Generate-Services {
             $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
             $DispTemp = "$ServiceCommName - $ServiceCurrType -> $ServiceType"
             If($ServiceTypeNum -eq 4) { $DispTemp += " (Delayed Start)" }
-            $CBName = "WPF_"+$ServiceName + "CB"
+            $CBName = "WPF_"+$ServiceName + "_1CB"
 
             $checkbox = Get-Variable -Name $CBName -valueOnly -ErrorAction SilentlyContinue
             If(!($checkbox)){
                 New-Variable -name $CBName -value ([System.Windows.Controls.CheckBox]::new()) -scope Script
                 $checkbox = Get-Variable -Name $CBName -valueOnly
                 $checkbox.width = 450
-                $checkbox.height = 20
-                $WPF_StackCBHere.AddChild($checkbox)
+                $checkbox.height = 20 
             }
+            $WPF_StackCBHere.AddChild($checkbox)
             $checkbox.Content = "$DispTemp"
             If($ServiceTypeNum -eq 0){ $checkbox.IsChecked = $false } Else { $checkbox.IsChecked = $true }
 
@@ -687,13 +670,16 @@ Function Generate-Services {
             $Script:ServiceCBList += $Object
         }
     }
-    $WPF_ServiceClickLabel.Visibility = 'Hidden'
-    $WPF_ServiceLegendLabel.Visibility = 'Visible'
-    $WPF_ServiceNote.Visibility = 'Visible'
-    $WPF_CustomBVCB.Visibility = 'Visible'
-    $WPF_SaveCustomSrvButton.Visibility = 'Visible'
-    $WPF_LoadServicesButton.content = "Reload"
-    $Script:ServicesGenerated = $true
+
+    If(!($ServicesGenerated)){
+        $WPF_ServiceClickLabel.Visibility = 'Hidden'
+        $WPF_ServiceLegendLabel.Visibility = 'Visible'
+        $WPF_ServiceNote.Visibility = 'Visible'
+        $WPF_CustomBVCB.Visibility = 'Visible'
+        $WPF_SaveCustomSrvButton.Visibility = 'Visible'
+        $WPF_LoadServicesButton.content = "Reload"
+        $Script:ServicesGenerated = $true
+    }
 }
 
 Function GetCustomBV {
@@ -790,7 +776,7 @@ Function Save_Service {
         $ServiceSavePath += "-Custom-Service.csv"
         ForEach($item In $ServiceCBList) {
             If($(Get-Variable -Name $item.CBName -ValueOnly).IsChecked) {
-                $ServiceName = ($item.ServiceName)
+                $ServiceName = $item.ServiceName
                 If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
                 $Object = New-Object -TypeName PSObject
                 Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
