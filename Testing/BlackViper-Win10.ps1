@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.4"
-$Minor_Version = "0"
-$Script_Date = "Aug-04-2017"
+$Minor_Version = "1"
+$Script_Date = "Aug-05-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -696,7 +696,7 @@ Function Generate-Services {
 }
 
 Function GetCustomBV ([Int]$SaveCsv) {
-    If($SaveCsv -eq 1) { $Script:LoadServiceConfig = 2 }
+    $Script:LoadServiceConfig = 2
     [System.Collections.ArrayList]$Script:csvTemp = @()
     ForEach($item In $ServiceCBList) {
         If($(Get-Variable -Name $item.CBName -ValueOnly).IsChecked) {
@@ -706,7 +706,7 @@ Function GetCustomBV ([Int]$SaveCsv) {
             $Script:csvTemp+= $Object
         }
     }
-    If($SaveCsv -eq 1) { [System.Collections.ArrayList]$Script:csv = $Script:csvTemp }
+    [System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 }
 
 ##########
