@@ -1,4 +1,11 @@
 -----------------------------------------------------------------------------------
+3.4.0 (08-05-2017)
+
+Fixed a bug that caused unchecked/checked services not to skip/run
+
+Thanks to Scott C for notifying me about the bug
+
+-----------------------------------------------------------------------------------
 3.4.0 (08-04-2017)
 
 Fixed a bug with the Service List Tab not loading checkboxes other than default
