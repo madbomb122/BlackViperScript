@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------
-3.4.0 (08-05-2017)
+3.4.2 (08-05-2017)
 
 Fixed a bug that caused unchecked/checked services not to skip/run
-
 Thanks to Scott C for notifying me about the bug
+
+Fixed a bug that didnt save selected services to file
+Fixed a bug with log file
 
 -----------------------------------------------------------------------------------
 3.4.0 (08-04-2017)
