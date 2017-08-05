@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------
-3.4.1 (08-04-2017)
+3.4.2 (08-05-2017)
 
-Fixed a bug that caused unchecked/checked services not to skip/run 
-
+Fixed a bug that caused unchecked/checked services not to skip/run
 Thanks to Scott C for notifying me about the bug
+
+Fixed a bug that didnt save selected services to file
+Fixed a bug with log file
 
 -----------------------------------------------------------------------------------
 3.4.0 (08-04-2017)
@@ -18,9 +20,13 @@ Known Bug/Issue for Service List Tab (ONLY)
 Disabled the ability to load Custom Service in Service List Tab till issue is resolved
 
 -----------------------------------------------------------------------------------
+
 3.3.0 (07-31-2017)
 
+
+
 Added some text in contact tab
+
 Fixed an issue with the -sec switch/argument and edition checkbox
 
 -----------------------------------------------------------------------------------
