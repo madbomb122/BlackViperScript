@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "3.4"
-$Minor_Version = "4"
-$Script_Date = "Aug-05-2017"
+$Script_Version = "3.5"
+$Minor_Version = "0"
+$Script_Date = "Aug-06-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -380,11 +380,11 @@ $inputXML = @"
    <RadioButton x:Name="RadioMin" Content="Min -Change Services that are Differant from Default to Safe/Tweaked" HorizontalAlignment="Left" Margin="5,41,0,0" VerticalAlignment="Top"/>
    <Label Content="Black Viper Configuration Options (BV Services Only)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,3,0,0" FontWeight="Bold"/>
    <Label x:Name="CustomNote1" Content="*Note: Configure Bellow" HorizontalAlignment="Left" Margin="262,63,0,0" VerticalAlignment="Top" Width="148" Height="27" FontWeight="Bold"/>
-   <Button x:Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="5,120,0,0" VerticalAlignment="Top" Width="66" Height="22"/>
-   <TextBox x:Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="23" Margin="5,170,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="454"/>
-   <Label x:Name="CustomNote3" Content="Config File: Type in Path/File or Browse for file" HorizontalAlignment="Left" Margin="1,147,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,97,-6,0" Stroke="Black" VerticalAlignment="Top"/>
-   <Label x:Name="CustomNote2" Content="Custom Configuration" HorizontalAlignment="Left" Margin="164,98,0,0" VerticalAlignment="Top" Width="135" Height="26" FontWeight="Bold"/></Grid>
+   <Button x:Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="5,120,0,0" VerticalAlignment="Top" Width="66" Height="22"/>
+   <TextBox x:Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="50" Margin="5,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" IsReadOnly="True" Background="#FFECECEC"/>
+   <Label x:Name="CustomNote3" Content="Config File: Browse for file" HorizontalAlignment="Left" Margin="76,118,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+   <Label x:Name="CustomNote2" Content="Custom Configuration" HorizontalAlignment="Left" Margin="164,95,0,0" VerticalAlignment="Top" Width="135" Height="26" FontWeight="Bold"/></Grid>
   </TabItem>
   <TabItem x:Name="Options_tab" Header="Script Options" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
@@ -454,8 +454,6 @@ $inputXML = @"
         If(($WPF_ServiceConfig.SelectedIndex+1) -eq $WPF_ServiceConfig.Items.Count) {
             $WPF_RadioAll.IsEnabled = $false
             $WPF_RadioMin.IsEnabled = $false
-            $WPF_btnOpenFile.IsEnabled = $true
-            $WPF_LoadFileTxtBox.IsEnabled = $true
             For($i=1; $i -lt 4; $i++) { $(Get-Variable -Name "WPF_CustomNote$i" -ValueOnly).Visibility = 'Visible' }
             $WPF_LoadFileTxtBox.Visibility = 'Visible'
             $WPF_btnOpenFile.Visibility = 'Visible'
@@ -463,12 +461,11 @@ $inputXML = @"
             $WPF_LoadServicesButton.IsEnabled = $true
             $WPF_RadioAll.IsEnabled = $true
             $WPF_RadioMin.IsEnabled = $true
-            $WPF_btnOpenFile.IsEnabled = $false
-            $WPF_LoadFileTxtBox.IsEnabled = $false
             For($i=1; $i -lt 4; $i++) { $(Get-Variable -Name "WPF_CustomNote$i" -ValueOnly).Visibility = 'Hidden' }
             $WPF_LoadFileTxtBox.Visibility = 'Hidden'
             $WPF_btnOpenFile.Visibility = 'Hidden'
         }
+        RunDisableCheck
     })
 
     $WPF_btnOpenFile.Add_Click({
@@ -478,6 +475,7 @@ $inputXML = @"
         $OpenFileDialog.ShowDialog() | Out-Null
         $Script:ServiceConfigFile = $OpenFileDialog.filename
         $WPF_LoadFileTxtBox.Text = $ServiceConfigFile
+        RunDisableCheck
     })
 
     $WPF_RunScriptButton.Add_Click({
@@ -485,7 +483,7 @@ $inputXML = @"
         $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
         If($Black_Viper -eq $WPF_ServiceConfig.Items.Count) {
             $Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
-            If(!(Test-Path $ServiceConfigFile -PathType Leaf)) {
+            If(!(Test-Path $ServiceConfigFile -PathType Leaf) -and $ServiceConfigFile -ne $null) {
                 [Windows.Forms.MessageBox]::Show("The File '$ServiceConfigFile' does not exist","Error", 'OK')
                 $Script:RunScript = 0
             } Else {
@@ -596,6 +594,16 @@ Function RunDisableCheck {
     } Else {
         If($WPF_CustomBVCB.IsChecked) { $Buttontxt = "Run Script with Checked Services" } Else { $Buttontxt = "Run Script" }
         $WPF_RunScriptButton.IsEnabled = $true
+        If($WPF_ServiceConfig.SelectedIndex + 1 -eq $WPF_ServiceConfig.Items.Count) {
+            $Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
+            If(!($ServiceConfigFile) -or (!(Test-Path $ServiceConfigFile -PathType Leaf))) { 
+                $WPF_RunScriptButton.IsEnabled = $false
+                $Buttontxt = "Run Disabled, No Custom Service Selected or Doesn't exist."
+                $WPF_LoadServicesButton.IsEnabled = $false
+            } Else {
+                $WPF_LoadServicesButton.IsEnabled = $true
+            }
+        }
     }
     $WPF_RunScriptButton.content = $Buttontxt
 }
@@ -616,12 +624,17 @@ Function Gui-Done {
 
 Function Generate-Services {
     $removecb = $false
-    If($ServicesGenerated){ $Tmp = $BVService ;$removecb = $true }
-    If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
-    
+    If($ServicesGenerated){ $Tmp = $BVService ;$removecb = $true } ElseIf(!($CurrServices)){ $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
+
     $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
-    If($Black_Viper -eq $WPF_ServiceConfig.Items.Count){ $Script:LoadServiceConfig = 1 }
-    If($WPF_RadioAll.IsChecked){ $FullMin = "-Full" } Else { $FullMin = "-Min" }
+    If($Black_Viper -eq $WPF_ServiceConfig.Items.Count){
+        $Script:LoadServiceConfig = 1
+        $ServiceFilePath = $WPF_LoadFileTxtBox.Text
+    } Else {
+        If($WPF_RadioAll.IsChecked){ $FullMin = "-Full" } Else { $FullMin = "-Min" }
+        $Script:LoadServiceConfig = 0
+        $ServiceFilePath = $filebase + "BlackViper.csv"
+    }
 
     Switch($Black_Viper){
         {$LoadServiceConfig -eq 1} { $Script:BVService = "StartType" ;Break }
@@ -629,14 +642,12 @@ Function Generate-Services {
         2 { ($Script:BVService="Safe"+$IsLaptop+$FullMin) ;$BVSAlt = "Safe"+$IsLaptop+"-Full";Break }
         3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
     }
-    If($LoadServiceConfig -eq 1){ $ServiceFilePath = $WPF_LoadFileTxtBox.Text } Else { $ServiceFilePath = $filebase + "BlackViper.csv" }
+
+    If($Tmp -ne $BVService){ If($Tmp -eq "StartType" -or $BVService -eq "StartType"){ $WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $false} }
+
     [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
-
-    If($removecb) {
-        If($Tmp -ne $BVService){ If($Tmp -eq "StartType" -or $Script:BVService -eq "StartType"){ $WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $false} }
-    }
-
     [System.Collections.ArrayList]$Script:ServiceCBList = @()
+
     ForEach($item In $ServCB) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
