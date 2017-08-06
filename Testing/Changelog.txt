@@ -1,13 +1,13 @@
 -----------------------------------------------------------------------------------
-3.4.3 (08-05-2017)
+3.5.0 (08-06-2017)
 
 Fixed a bug that caused unchecked/checked services not to skip/run
 Thanks to Scott C for notifying me about the bug
 
-Fixed a bug that didnt save selected services to file
-Fixed a bug with log file
+Fixed a bug with log file Not working
 
 Fixed Known Bug/Issue listed in 3.4.0
+Misc Improvement/Bug Fix
 
 Changed the Run button to say "Run Script with Checked Services" if you check the box
   that says "Use Checked Services"
