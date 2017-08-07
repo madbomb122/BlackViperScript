@@ -1,9 +1,9 @@
 **Current Version** <br />
-**Script:** `3.5.0` (August 06, 2017) <br />
+**Script:** `3.5.1` (August 07, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 # Description
-Easy to use Script that can set Windows 10 services based on Black Viper's Service Configurations. <br />
+This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script. <br />
 
 Black Viper's Service Configurations from http://www.blackviper.com/
 
