@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.5"
-$Minor_Version = "0"
-$Script_Date = "Aug-06-2017"
+$Minor_Version = "1"
+$Script_Date = "Aug-07-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -366,10 +366,10 @@ $inputXML = @"
  <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,276,0,0" VerticalAlignment="Top" Height="25"/>
  <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
  <Button x:Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="0,238,0,0" VerticalAlignment="Top" Width="474" Height="20" FontWeight="Bold"/>
- <Button x:Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="158" FontStyle="Italic"/>
- <Button x:Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="158,259,0,0" VerticalAlignment="Top" Width="158" FontStyle="Italic"/>
- <Button x:Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="316,259,0,0" VerticalAlignment="Top" Width="158" FontStyle="Italic"/>
- <TextBox x:Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="125" IsEnabled="False"/>
+ <Button x:Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="114,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic"/>
+ <Button x:Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="228,259,0,0" VerticalAlignment="Top" Width="117" FontStyle="Italic"/>
+ <Button x:Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="345,259,0,0" VerticalAlignment="Top" Width="129" FontStyle="Italic"/>
+ <Button x:Name="DonateButton" Content="Donate to me" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic"/> <TextBox x:Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="125" IsEnabled="False"/>
  <TextBox x:Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="345,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="129" IsEnabled="False"/>
  <TextBox x:Name="Release_Type_Txt" HorizontalAlignment="Left" Height="24" Margin="207,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
  <TabControl x:Name="TabControl" Height="235" VerticalAlignment="Top">
@@ -418,13 +418,15 @@ $inputXML = @"
    <Label x:Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
    <CheckBox x:Name="CustomBVCB" Content="Use Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
   </TabItem>
-  <TabItem x:Name="Dev_Option_Tab" Header="Dev Option/Contact" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
+  <TabItem x:Name="Dev_Option_Tab" Header="Dev Option/Contact/About" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <CheckBox x:Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
    <CheckBox x:Name="DevLog_CB" Content="Dev Log" HorizontalAlignment="Left" Margin="9,33,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-   <Button x:Name="EMail" Content="e-mail Madbomb122" HorizontalAlignment="Left" Margin="9,55,0,0" VerticalAlignment="Top" Width="123"/>
+   <Button x:Name="EMail" Content="e-mail Madbomb122" HorizontalAlignment="Left" Margin="12,66,0,0" VerticalAlignment="Top" Width="123"/>
    <Label Content="If your having problems email me&#xD;&#xA;&#xD;&#xA;e-mail: Madbomb122@gmail.com" HorizontalAlignment="Left" Margin="200,10,0,0" VerticalAlignment="Top" Width="190"/>
    <Label Content="&lt;-- with a 'Dev Log' if asked to." HorizontalAlignment="Left" Margin="178,26,0,0" VerticalAlignment="Top"/>
-   <Label Content="Before contacting me, make sure your&#xD;&#xA;question/problem isn't answered in the faqs." HorizontalAlignment="Left" Margin="9,81,0,0" VerticalAlignment="Top" FontWeight="Bold"/></Grid>
+   <Label Content="Please check FAQ on my Github before contacting me." HorizontalAlignment="Left" Margin="135,63,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+   <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,90,0,0" Stroke="Black" VerticalAlignment="Top"/>
+   <Label Content="This script lets you set Windows 10's services based on Black Viper's Service &#xD;&#xA;Configurations, your own Service Configuration (If in a proper format), or a backup &#xD;&#xA;of your Service Configurations made by this script.&#xD;&#xA;&#xD;&#xA;This script was created by MadBomb122." HorizontalAlignment="Left" Margin="11,101,0,0" VerticalAlignment="Top" Width="450" Height="91"/></Grid>
   </TabItem>
  </TabControl>
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,237,0,0" Stroke="Black" VerticalAlignment="Top"/>
@@ -503,6 +505,7 @@ $inputXML = @"
     $WPF_EditionCheck_CB.Add_Click({ RunDisableCheck })
     $WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
     $WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
+    $WPF_DonateButton.Add_Click({ OpenWebsite "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" })
     $WPF_LoadServicesButton.Add_Click({ Generate-Services })
     $WPF_SaveCustomSrvButton.Add_Click({ Save_Service ;[Windows.Forms.MessageBox]::Show("Custom Service file saved as '$filebase$env:computername-Custom-Service.csv'","File Saved", 'OK') })
     $WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK') })
