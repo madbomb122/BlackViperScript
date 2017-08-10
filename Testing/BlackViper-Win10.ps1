@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.5"
-$Minor_Version = "1"
-$Script_Date = "Aug-07-2017"
+$Minor_Version = "2"
+$Script_Date = "Aug-09-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -28,7 +28,7 @@ $Release_Type = "Testing"
 ## !!                                            !!
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-<#--------------------------------------------------------------------------------
+<#------------------------------------------------------------------------------
 Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
 The MIT License (MIT)
@@ -51,9 +51,9 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
---------------------------------------------------------------------------------#>
 
-<#--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
 .Prerequisite to run script
     System: Windows 10 x64
     Edition: Home or Pro     (Can run on other Edition AT YOUR OWN RISK)
@@ -116,7 +116,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
   -snis          (Show not installed Services)
---------------------------------------------------------------------------------#>
+------------------------------------------------------------------------------#>
 ##########
 # Pre-Script -Start
 ##########
@@ -451,19 +451,20 @@ $inputXML = @"
     $Runspace.Open()
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
     [System.Collections.ArrayList]$VarList = Get-Variable "WPF_*_CB"
+    [System.Collections.ArrayList]$CNoteList = Get-Variable "WPF_CustomNote*"
 
     $WPF_ServiceConfig.add_SelectionChanged({
         If(($WPF_ServiceConfig.SelectedIndex+1) -eq $WPF_ServiceConfig.Items.Count) {
             $WPF_RadioAll.IsEnabled = $false
             $WPF_RadioMin.IsEnabled = $false
-            For($i=1; $i -lt 4; $i++) { $(Get-Variable -Name "WPF_CustomNote$i" -ValueOnly).Visibility = 'Visible' }
+            ForEach($Var in $CNoteList) { $Var.Value.Visibility = 'Visible' }
             $WPF_LoadFileTxtBox.Visibility = 'Visible'
             $WPF_btnOpenFile.Visibility = 'Visible'
         } Else {
             $WPF_LoadServicesButton.IsEnabled = $true
             $WPF_RadioAll.IsEnabled = $true
             $WPF_RadioMin.IsEnabled = $true
-            For($i=1; $i -lt 4; $i++) { $(Get-Variable -Name "WPF_CustomNote$i" -ValueOnly).Visibility = 'Hidden' }
+            ForEach($Var in $CNoteList) { $Var.Value.Visibility = 'Hidden' }
             $WPF_LoadFileTxtBox.Visibility = 'Hidden'
             $WPF_btnOpenFile.Visibility = 'Hidden'
         }
@@ -534,16 +535,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     ForEach($Var in $VarList) {
         If($(Get-Variable -Name ($Var.Name.split('_')[1]) -ValueOnly) -eq 1){ $SetValue = $true } Else { $SetValue = $false }
-        $(Get-Variable -Name $Var.Name -ValueOnly).IsChecked = $SetValue
+        $Var.Value.IsChecked = $SetValue
     }
 
     If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $true } Else { $WPF_RadioMin.IsChecked = $true }
-    If($ScriptLog -eq 1) { 
-        $WPF_ScriptLog_CB.IsChecked = $true
-        $WPF_LogNameInput.IsEnabled = $true
-    } Else {
-        $WPF_LogNameInput.IsEnabled = $false
-    }
+    If($ScriptLog -eq 1) { $WPF_ScriptLog_CB.IsChecked = $true ;$WPF_LogNameInput.IsEnabled = $true} Else { $WPF_LogNameInput.IsEnabled = $false }
 
     $WPF_EditionConfig.SelectedIndex = 1
     If($EditionCheck -eq 1 -or $EditionCheck -eq "Pro") {
@@ -613,14 +609,14 @@ Function RunDisableCheck {
 
 Function Gui-Done {
     ForEach($Var in $VarList) {
-        If($(Get-Variable -Name $Var.Name -ValueOnly).IsChecked){ $SetValue = 1 } Else { $SetValue = 0 }
+        If($Var.Value.IsChecked){ $SetValue = 1 } Else { $SetValue = 0 }
         Set-Variable -Name ($Var.Name.split('_')[1]) -Value $SetValue -scope Script
     }
-
     If($WPF_RadioAll.IsChecked) { $Script:All_or_Min = "-full" } Else { $Script:All_or_Min = "-min" }
     If($WPF_ScriptLog_CB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
     If($WPF_EditionCheck_CB.IsChecked) { $Script:EditionCheck = $WPF_EditionConfig.Text }
     If($WPF_CustomBVCB.IsChecked) { GetCustomBV }
+
     $Form.Close()
     Black_Viper_Set $Black_Viper $All_or_Min
 }
@@ -655,12 +651,12 @@ Function Generate-Services {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
         If($ServiceName -like "*_*"){ $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
-        If($CurrServices | Where Name -eq $ServiceName){ $ServiceCurrType = ($CurrServices | Where Name -eq $ServiceName).StartType } Else { $ServiceCurrType = $false} 
+        If($CurrServices.Where{$_.Name -eq $ServiceName}){ $ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType } Else { $ServiceCurrType = $false} 
 
         If($ServiceCurrType -ne $false) {
             If($ServiceTypeNum -eq 0){ $ServiceTypeNum1 = $($item.$BVSAlt) ;$ServiceType = $ServicesTypeList[$ServiceTypeNum1] } Else { $ServiceType = $ServicesTypeList[$ServiceTypeNum] }
             If($ServiceName -is [system.array]){ $ServiceName = $ServiceName[0] }
-            $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
+            $ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
             $DispTemp = "$ServiceCommName - $ServiceCurrType -> $ServiceType"
             If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed Start)" }
             $CBName = "WPF_"+$ServiceName + "_1CB"
@@ -675,11 +671,13 @@ Function Generate-Services {
             If(!($ServicesGenerated)){ $WPF_StackCBHere.AddChild($checkbox) }
             $checkbox.Content = "$DispTemp"
             If($ServiceTypeNum -eq 0){ $checkbox.IsChecked = $false } Else { $checkbox.IsChecked = $true }
-
-            $Object = New-Object -TypeName PSObject
-            Add-Member -InputObject $Object -memberType NoteProperty -name "CBName" -value $CBName
-            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
-            Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $ServiceTypeNum
+         
+            $Object = New-Object psobject -Property @{
+                Value = $checkbox
+                CBName = $CBName
+                ServiceName = $ServiceName
+                StartType = $ServiceTypeNum
+            }
             $Script:ServiceCBList += $Object
         }
     }
@@ -699,7 +697,7 @@ Function GetCustomBV {
     $Script:LoadServiceConfig = 2
     [System.Collections.ArrayList]$Script:csvTemp = @()
     ForEach($item In $ServiceCBList) {
-        If($(Get-Variable -Name $item.CBName -ValueOnly).IsChecked) {
+        If($item.Value.IsChecked) {
             $Object = New-Object -TypeName PSObject
             Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value ($item.ServiceName)
             Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value ($item.StartType)
@@ -788,7 +786,7 @@ Function Save_Service {
     If($WPF_CustomBVCB.IsChecked) {
         $ServiceSavePath += "-Custom-Service.csv"
         ForEach($item In $ServiceCBList) {
-            If($(Get-Variable -Name $item.CBName -ValueOnly).IsChecked) {
+            If($item.Value.IsChecked) {
                 $ServiceName = $item.ServiceName
                 If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
                 $Object = New-Object -TypeName PSObject
@@ -836,7 +834,7 @@ Function ServiceSet ([String]$BVService) {
     ForEach($item In $csv) {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
-        $ServiceCommName = ($CurrServices | Where Name -eq $ServiceName).DisplayName
+        $ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
         If($ServiceTypeNum -eq 0 -and $ShowSkipped -eq 1) {
             If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else { $DispTemp = "Skipping $ServiceName" }
             DisplayOut $DispTemp  14 0
@@ -873,8 +871,8 @@ Function ServiceSet ([String]$BVService) {
 }
 
 Function ServiceCheck ([string]$S_Name,[string]$S_Type) {
-    If($CurrServices | Where Name -eq $S_Name) {
-        $C_Type = ($CurrServices | Where Name -eq $S_Name).StartType
+    If($CurrServices.Where{$_.Name -eq $S_Name}) {
+        $C_Type = ($CurrServices.Where{$_.Name -eq $S_Name}).StartType
         If($S_Type -ne $C_Type) {
             If($S_Name -eq 'lfsvc' -and $C_Type -eq 'disabled') {
                 If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
