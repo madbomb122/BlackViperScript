@@ -186,6 +186,7 @@ Function RightLine { DisplayOutMenu " |" 14 0 1 0 }
 Function OpenWebsite ([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile ([String]$Url,[String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function ShowInvalid ([Int]$InvalidA) { If($InvalidA -eq 1) { Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
+Function LaptopCheck { $Script:PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType ;If($PCType -ne 2) { Return "-Desk" } Return "-Lap" }
 
 Function DisplayOutMenu ([String]$TxtToDisplay,[int]$TxtColor,[int]$BGColor,[int]$NewLine,[int]$LogOut) {
     If($NewLine -eq 0) {
@@ -261,11 +262,6 @@ Function DiagnosticCheck ([int]$Bypass) {
         DisplayOutMenu " Args = $PassedArg" 15 0 1 1
         DisplayOutMenu " ---------End---------`n" 15 0 1 1
     }
-}
-
-Function LaptopCheck {
-    $Script:PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType
-    If($PCType -ne 2) { Return "-Desk" } Return "-Lap"
 }
 
 ##########
@@ -438,9 +434,8 @@ $inputXML = @"
 </Window>
 "@
 
-    $inputXML = $inputXML -replace "x:N",'N'
+    [xml]$XAML = $inputXML -replace "x:N",'N'
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-    [xml]$XAML = $inputXML
     $reader=(New-Object System.Xml.XmlNodeReader $xaml)
     $Form=[Windows.Markup.XamlReader]::Load( $reader )
     $xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name) -scope Script} 
@@ -533,10 +528,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     [void]$WPF_EditionConfig.Items.Add("Home")
     [void]$WPF_EditionConfig.Items.Add("Pro")
 
-    ForEach($Var in $VarList) {
-        If($(Get-Variable -Name ($Var.Name.split('_')[1]) -ValueOnly) -eq 1){ $SetValue = $true } Else { $SetValue = $false }
-        $Var.Value.IsChecked = $SetValue
-    }
+    ForEach($Var in $VarList) { If($(Get-Variable -Name ($Var.Name.split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $true } Else { $Var.Value.IsChecked = $false } }
 
     If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $true } Else { $WPF_RadioMin.IsChecked = $true }
     If($ScriptLog -eq 1) { $WPF_ScriptLog_CB.IsChecked = $true ;$WPF_LogNameInput.IsEnabled = $true} Else { $WPF_LogNameInput.IsEnabled = $false }
@@ -672,7 +664,7 @@ Function Generate-Services {
             $checkbox.Content = "$DispTemp"
             If($ServiceTypeNum -eq 0){ $checkbox.IsChecked = $false } Else { $checkbox.IsChecked = $true }
          
-            $Object = New-Object psobject -Property @{
+            $Object = New-Object PSObject -Property @{
                 Value = $checkbox
                 CBName = $CBName
                 ServiceName = $ServiceName
@@ -698,9 +690,10 @@ Function GetCustomBV {
     [System.Collections.ArrayList]$Script:csvTemp = @()
     ForEach($item In $ServiceCBList) {
         If($item.Value.IsChecked) {
-            $Object = New-Object -TypeName PSObject
-            Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value ($item.ServiceName)
-            Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value ($item.StartType)
+            $Object = New-Object PSObject -Property @{
+                ServiceName = $item.ServiceName
+                StartType = $item.StartType
+            }
             $Script:csvTemp+= $Object
         }
     }
@@ -789,10 +782,11 @@ Function Save_Service {
             If($item.Value.IsChecked) {
                 $ServiceName = $item.ServiceName
                 If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
-                $Object = New-Object -TypeName PSObject
-                Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
-                Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value ($item.StartType)
-                $SaveService+= $Object
+                $Object = New-Object PSObject -Property @{
+                   ServiceName = $ServiceName
+                   StartType = $item.StartType
+                }
+                $SaveService += $Object
             }
         }
     } Else {
@@ -812,9 +806,10 @@ Function Save_Service {
                 }
                 $ServiceName = $Service.Name
                 If($ServiceName -like "*_*") { $ServiceName = $ServiceName.split('_')[0] + "?????" }
-                $Object = New-Object -TypeName PSObject
-                Add-Member -InputObject $Object -memberType NoteProperty -name "ServiceName" -value $ServiceName
-                Add-Member -InputObject $Object -memberType NoteProperty -name "StartType" -value $StartType
+                $Object = New-Object PSObject -Property @{
+                   ServiceName = $ServiceName
+                   StartType = $StartType
+                }
                 $SaveService += $Object
             }
         }
