@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.5"
-$Minor_Version = "3"
-$Script_Date = "Aug-10-2017"
+$Minor_Version = "4"
+$Script_Date = "Aug-11-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -342,6 +342,23 @@ Function Update-Window {
     $form.Dispatcher.Invoke([action]{ If ($PSBoundParameters['AppendContent']) { $Control.AppendText($Value) } Else { $Control.$Property = $Value } }, "Normal")
 }
 
+Function OpenSaveDiaglog([Int]$SorO){
+    If($SorO -eq 0) { $SOFileDialog = New-Object System.Windows.Forms.OpenFileDialog } Else { $SOFileDialog = New-Object System.Windows.Forms.SaveFileDialog }
+    $SOFileDialog.initialDirectory = $filebase
+    $SOFileDialog.filter = "CSV (*.csv)| *.csv"
+    $SOFileDialog.ShowDialog() | Out-Null
+    If($SorO -eq 0) { $Script:ServiceConfigFile = $SOFileDialog.filename ;$WPF_LoadFileTxtBox.Text = $ServiceConfigFile ;RunDisableCheck } Else { Save_Service $SOFileDialog.filename }
+}
+
+Function HideCustomSrvStuff {
+    $WPF_LoadServicesButton.IsEnabled = $True
+    $WPF_RadioAll.IsEnabled = $True
+    $WPF_RadioMin.IsEnabled = $True
+    ForEach($Var in $CNoteList) { $Var.Value.Visibility = 'Hidden' }
+    $WPF_LoadFileTxtBox.Visibility = 'Hidden'
+    $WPF_btnOpenFile.Visibility = 'Hidden'
+}
+
 Function Gui-Start {
     Clear-Host
     DisplayOutMenu "Preparing GUI, Please wait..." 15 0 1 0
@@ -457,23 +474,18 @@ $inputXML = @"
     [System.Collections.ArrayList]$CNoteList = Get-Variable "WPF_CustomNote*"
 
     $WPF_ServiceConfig.add_SelectionChanged({
-        If(($WPF_ServiceConfig.SelectedIndex+1) -eq $WPF_ServiceConfig.Items.Count) {
+        If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
             $WPF_RadioAll.IsEnabled = $False
             $WPF_RadioMin.IsEnabled = $False
             ForEach($Var in $CNoteList) { $Var.Value.Visibility = 'Visible' }
             $WPF_LoadFileTxtBox.Visibility = 'Visible'
             $WPF_btnOpenFile.Visibility = 'Visible'
         } Else {
-            $WPF_LoadServicesButton.IsEnabled = $True
-            $WPF_RadioAll.IsEnabled = $True
-            $WPF_RadioMin.IsEnabled = $True
-            ForEach($Var in $CNoteList) { $Var.Value.Visibility = 'Hidden' }
-            $WPF_LoadFileTxtBox.Visibility = 'Hidden'
-            $WPF_btnOpenFile.Visibility = 'Hidden'
+            HideCustomSrvStuff
         }
         RunDisableCheck
     })
-
+<#
     $WPF_btnOpenFile.Add_Click({
         $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
         $OpenFileDialog.initialDirectory = $filebase
@@ -484,10 +496,15 @@ $inputXML = @"
         RunDisableCheck
     })
 
+    $WPF_SaveCustomSrvButton.Add_Click({ Save_Service ;[Windows.Forms.MessageBox]::Show("Custom Service file saved as '$filebase$env:computername-Custom-Service.csv'","File Saved", 'OK') })
+#>
+    $WPF_btnOpenFile.Add_Click({ OpenSaveDiaglog 0 })
+    $WPF_SaveCustomSrvButton.Add_Click({ OpenSaveDiaglog 1 })
+
     $WPF_RunScriptButton.Add_Click({
         $Script:RunScript = 1
         $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
-        If($Black_Viper -eq $WPF_ServiceConfig.Items.Count) {
+        If($Black_Viper -eq $BVCount) {
             $Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
             If(!(Test-Path $ServiceConfigFile -PathType Leaf) -and $ServiceConfigFile -ne $null) {
                 [Windows.Forms.MessageBox]::Show("The File '$ServiceConfigFile' does not exist","Error", 'OK')
@@ -511,7 +528,6 @@ $inputXML = @"
     $WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
     $WPF_DonateButton.Add_Click({ OpenWebsite "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" })
     $WPF_LoadServicesButton.Add_Click({ Generate-Services })
-    $WPF_SaveCustomSrvButton.Add_Click({ Save_Service ;[Windows.Forms.MessageBox]::Show("Custom Service file saved as '$filebase$env:computername-Custom-Service.csv'","File Saved", 'OK') })
     $WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK') })
 
     $CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
@@ -530,6 +546,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $True } Else { $WPF_RadioMin.IsChecked = $True }
     If($ScriptLog -eq 1) { $WPF_ScriptLog_CB.IsChecked = $True ;$WPF_LogNameInput.IsEnabled = $True} Else { $WPF_LogNameInput.IsEnabled = $False }
     If($IsLaptop -eq "-Lap"){ $WPF_ServiceConfig.Items.RemoveAt(2) }
+    $Script:BVCount = $WPF_ServiceConfig.Items.Count
 
     ForEach($Var in $VarList) { If($(Get-Variable -Name ($Var.Name.split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else { $Var.Value.IsChecked = $False } }
 
@@ -550,6 +567,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     $WPF_Service_Ver_Txt.Text = "$ServiceVersion ($ServiceDate)"
     $WPF_Release_Type_Txt.Text = $Release_Type
     $Script:ServicesGenerated = $False
+    HideCustomSrvStuff
     RunDisableCheck
     Clear-Host
     DisplayOutMenu "Displaying GUI Now" 14 0 1 0
@@ -585,7 +603,7 @@ Function RunDisableCheck {
     } Else {
         If($WPF_CustomBVCB.IsChecked) { $Buttontxt = "Run Script with Checked Services" } Else { $Buttontxt = "Run Script" }
         $WPF_RunScriptButton.IsEnabled = $True
-        If($WPF_ServiceConfig.SelectedIndex + 1 -eq $WPF_ServiceConfig.Items.Count) {
+        If($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
             $Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
             If(!($ServiceConfigFile) -or (!(Test-Path $ServiceConfigFile -PathType Leaf))) { 
                 $WPF_RunScriptButton.IsEnabled = $False
@@ -600,10 +618,7 @@ Function RunDisableCheck {
 }
 
 Function Gui-Done {
-    ForEach($Var in $VarList) {
-        If($Var.Value.IsChecked){ $SetValue = 1 } Else { $SetValue = 0 }
-        Set-Variable -Name ($Var.Name.split('_')[1]) -Value $SetValue -scope Script
-    }
+    ForEach($Var in $VarList) { If($Var.Value.IsChecked){ $SetValue = 1 } Else { $SetValue = 0 } ;Set-Variable -Name ($Var.Name.split('_')[1]) -Value $SetValue -scope Script }
     If($WPF_RadioAll.IsChecked) { $Script:All_or_Min = "-full" } Else { $Script:All_or_Min = "-min" }
     If($WPF_ScriptLog_CB.IsChecked) { $Script:LogName = $WPF_LogNameInput.Text }
     If($WPF_EditionCheck_CB.IsChecked) { $Script:EditionCheck = $WPF_EditionConfig.Text }
@@ -618,7 +633,7 @@ Function Generate-Services {
     If($ServicesGeneratedA){ $Tmp = $BVService ;$removecb = $True } ElseIf(!($CurrServices)){ $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
 
     $Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
-    If($Black_Viper -eq $WPF_ServiceConfig.Items.Count){
+    If($Black_Viper -eq $BVCount){
         $Script:LoadServiceConfig = 1
         $ServiceFilePath = $WPF_LoadFileTxtBox.Text
     } Else {
@@ -643,7 +658,7 @@ Function Generate-Services {
         $ServiceTypeNum = $($item.$BVService)
         $ServiceName = $($item.ServiceName)
         If($ServiceName -like "*_*"){ $ServiceName = $CurrServices.Name -like (-join($ServiceName.replace('?',''),"*")) }
-		If($CurrServices.Name -contains $ServiceName) { $ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType } Else { $ServiceCurrType = $False} 
+        If($CurrServices.Name -contains $ServiceName) { $ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType } Else { $ServiceCurrType = $False} 
 
         If($ServiceCurrType -ne $False) {
             If($ServiceTypeNum -eq 0){ $ServiceType = $ServicesTypeList[$($item.$BVSAlt)] } Else { $ServiceType = $ServicesTypeList[$ServiceTypeNum] }
@@ -682,7 +697,7 @@ Function Generate-Services {
         $WPF_SaveCustomSrvButton.Visibility = 'Visible'
         $WPF_LoadServicesButton.content = "Reload"
         $Script:ServicesGenerated = $True
-		$Script:ServicesGeneratedA = $True
+        $Script:ServicesGeneratedA = $True
     }
 }
 
@@ -739,7 +754,7 @@ Function ServiceBA ([String]$ServiceBA) {
     }
 }
 
-Function Save_Service {
+Function Save_Service([String]$SavePath) {
     $Skip_Services = @(
     "PimIndexMaintenanceSvc_",
     "DevicesFlowUserSvc_",
@@ -815,7 +830,9 @@ Function Save_Service {
             }
         }
     }
+    If($SavePath -ne $null) { $ServiceSavePath = $SavePath}
     $SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
+    If($SavePath -ne $null) { [Windows.Forms.MessageBox]::Show("File saved as '$SavePath'","File Saved", 'OK') }
 }
 
 Function ServiceSet ([String]$BVService) {
