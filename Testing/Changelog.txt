@@ -1,8 +1,9 @@
 -----------------------------------------------------------------------------------
-3.5.3 (08-10-2017)
+3.6.0 (08-12-2017)
 
 Added a donate button
 Added an About
+Added ability to set a filename when you are saving the custom services
 
 Script Improvements
 
