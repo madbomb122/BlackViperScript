@@ -42,16 +42,16 @@ Download/Save the following files <br />
 Script File: `BlackViper-Win10.ps1` -Need <br />
 Service Config File: `BlackViper.csv` -Need <br />
 Bat File: `_Win10-BlackViper.bat` -Recommended <br />
-  **Note: DO NOT RENAME THE FILES**<br />
+  **Note 1: DO NOT RENAME THE FILES**<br />
+  **Note 2: HAVE THE FILES IN THE SAME DIRECTORY**<br />
 Next follow the **Basic Usage** or **Advanced Usage**
 
 # Basic_Usage
 Run the Script by bat file `_Win10-BlackViper.bat` (Recommended) <br />
+or <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
 Select desired Services Configuration <br />
-*1. Default <br />
-2. Safe (Recommended Option) <br />
-3. Tweaked (Not supported for laptop ATM)<br />*
+Select the options you want and then click run script <br />
 
 # Advanced_Usage
 Use one of the following Methods you can 
