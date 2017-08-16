@@ -49,7 +49,8 @@ Next follow the **Basic Usage** or **Advanced Usage**
 # Basic_Usage
 Run the Script by bat file `_Win10-BlackViper.bat` (Recommended) <br />
 or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1` <br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File c:/BlackViper-Win10.ps1`  <br />
+*For the above, Please note you need change the c:/ to the fullpath of your file* <br />
 Select desired Services Configuration <br />
 Select the options you want and then click run script <br />
 
