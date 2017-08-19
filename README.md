@@ -1,5 +1,5 @@
 **Current Version** <br />
-**Script:** `3.6.0` (August 12, 2017) <br />
+**Script:** `3.6.1` (August 19, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 # Description
