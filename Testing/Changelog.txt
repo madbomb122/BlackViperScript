@@ -1,8 +1,13 @@
 -----------------------------------------------------------------------------------
-3.6.2 (08-22-2017)
+3.6.3 (08-22-2017)
 
 Slight Improvement of Gui load speed
 Fixed a Typo noticed by Prettyclaire82
+
+Fixed a bug if you load a custom service file then use the Services List tab then
+load another custom service file, the service list tab wont refresh
+
+Script Improvements
 
 -----------------------------------------------------------------------------------
 3.6.0 (08-12-2017)
