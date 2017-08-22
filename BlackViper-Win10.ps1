@@ -12,8 +12,7 @@
 $Script_Version = "3.6"
 $Minor_Version = "2"
 $Script_Date = "Aug-22-2017"
-#$Release_Type = "Stable"
-$Release_Type = "Testing"
+$Release_Type = "Stable"
 ##########
 
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
