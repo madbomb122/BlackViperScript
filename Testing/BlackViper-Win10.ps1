@@ -10,7 +10,7 @@
 # Website: https://GitHub.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.6"
-$Minor_Version = "2"
+$Minor_Version = "3"
 $Script_Date = "Aug-22-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -260,7 +260,6 @@ Function DiagnosticCheck([Int]$Bypass) {
         DisplayOutMenu " ScriptVerCheck = $ScriptVerCheck" 15 0 1 1
         DisplayOutMenu " ServiceVerCheck = $ServiceVerCheck" 15 0 1 1
         DisplayOutMenu " InternetCheck = $InternetCheck" 15 0 1 1
-        DisplayOutMenu " ShowChanged = $ShowChanged" 15 0 1 1
         DisplayOutMenu " ShowAlreadySet = $ShowAlreadySet" 15 0 1 1
         DisplayOutMenu " ShowNonInstalled = $ShowNonInstalled" 15 0 1 1
         DisplayOutMenu " ShowSkipped = $ShowSkipped" 15 0 1 1
@@ -317,8 +316,8 @@ Function TOS {
         $Invalid = ShowInvalid $Invalid
         $TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
         Switch($TOS.ToLower()) {
-            { $_ -eq "n" -or $_ -eq "no" } { Exit ;Break }
-            { $_ -eq "y" -or $_ -eq "yes" } { $TOS = "Out" ;TOSyes ;Break }
+            {$_ -eq "n" -or $_ -eq "no"} { Exit ;Break }
+            {$_ -eq "y" -or $_ -eq "yes"} { $TOS = "Out" ;TOSyes ;Break }
             default { $Invalid = 1 ;Break }
         }
     } Return
@@ -354,7 +353,7 @@ Function OpenSaveDiaglog([Int]$SorO){
     $SOFileDialog.InitialDirectory = $filebase
     $SOFileDialog.Filter = "CSV (*.csv)| *.csv"
     $SOFileDialog.ShowDialog() | Out-Null
-    If($SorO -eq 0){ $Script:ServiceConfigFile = $SOFileDialog.filename ;$WPF_LoadFileTxtBox.Text = $ServiceConfigFile ;RunDisableCheck } Else{ Save_Service $SOFileDialog.filename }
+    If($SorO -eq 0){ $LoadSrvConfig = "Refresh" ;$Script:ServiceConfigFile = $SOFileDialog.filename ;$WPF_LoadFileTxtBox.Text = $ServiceConfigFile ;RunDisableCheck } Else{ Save_Service $SOFileDialog.filename }
 }
 
 Function HideCustomSrvStuff {
@@ -489,7 +488,8 @@ Function Gui-Start {
             $WPF_btnOpenFile.Visibility = 'Visible'
         } Else {
             HideCustomSrvStuff
-        } RunDisableCheck
+        }
+        RunDisableCheck
     })
 
     $WPF_RunScriptButton.Add_Click({
@@ -575,17 +575,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
 
-    If($WinEdition -eq "Home" -or $EditionCheck -eq "Home") {
-        $WPF_EditionConfig.SelectedIndex = 0
-    } Else {
-        $WPF_EditionConfig.SelectedIndex = 1
-    }
-
-    If(!($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home")) {
-        $WPF_EditionConfig.IsEnabled = $False
-    } Else {
-        $WPF_EditionCheck_CB.IsChecked = $True
-    }
+    If($WinEdition -eq "Home" -or $EditionCheck -eq "Home") { $WPF_EditionConfig.SelectedIndex = 0 } Else { $WPF_EditionConfig.SelectedIndex = 1 }
+    If(!($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home")) { $WPF_EditionConfig.IsEnabled = $False } Else { $WPF_EditionCheck_CB.IsChecked = $True }
 
     $WPF_LoadFileTxtBox.Text = $ServiceConfigFile
     $WPF_LogNameInput.Text = $LogName
@@ -610,14 +601,9 @@ Function RunDisableCheck {
 
 #    If($HomeEditions -Contains $WinEdition -or $EditionCheck -eq "Home" -or $WinSku -In 100..101) {
 #    } ElseIf($ProEditions -Contains $WinEdition -or $EditionCheck -eq "Pro" -or $WinSku -eq 48) {
-    If($EditionCheck -eq "Home" -or $WinSku -In 100..101) {
-    } ElseIf($EditionCheck -eq "Pro" -or $WinSku -eq 48) {
-    } Else {
-        $temp1 = "Edition"
-        $tempfail++
-    }
+    If(!(($EditionCheck -eq "Home" -or $WinSku -In 100..101) -or ($EditionCheck -eq "Pro" -or $WinSku -eq 48))){ $temp1 = "Edition" ;$tempfail++ }
 
-    If($BuildVer -lt $ForBuild -And $BuildCheck -ne 1) { $tempfail++ ; $temp2 = "Build" }
+    If($BuildVer -lt $ForBuild -And $BuildCheck -ne 1){ $tempfail++ ; $temp2 = "Build" }
     If($tempfail -ne 0) {
         $Buttontxt = "Run Disabled Due to "
         If($tempfail -eq 2) {
@@ -676,7 +662,13 @@ Function Generate-Services {
         3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
     }
 
-    If($OldBVService -ne $BVService){ If($OldBVService -eq "StartType" -or $BVService -eq "StartType"){ $WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $False } }
+    If(($OldBVService -ne $BVService) -and ($OldBVService -eq "StartType" -or $BVService -eq "StartType")){
+        $Clear = $True
+    } ElseIf($LoadSrvConfig -eq "Refresh" -and $BVService -eq "StartType"){
+        $Clear = $True
+    }
+
+    If($Clear){ $WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $False ;$LoadSrvConfig = 0 ;$Clear = $False }
     If(!($ServicesGenerated)){ [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath }
 
     [System.Collections.ArrayList]$Script:ServiceCBList = @()
@@ -713,8 +705,7 @@ Function Generate-Services {
                 CBName = $CBName
                 ServiceName = $ServiceName
                 StartType = $ServiceTypeNum
-            }
-            $ServiceCBList += $Object
+            } $ServiceCBList += $Object
         }
     }
 
@@ -738,8 +729,7 @@ Function GetCustomBV {
             $Object = New-Object PSObject -Property @{
                 ServiceName = $item.ServiceName
                 StartType = $item.StartType
-            }
-            $Script:csvTemp+= $Object
+            } $Script:csvTemp+= $Object
         }
     }
     [System.Collections.ArrayList]$Script:csv = $Script:csvTemp
@@ -797,8 +787,7 @@ Function Save_Service([String]$SavePath) {
                 $Object = New-Object PSObject -Property @{
                    ServiceName = $ServiceName
                    StartType = $item.StartType
-                }
-                $SaveService += $Object
+                } $SaveService += $Object
             }
         }
     } Else {
@@ -821,8 +810,7 @@ Function Save_Service([String]$SavePath) {
                 $Object = New-Object PSObject -Property @{
                    ServiceName = $ServiceName
                    StartType = $StartType
-                }
-                $SaveService += $Object
+                } $SaveService += $Object
             }
         }
     }
@@ -858,7 +846,7 @@ Function ServiceSet([String]$BVService) {
                     $DispTemp += " (Delayed Start)"
                     If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name "DelayedAutostart" -Type DWord -Value 1 }
                 }
-                If($ShowChanged -eq 1){ DisplayOut $DispTemp  11 0 }
+                DisplayOut $DispTemp  11 0
             } ElseIf($ServiceCurrType -eq "Already" -And $ShowAlreadySet -eq 1) {
                 $DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
                 If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed Start)" }
@@ -879,8 +867,8 @@ Function ServiceCheck([String]$S_Name, [String]$S_Type) {
     If($CurrServices.Name -Contains $S_Name) {
         $C_Type = ($CurrServices.Where{$_.Name -eq $S_Name}).StartType
         If($S_Type -ne $C_Type) {
-            If($S_Name -eq 'lfsvc' -And $C_Type -eq 'disabled') {
-                If(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3") { Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -recurse -Force }
+            If($S_Name -eq 'lfsvc' -And $C_Type -eq 'disabled' -And (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3")) {
+                Remove-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3" -Recurse -Force
             } ElseIf($S_Name -eq 'NetTcpPortSharing') {
                 If($NetTCP -Contains $CurrServices.Name){ Return "Manual" } Return $False
             } Return $C_Type
@@ -898,7 +886,7 @@ Function Black_Viper_Set([Int]$BVOpt, [String]$FullMin) {
     }
 }
 
-Function InternetCheck { If($InternetCheck -eq 1){ Return $True } ElseIf(!(Test-Connection -Computer GitHub.com -Count 1 -Quiet)){ Return $False } Return $True }
+Function InternetCheck { If($InternetCheck -eq 1 -or (Test-Connection -Computer GitHub.com -Count 1 -Quiet)){ Return $True } Return $False }
 
 Function CreateLog {
     If($DevLog -eq 1) {
@@ -911,7 +899,6 @@ Function CreateLog {
         $Script:AcceptToS = "Accepted-Dev-Switch"
         $Script:ShowNonInstalled = 1
         $Script:ShowSkipped = 1
-        $Script:ShowChanged = 1
         $Script:ShowAlreadySet = 1
     }
 
@@ -1159,7 +1146,7 @@ Function GetArgs {
               "-devl" { $Script:DevLog = 1 ;Break }
               "-sbc" { $Script:BuildCheck = 1 ;Break }
               "-sech" { $Script:EditionCheck = "Home" ;Break }
-              {$_ -eq "-secp" -or $_ -eq "-sec" } { $Script:EditionCheck = "Pro" ;Break }
+              {$_ -eq "-secp" -or $_ -eq "-sec"} { $Script:EditionCheck = "Pro" ;Break }
             }
         }
     }
@@ -1274,9 +1261,6 @@ $Script:ScriptVerCheck = 0      #0 = Skip Check for update of Script File
 $Script:ServiceVerCheck = 0     #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File
 # Note: If found will Auto download will be used
-
-$Script:ShowChanged = 1         #0 = Dont Show Changed Services
-                                #1 = Show Changed Services
 
 $Script:ShowAlreadySet = 1      #0 = Dont Show Already set Services
                                 #1 = Show Already set Services
