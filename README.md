@@ -1,3 +1,5 @@
+I am currently working on a seperate file that will download updates (to replace the old file, instead of creating a new file, so you dont have to rename the file or edit the bat file). The file will also allow you to download my Black Viper Script or my Win 10 Script and the needed files (if any). <br />
+
 **Current Version** <br />
 **Script:** `3.6.2` (August 22, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
