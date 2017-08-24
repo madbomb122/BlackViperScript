@@ -1,4 +1,6 @@
-I am currently working on a seperate file that will download updates (to replace the old file, instead of creating a new file, so you dont have to rename the file or edit the bat file). The file will also allow you to download my Black Viper Script or my Win 10 Script and the needed files (if any). <br />
+I am currently working on a seperate script file that will <br />
+1. Allow you to download my Black Viper Script or my Win 10 Script and the needed files (if any). <br />
+2. The script will use to Download updates (to replace the old file, instead of creating a new file, so you dont have to rename the file or edit the bat file). (If this script is present) <br />
 
 **Current Version** <br />
 **Script:** `3.6.2` (August 22, 2017) <br />
