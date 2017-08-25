@@ -180,25 +180,31 @@ echo  บณ                                                                        
 echo  บณ                        Download Options (Toggles)                        ณบ
 echo  บณ                     --------------------------------                     ณบ
 If /i !TestV!==no (
-echo  บณ                      4^) Test Version of Script                           ณบ
+echo  บณ                      4^) Dont Download Test Version ^(Stable^) of Script    ณบ
 ) Else (
-echo  บณ                      4^) Stable Version of Script                         ณบ
+echo  บณ                      4^) Download Test Version of Script                  ณบ
 )
 If /i !BatDownload!==no (
 echo  บณ                      5^) Dont Download bat file                           ณบ
 ) Else (
 echo  บณ                      5^) Download bat file                                ณบ
 )
+If /i !RunArg!==no (
+echo  บณ                      6^) Dont Run Script after download**                 ณบ
+) Else (
+echo  บณ                      6^) Run A Script after download**                    ณบ
+)
 echo  บณ                                                                          ณบ
 echo  บณ                     --------------------------------                     ณบ
 echo  บณ                      Q^) Quit                                             ณบ
 echo  บณ                                                                          ณบ
 echo  บณ  *Note: Will also download the Service file for Black Viper Script.      ณบ
+echo  บณ  **Note: Will NOT Run Script if downloading both Scripts. ^(Option 3^)     ณบ
 echo  บณ                                                                          ณบ
 echo  บภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤูบ
 echo  ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
 echo.
-CHOICE /C 12345Q /N /M "Please Input Choice:"
+CHOICE /C 123456Q /N /M "Please Input Choice:"
 IF %ERRORLEVEL%==1 goto BV
 IF %ERRORLEVEL%==2 goto W10
 IF %ERRORLEVEL%==3 (
@@ -221,6 +227,14 @@ IF %ERRORLEVEL%==5 (
 	)
 	goto MainMenu
 )
-IF %ERRORLEVEL%==6 GOTO:EOF
+IF %ERRORLEVEL%==6 (
+	If /i !RunArg!==no (
+		Set RunArg=yes
+	) Else (
+		Set RunArg=no
+	)
+	goto MainMenu
+)
+IF %ERRORLEVEL%==7 GOTO:EOF
 
 ENDLOCAL DISABLEDELAYEDEXPANSION
