@@ -1,4 +1,4 @@
-I am currently working on a seperate script file that will <br />
+I am currently working on a seperate script file that will (Avilable in Testing folder)<br />
 1. Allow you to download my Black Viper Script or my Win 10 Script and the needed files (if any). <br />
 2. The script will use to Download updates (to replace the old file, instead of creating a new file, so you dont have to rename the file or edit the bat file). (If this script is present) <br />
 
