@@ -1,8 +1,11 @@
 -----------------------------------------------------------------------------------
-3.6.2 (08-22-2017)
+3.6.3 (08-25-2017)
 
 Slight Improvement of Gui load speed
 Fixed a Typo noticed by Prettyclaire82
+
+Fixed Bug that didnt set services with switches being used
+Fixed Bug that didnt show error when using the -tweaked switch on laptops
 
 -----------------------------------------------------------------------------------
 3.6.0 (08-12-2017)
