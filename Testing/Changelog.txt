@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-3.6.4 (08-25-2017)
+3.6.5 (08-25-2017)
 
 Slight Improvement of Gui load speed
 Fixed a Typo noticed by Prettyclaire82
@@ -11,6 +11,9 @@ Script Improvements
 Script now updates bat file with new script name if update is downloaded using script
 
 Updates will use Update.bat if avaiable (will overwrite script file instead of creating new file)
+
+Fixed Bug that didnt set services with switches being used
+Fixed Bug that didnt show error when using the -tweaked switch on laptops
 
 -----------------------------------------------------------------------------------
 3.6.0 (08-12-2017)
