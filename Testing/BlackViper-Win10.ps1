@@ -10,7 +10,7 @@
 # Website: https://GitHub.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.6"
-$Minor_Version = "4"
+$Minor_Version = "5"
 $Script_Date = "Aug-25-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
@@ -820,6 +820,7 @@ Function Save_Service([String]$SavePath) {
 
 Function ServiceSet([String]$BVService) {
     Clear-Host
+    If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
     $NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
     If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
     ServiceBAfun "Services-Before"
@@ -1071,21 +1072,21 @@ Function PreScriptCheck {
 
 Function ScriptUpdateFun {
     $FullVer = "$WebScriptVer.$WebScriptMinorVer"
-	$UpdateFile = $filebase + "Update.bat"
+    $UpdateFile = $filebase + "Update.bat"
     If(Test-Path $UpdateFile -PathType Leaf){
         $DFilename = "BlackViper-Win10.ps1"
-		$UpdateOptBat = $True
+        $UpdateOptBat = $True
         $UpArg = "-u -bv "
         If($Release_Type -ne "Stable"){ $UpArg += "-test " }
-	} Else {
+    } Else {
         $DFilename = "BlackViper-Win10-Ver." + $FullVer
         If($Release_Type -ne "Stable"){ $DFilename += "-Testing" ;$Script_Url = $URL_Base + "Testing/" }
         $DFilename += ".ps1"
         $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
         $WebScriptFilePath = $filebase + $DFilename
-		$UpdateOptBat = $False
+        $UpdateOptBat = $False
         $UpArg = ""
-	}
+    }
     Clear-Host
     MenuLineLog
     LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
@@ -1121,7 +1122,7 @@ Function ScriptUpdateFun {
     If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
     If($UpdateOptBat){
         cmd.exe /c "$UpdateFile $UpArg"
-	} Else {
+    } Else {
         DownloadFile $Script_Url $WebScriptFilePath
         If($BatUpdateScriptFileName -eq 1) {
             $BatFile = $filebase + "_Win10-BlackViper.bat"
@@ -1134,7 +1135,7 @@ Function ScriptUpdateFun {
             }
         }
         Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
-	}
+    }
     Exit
 }
 
@@ -1144,7 +1145,7 @@ Function GetArgs {
             Switch($PassedArg[$i]) {
               "-default" { $Script:Black_Viper = 1 ;$Script:BV_ArgUsed = 2 ;Break }
               "-safe" { $Script:Black_Viper = 2 ;$Script:BV_ArgUsed = 2;Break }
-              "-tweaked" { If($IsLaptop -ne "-Lap"){ $Script:Black_Viper = 3 ;$Script:BV_ArgUsed = 2 } Else{ $Script:BV_ArgUsed = 3 } ;Break }
+              "-tweaked" { If($IsLaptop -ne "-Lap"){ $Script:Black_Viper = 3 ;$Script:BV_ArgUsed = 2 } Else{ $Script:BV_ArgUsed = 1 } ;Break }
               "-all" { $Script:All_or_Min = "-full" ;Break }
               "-min" { $Script:All_or_Min = "-min" ;Break }
               "-log" { $Script:ScriptLog = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
@@ -1209,16 +1210,16 @@ Function ArgsAndVarSet {
     # 1507 = First Release
     If($Diagnostic -eq 3) { Clear-Host ;DiagnosticCheck 1 ;Exit }
     If($BV_ArgUsed -eq 1) {
+        CreateLog
+        Error_Top_Display
         If($Automated -eq 1) {
-            CreateLog
             $Script:ErrorDi = "Automated with Tweaked + Laptop (Not supported ATM)"
-            Error_Top_Display
             LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog
-            LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
-            Error_Bottom
         } Else {
-            Gui-Start
+            $Script:ErrorDi = "Tweaked + Laptop (Not supported ATM)"
         }
+        LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
+        Error_Bottom
     } ElseIf($BV_ArgUsed -In 2..3) {
         $Script:RunScript = 1
         If($AcceptToS -ne 0) {
