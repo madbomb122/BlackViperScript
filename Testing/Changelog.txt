@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-3.6.3 (08-22-2017)
+3.6.4 (08-25-2017)
 
 Slight Improvement of Gui load speed
 Fixed a Typo noticed by Prettyclaire82
@@ -8,6 +8,9 @@ Fixed a bug if you load a custom service file then use the Services List tab the
 load another custom service file, the service list tab wont refresh
 
 Script Improvements
+Script now updates bat file with new script name if update is downloaded using script
+
+Updates will use Update.bat if avaiable (will overwrite script file instead of creating new file)
 
 -----------------------------------------------------------------------------------
 3.6.0 (08-12-2017)
