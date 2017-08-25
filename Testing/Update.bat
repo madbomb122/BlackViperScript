@@ -11,11 +11,12 @@ Set RunArg=no
 Set DownloadBV=no
 Set DownloadW10=no
 Set DownloadBV-W10=no
-Set Test=no
+Set BatDownload=no
+Set TestV=no
 Set MiscArg=
 
 if [%1]==[] (
-	goto Menu
+	goto MainMenu
 ) else (
 	goto loop
 )
@@ -57,7 +58,7 @@ If "%1" equ "-both" (
 	goto next
 )
 If "%1" equ "-test" (
-	Set Test=yes
+	Set TestV=yes
 	goto next
 )
 Set MiscArg=!MiscArg! %1
@@ -68,18 +69,31 @@ goto next
 	Set ScriptFileName=BlackViper-Win10.ps1
 	Set FilePath=!FileDir!!ScriptFileName!
 	Set ScriptUrl=!URL_Base!BlackViperScript/master/
-	If /i %Test%==yes Set ScriptUrl=!ScriptUrl!Testing/
+	If /i !TestV!==yes Set ScriptUrl=!ScriptUrl!Testing/
 	Set ScriptUrl=!ScriptUrl!!ScriptFileName!
 	echo.
 	echo Downloading Black Viper Script
-	echo from !ScriptUrl!
+	::echo from !ScriptUrl!
 	echo to !FilePath!
 	echo.
 	powershell -Command "Invoke-WebRequest !ScriptUrl! -OutFile !FilePath!"
 	If /i %UpdateArg%==no (
 		Set ServiceFilePath=!FileDir!BlackViper.csv
 		Set ServiceUrl=!URL_Base!BlackViperScript/master/BlackViper.csv
+		echo Downloading Black Viper Service File
+		::echo from !ServiceUrl!
+		echo to !ServiceFilePath!
+		echo.
 		powershell -Command "Invoke-WebRequest !ServiceUrl! -OutFile !ServiceFilePath!"
+		If !BatDownload!==yes (
+			Set BatFilePath=!FileDir!_Win10-BlackViper.bat
+			Set BatUrl=!URL_Base!BlackViperScript/master/_Win10-BlackViper.bat
+			echo Downloading Black Viper Script Bat File
+			::echo from !BatUrl!
+			echo to !BatFilePath!
+			echo.
+			powershell -Command "Invoke-WebRequest !BatUrl! -OutFile !BatFilePath!"
+		)
 	)
 	goto CheckRun
 
@@ -87,14 +101,23 @@ goto next
 	Set ScriptFileName=Win10-Menu.ps1
 	Set FilePath=!FileDir!!ScriptFileName!
 	Set ScriptUrl=!URL_Base!Win10Script/master/
-	If /i %Test%==yes Set ScriptUrl=!ScriptUrl!Testing/
+	If /i !TestV!==yes Set ScriptUrl=!ScriptUrl!Testing/
 	Set ScriptUrl=!ScriptUrl!!ScriptFileName!
 	echo.
 	echo Downloading Windows 10 Script
-	echo from !ScriptUrl!
+	::echo from !ScriptUrl!
 	echo to !FilePath!
 	echo.
-    powershell -Command "Invoke-WebRequest !ScriptUrl! -OutFile !FilePath!"
+	powershell -Command "Invoke-WebRequest !ScriptUrl! -OutFile !FilePath!"
+	If !BatDownload!==yes (
+		Set BatFilePath=!FileDir!_Win10-Script-Run.bat
+		Set BatUrl=!URL_Base!Win10Script/master/_Win10-Script-Run.bat
+		echo Downloading Windows 10 Script Bat File
+		::echo from !BatUrl!
+		echo to !BatFilePath!
+		echo.
+		powershell -Command "Invoke-WebRequest !BatUrl! -OutFile !BatFilePath!"
+	)
 	If /i %DownloadBV-W10%==yes set DownloadBV-W10=Done
 	goto CheckRun
 
@@ -119,46 +142,63 @@ goto next
 :CheckRun
 	If /i %DownloadBV-W10%==yes goto W10
 	If /i %UpdateArg%==yes (
-		PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!FilePath! !MiscArg!"' -Verb RunAs}"
+		powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!FilePath! !MiscArg!"' -Verb RunAs}"
 		Exit
 	)
 	If /i %RunArg%==yes (
 		If /i %DownloadBV-W10%==Done (
 			echo Cannot do a -Run with -Both
 		) else (
-			PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!FilePath!"' -Verb RunAs}"
+			powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!FilePath!"' -Verb RunAs}"
 		)
 		Exit
 	)
 	GOTO:EOF
 
-:Menu
+:MainMenu
 cls
-echo      ******************************************************
-echo      *                                                    *
-echo      *       Madbomb122's Script Updater/Downloader       *
-echo      *                                                    *
-echo      ******************************************************
-echo      *                                                    *
-echo      *   Stable Version                                   *
-echo      *  ------------------------                          *
-echo      *   A) Black Viper Script*                           *
-echo      *   B) Windows 10 Script                             *
-echo      *   C) Black Viper ^& Windows 10 Script               *
-echo      *                                                    *
-echo      *   Test Version                                     *
-echo      *  ------------------------                          *
-echo      *   D) Black Viper Script*                           *
-echo      *   E) Windows 10 Script                             *
-echo      *   F) Black Viper ^& Windows 10 Script               *
-echo      *                                                    *
-echo      *  ------------------------                          *
-echo      *   Q) Quit                                          *
-echo      *                                                    *
-echo      *  *Note: Will also download the Service file for    *
-echo      *            Black Viper Script.                     *
-echo      ******************************************************
-CHOICE /C ABCDEFQ /N /M "Please Input Choice:"
+echo  ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+echo  บฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฟ Madbomb122's Script Updater/Downloader ฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฟบ
+echo  บณ                ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤู                ณบ
+echo  บณ                                                                          ณบ
+If /i !TestV!==no (
+echo  บณ                              Stable Version                              ณบ
+) Else (
+echo  บณ                               Test Version                               ณบ
+)
+echo  บณ                     --------------------------------                     ณบ
+If !BatDownload!==no (
+echo  บณ                      1^) Black Viper Script*                              ณบ
+echo  บณ                      2^) Windows 10 Script                                ณบ
+echo  บณ                      3^) Black Viper ^& Windows 10 Script                  ณบ
+) Else (
+echo  บณ                      1^) Black Viper Script* ^& Bat File                   ณบ
+echo  บณ                      2^) Windows 10 Script ^& Bat File                     ณบ
+echo  บณ                      3^) Black Viper ^& Windows 10 Script ^& Bat Files      ณบ
+)
+echo  บณ                                                                          ณบ
+echo  บณ                        Download Options (Toggles)                        ณบ
+echo  บณ                     --------------------------------                     ณบ
+If /i !TestV!==no (
+echo  บณ                      4^) Test Version of Script                           ณบ
+) Else (
+echo  บณ                      4^) Stable Version of Script                         ณบ
+)
+If /i !BatDownload!==no (
+echo  บณ                      5^) Dont Download bat file                           ณบ
+) Else (
+echo  บณ                      5^) Download bat file                                ณบ
+)
+echo  บณ                                                                          ณบ
+echo  บณ                     --------------------------------                     ณบ
+echo  บณ                      Q^) Quit                                             ณบ
+echo  บณ                                                                          ณบ
+echo  บณ  *Note: Will also download the Service file for Black Viper Script.      ณบ
+echo  บณ                                                                          ณบ
+echo  บภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤูบ
+echo  ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+echo.
+CHOICE /C 12345Q /N /M "Please Input Choice:"
 IF %ERRORLEVEL%==1 goto BV
 IF %ERRORLEVEL%==2 goto W10
 IF %ERRORLEVEL%==3 (
@@ -166,18 +206,21 @@ IF %ERRORLEVEL%==3 (
 	goto BV 
 )
 IF %ERRORLEVEL%==4 (
-	Set Test=yes
-	goto BV 
+	If !TestV!==no (
+		Set TestV=yes
+	) Else (
+		Set TestV=no
+	)
+	goto MainMenu 
 )
 IF %ERRORLEVEL%==5 (
-	Set Test=yes
-	goto W10 
+	If !BatDownload!==no (
+		Set BatDownload=yes
+	) Else (
+		Set BatDownload=no
+	)
+	goto MainMenu
 )
-IF %ERRORLEVEL%==6 (
-	Set DownloadBV-W10=yes
-	Set Test=yes
-	goto BV 
-)
-IF %ERRORLEVEL%==7 GOTO:EOF
+IF %ERRORLEVEL%==6 GOTO:EOF
 
 ENDLOCAL DISABLEDELAYEDEXPANSION
