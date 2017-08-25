@@ -1,5 +1,5 @@
 # Currently Testing (Read Notes)
-Nothing ATM
+The Update Script listed in the base folder.
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
