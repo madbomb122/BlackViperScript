@@ -10,8 +10,8 @@
 # Website: https://GitHub.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.6"
-$Minor_Version = "3"
-$Script_Date = "Aug-22-2017"
+$Minor_Version = "4"
+$Script_Date = "Aug-25-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -422,9 +422,10 @@ Function Gui-Start {
    <CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,105,0,-11" VerticalAlignment="Top" Height="15" Width="218"/>
    <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,164,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
    <CheckBox Name="ScriptVerCheck_CB" Content="Script Update*" HorizontalAlignment="Left" Margin="244,105,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
+   <CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="244,120,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
    <CheckBox Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="244,90,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
-   <CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="244,120,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
-   <Label Content="*Will run and use current settings" HorizontalAlignment="Left" Margin="238,129,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+   <CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="244,135,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
+   <Label Content="*Will run and use current settings&#xA;**If update.bat isnt avilable" HorizontalAlignment="Left" Margin="238,144,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
    <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="239,67,0,0" FontWeight="Bold"/>
    <CheckBox Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="244,28,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
    <CheckBox Name="EditionCheck_CB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="244,43,0,0" VerticalAlignment="Top" Height="15" Width="160"/>
@@ -599,8 +600,6 @@ Function RunDisableCheck {
     $temp1 = ""
     $temp2 = ""
 
-#    If($HomeEditions -Contains $WinEdition -or $EditionCheck -eq "Home" -or $WinSku -In 100..101) {
-#    } ElseIf($ProEditions -Contains $WinEdition -or $EditionCheck -eq "Pro" -or $WinSku -eq 48) {
     If(!(($EditionCheck -eq "Home" -or $WinSku -In 100..101) -or ($EditionCheck -eq "Pro" -or $WinSku -eq 48))){ $temp1 = "Edition" ;$tempfail++ }
 
     If($BuildVer -lt $ForBuild -And $BuildCheck -ne 1){ $tempfail++ ; $temp2 = "Build" }
@@ -915,60 +914,13 @@ Function CreateLog {
     }
 }
 
-Function ScriptUpdateFun {
-    $FullVer = "$WebScriptVer.$WebScriptMinorVer"
-    $DFilename = "BlackViper-Win10-Ver." + $FullVer
-    If($Release_Type -ne "Stable"){ $DFilename += "-Testing" ;$Script_Url = $URL_Base + "Testing/" }
-    $DFilename += ".ps1"
-    $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
-    $WebScriptFilePath = $filebase + $DFilename
-    Clear-Host
-    MenuLineLog
-    LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
-    MenuLineLog
-    MenuBlankLineLog
-    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(29-$FullVer.Length))) 11 0 0 1 ;RightLineLog
-    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.Length))) 11 0 0 1 ;RightLineLog
-    LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
-    MenuBlankLine
-    MenuLineLog
-    DownloadFile $Script_Url $WebScriptFilePath
-    $UpArg = ""
-    If($Automated -eq 1){ $UpArg += "-auto " }
-    If($AcceptToS -ne 0){ $UpArg += "-atosu " }
-    If($ServiceVerCheck -eq 1){ $UpArg += "-use " }
-    If($InternetCheck -eq 1){ $UpArg += "-sic " }
-    If($EditionCheck -eq "Home"){ $UpArg += "-sech " }
-    If($EditionCheck -eq "Pro"){ $UpArg += "-secp " }
-    If($BuildCheck -eq 1){ $UpArg += "-sbc " }
-    If($Black_Viper -eq 1){ $UpArg += "-default " }
-    If($Black_Viper -eq 2){ $UpArg += "-safe " }
-    If($Black_Viper -eq 3){ $UpArg += "-tweaked " }
-    If($Diagnostic -eq 1){ $UpArg += "-diag " }
-    If($LogBeforeAfter -eq 1){ $UpArg += "-baf " }
-    If($DryRun -eq 1){ $UpArg += "-dry " }
-    If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
-    If($ShowSkipped -eq 1){ $UpArg += "-sss " }
-    If($DevLog -eq 1){ $UpArg += "-devl " }
-    If($ScriptLog -eq 1){ $UpArg += "-logc $LogName " }
-    If($All_or_Min -eq "-full"){ $UpArg += "-all " } Else{ $UpArg += "-min " }
-    If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
-    If($LoadServiceConfig -eq 2){ $TempSrv = $Env:Temp + "\TempSrv.csv" ;$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding "unicode" -Force -Delimiter "," ;$UpArg += "-lcsc $TempSrv " } 
-    If($BackupServiceConfig -eq 1){ $UpArg += "-bcsc " }
-    If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
-    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
-    Exit
-}
-
 Function PreScriptCheck {
     If($RunScript -eq 0){ Exit }
     CreateLog
     $EBCount = 0
 
-#    If($HomeEditions -Contains $WinEdition -or $EditionCheck -eq "Home" -or $WinSku -In 100..101) {
     If($EditionCheck -eq "Home" -or $WinSku -In 100..101) {
         $Script:WinEdition = "-Home"
-#    } ElseIf($ProEditions -Contains $WinEdition -or $EditionCheck -eq "Pro" -or $WinSku -eq 48) {
     } ElseIf($EditionCheck -eq "Pro" -or $WinSku -eq 48) {
         $Script:WinEdition = "-Pro"
     } Else {
@@ -1103,7 +1055,6 @@ Function PreScriptCheck {
             }
         }
     }
-
     If($LoadServiceConfig -ne 2) { 
         If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
             $Script:ErrorDi = "Missing File BlackViper.csv"
@@ -1116,6 +1067,75 @@ Function PreScriptCheck {
         $ServiceDate = ($csv[0]."Def-Home-Min")
         $csv.RemoveAt(0)
     }
+}
+
+Function ScriptUpdateFun {
+    $FullVer = "$WebScriptVer.$WebScriptMinorVer"
+	$UpdateFile = $filebase + "Update.bat"
+    If(Test-Path $UpdateFile -PathType Leaf){
+        $DFilename = "BlackViper-Win10.ps1"
+		$UpdateOptBat = $True
+        $UpArg = "-u -bv "
+        If($Release_Type -ne "Stable"){ $UpArg += "-test " }
+	} Else {
+        $DFilename = "BlackViper-Win10-Ver." + $FullVer
+        If($Release_Type -ne "Stable"){ $DFilename += "-Testing" ;$Script_Url = $URL_Base + "Testing/" }
+        $DFilename += ".ps1"
+        $Script_Url = $URL_Base + "BlackViper-Win10.ps1"
+        $WebScriptFilePath = $filebase + $DFilename
+		$UpdateOptBat = $False
+        $UpArg = ""
+	}
+    Clear-Host
+    MenuLineLog
+    LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
+    MenuLineLog
+    MenuBlankLineLog
+    LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(29-$FullVer.Length))) 11 0 0 1 ;RightLineLog
+    LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.Length))) 11 0 0 1 ;RightLineLog
+    LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
+    MenuBlankLineLog
+    MenuLineLog
+
+    If($Automated -eq 1){ $UpArg += "-auto " }
+    If($AcceptToS -ne 0){ $UpArg += "-atosu " }
+    If($ServiceVerCheck -eq 1){ $UpArg += "-use " }
+    If($InternetCheck -eq 1){ $UpArg += "-sic " }
+    If($EditionCheck -eq "Home"){ $UpArg += "-sech " }
+    If($EditionCheck -eq "Pro"){ $UpArg += "-secp " }
+    If($BuildCheck -eq 1){ $UpArg += "-sbc " }
+    If($Black_Viper -eq 1){ $UpArg += "-default " }
+    If($Black_Viper -eq 2){ $UpArg += "-safe " }
+    If($Black_Viper -eq 3){ $UpArg += "-tweaked " }
+    If($Diagnostic -eq 1){ $UpArg += "-diag " }
+    If($LogBeforeAfter -eq 1){ $UpArg += "-baf " }
+    If($DryRun -eq 1){ $UpArg += "-dry " }
+    If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
+    If($ShowSkipped -eq 1){ $UpArg += "-sss " }
+    If($DevLog -eq 1){ $UpArg += "-devl " }
+    If($ScriptLog -eq 1){ $UpArg += "-logc $LogName " }
+    If($All_or_Min -eq "-full"){ $UpArg += "-all " } Else{ $UpArg += "-min " }
+    If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
+    If($LoadServiceConfig -eq 2){ $TempSrv = $Env:Temp + "\TempSrv.csv" ;$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding "unicode" -Force -Delimiter "," ;$UpArg += "-lcsc $TempSrv " } 
+    If($BackupServiceConfig -eq 1){ $UpArg += "-bcsc " }
+    If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
+    If($UpdateOptBat){
+        cmd.exe /c "$UpdateFile $UpArg"
+	} Else {
+        DownloadFile $Script_Url $WebScriptFilePath
+        If($BatUpdateScriptFileName -eq 1) {
+            $BatFile = $filebase + "_Win10-BlackViper.bat"
+            If(Test-Path $BatFile -PathType Leaf){ 
+                (Get-Content -LiteralPath $BatFile) | Foreach-Object {$_ -replace "Set Script_File=.*?$" , "Set Script_File=$DFilename"} | Set-Content -LiteralPath $BatFile -Force
+                MenuBlankLineLog
+                LeftLineLog ;DisplayOutMenu " Updated bat file with new script file name.     " 13 0 0 1 ;RightLineLog
+                MenuBlankLineLog
+                MenuLineLog
+            }
+        }
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
+	}
+    Exit
 }
 
 Function GetArgs {
@@ -1143,6 +1163,7 @@ Function GetArgs {
               "-dry" { $Script:DryRun = 1 ;$Script:ShowNonInstalled = 1 ;Break }
               "-diag" { $Script:Diagnostic = 1 ;$Script:Automated = 0 ;Break }
               "-diagt" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break }
+              "-diagf" { $Script:Diagnostic = 3 ;$Script:Automated = 0 ;Break }
               "-devl" { $Script:DevLog = 1 ;Break }
               "-sbc" { $Script:BuildCheck = 1 ;Break }
               "-sech" { $Script:EditionCheck = "Home" ;Break }
@@ -1186,7 +1207,7 @@ Function ArgsAndVarSet {
     # 1607 = Anniversary Update
     # 1511 = First Major Update
     # 1507 = First Release
-
+    If($Diagnostic -eq 3) { Clear-Host ;DiagnosticCheck 1 ;Exit }
     If($BV_ArgUsed -eq 1) {
         If($Automated -eq 1) {
             CreateLog
@@ -1257,6 +1278,8 @@ $Script:LogBeforeAfter = 0      #0 = Dont make a file of all the services before
 $Script:ScriptVerCheck = 0      #0 = Skip Check for update of Script File
                                 #1 = Check for update of Script File
 # Note: If found will Auto download and runs that, File name will be "BlackViper-Win10-Ver.(version#).ps1"
+
+$Script:BatUpdateScriptFileName = 1 #0-Dont ->, 1-Update Bat file with new script filename (if update is found)
 
 $Script:ServiceVerCheck = 0     #0 = Skip Check for update of Service File
                                 #1 = Check for update of Service File
