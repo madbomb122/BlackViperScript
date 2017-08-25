@@ -3,7 +3,7 @@ I am currently working on a seperate script file that will (Avilable in Testing 
 2. The script will use to Download updates (to replace the old file, instead of creating a new file, so you dont have to rename the file or edit the bat file). (If this script is present) <br />
 
 **Current Version** <br />
-**Script:** `3.6.2` (August 22, 2017) <br />
+**Script:** `3.6.3` (August 25, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 # Description
