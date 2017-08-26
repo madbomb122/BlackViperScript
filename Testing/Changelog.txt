@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-3.6.5 (08-25-2017)
+3.7.0 (08-26-2017)
 
 Slight Improvement of Gui load speed
 Fixed a Typo noticed by Prettyclaire82
