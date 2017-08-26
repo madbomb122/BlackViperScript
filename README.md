@@ -22,38 +22,38 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 
 <br />
 
-**_Need Files_** <br />
-`BlackViper-Win10.ps1` (Script) -Size about `71.0 KB` <br />
-`BlackViper.csv` (Service Configurations) -Size about `6.54 KB`  <br />
+**_Need Files_**<br />
+`BlackViper-Win10.ps1` (Script) -Size about `71.0 KB`<br />
+`BlackViper.csv` (Service Configurations) -Size about `6.54 KB`<br />
 
-**Recommended Files** <br />
-`Update.bat` (Script will use to update script if available) -Size about `7.51 KB` 
-`_Win10-BlackViper.bat` (To run script easier) -Size about `4.85 KB`  <br /> 
+**Recommended Files**<br />
+`Update.bat` (Script will use to update script if available) -Size about `7.34 KB`<br /> 
+`_Win10-BlackViper.bat` (To run script easier) -Size about `4.85 KB`<br /> 
 `README.md` (This Readme) <br />
 
 **Note:**
-**AT YOUR OWN RISK** <br />
-**1. Run the script on x32 w/o changing settings (But shows a warning)** <br />
-**2. Skip the check for** <br />
-**---A. Home/Pro** *(`$Script:Edition_Check` variable in script or use `-sec` switch)* <br />
-**---B. Creator's Update** *(`$Script:Build_Check` variable in script or use `-sbc` switch)* <br />
+**AT YOUR OWN RISK**<br />
+**1. Run the script on x32 w/o changing settings (But shows a warning)**<br />
+**2. Skip the check for**<br />
+**---A. Home/Pro** *(`$Script:Edition_Check` variable in script or use `-sec` switch)*<br />
+**---B. Creator's Update** *(`$Script:Build_Check` variable in script or use `-sbc` switch)*<br />
 
 # How to Use/Run
-Download/Save the following files <br />
-Script File: `BlackViper-Win10.ps1` -Need <br />
-Service Config File: `BlackViper.csv` -Need <br />
-Bat File: `_Win10-BlackViper.bat` -Recommended <br />
+Download/Save the following files<br />
+Script File: `BlackViper-Win10.ps1` -Need<br />
+Service Config File: `BlackViper.csv` -Need<br />
+Bat File: `_Win10-BlackViper.bat` -Recommended<br />
   **Note 1: DO NOT RENAME THE FILES**<br />
   **Note 2: HAVE THE FILES IN THE SAME DIRECTORY**<br />
 Next follow the **Basic Usage** or **Advanced Usage**
 
 # Basic_Usage
-Run the Script by bat file `_Win10-BlackViper.bat` (Recommended) <br />
-or <br />
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File c:/BlackViper-Win10.ps1`  <br />
-*For the above, Please note you need change the c:/ to the fullpath of your file* <br />
-Select desired Services Configuration <br />
-Select the options you want and then click run script <br />
+Run the Script by bat file `_Win10-BlackViper.bat` (Recommended)<br />
+or<br />
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File c:/BlackViper-Win10.ps1`<br />
+*For the above, Please note you need change the c:/ to the fullpath of your file*<br />
+Select desired Services Configuration<br />
+Select the options you want and then click run script<br />
 
 # Advanced_Usage
 Use one of the following Methods you can 
