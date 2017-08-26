@@ -95,6 +95,7 @@ Examples: <br />
 `_Win10-BlackViper.bat -auto -use -tweaked -sec` <br />
 ******
 # Update.Bat
+This file is EXACTLY the same as the one in my other Repo
 
 This file will <br />
 1. Allow you to download my Black Viper Script or my Win 10 Script and the needed files (if any). <br />
