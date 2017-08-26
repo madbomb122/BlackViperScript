@@ -162,52 +162,52 @@ goto next
 
 :MainMenu
 cls
-echo  ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
-echo  บฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฟ Madbomb122's Script Updater/Downloader ฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฟบ
-echo  บณ                ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤู                ณบ
-echo  บณ                                                                          ณบ
+echo  รรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรยป
+echo  ยบรรรรรรรรรรรรรรรรรยฟ Madbomb122's Script Updater/Downloader รรรรรรรรรรรรรรรรรยฟยบ
+echo  ยบยณ                ร€รรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรร                ยณยบ
+echo  ยบยณ                                                                          ยณยบ
 If /i !TestV!==no (
-echo  บณ                              Stable Version                              ณบ
+echo  ยบยณ                              Stable Version                              ยณยบ
 ) Else (
-echo  บณ                               Test Version                               ณบ
+echo  ยบยณ                               Test Version                               ยณยบ
 )
-echo  บณ                     --------------------------------                     ณบ
+echo  ยบยณ                     --------------------------------                     ยณยบ
 If !BatDownload!==no (
-echo  บณ                      1^) Black Viper Script*                              ณบ
-echo  บณ                      2^) Windows 10 Script                                ณบ
-echo  บณ                      3^) Black Viper ^& Windows 10 Script                  ณบ
+echo  ยบยณ                      1^) Black Viper Script*                              ยณยบ
+echo  ยบยณ                      2^) Windows 10 Script                                ยณยบ
+echo  ยบยณ                      3^) Black Viper ^& Windows 10 Script                  ยณยบ
 ) Else (
-echo  บณ                      1^) Black Viper Script* ^& Bat File                   ณบ
-echo  บณ                      2^) Windows 10 Script ^& Bat File                     ณบ
-echo  บณ                      3^) Black Viper ^& Windows 10 Script ^& Bat Files      ณบ
+echo  ยบยณ                      1^) Black Viper Script* ^& Bat File                   ยณยบ
+echo  ยบยณ                      2^) Windows 10 Script ^& Bat File                     ยณยบ
+echo  ยบยณ                      3^) Black Viper ^& Windows 10 Script ^& Bat Files      ยณยบ
 )
-echo  บณ                                                                          ณบ
-echo  บณ                        Download Options (Toggles)                        ณบ
-echo  บณ                     --------------------------------                     ณบ
+echo  ยบยณ                                                                          ยณยบ
+echo  ยบยณ                        Download Options (Toggles)                        ยณยบ
+echo  ยบยณ                     --------------------------------                     ยณยบ
 If /i !TestV!==no (
-echo  บณ                      4^) Dont Download Test Version ^(Stable^) of Script    ณบ
+echo  ยบยณ                      4^) Dont Download Test Version ^(Stable^) of Script    ยณยบ
 ) Else (
-echo  บณ                      4^) Download Test Version of Script                  ณบ
+echo  ยบยณ                      4^) Download Test Version of Script                  ยณยบ
 )
 If /i !BatDownload!==no (
-echo  บณ                      5^) Dont Download bat file                           ณบ
+echo  ยบยณ                      5^) Dont Download bat file                           ยณยบ
 ) Else (
-echo  บณ                      5^) Download bat file                                ณบ
+echo  ยบยณ                      5^) Download bat file                                ยณยบ
 )
 If /i !RunArg!==no (
-echo  บณ                      6^) Dont Run Script after download**                 ณบ
+echo  ยบยณ                      6^) Dont Run Script after download**                 ยณยบ
 ) Else (
-echo  บณ                      6^) Run A Script after download**                    ณบ
+echo  ยบยณ                      6^) Run A Script after download**                    ยณยบ
 )
-echo  บณ                                                                          ณบ
-echo  บณ                     --------------------------------                     ณบ
-echo  บณ                      Q^) Quit                                             ณบ
-echo  บณ                                                                          ณบ
-echo  บณ  *Note: Will also download the Service file for Black Viper Script.      ณบ
-echo  บณ  **Note: Will NOT Run Script if downloading both Scripts. ^(Option 3^)     ณบ
-echo  บณ                                                                          ณบ
-echo  บภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤูบ
-echo  ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+echo  ยบยณ                                                                          ยณยบ
+echo  ยบยณ                     --------------------------------                     ยณยบ
+echo  ยบยณ                      Q^) Quit                                             ยณยบ
+echo  ยบยณ                                                                          ยณยบ
+echo  ยบยณ  *Note: Will also download the Service file for Black Viper Script.      ยณยบ
+echo  ยบยณ  **Note: Will NOT Run Script if downloading both Scripts. ^(Option 3^)     ยณยบ
+echo  ยบยณ                                                                          ยณยบ
+echo  ยบร€รรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรยบ
+echo  รรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรรยผ
 echo.
 CHOICE /C 123456Q /N /M "Please Input Choice:"
 IF %ERRORLEVEL%==1 goto BV
