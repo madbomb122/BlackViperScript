@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://GitHub.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "3.6"
-$Minor_Version = "5"
-$Script_Date = "Aug-25-2017"
+$Script_Version = "3.7"
+$Minor_Version = "0"
+$Script_Date = "Aug-26-2017"
 #$Release_Type = "Stable"
 $Release_Type = "Testing"
 ##########
@@ -576,8 +576,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
 
-    If($WinEdition -eq "Home" -or $EditionCheck -eq "Home") { $WPF_EditionConfig.SelectedIndex = 0 } Else { $WPF_EditionConfig.SelectedIndex = 1 }
-    If(!($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home")) { $WPF_EditionConfig.IsEnabled = $False } Else { $WPF_EditionCheck_CB.IsChecked = $True }
+    If($WinEdition -eq "Home" -or $EditionCheck -eq "Home"){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
+    If(!($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home")){ $WPF_EditionConfig.IsEnabled = $False } Else{ $WPF_EditionCheck_CB.IsChecked = $True }
 
     $WPF_LoadFileTxtBox.Text = $ServiceConfigFile
     $WPF_LogNameInput.Text = $LogName
