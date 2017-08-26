@@ -163,45 +163,45 @@ goto next
 :MainMenu
 cls
 echo  ----------------------------------------------------------------------------
-echo  ^|_________________  Madbomb122's Script Updater/Downloader  _______________^|
-echo  ^|                 ------------------------------------------               ^|
+echo  ^|________________  Madbomb122's Script Updater/Downloader  ________________^|
+echo  ^|                ------------------------------------------                ^|
 echo  ^|                                                                          ^|
 If /i !TestV!==no (
 echo  ^|                              Stable Version                              ^|
 ) Else (
 echo  ^|                               Test Version                               ^|
 )
-echo  ^|                     --------------------------------                     ^|
+echo  ^|                  --------------------------------------                  ^|
 If !BatDownload!==no (
-echo  ^|                      1^) Black Viper Script*                              ^|
-echo  ^|                      2^) Windows 10 Script                                ^|
-echo  ^|                      3^) Black Viper ^& Windows 10 Script                  ^|
+echo  ^|                    1^) Black Viper Script*                                ^|
+echo  ^|                    2^) Windows 10 Script                                  ^|
+echo  ^|                    3^) Black Viper ^& Windows 10 Script                    ^|
 ) Else (
-echo  ^|                      1^) Black Viper Script* ^& Bat File                   ^|
-echo  ^|                      2^) Windows 10 Script ^& Bat File                     ^|
-echo  ^|                      3^) Black Viper ^& Windows 10 Script ^& Bat Files      ^|
+echo  ^|                    1^) Black Viper Script* ^& Bat File                     ^|
+echo  ^|                    2^) Windows 10 Script ^& Bat File                       ^|
+echo  ^|                    3^) Black Viper ^& Windows 10 Script ^& Bat Files        ^|
 )
 echo  ^|                                                                          ^|
 echo  ^|                        Download Options (Toggles)                        ^|
-echo  ^|                     --------------------------------                     ^|
+echo  ^|                  --------------------------------------                  ^|
 If /i !TestV!==no (
-echo  ^|                      4^) Dont Download Test Version ^(Stable^) of Script    ^|
+echo  ^|                    4^) Dont Download Test Version ^(Stable^) of Script      ^|
 ) Else (
-echo  ^|                      4^) Download Test Version of Script                  ^|
+echo  ^|                    4^) Download Test Version of Script                    ^|
 )
 If /i !BatDownload!==no (
-echo  ^|                      5^) Dont Download bat file                           ^|
+echo  ^|                    5^) Dont Download bat file                             ^|
 ) Else (
-echo  ^|                      5^) Download bat file                                ^|
+echo  ^|                    5^) Download bat file                                  ^|
 )
 If /i !RunArg!==no (
-echo  ^|                      6^) Dont Run Script after download**                 ^|
+echo  ^|                    6^) Dont Run Script after download**                   ^|
 ) Else (
-echo  ^|                      6^) Run A Script after download**                    ^|
+echo  ^|                    6^) Run A Script after download**                      ^|
 )
 echo  ^|                                                                          ^|
-echo  ^|                     --------------------------------                     ^|
-echo  ^|                      Q^) Quit                                             ^|
+echo  ^|                  --------------------------------------                  ^|
+echo  ^|                    Q^) Quit                                               ^|
 echo  ^|                                                                          ^|
 echo  ^|  *Note: Will also download the Service file for Black Viper Script.      ^|
 echo  ^|  **Note: Will NOT Run Script if downloading both Scripts. ^(Option 3^)     ^|
