@@ -1,6 +1,6 @@
 @echo off
 :: Version 1.0
-:: August 25th, 2017
+:: August 26th, 2017
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
@@ -23,6 +23,12 @@ if [%1]==[] (
 
 :loop
 if x%1 equ x (
+	echo.
+	If /i %DownloadBV%==yes If /i %DownloadW10%==yes (
+		Set DownloadBV-W10=yes
+		Set DownloadBV=no
+		Set DownloadW10=no
+	)
 	If /i %DownloadBV-W10%==yes goto BV
 	If /i %DownloadBV%==yes goto BV
 	If /i %DownloadW10%==yes goto W10
@@ -37,6 +43,7 @@ goto loop
 
 :checkParam
 If "%1" equ "-help" goto ShowArgs
+If "%1" equ "-h" goto ShowArgs
 If "%1" equ "-u" (
 	Set UpdateArg=yes
 	goto next
@@ -71,7 +78,6 @@ goto next
 	Set ScriptUrl=!URL_Base!BlackViperScript/master/
 	If /i !TestV!==yes Set ScriptUrl=!ScriptUrl!Testing/
 	Set ScriptUrl=!ScriptUrl!!ScriptFileName!
-	echo.
 	echo Downloading Black Viper Script
 	::echo from !ScriptUrl!
 	echo to !FilePath!
@@ -103,7 +109,6 @@ goto next
 	Set ScriptUrl=!URL_Base!Win10Script/master/
 	If /i !TestV!==yes Set ScriptUrl=!ScriptUrl!Testing/
 	Set ScriptUrl=!ScriptUrl!!ScriptFileName!
-	echo.
 	echo Downloading Windows 10 Script
 	::echo from !ScriptUrl!
 	echo to !FilePath!
