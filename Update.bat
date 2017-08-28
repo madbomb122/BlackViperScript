@@ -1,6 +1,6 @@
 @echo off
-:: Version 1.0
-:: August 26th, 2017
+:: Version 1.1
+:: August 28th, 2017
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
@@ -18,10 +18,10 @@ Set MiscArg=
 if [%1]==[] (
 	goto MainMenu
 ) else (
-	goto loop
+	goto Loop
 )
 
-:loop
+:Loop
 if x%1 equ x (
 	echo.
 	If /i %DownloadBV%==yes If /i %DownloadW10%==yes (
@@ -35,42 +35,41 @@ if x%1 equ x (
 	goto Invalid
 )
 set param=%1
-goto checkParam
+goto CheckParam
 
-:next
+:Next
 shift /1
-goto loop
+goto Loop
 
-:checkParam
-If "%1" equ "-help" goto ShowArgs
-If "%1" equ "-h" goto ShowArgs
-If "%1" equ "-u" (
+:CheckParam
+If /i %1==-help goto ShowArgs
+If /i %1==-h goto ShowArgs
+If /i %1==-u (
 	Set UpdateArg=yes
-	goto next
+	goto Next
 )
-If "%1" equ "-r" (
+If /i %1==-r (
 	Set RunArg=yes
-	goto next
+	goto Next
 )
-If "%1" equ "-bv" (
+If /i %1==-bv (
 	Set DownloadBV=yes
-	goto next
+	goto Next
 )
-If "%1" equ "-w10" (
+If /i %1==-w10 (
 	Set DownloadW10=yes
-	goto next
+	goto Next
 )
-If "%1" equ "-both" (
+If /i %1==-both (
 	Set DownloadBV-W10=yes
-	goto next
+	goto Next
 )
-If "%1" equ "-test" (
+If /i %1==-test (
 	Set TestV=yes
-	goto next
+	goto Next
 )
 Set MiscArg=!MiscArg! %1
-goto next
-
+goto Next
 
 :BV
 	Set ScriptFileName=BlackViper-Win10.ps1
@@ -125,7 +124,6 @@ goto next
 	)
 	If /i %DownloadBV-W10%==yes set DownloadBV-W10=Done
 	goto CheckRun
-
 
 :Invalid
 	echo No valid Argument/Switch was used,
