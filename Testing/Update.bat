@@ -1,6 +1,6 @@
 @Echo off
-:: Version 1.2
-:: September 1st, 2017
+:: Version 1.2.1
+:: September 3st, 2017
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
@@ -27,14 +27,14 @@ if [%1]==[] (
 :Loop
 if x%1 equ x (
 	Echo.
-	If /i %DownloadBV%==yes If /i %DownloadW10%==yes (
+	If %DownloadBV%==yes If %DownloadW10%==yes (
 		Set DownloadBV-W10=yes
 		Set DownloadBV=no
 		Set DownloadW10=no
 	)
-	If /i %DownloadBV-W10%==yes goto BV
-	If /i %DownloadBV%==yes goto BV
-	If /i %DownloadW10%==yes goto W10
+	If %DownloadBV-W10%==yes goto BV
+	If %DownloadBV%==yes goto BV
+	If %DownloadW10%==yes goto W10
 	goto Invalid
 )
 set param=%1
@@ -78,14 +78,14 @@ goto Next
 	Set ScriptFileName=BlackViper-Win10.ps1
 	Set FilePath=%FileDir%%ScriptFileName%
 	Set ScriptUrl=!URL_Base!BlackViperScript/master/
-	If /i %TestV%==yes Set ScriptUrl=!ScriptUrl!Testing/
+	If %TestV%==yes Set ScriptUrl=!ScriptUrl!Testing/
 	Set ScriptUrl=!ScriptUrl!%ScriptFileName%
 	Echo Downloading Black Viper Script
 	::Echo from !ScriptUrl!
 	Echo to %FilePath%
 	Echo.
 	powershell -Command "Invoke-WebRequest !ScriptUrl! -OutFile %FilePath%"
-	If /i %UpdateArg%==no (
+	If %UpdateArg%==no (
 		Set ServiceFilePath=%FileDir%BlackViper.csv
 		Set ServiceUrl=!URL_Base!BlackViperScript/master/BlackViper.csv
 		Echo Downloading Black Viper Service File
@@ -115,16 +115,16 @@ goto Next
 		Set /a BVCount=!BVCount!+1
 		If !BVCount!==12 (
 			Set LocalBaseVerBV=%%G
-			Set LocalBaseVerBV=%LocalBaseVerBV:~18,3%
+			Set LocalBaseVerBV=!LocalBaseVerBV:~18,3!
 		)
 		If !BVCount!==13 (
 			Set LocalSubVerBV=%%G
-			Set LocalSubVerBV=%LocalSubVerBV:~17,1%
+			Set LocalSubVerBV=!LocalSubVerBV:~17,1!
 		)
 		If !BVCount!==15 (
 			Set BVTemp=%%G
-			Set BVTemp=%BVTemp:~16,1%
-			If %BVTemp%==T Set BVTest=yes
+			Set BVTemp=!BVTemp:~16,1!
+			If /i !BVTemp!==T Set BVTest=yes
 			goto BVWebVer
 		)
 	)
@@ -135,30 +135,30 @@ goto Next
 	Set WebSubVerBV=0
 	powershell -Command "Invoke-WebRequest "%URL_Base%BlackViperScript/master/Version/Version.csv" -OutFile %Temp%\BV-Ver.csv"
 	For /F "tokens=*" %%G IN (%Temp%\BV-Ver.csv) DO (
-		If /i %BVTest%==no (
+		If %BVTest%==no (
 			If !BVuCount!==1 (
 				Set WebBaseVerBVT=%%G
-				Set WebBaseVerBV=%WebBaseVerBVT:~17,3%
-				Set WebSubVerBV=%WebBaseVerBVT:~21,1%
+				Set WebBaseVerBV=!WebBaseVerBVT:~17,3!
+				Set WebSubVerBV=!WebBaseVerBVT:~21,1!
 			)
 		) Else (
 			If !BVuCount!==3 (
 				Set WebBaseVerBVT=%%G
-				Set WebBaseVerBV=%WebBaseVerBVT:~17,3%
-				Set WebSubVerBV=%WebBaseVerBVT:~21,1%
+				Set WebBaseVerBV=!WebBaseVerBVT:~17,3!
+				Set WebSubVerBV=!WebBaseVerBVT:~21,1!
 			)
 		)
 		Set /a BVuCount=!BVuCount!+1
 	)
-	If %LocalBaseVerBV% lss %WebBaseVerBV% Set DownloadBV=yes
-	If %LocalBaseVerBV%==%WebBaseVerBV% If %LocalSubVerBV% lss %WebSubVerBV% Set DownloadBV=yes
-	If /i %DownloadBV%==yes (
+	If !LocalBaseVerBV! lss !WebBaseVerBV! Set DownloadBV=yes
+	If !LocalBaseVerBV!==!WebBaseVerBV! If !LocalSubVerBV! lss !WebSubVerBV! Set DownloadBV=yes
+	If %DownloadBV%==yes (
 		::Echo Test = %BVTest%
-		Echo Your BlackViper Script V.%LocalBaseVerBV%.%LocalSubVerBV%
-		Echo Latest BlackViper Script V.%WebBaseVerBV%.%WebSubVerBV%
+		Echo Your BlackViper Script V.!LocalBaseVerBV!.!LocalSubVerBV!
+		Echo Latest BlackViper Script V.!WebBaseVerBV!.!WebSubVerBV!
 		Echo.
 	) Else (
-		Echo Your BlackViper Script V.%LocalBaseVerBV%.%LocalSubVerBV% is the latest version
+		Echo Your BlackViper Script V.!LocalBaseVerBV!.!LocalSubVerBV! is the latest version
 	)
 	goto BV
 
@@ -166,7 +166,7 @@ goto Next
 	Set ScriptFileName=Win10-Menu.ps1
 	Set FilePath=%FileDir%%ScriptFileName%
 	Set ScriptUrl=!URL_Base!Win10Script/master/
-	If /i %TestV%==yes Set ScriptUrl=!ScriptUrl!Testing/
+	If %TestV%==yes Set ScriptUrl=!ScriptUrl!Testing/
 	Set ScriptUrl=!ScriptUrl!%ScriptFileName%
 	Echo Downloading Windows 10 Script
 	::Echo from !ScriptUrl!
@@ -182,7 +182,7 @@ goto Next
 		Echo.
 		powershell -Command "Invoke-WebRequest !BatUrl! -OutFile !BatFilePath!"
 	)
-	If /i %DownloadBV-W10%==yes set DownloadBV-W10=Done
+	If %DownloadBV-W10%==yes set DownloadBV-W10=Done
 	goto CheckRun
 
 :W10LocalVer
@@ -190,21 +190,21 @@ goto Next
 	Set LocalBaseVerW10=0
 	Set LocalSubVerW10=0
 	Set W10Test=no
-	Echo Checking if Update is aviable for BlackViper Script...
+	Echo Checking if Update is aviable for Windows 10 Script...
 	For /F "tokens=1 delims=$" %%G IN (Win10-Menu.ps1) DO (
 		Set /a W10Count=!W10Count!+1
 		If !W10Count!==13 (
 			Set LocalBaseVerW10=%%G
-			Set LocalBaseVerW10=%LocalBaseVerW10:~18,3%
+			Set LocalBaseVerW10=!LocalBaseVerW10:~18,3!
 		)
 		If !W10Count!==14 (
 			Set LocalSubVerW10=%%G
-			Set LocalSubVerW10=%LocalSubVerW10:~17,1%
+			Set LocalSubVerW10=!LocalSubVerW10:~17,1!
 		)
 		If !W10Count!==16 (
 			Set W10Temp=%%G
-			Set W10Temp=%W10Temp:~16,1%
-			If %W10Temp%==T Set W10Test=yes
+			Set W10Temp=!W10Temp:~16,1!
+			If /i !W10Temp!==T Set W10Test=yes
 			goto W10WebVer
 		)
 	)
@@ -215,30 +215,30 @@ goto Next
 	Set WebSubVerW10=0
 	powershell -Command "Invoke-WebRequest "%URL_Base%Win10Script/master/Version/Version.csv" -OutFile %Temp%\W10-Ver.csv"
 	For /F "tokens=*" %%G IN (%Temp%\W10-Ver.csv) DO (
-		If /i %W10Test%==no (
+		If %W10Test%==no (
 			If !W10uCount!==1 (
 				Set WebBaseVerW10T=%%G
-				Set WebBaseVerW10=%WebBaseVerW10T:~7,3%
-				Set WebSubVerW10=%WebBaseVerW10T:~11,1%
+				Set WebBaseVerW10=!WebBaseVerW10T:~7,3!
+				Set WebSubVerW10=!WebBaseVerW10T:~11,1!
 			)
 		) Else (
 			If !W10uCount!==2 (
 				Set WebBaseVerW10T=%%G
-				Set WebBaseVerW10=%WebBaseVerW10T:~5,3%
-				Set WebSubVerW10=%WebBaseVerW10T:~9,1%
+				Set WebBaseVerW10=!WebBaseVerW10T:~5,3!
+				Set WebSubVerW10=!WebBaseVerW10T:~9,1!
 			)
 		)
 		Set /a W10uCount=!W10uCount!+1
 	)
-	If %LocalBaseVerW10% lss %WebBaseVerW10% Set DownloadW10=yes
-	If %LocalBaseVerW10%==%WebBaseVerW10% If %LocalSubVerW10% lss %WebSubVerW10% Set DownloadW10=yes
-	If /i %DownloadW10%==yes (
+	If !LocalBaseVerW10! lss !WebBaseVerW10! Set DownloadW10=yes
+	If !LocalBaseVerW10!==!WebBaseVerW10! If !LocalSubVerW10! lss !WebSubVerW10! Set DownloadW10=yes
+	If %DownloadW10%==yes (
 		::Echo Test = %BVTest%
-		Echo Your Windows 10 Script V.%LocalBaseVerW10%.%LocalSubVerW10%
-		Echo Latest Windows 10 Script V.%WebBaseVerW10%.%WebSubVerW10%
+		Echo Your Windows 10 Script V.!LocalBaseVerW10!.!LocalSubVerW10!
+		Echo Latest Windows 10 Script V.!WebBaseVerW10!.!WebSubVerW10!
 		Echo.
 	) Else (
-		Echo Your Windows 10 Script V.%LocalBaseVerW10%.%LocalSubVerW10% is the latest version
+		Echo Your Windows 10 Script V.!LocalBaseVerW10!.!LocalSubVerW10! is the latest version
 	)
 	goto CheckRun
 
@@ -264,19 +264,20 @@ goto Next
 		Set CheckUpdateBoth=no
 		goto W10LocalVer
 	)
-	If /i %DownloadBV-W10%==yes goto W10
-	If /i %UpdateArg%==yes (
+	If %DownloadBV-W10%==yes goto W10
+	If %UpdateArg%==yes (
 		powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "%FilePath% !MiscArg!"' -Verb RunAs}"
 		Exit
 	)
-	If /i %RunArg%==yes (
-		If /i %DownloadBV-W10%==Done (
+	If %RunArg%==yes (
+		If %DownloadBV-W10%==Done (
 			Echo Cannot do a -Run with -Both
 		) else (
 			powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "%FilePath%"' -Verb RunAs}"
 		)
 		Exit
 	)
+	Echo Goodbye
 	goto:EOF
 
 :Check4Script
@@ -295,18 +296,18 @@ goto MainMenu
 
 
 :MainMenu
-cls
+::cls
 Echo  ----------------------------------------------------------------------------
 Echo  ^|________________  Madbomb122's Script Updater/Downloader  ________________^|
 Echo  ^|                ------------------------------------------                ^|
 Echo  ^|                                                                          ^|
-If /i %TestV%==no (
+If %TestV%==no (
 	Echo  ^|                              Stable Version                              ^|
 ) Else (
 	Echo  ^|                               Test Version                               ^|
 )
 Echo  ^|                  --------------------------------------                  ^|
-If /i %BatDownload%==no (
+If %BatDownload%==no (
 	Echo  ^|                    1^) Black Viper Script*                                ^|
 	Echo  ^|                    2^) Windows 10 Script                                  ^|
 	Echo  ^|                    3^) Black Viper ^& Windows 10 Script                    ^|
@@ -318,17 +319,17 @@ If /i %BatDownload%==no (
 Echo  ^|                                                                          ^|
 Echo  ^|                        Download Options (Toggles)                        ^|
 Echo  ^|                  --------------------------------------                  ^|
-If /i !TestV!==no (
+If !TestV!==no (
 	Echo  ^|                    4^) Dont Download Test Version ^(Stable^) of Script      ^|
 ) Else (
 	Echo  ^|                    4^) Download Test Version of Script                    ^|
 )
-If /i %BatDownload%==no (
+If %BatDownload%==no (
 	Echo  ^|                    5^) Dont Download bat file                             ^|
 ) Else (
 	Echo  ^|                    5^) Download bat file                                  ^|
 )
-If /i !RunArg!==no (
+If !RunArg!==no (
 	Echo  ^|                    6^) Dont Run Script after download**                   ^|
 ) Else (
 	Echo  ^|                    6^) Run A Script after download**                      ^|
@@ -378,7 +379,7 @@ IF %ERRORLEVEL%==5 (
 	goto MainMenu
 )
 IF %ERRORLEVEL%==6 (
-	If /i !RunArg!==no (
+	If !RunArg!==no (
 		Set RunArg=yes
 	) Else (
 		Set RunArg=no
@@ -393,10 +394,12 @@ IF %ERRORLEVEL%==7 (
 			goto W10LocalVer
 		)
 	)
+	Echo Goodbye
 	goto:EOF
 )
 IF %ERRORLEVEL%==8 (
 	If !BVW10Script!==2 goto W10LocalVer
+	Echo Goodbye
 	goto:EOF
 )
 IF %ERRORLEVEL%==9 (
@@ -404,8 +407,12 @@ IF %ERRORLEVEL%==9 (
 		Set CheckUpdateBoth=yes
 		goto BVLocalVer
 	)
+	Echo Goodbye
 	goto:EOF
 )
-IF %ERRORLEVEL%==10 goto:EOF
+IF %ERRORLEVEL%==10 (
+	Echo Goodbye
+	goto:EOF
+)
 
 ENDLOCAL DISABLEDELAYEDEXPANSION
