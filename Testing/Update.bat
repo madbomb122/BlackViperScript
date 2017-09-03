@@ -1,5 +1,5 @@
 @Echo off
-:: Version 1.2.1
+:: Version 1.2.2
 :: September 3st, 2017
 
 SETLOCAL ENABLEDELAYEDEXPANSION
@@ -27,11 +27,7 @@ if [%1]==[] (
 :Loop
 if x%1 equ x (
 	Echo.
-	If %DownloadBV%==yes If %DownloadW10%==yes (
-		Set DownloadBV-W10=yes
-		Set DownloadBV=no
-		Set DownloadW10=no
-	)
+	If %DownloadBV%==yes If %DownloadW10%==yes Set DownloadBV-W10=yes
 	If %DownloadBV-W10%==yes goto BV
 	If %DownloadBV%==yes goto BV
 	If %DownloadW10%==yes goto W10
@@ -65,6 +61,8 @@ If /i %1==-w10 (
 )
 If /i %1==-both (
 	Set DownloadBV-W10=yes
+	Set DownloadBV=yes
+	Set DownloadW10=yes
 	goto Next
 )
 If /i %1==-test (
@@ -103,6 +101,7 @@ goto Next
 			powershell -Command "Invoke-WebRequest !BatUrl! -OutFile !BatFilePath!"
 		)
 	)
+	Set DownloadBV=no
 	goto CheckRun
 
 :BVLocalVer
@@ -160,7 +159,7 @@ goto Next
 	) Else (
 		Echo Your BlackViper Script V.!LocalBaseVerBV!.!LocalSubVerBV! is the latest version
 	)
-	goto BV
+	goto CheckRun
 
 :W10
 	Set ScriptFileName=Win10-Menu.ps1
@@ -182,7 +181,8 @@ goto Next
 		Echo.
 		powershell -Command "Invoke-WebRequest !BatUrl! -OutFile !BatFilePath!"
 	)
-	If %DownloadBV-W10%==yes set DownloadBV-W10=Done
+	If %DownloadBV-W10%==yes Set DownloadBV-W10=done
+	Set DownloadW10=no
 	goto CheckRun
 
 :W10LocalVer
@@ -260,17 +260,18 @@ goto Next
 	goto:EOF
 
 :CheckRun
+	If %DownloadBV%==yes goto BV
+	If %DownloadW10%==yes goto W10
 	If %CheckUpdateBoth%==yes (
 		Set CheckUpdateBoth=no
 		goto W10LocalVer
 	)
-	If %DownloadBV-W10%==yes goto W10
 	If %UpdateArg%==yes (
 		powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "%FilePath% !MiscArg!"' -Verb RunAs}"
 		Exit
 	)
 	If %RunArg%==yes (
-		If %DownloadBV-W10%==Done (
+		If %DownloadBV-W10%==done (
 			Echo Cannot do a -Run with -Both
 		) else (
 			powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "%FilePath%"' -Verb RunAs}"
@@ -296,7 +297,7 @@ goto MainMenu
 
 
 :MainMenu
-::cls
+cls
 Echo  ----------------------------------------------------------------------------
 Echo  ^|________________  Madbomb122's Script Updater/Downloader  ________________^|
 Echo  ^|                ------------------------------------------                ^|
@@ -359,6 +360,8 @@ CHOICE /C 123456789Q /N /M "Please Input Choice:"
 IF %ERRORLEVEL%==1 goto BV
 IF %ERRORLEVEL%==2 goto W10
 IF %ERRORLEVEL%==3 (
+	Set DownloadBV=yes
+	Set DownloadW10=yes
 	Set DownloadBV-W10=yes
 	goto BV 
 )
