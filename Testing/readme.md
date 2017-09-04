@@ -1,6 +1,5 @@
 # Currently Testing (Read Notes)
-The update.bat in this folder..<br />
-Will allow you to check for update to script(s) and will download it if there is an update
+Nothing ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
