@@ -27,7 +27,7 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 `BlackViper.csv` (Service Configurations) -Size about `6.54 KB`<br />
 
 **Recommended Files**<br />
-`Update.bat` (Script will use to update script if available) -Size about `7.31 KB`<br /> 
+`Update.bat` (Script will use to update script if available) -Size about `12.3 KB`<br /> 
 `_Win10-BlackViper.bat` (To run script easier) -Size about `4.85 KB`<br /> 
 `README.md` (This Readme) <br />
 
