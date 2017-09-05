@@ -1,5 +1,5 @@
 **Current Version** <br />
-**Script:** `3.7.0` (August 26, 2017) <br />
+**Script:** `3.7.1` (September 5, 2017) <br />
 **Service:** `2.0` (May 21, 2017) <br />
 
 # Description
@@ -23,7 +23,7 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 <br />
 
 **_Need Files_**<br />
-`BlackViper-Win10.ps1` (Script) -Size about `71.0 KB`<br />
+`BlackViper-Win10.ps1` (Script) -Size about `65.0 KB`<br />
 `BlackViper.csv` (Service Configurations) -Size about `6.54 KB`<br />
 
 **Recommended Files**<br />
