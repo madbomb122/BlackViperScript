@@ -43,6 +43,7 @@ Download/Save the following files<br />
 Script File: `BlackViper-Win10.ps1` -Need<br />
 Service Config File: `BlackViper.csv` -Need<br />
 Bat File: `_Win10-BlackViper.bat` -Recommended<br />
+Bat File: `Update.bat` -Recommended<br />
   **Note 1: DO NOT RENAME THE FILES**<br />
   **Note 2: HAVE THE FILES IN THE SAME DIRECTORY**<br />
 Next follow the **Basic Usage** or **Advanced Usage**
