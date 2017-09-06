@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "1"
-$Script_Date = "Sept-5-2017"
+$Minor_Version = "2"
+$Script_Date = "Sept-6-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -254,7 +254,7 @@ Function DiagnosticCheck([Int]$Bypass) {
 		DisplayOutMenu " PC Type = $PCType" 15 0 1 1
 		DisplayOutMenu " Desktop/Laptop = $IsLaptop" 15 0 1 1
 		DisplayOutMenu " ServiceConfig = $Black_Viper" 15 0 1 1
-		DisplayOutMenu " All/Min = $All_or_Min" 15 0 1 1		
+		DisplayOutMenu " All/Min = $All_or_Min" 15 0 1 1
 		DisplayOutMenu " ToS = $AcceptToS" 15 0 1 1
 		DisplayOutMenu " Automated = $Automated" 15 0 1 1
 		DisplayOutMenu " ScriptVerCheck = $ScriptVerCheck" 15 0 1 1
@@ -657,7 +657,7 @@ Function Generate-Services {
 		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
 	}
 
-	If((($OldBVService -ne $BVService) -and ($OldBVService -eq "StartType" -or $BVService -eq "StartType")) -or ($LoadSrvConfig -eq "Refresh" -and $BVService -eq "StartType"){
+	If((($OldBVService -ne $BVService) -and ($OldBVService -eq "StartType" -or $BVService -eq "StartType")) -or ($LoadSrvConfig -eq "Refresh" -and $BVService -eq "StartType")){
 		$WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $False ;$LoadSrvConfig = 0 ;$Clear = $False
 	}
 
