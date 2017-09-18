@@ -1,6 +1,6 @@
 @Echo off
-:: Version 1.2.3
-:: September 3st, 2017
+:: Version 1.2.4
+:: September 18th, 2017
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
@@ -152,7 +152,7 @@ goto Next
 	If !LocalBaseVerBV! lss !WebBaseVerBV! Set DownloadBV=yes
 	If !LocalBaseVerBV!==!WebBaseVerBV! If !LocalSubVerBV! lss !WebSubVerBV! Set DownloadBV=yes
 	If %DownloadBV%==yes (
-		::Echo Test = %BVTest%
+		::Echo BlackViper Script is Test Version
 		Echo Your BlackViper Script V.!LocalBaseVerBV!.!LocalSubVerBV!
 		Echo Latest BlackViper Script V.!WebBaseVerBV!.!WebSubVerBV!
 		Echo.
@@ -233,7 +233,7 @@ goto Next
 	If !LocalBaseVerW10! lss !WebBaseVerW10! Set DownloadW10=yes
 	If !LocalBaseVerW10!==!WebBaseVerW10! If !LocalSubVerW10! lss !WebSubVerW10! Set DownloadW10=yes
 	If %DownloadW10%==yes (
-		::Echo Test = %BVTest%
+		::Echo Windows 10 Script is Test Version
 		Echo Your Windows 10 Script V.!LocalBaseVerW10!.!LocalSubVerW10!
 		Echo Latest Windows 10 Script V.!WebBaseVerW10!.!WebSubVerW10!
 		Echo.
@@ -286,12 +286,10 @@ Set BVW10Script=0
 If Exist %FileDir%BlackViper-Win10.ps1 (
 	Set BVScript=yes 
 	Set /a BVW10Script=!BVW10Script!+1
-	Echo BVW10Script=!BVW10Script! - BV
 )
 If Exist %FileDir%Win10-Menu.ps1 (
 	Set W10Script=yes
 	Set /a BVW10Script=!BVW10Script!+1
-	Echo BVW10Script=!BVW10Script! - W10
 )
 goto MainMenu
 
