@@ -42,13 +42,15 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 
 # How to Use/Run
 Download/Save the following files<br />
-Script File: `BlackViper-Win10.ps1` -Need<br />
-Service Config File: `BlackViper.csv` -Need<br />
-Bat File: `_Win10-BlackViper.bat` -Recommended<br />
-Bat File: `Update.bat` -Recommended<br />
+Script File: [BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) -Need<br />
+Service Config File: [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) -Need<br />
+Bat File: [_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) -Recommended<br />
+Bat File: [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Recommended<br />
   **Note 1: DO NOT RENAME THE FILES**<br />
   **Note 2: HAVE THE FILES IN THE SAME DIRECTORY**<br />
 Next follow the **Basic Usage** or **Advanced Usage**
+
+**You can do a `save as` on the filenames above to save them to you computer, you cannot do a `save as` on github's file list**
 
 # Basic_Usage
 Run the Script by bat file `_Win10-BlackViper.bat` (Recommended)<br />
