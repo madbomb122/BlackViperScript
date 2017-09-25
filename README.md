@@ -28,7 +28,7 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 
 **Recommended Files** <br />
 [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `12.4 KB`<br /> 
-[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `4.85 KB`<br /> 
+[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easyer) -Size about `4.85 KB`<br /> 
 [README.md](https://github.com/madbomb122/BlackViperScript/raw/master/README.md) (This Readme) <br />
 
 **You can do a `save as` on the filenames above to save them to you computer, you cannot do a `save as` on github's file list**
