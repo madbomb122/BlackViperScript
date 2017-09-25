@@ -1,6 +1,6 @@
 @Echo off
-:: Version 1.2.4
-:: September 18th, 2017
+:: Version 1.2.5
+:: September 24th, 2017
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
@@ -67,6 +67,10 @@ If /i %1==-both (
 )
 If /i %1==-test (
 	Set TestV=yes
+	goto Next
+)
+If /i %1==-bat (
+	Set BatDownload=yes
 	goto Next
 )
 Set MiscArg=!MiscArg! %1
@@ -257,6 +261,7 @@ goto Next
 	Echo -Both     Download BlackViper and Windows 10 Script
 	Echo -Test     Download the Test Version of Script
 	Echo -Run      Download then runs the script..Does not work with -Both
+	Echo -Bat      Download the bat file to run script easyer
 	goto:EOF
 
 :CheckRun
