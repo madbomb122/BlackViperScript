@@ -24,7 +24,7 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 
 **_Need Files_** <br />
 [BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `65.0 KB`<br />
-[BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `6.54 KB`<br />
+[BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `6.54 KB` (Not the same as the one on BlackViper's Website)<br />
 
 **Recommended Files** <br />
 [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `12.4 KB`<br /> 
@@ -43,7 +43,7 @@ PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10S
 # How to Use/Run
 Download/Save the following files<br />
 Script File: [BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) -Need<br />
-Service Config File: [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) -Need<br />
+Service Config File: [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) -Need (Not the same as the one on BlackViper's Website)<br />
 Bat File: [_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) -Recommended<br />
 Bat File: [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Recommended<br />
   **Note 1: DO NOT RENAME THE FILES**<br />
