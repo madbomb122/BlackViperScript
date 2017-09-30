@@ -712,7 +712,10 @@ Function GetCustomBV {
 	$Script:LoadServiceConfig = 2
 	[System.Collections.ArrayList]$Script:csvTemp = @()
 	ForEach($item In $ServiceCBList) {
-		If($item.Value.IsChecked){ $Object = New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $item.StartType } $Script:csvTemp+= $Object }
+		If($item.Value.IsChecked){
+			$Object = New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $item.StartType }
+			$Script:csvTemp+= $Object
+		}
 	}
 	[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 }
