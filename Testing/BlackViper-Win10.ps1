@@ -691,7 +691,8 @@ Function Generate-Services {
 			$checkbox.Content = "$DispTemp"
 			If($ServiceTypeNum -eq 0){ $checkbox.IsChecked = $False } Else{ $checkbox.IsChecked = $True }
 
-			$Object = New-Object PSObject -Property @{ Value = $checkbox ;CBName = $CBName ;ServiceName = $ServiceName ;StartType = $ServiceTypeNum } $ServiceCBList += $Object
+			$Object = New-Object PSObject -Property @{ Value = $checkbox ;CBName = $CBName ;ServiceName = $ServiceName ;StartType = $ServiceTypeNum }
+			$ServiceCBList += $Object
 		}
 	}
 
