@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "2"
-$Script_Date = "Sept-6-2017"
+$Minor_Version = "3"
+$Script_Date = "Sept-30-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -145,29 +145,29 @@ If([System.Environment]::Is64BitProcess){ $OSType = 64 }
 $Script:ServiceEnd = (Get-Service "*_*" | Select Name | Select-Object -First 1).Name.Split('_')[1]
 
 $colors = @(
-"black",       #0
-"blue",        #1
-"cyan",        #2
-"darkblue",    #3
-"darkcyan",    #4
-"darkgray",    #5
-"darkgreen",   #6
-"darkmagenta", #7
-"darkred",     #8
-"darkyellow",  #9
-"gray",        #10
-"green",       #11
-"magenta",     #12
-"red",         #13
-"white",       #14
-"yellow")      #15
+"black",      #0
+"blue",       #1
+"cyan",       #2
+"darkblue",   #3
+"darkcyan",   #4
+"darkgray",   #5
+"darkgreen",  #6
+"darkmagenta",#7
+"darkred",    #8
+"darkyellow", #9
+"gray",       #10
+"green",      #11
+"magenta",    #12
+"red",        #13
+"white",      #14
+"yellow")     #15
 
 $ServicesTypeList = @(
-'',            #0 -None (Skip/Not Installed)
-'Disabled',    #1 -Disable
-'Manual',      #2 -Manual
-'Automatic',   #3 -Automatic
-'Automatic')   #4 -Automatic (Delayed Start)
+'',           #0 -Skip Not Installed
+'Disabled',   #1 -Disable
+'Manual',     #2 -Manual
+'Automatic',  #3 -Automatic
+'Automatic')  #4 -Automatic (Delayed Start)
 
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
@@ -191,11 +191,11 @@ Function LeftLine { DisplayOutMenu "| " 14 0 0 0 }
 Function RightLine { DisplayOutMenu " |" 14 0 1 0 }
 
 Function OpenWebsite([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
-Function DownloadFile([String]$Url, [String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
+Function DownloadFile([String]$Url,[String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function ShowInvalid([Int]$InvalidA) { If($InvalidA -eq 1) { Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
 Function LaptopCheck { $Script:PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType ;If($PCType -ne 2) { Return "-Desk" } Return "-Lap" }
 
-Function DisplayOutMenu([String]$TxtToDisplay, [Int]$TxtColor, [Int]$BGColor, [Int]$NewLine, [Int]$LogOut) {
+Function DisplayOutMenu([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor,[Int]$NewLine,[Int]$LogOut) {
 	If($NewLine -eq 0) {
 		If($ScriptLog -eq 1 -And $LogOut -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
 		Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
@@ -205,7 +205,7 @@ Function DisplayOutMenu([String]$TxtToDisplay, [Int]$TxtColor, [Int]$BGColor, [I
 	}
 }
 
-Function DisplayOut([String]$TxtToDisplay, [Int]$TxtColor, [Int]$BGColor) {
+Function DisplayOut([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor) {
 	If($ScriptLog -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -Filepath $LogFile -Append }
 	Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
 }
@@ -343,7 +343,7 @@ Function TOSyes {
 
 Function Update-Window {
 	[cmdletBinding()]
-	Param($Control, $Property, $Value, [Switch]$AppendContent)
+	Param($Control,$Property,$Value,[Switch]$AppendContent)
 	If($Property -eq "Close"){ $syncHash.Window.Dispatcher.invoke([action]{$syncHash.Window.Close()},"Normal") ;Return }
 	$form.Dispatcher.Invoke([Action]{ If($PSBoundParameters['AppendContent']){ $Control.AppendText($Value) } Else{ $Control.$Property = $Value } }, "Normal")
 }
@@ -375,22 +375,23 @@ Function Gui-Start {
 		$ServiceDate = ($TMP[0]."Def-Home-Min")
 	} Else {
 		$ServiceVersion = "Missing File"
-		$ServiceDate = ""
+		$ServiceDate = "BlackViper.csv"
 	}
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="343" Width="490" ResizeMode="NoResize" BorderBrush="Black" Background="White" WindowStyle="ThreeDBorderWindow">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="339" Width="490" ResizeMode="NoResize" BorderBrush="Black" Background="White">
 <Window.Effect> <DropShadowEffect/></Window.Effect><Grid>
  <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,276,0,0" VerticalAlignment="Top" Height="25"/>
  <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
+ <Button Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="114,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic" Background="#FF8ABEF0"/>
+ <Button Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="228,259,0,0" VerticalAlignment="Top" Width="117" FontStyle="Italic" Background="#FFA7D24D"/>
+ <Button Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="345,259,0,0" VerticalAlignment="Top" Width="129" FontStyle="Italic" Background="#FFA7D24D"/>
+ <Button Name="DonateButton" Content="Donate to me" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic" Background="#FFFFAD2F"/>
  <Button Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="0,238,0,0" VerticalAlignment="Top" Width="474" Height="20" FontWeight="Bold"/>
- <Button Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="114,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic"/>
- <Button Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="228,259,0,0" VerticalAlignment="Top" Width="117" FontStyle="Italic"/>
- <Button Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="345,259,0,0" VerticalAlignment="Top" Width="129" FontStyle="Italic"/>
- <Button Name="DonateButton" Content="Donate to me" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic"/> <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="125" IsEnabled="False"/>
- <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="24" Margin="345,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="129" IsEnabled="False"/>
- <TextBox Name="Release_Type_Txt" HorizontalAlignment="Left" Height="24" Margin="207,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
+ <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="125" IsEnabled="False"/>
+ <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="345,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="129" IsEnabled="False"/>
+ <TextBox Name="Release_Type_Txt" HorizontalAlignment="Left" Height="20" Margin="207,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
  <TabControl Name="TabControl" Height="235" VerticalAlignment="Top">
   <TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,63,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
@@ -461,7 +462,7 @@ Function Gui-Start {
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,280,0,0" Stroke="Black" Width="1" Height="25" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFB6B6B6" Stroke="Black" Margin="0,304,0,0" Height="10" VerticalAlignment="Top"/>
+ <Rectangle Fill="#FFB6B6B6" Stroke="Black" Margin="0,300,0,0" Height="10" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFB6B6B6" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/> </Grid>
 </Window>
 "@
@@ -836,7 +837,7 @@ Function ServiceSet([String]$BVService) {
 	AutomatedExitCheck 1
 }
 
-Function ServiceCheck([String]$S_Name, [String]$S_Type) {
+Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 	If($CurrServices.Name -Contains $S_Name) {
 		$C_Type = ($CurrServices.Where{$_.Name -eq $S_Name}).StartType
 		If($S_Type -ne $C_Type) {
@@ -849,13 +850,13 @@ Function ServiceCheck([String]$S_Name, [String]$S_Type) {
 	} Return $False
 }
 
-Function Black_Viper_Set([Int]$BVOpt, [String]$FullMin) {
+Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
 	Switch($BVOpt) {
 		{$LoadServiceConfig -eq 1 -or $LoadServiceConfig -eq 2} { ServiceSet "StartType" ;Break }
-		1 { ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
-		2 { ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
-		3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
+		1 { ServiceSet ("Def"+$WinEdition+$FullMin+$BuildV) ;Break }
+		2 { ServiceSet ("Safe"+$IsLaptop+$FullMin+$BuildV) ;Break }
+		3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin+$BuildV) ;Break }
 	}
 }
 
@@ -908,6 +909,10 @@ Function PreScriptCheck {
 		$Script:ErrorDi += " Check Failed"
 		$BuildCheck = "Fail"
 		$EBCount++
+	} ElseIf($Win10Ver -eq 1803 ) { #change 11111 to ver of fall creator's update
+		$BuildV = "-FCU" #FCU = Fall Creator Update
+	} Else {
+		$BuildV = ""
 	}
 
 	If($EBCount -ne 0) {
@@ -957,7 +962,7 @@ Function PreScriptCheck {
 	}
 
 	If($BackupServiceConfig -eq 1){ Save_Service }
-	If($LoadServiceConfig -eq 1){
+	If($LoadServiceConfig -eq 1) {
 		$ServiceFilePath = $filebase + $ServiceConfigFile
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 			$Script:ErrorDi = "Missing File $ServiceConfigFile"
@@ -985,7 +990,7 @@ Function PreScriptCheck {
 			DownloadFile $Version_Url $VersionFile
 			$CSV_Ver = Import-Csv $VersionFile
 			If($ServiceVerCheck -eq 1 -And $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
-				If($ScriptLog -eq 1) { Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -Filepath $LogFile }
+				If($ScriptLog -eq 1){ Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -Filepath $LogFile }
 				DownloadFile $Service_Url $ServiceFilePath
 				If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
 			}
@@ -1034,23 +1039,7 @@ Function PreScriptCheck {
 	}
 }
 
-Function ScriptUpdateFun {
-	$FullVer = "$WebScriptVer.$WebScriptMinorVer"
-	$UpdateFile = $filebase + "Update.bat"
-	If(Test-Path $UpdateFile -PathType Leaf){
-		$DFilename = "BlackViper-Win10.ps1"
-		$UpdateOptBat = $True
-		$UpArg = "-u -bv "
-		If($Release_Type -ne "Stable"){ $UpArg += "-test " }
-	} Else {
-		$DFilename = "BlackViper-Win10-Ver." + $FullVer
-		If($Release_Type -ne "Stable"){ $DFilename += "-Testing" ;$Script_Url = $URL_Base + "Testing/" }
-		$DFilename += ".ps1"
-		$Script_Url = $URL_Base + "BlackViper-Win10.ps1"
-		$WebScriptFilePath = $filebase + $DFilename
-		$UpdateOptBat = $False
-		$UpArg = ""
-	}
+Function UpdateDisplay([String]$FullVer,[String]$DFilename) {
 	Clear-Host
 	MenuLineLog
 	LeftLineLog ;DisplayOutMenu "                  Update Found!                  " 13 0 0 1 ;RightLineLog
@@ -1061,6 +1050,12 @@ Function ScriptUpdateFun {
 	LeftLineLog ;DisplayOutMenu "after download is complete.					  " 2 0 0 1 ;RightLineLog
 	MenuBlankLineLog
 	MenuLineLog
+}
+
+Function ScriptUpdateFun {
+	$FullVer = "$WebScriptVer.$WebScriptMinorVer"
+	$UpdateFile = $filebase + "Update.bat"
+	$UpArg = ""
 
 	If($Automated -eq 1){ $UpArg += "-auto " }
 	If($AcceptToS -ne 0){ $UpArg += "-atosu " }
@@ -1084,19 +1079,30 @@ Function ScriptUpdateFun {
 	If($LoadServiceConfig -eq 2){ $TempSrv = $Env:Temp + "\TempSrv.csv" ;$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding "unicode" -Force -Delimiter "," ;$UpArg += "-lcsc $TempSrv " } 
 	If($BackupServiceConfig -eq 1){ $UpArg += "-bcsc " }
 	If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
-	If($UpdateOptBat){
+
+	If(Test-Path $UpdateFile -PathType Leaf) {
+		$DFilename = "BlackViper-Win10.ps1"
+		$UpArg += "-u -bv "
+		If($Release_Type -ne "Stable"){ $UpArg += "-test " }
+		UpdateDisplay $FullVer $DFilename
 		cmd.exe /c "$UpdateFile $UpArg"
 	} Else {
+		$DFilename = "BlackViper-Win10-Ver." + $FullVer
+		If($Release_Type -ne "Stable"){ $DFilename += "-Testing" ;$Script_Url = $URL_Base + "Testing/" }
+		$DFilename += ".ps1"
+		$Script_Url = $URL_Base + "BlackViper-Win10.ps1"
+		$WebScriptFilePath = $filebase + $DFilename
+		UpdateDisplay $FullVer $DFilename
 		DownloadFile $Script_Url $WebScriptFilePath
 		If($BatUpdateScriptFileName -eq 1) {
 			$BatFile = $filebase + "_Win10-BlackViper.bat"
-			If(Test-Path $BatFile -PathType Leaf){ 
+			If(Test-Path $BatFile -PathType Leaf) { 
 				(Get-Content -LiteralPath $BatFile) | Foreach-Object {$_ -replace "Set Script_File=.*?$" , "Set Script_File=$DFilename"} | Set-Content -LiteralPath $BatFile -Force
 				MenuBlankLineLog
 				LeftLineLog ;DisplayOutMenu " Updated bat file with new script file name.     " 13 0 0 1 ;RightLineLog
 				MenuBlankLineLog
 				MenuLineLog
-				}
+			}
 		}
 		Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
 	}
@@ -1151,8 +1157,11 @@ Function ArgsAndVarSet {
 	$Script:WinEdition = $FullWinEdition.Split(' ')[-1]
 	#  Pro or Home
 
+	# https://en.wikipedia.org/wiki/Windows_10_version_history
+
 	$Script:ForBuild = 15063
 	$Script:BuildVer = [Environment]::OSVersion.Version.build
+	# 17004 = Falls's Creator's Update ?
 	# 15063 = Creator's Update
 	# 14393 = Anniversary Update
 	# 10586 = First Major Update
@@ -1160,6 +1169,7 @@ Function ArgsAndVarSet {
 
 	$Script:ForVer = 1703
 	$Script:Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).ReleaseId
+	# 1803 = Falls's Creator's Update ?
 	# 1703 = Creator's Update
 	# 1607 = Anniversary Update
 	# 1511 = First Major Update
@@ -1170,7 +1180,7 @@ Function ArgsAndVarSet {
 		CreateLog
 		Error_Top_Display
 		$Script:ErrorDi = "Tweaked + Laptop (Not supported ATM)"
-		If($Automated -eq 1) { LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog }
+		If($Automated -eq 1){ LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog }
 		LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
 		Error_Bottom
 	} ElseIf($BV_ArgUsed -In 2..3) {
