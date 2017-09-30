@@ -1,9 +1,17 @@
 -----------------------------------------------------------------------------------
-3.7.2 (09-06-2017)
+3.7.3 (09-30-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
 
 Bug Fix thanks to sdmunozsierra 
+
+Minor changes in script
+
+Getting Script Ready for the New Fall's Creator's Update
+Script will use the Service Configuration for Fall's Creator's Update if your on it,
+If not Script will use the Older Setting
+
+Added Color to Donate, Website and Copyright button
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
