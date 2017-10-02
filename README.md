@@ -12,6 +12,8 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10Script  <br />
 
+PPS. My Thanks goes out to all that have helped in any way
+
 # Requirements (Make sure to LOOK at this)
 
 |            | Recommended Requirements         | AT YOURN OWN RISK* (See Note Bellow) |
