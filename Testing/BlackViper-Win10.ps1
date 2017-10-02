@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "3"
-$Script_Date = "Sept-30-2017"
+$Minor_Version = "4"
+$Script_Date = "Oct-02-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -438,7 +438,14 @@ Function Gui-Start {
    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="210" Margin="236,-2,0,-3" Stroke="Black" VerticalAlignment="Top" Width="1"/></Grid>
   </TabItem>
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
-   <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="0,38,1,0"> <StackPanel Name="StackCBHere" Width="458" ScrollViewer.VerticalScrollBarVisibility="Auto" CanVerticallyScroll="True"/></ScrollViewer>
+    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" SelectionMode="Single" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" > <DataGrid.Columns>
+     <DataGridCheckBoxColumn Binding="{Binding checkboxChecked, UpdateSourceTrigger=PropertyChanged}"> <DataGridCheckBoxColumn.ElementStyle>
+     <Style TargetType="CheckBox"/> </DataGridCheckBoxColumn.ElementStyle>  </DataGridCheckBoxColumn>
+    <DataGridTextColumn Header="Common Name" Width="125" Binding="{Binding CName}"/>
+    <DataGridTextColumn Header="Service Name" Width="125" Binding="{Binding ServiceName}"/>
+    <DataGridTextColumn Header="Current Status" Width="125"  Binding="{Binding CurrType}"/>
+    <DataGridTextColumn Header="Changed Status" Width="125"  Binding="{Binding ChType}"/>
+    </DataGrid.Columns> </DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="153,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
    <Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="3,1,0,0" VerticalAlignment="Top" Width="76"/>
@@ -479,7 +486,7 @@ Function Gui-Start {
 	[System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
 	[System.Collections.ArrayList]$VarList = Get-Variable "WPF_*_CB"
 	[System.Collections.ArrayList]$CNoteList = Get-Variable "WPF_CustomNote*"
-	[System.Collections.ArrayList]$Script:CBNameList = @()
+	[System.Collections.ArrayList]$DataGridList = @()
 
 	$WPF_ServiceConfig.add_SelectionChanged({
 		If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
@@ -638,8 +645,7 @@ Function Gui-Done {
 }
 
 Function Generate-Services {
-	$removecb = $False
-	If($ServicesGeneratedA){ $OldBVService = $BVService ;$removecb = $True}
+	If($ServicesGeneratedA){ $OldBVService = $BVService }
 
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
@@ -659,42 +665,29 @@ Function Generate-Services {
 	}
 
 	If((($OldBVService -ne $BVService) -and ($OldBVService -eq "StartType" -or $BVService -eq "StartType")) -or ($LoadSrvConfig -eq "Refresh" -and $BVService -eq "StartType")){
-		$WPF_StackCBHere.Children.Clear() ;$Script:ServicesGenerated = $False ;$LoadSrvConfig = 0 ;$Clear = $False
+		$Script:ServicesGenerated = $False ;$LoadSrvConfig = 0
 	}
 
-	If(!($ServicesGenerated)){ [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath }
-
-	[System.Collections.ArrayList]$Script:ServiceCBList = @()
+	#If(!($ServicesGenerated)){ [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath }
+	[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
+	$DataGridList = @()
 
 	ForEach($item In $ServCB) {
 		$ServiceTypeNum = $($item.$BVService)
-		$ServiceName = $($item.ServiceName)
-		If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
-		If($CurrServices.Name -Contains $ServiceName) {
-			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
-			If($ServiceTypeNum -eq 0){ $ServiceType = $ServicesTypeList[$($item.$BVSAlt)] } Else{ $ServiceType = $ServicesTypeList[$ServiceTypeNum] }
-			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-			$DispTemp = "$ServiceCommName - $ServiceCurrType -> $ServiceType"
-			If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed Start)" }
-			$CBName = "WPF_"+$ServiceName + "_1CB"
-
-			If(!($CBNameList -Contains $CBName)) {
-				New-Variable -Name $CBName -Value ([System.Windows.Controls.CheckBox]::new()) -Scope Script
-				$checkbox = Get-Variable -Name $CBName -ValueOnly
-				$checkbox.Width = 450
-				$checkbox.Height = 20
-				$CBNameList.Add($CBName)
-			} Else{ $checkbox = Get-Variable -Name $CBName -ValueOnly }
-
-			If(!($ServicesGenerated)){ $WPF_StackCBHere.AddChild($checkbox) }
-			$checkbox.Content = "$DispTemp"
-			If($ServiceTypeNum -eq 0){ $checkbox.IsChecked = $False } Else{ $checkbox.IsChecked = $True }
-
-			$Object = New-Object PSObject -Property @{ Value = $checkbox ;CBName = $CBName ;ServiceName = $ServiceName ;StartType = $ServiceTypeNum }
-			$ServiceCBList += $Object
+		$SName = $($item.ServiceName)
+		If($SName -Like "*_*"){ $SName = $SName.Split('_')[0] + "_$ServiceEnd" }
+		If($CurrServices.Name -Contains $SName) {
+			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $SName}).StartType
+			If($ServiceTypeNum -eq 0){ $checkbox = $False ;$ServiceTypeNum = $($item.$BVSAlt) } Else { $checkbox = $True }
+			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
+			If($SName -Is [system.array]){ $SName = $SName[0] }
+			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $SName}).DisplayName
+			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed Start)" }
+			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $SName ;CurrType = $ServiceCurrType ;ChType = $ServiceType ;StartType = $ServiceTypeNum }
 		}
 	}
+	$WPF_dataGrid.ItemsSource = $DataGridList
+	$WPF_dataGrid.Items.Refresh()
 
 	If(!($ServicesGeneratedA)){
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
@@ -703,7 +696,7 @@ Function Generate-Services {
 		$WPF_CustomBVCB.Visibility = 'Visible'
 		$WPF_SaveCustomSrvButton.Visibility = 'Visible'
 		$WPF_LoadServicesButton.content = "Reload"
-		$Script:ServicesGenerated = $True
+		#$Script:ServicesGenerated = $True
 		$Script:ServicesGeneratedA = $True
 	}
 }
@@ -711,12 +704,8 @@ Function Generate-Services {
 Function GetCustomBV {
 	$Script:LoadServiceConfig = 2
 	[System.Collections.ArrayList]$Script:csvTemp = @()
-	ForEach($item In $ServiceCBList) {
-		If($item.Value.IsChecked){
-			$Object = New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $item.StartType }
-			$Script:csvTemp+= $Object
-		}
-	}
+	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
+	ForEach($item In $ServiceCBList){ $Script:csvTemp+= New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $item.StartType } }
 	[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 }
 
