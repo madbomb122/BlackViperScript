@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "2"
-$Script_Date = "Sept-6-2017"
+$Minor_Version = "3"
+$Script_Date = "Oct-3-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -763,7 +763,7 @@ Function Save_Service([String]$SavePath) {
 			If($item.Value.IsChecked) {
 				$ServiceName = $item.ServiceName
 				If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
-				$Object = New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $item.StartType } $SaveService += $Object
+				$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $item.StartType }
 			}
 		}
 	} Else {
@@ -781,7 +781,7 @@ Function Save_Service([String]$SavePath) {
 					Default { $StartType = "$($Service.StartType)" ;Break }
 				}
 				If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
-				$Object = New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $StartType } $SaveService += $Object
+				$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $StartType }
 			}
 		}
 	}
