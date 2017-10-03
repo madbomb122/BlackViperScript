@@ -957,7 +957,7 @@ Function PreScriptCheck {
 
 	If($BackupServiceConfig -eq 1){ Save_Service }
 	If($LoadServiceConfig -eq 1){
-		$ServiceFilePath = $filebase + $ServiceConfigFile
+		$ServiceFilePath = $ServiceConfigFile
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 			$Script:ErrorDi = "Missing File $ServiceConfigFile"
 			Error_Top_Display
