@@ -952,7 +952,6 @@ Function PreScriptCheck {
 		}
 		AutomatedExitCheck 1
 	}
-
 	If($BackupServiceConfig -eq 1){ Save_Service }
 	If($LoadServiceConfig -eq 1) {
 		$ServiceFilePath = $ServiceConfigFile
@@ -1178,7 +1177,7 @@ Function ArgsAndVarSet {
 	} ElseIf($BV_ArgUsed -In 2..3) {
 		$Script:RunScript = 1
 		If($AcceptToS -ne 0) {
-			If($LoadServiceConfig -eq 1){ ServiceSet "StartType" } Else{ Black_Viper_Set $Black_Viper $All_or_Min }
+			If($LoadServiceConfig -eq 1){ PreScriptCheck ;ServiceSet "StartType" } Else{ PreScriptCheck ;Black_Viper_Set $Black_Viper $All_or_Min }
 		} Else {
 			TOS
 		}
