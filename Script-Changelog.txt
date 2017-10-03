@@ -6,7 +6,7 @@ Changed indent from spaces to tabs to decrease file size about 5 KB
 Bug Fix thanks to sdmunozsierra
 
 Bug Fix Issue with Saving Services
-Bug Fix Issue with Running Custom Service list via Gui (Said file was missing)
+Bug Fix Issue with Running Custom Service list
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
