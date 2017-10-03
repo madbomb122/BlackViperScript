@@ -1,9 +1,11 @@
 -----------------------------------------------------------------------------------
-3.7.2 (09-06-2017)
+3.7.3 (10-03-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
 
-Bug Fix thanks to sdmunozsierra 
+Bug Fix thanks to sdmunozsierra
+
+Bug Fix Issue with Saveing Services
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
