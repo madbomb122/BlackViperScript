@@ -1,13 +1,13 @@
 -----------------------------------------------------------------------------------
-3.7.5 (10-02-2017)
+3.7.6 (10-04-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
 
 Bug Fix thanks to sdmunozsierra
 
 Bug Fix Issue with Saving Services
+
 Bug Fix Issue with Running Custom Service list
-Minor changes in script
 
 Getting Script Ready for the New Fall's Creator's Update
 Script will use the Service Configuration for Fall's Creator's Update if your on it,
@@ -15,6 +15,7 @@ If not Script will use the Older Setting
 
 Added Color to Donate, Website and Copyright button
 Improved Listing Method for the Services (added Columns that are sortable) 
+Minor changes in script
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
