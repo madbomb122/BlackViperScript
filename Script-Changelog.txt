@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------------------
-3.7.3 (10-03-2017)
+3.7.4 (10-04-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
 
 Bug Fix thanks to sdmunozsierra
 
 Bug Fix Issue with Saving Services
+
 Bug Fix Issue with Running Custom Service list
 
 -----------------------------------------------------------------------------------
