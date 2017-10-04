@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "5"
-$Script_Date = "Oct-03-2017"
+$Minor_Version = "6"
+$Script_Date = "Oct-04-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -327,7 +327,7 @@ Function TOSyes {
 	$Script:AcceptToS = "Accepted-Script"
 	$Script:RunScript = 1
 	If($LoadServiceConfig -eq 1) {
-		ServiceSet "StartType"
+		Black_Viper_Set
 	} ElseIf($Black_Viper -eq 0) {
 		Gui-Start
 	} Else {
@@ -845,7 +845,7 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
 	Switch($BVOpt) {
-		{$LoadServiceConfig -eq 1 -or $LoadServiceConfig -eq 2} { ServiceSet "StartType" ;Break }
+		{$LoadServiceConfig -In 1..2} { ServiceSet "StartType" ;Break }
 		1 { ServiceSet ("Def"+$WinEdition+$FullMin+$BuildV) ;Break }
 		2 { ServiceSet ("Safe"+$IsLaptop+$FullMin+$BuildV) ;Break }
 		3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin+$BuildV) ;Break }
@@ -1177,7 +1177,7 @@ Function ArgsAndVarSet {
 	} ElseIf($BV_ArgUsed -In 2..3) {
 		$Script:RunScript = 1
 		If($AcceptToS -ne 0) {
-			If($LoadServiceConfig -eq 1){ PreScriptCheck ;ServiceSet "StartType" } Else{ PreScriptCheck ;Black_Viper_Set $Black_Viper $All_or_Min }
+			If($LoadServiceConfig -eq 1){ Black_Viper_Set } Else{ Black_Viper_Set $Black_Viper $All_or_Min }
 		} Else {
 			TOS
 		}
