@@ -348,7 +348,7 @@ Function Update-Window {
 	$form.Dispatcher.Invoke([Action]{ If($PSBoundParameters['AppendContent']){ $Control.AppendText($Value) } Else{ $Control.$Property = $Value } }, "Normal")
 }
 
-Function OpenSaveDiaglog([Int]$SorO){
+Function OpenSaveDiaglog([Int]$SorO) {
 	If($SorO -eq 0){ $SOFileDialog = New-Object System.Windows.Forms.OpenFileDialog } Else{ $SOFileDialog = New-Object System.Windows.Forms.SaveFileDialog }
 	$SOFileDialog.InitialDirectory = $filebase
 	$SOFileDialog.Filter = "CSV (*.csv)| *.csv"
@@ -360,7 +360,7 @@ Function HideCustomSrvStuff {
 	$WPF_LoadServicesButton.IsEnabled = $True
 	$WPF_RadioAll.IsEnabled = $True
 	$WPF_RadioMin.IsEnabled = $True
-	ForEach($Var In $CNoteList) { $Var.Value.Visibility = 'Hidden' }
+	ForEach($Var In $CNoteList){ $Var.Value.Visibility = 'Hidden' }
 	$WPF_LoadFileTxtBox.Visibility = 'Hidden'
 	$WPF_btnOpenFile.Visibility = 'Hidden'
 }
@@ -438,14 +438,14 @@ Function Gui-Start {
    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="210" Margin="236,-2,0,-3" Stroke="Black" VerticalAlignment="Top" Width="1"/></Grid>
   </TabItem>
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
-    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" SelectionMode="Single" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" > <DataGrid.Columns>
-     <DataGridCheckBoxColumn Binding="{Binding checkboxChecked, UpdateSourceTrigger=PropertyChanged}"> <DataGridCheckBoxColumn.ElementStyle>
-     <Style TargetType="CheckBox"/> </DataGridCheckBoxColumn.ElementStyle>  </DataGridCheckBoxColumn>
-    <DataGridTextColumn Header="Common Name" Width="125" Binding="{Binding CName}"/>
-    <DataGridTextColumn Header="Service Name" Width="125" Binding="{Binding ServiceName}"/>
-    <DataGridTextColumn Header="Current Status" Width="125"  Binding="{Binding CurrType}"/>
-    <DataGridTextColumn Header="Changed Status" Width="125"  Binding="{Binding ChType}"/>
-    </DataGrid.Columns> </DataGrid>
+    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" SelectionMode="Single" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" ><DataGrid.Columns>
+     <DataGridCheckBoxColumn Binding="{Binding checkboxChecked, UpdateSourceTrigger=PropertyChanged}"><DataGridCheckBoxColumn.ElementStyle>
+     <Style TargetType="CheckBox"/></DataGridCheckBoxColumn.ElementStyle></DataGridCheckBoxColumn>
+     <DataGridTextColumn Header="Common Name" Width="125" Binding="{Binding CName}"/>
+     <DataGridTextColumn Header="Service Name" Width="125" Binding="{Binding ServiceName}"/>
+     <DataGridTextColumn Header="Current Status" Width="125"  Binding="{Binding CurrType}"/>
+     <DataGridTextColumn Header="Changed Status" Width="125"  Binding="{Binding ChType}"/>
+    </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="153,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
    <Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="3,1,0,0" VerticalAlignment="Top" Width="76"/>
@@ -470,7 +470,7 @@ Function Gui-Start {
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,280,0,0" Stroke="Black" Width="1" Height="25" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFB6B6B6" Stroke="Black" Margin="0,300,0,0" Height="10" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFB6B6B6" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/> </Grid>
+ <Rectangle Fill="#FFB6B6B6" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/></Grid>
 </Window>
 "@
 
@@ -486,7 +486,6 @@ Function Gui-Start {
 	[System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
 	[System.Collections.ArrayList]$VarList = Get-Variable "WPF_*_CB"
 	[System.Collections.ArrayList]$CNoteList = Get-Variable "WPF_CustomNote*"
-	[System.Collections.ArrayList]$DataGridList = @()
 
 	$WPF_ServiceConfig.add_SelectionChanged({
 		If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
@@ -503,14 +502,10 @@ Function Gui-Start {
 		$Script:RunScript = 1
 		$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 		If($Black_Viper -eq $BVCount) {
-			$Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
 			If(!(Test-Path $ServiceConfigFile -PathType Leaf) -And $ServiceConfigFile -ne $null) {
 				[Windows.Forms.MessageBox]::Show("The File '$ServiceConfigFile' does not exist","Error", 'OK')
 				$Script:RunScript = 0
-			} Else {
-				$Script:LoadServiceConfig = 1
-				$Script:Black_Viper = 0
-			}
+			} Else{ $Script:LoadServiceConfig = 1 ;$Script:Black_Viper = 0 }
 		}
 		If($RunScript -eq 1){ Gui-Done }
 	})
@@ -576,7 +571,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$Script:CurrServices = Get-Service | Select DisplayName, Name, StartType
 	$Script:RunScript = 0
 	If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $True } Else{ $WPF_RadioMin.IsChecked = $True }
-	If($ScriptLog -eq 1) { $WPF_ScriptLog_CB.IsChecked = $True ;$WPF_LogNameInput.IsEnabled = $True} Else{ $WPF_LogNameInput.IsEnabled = $False }
+	If($ScriptLog -eq 1){ $WPF_ScriptLog_CB.IsChecked = $True ;$WPF_LogNameInput.IsEnabled = $True} Else{ $WPF_LogNameInput.IsEnabled = $False }
 	If($IsLaptop -eq "-Lap"){ $WPF_ServiceConfig.Items.RemoveAt(2) }
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
@@ -600,7 +595,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Function RunDisableCheck {
 	If($WPF_BuildCheck_CB.IsChecked){ $Script:BuildCheck = 1 } Else{ $Script:BuildCheck = 0 }
-	If($WPF_EditionCheck_CB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text ;$WPF_EditionConfig.IsEnabled = $True } Else { $Script:EditionCheck = 0 ;$WPF_EditionConfig.IsEnabled = $False }
+	If($WPF_EditionCheck_CB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text ;$WPF_EditionConfig.IsEnabled = $True } Else{ $Script:EditionCheck = 0 ;$WPF_EditionConfig.IsEnabled = $False }
 
 	$tempfail = 0
 	$temp1 = ""
@@ -623,7 +618,6 @@ Function RunDisableCheck {
 		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
 		If($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
-			$Script:ServiceConfigFile = $WPF_LoadFileTxtBox.Text
 			If(!($ServiceConfigFile) -or !(Test-Path $ServiceConfigFile -PathType Leaf)) { 
 				$WPF_RunScriptButton.IsEnabled = $False
 				$Buttontxt = "Run Disabled, No Custom Service Selected or Doesn't exist."
@@ -645,7 +639,7 @@ Function Gui-Done {
 }
 
 Function Generate-Services {
-	If($ServicesGeneratedA){ $OldBVService = $BVService }
+	#If($ServicesGeneratedA){ $OldBVService = $BVService }
 
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
@@ -664,13 +658,11 @@ Function Generate-Services {
 		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
 	}
 
-	If((($OldBVService -ne $BVService) -and ($OldBVService -eq "StartType" -or $BVService -eq "StartType")) -or ($LoadSrvConfig -eq "Refresh" -and $BVService -eq "StartType")){
-		$Script:ServicesGenerated = $False ;$LoadSrvConfig = 0
-	}
+	#If((($OldBVService -ne $BVService) -and ($OldBVService -eq "StartType" -or $BVService -eq "StartType")) -or ($LoadSrvConfig -eq "Refresh" -and $BVService -eq "StartType")){ $Script:ServicesGenerated = $False ;$LoadSrvConfig = 0 }
 
 	#If(!($ServicesGenerated)){ [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath }
 	[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
-	$DataGridList = @()
+	[System.Collections.ArrayList]$DataGridList = @()
 
 	ForEach($item In $ServCB) {
 		$ServiceTypeNum = $($item.$BVService)
@@ -756,9 +748,9 @@ Function Save_Service([String]$SavePath) {
 		$ServiceSavePath += "-Custom-Service.csv"
 		$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
 		ForEach($item In $ServiceCBList) {
-				$ServiceName = $item.ServiceName
-				If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
-				$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $item.StartType }
+			$ServiceName = $item.ServiceName
+			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
+			$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $item.StartType }
 		}
 	} Else {
 		If($AllService -eq $null) { 
@@ -1038,7 +1030,7 @@ Function UpdateDisplay([String]$FullVer,[String]$DFilename) {
 	MenuBlankLineLog
 	LeftLineLog ;DisplayOutMenu "Downloading version " 15 0 0 1 ;DisplayOutMenu ("$FullVer" + (" "*(29-$FullVer.Length))) 11 0 0 1 ;RightLineLog
 	LeftLineLog ;DisplayOutMenu "Will run " 15 0 0 1 ;DisplayOutMenu ("$DFilename" +(" "*(40-$DFilename.Length))) 11 0 0 1 ;RightLineLog
-	LeftLineLog ;DisplayOutMenu "after download is complete.					  " 2 0 0 1 ;RightLineLog
+	LeftLineLog ;DisplayOutMenu "after download is complete.                      " 2 0 0 1 ;RightLineLog
 	MenuBlankLineLog
 	MenuLineLog
 }
@@ -1104,32 +1096,32 @@ Function GetArgs {
 	For($i=0; $i -lt $PassedArg.Length; $i++) {
 		If($PassedArg[$i].StartsWith("-")) {
 			Switch($PassedArg[$i]) {
-			  "-default" { $Script:Black_Viper = 1 ;$Script:BV_ArgUsed = 2 ;Break }
-			  "-safe" { $Script:Black_Viper = 2 ;$Script:BV_ArgUsed = 2;Break }
-			  "-tweaked" { If($IsLaptop -ne "-Lap"){ $Script:Black_Viper = 3 ;$Script:BV_ArgUsed = 2 } Else{ $Script:BV_ArgUsed = 1 } ;Break }
-			  "-all" { $Script:All_or_Min = "-full" ;Break }
-			  "-min" { $Script:All_or_Min = "-min" ;Break }
-			  "-log" { $Script:ScriptLog = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
-			  "-logc" { $Script:ScriptLog = 2 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
-			  "-lcsc" { $Script:BV_ArgUsed = 3 ;$Script:LoadServiceConfig = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:ServiceConfigFile = $PassedArg[$i+1] ;$i++ } ;Break }
-			  "-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
-			  "-baf" { $Script:LogBeforeAfter = 1 ;Break }
-			  "-snis" { $Script:ShowNonInstalled = 1 ;Break }
-			  "-sss" { $Script:ShowSkipped = 1 ;Break }
-			  "-sic" { $Script:InternetCheck = 1 ;Break }
-			  "-usc" { $Script:ScriptVerCheck = 1 ;Break }
-			  "-use" { $Script:ServiceVerCheck = 1 ;Break }
-			  "-atos" { $Script:AcceptToS = "Accepted-Switch" ;Break }
-			  "-atosu" { $Script:AcceptToS = "Accepted-Update" ;Break }
-			  "-auto" { $Script:Automated = 1 ;$Script:AcceptToS = "Accepted-Automated-Switch" ;Break }
-			  "-dry" { $Script:DryRun = 1 ;$Script:ShowNonInstalled = 1 ;Break }
-			  "-diag" { $Script:Diagnostic = 1 ;$Script:Automated = 0 ;Break }
-			  "-diagt" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break }
-			  "-diagf" { $Script:Diagnostic = 3 ;$Script:Automated = 0 ;Break }
-			  "-devl" { $Script:DevLog = 1 ;Break }
-			  "-sbc" { $Script:BuildCheck = 1 ;Break }
-			  "-sech" { $Script:EditionCheck = "Home" ;Break }
-			  {$_ -eq "-secp" -or $_ -eq "-sec"} { $Script:EditionCheck = "Pro" ;Break }
+				"-default" { $Script:Black_Viper = 1 ;$Script:BV_ArgUsed = 2 ;Break }
+				"-safe" { $Script:Black_Viper = 2 ;$Script:BV_ArgUsed = 2;Break }
+				"-tweaked" { If($IsLaptop -ne "-Lap"){ $Script:Black_Viper = 3 ;$Script:BV_ArgUsed = 2 } Else{ $Script:BV_ArgUsed = 1 } ;Break }
+				"-all" { $Script:All_or_Min = "-full" ;Break }
+				"-min" { $Script:All_or_Min = "-min" ;Break }
+				"-log" { $Script:ScriptLog = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
+				"-logc" { $Script:ScriptLog = 2 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
+				"-lcsc" { $Script:BV_ArgUsed = 3 ;$Script:LoadServiceConfig = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:ServiceConfigFile = $PassedArg[$i+1] ;$i++ } ;Break }
+				"-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
+				"-baf" { $Script:LogBeforeAfter = 1 ;Break }
+				"-snis" { $Script:ShowNonInstalled = 1 ;Break }
+				"-sss" { $Script:ShowSkipped = 1 ;Break }
+				"-sic" { $Script:InternetCheck = 1 ;Break }
+				"-usc" { $Script:ScriptVerCheck = 1 ;Break }
+				"-use" { $Script:ServiceVerCheck = 1 ;Break }
+				"-atos" { $Script:AcceptToS = "Accepted-Switch" ;Break }
+				"-atosu" { $Script:AcceptToS = "Accepted-Update" ;Break }
+				"-auto" { $Script:Automated = 1 ;$Script:AcceptToS = "Accepted-Automated-Switch" ;Break }
+				"-dry" { $Script:DryRun = 1 ;$Script:ShowNonInstalled = 1 ;Break }
+				"-diag" { $Script:Diagnostic = 1 ;$Script:Automated = 0 ;Break }
+				"-diagt" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break }
+				"-diagf" { $Script:Diagnostic = 3 ;$Script:Automated = 0 ;Break }
+				"-devl" { $Script:DevLog = 1 ;Break }
+				"-sbc" { $Script:BuildCheck = 1 ;Break }
+				"-sech" { $Script:EditionCheck = "Home" ;Break }
+				{$_ -eq "-secp" -or $_ -eq "-sec"} { $Script:EditionCheck = "Pro" ;Break }
 			}
 		}
 	}
