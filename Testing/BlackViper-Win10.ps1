@@ -142,7 +142,7 @@ $Version_Url = $URL_Base + "Version/Version.csv"
 $Service_Url = $URL_Base + "BlackViper.csv"
 
 If([System.Environment]::Is64BitProcess){ $OSType = 64 }
-$Script:ServiceEnd = (Get-Service "*_*" | Select Name | Select-Object -First 1).Name.Split('_')[1]
+$Script:ServiceEnd = (Get-Service "*_*" | Select-Object Name | Select-Object -First 1).Name.Split('_')[1]
 
 $colors = @(
 "black",      #0
@@ -329,7 +329,7 @@ Function TOSyes {
 	If($LoadServiceConfig -eq 1) {
 		Black_Viper_Set
 	} ElseIf($Black_Viper -eq 0) {
-		Gui-Start
+		GuiStart
 	} Else {
 		Black_Viper_Set $Black_Viper $All_or_Min
 	}
@@ -353,7 +353,7 @@ Function OpenSaveDiaglog([Int]$SorO) {
 	$SOFileDialog.InitialDirectory = $filebase
 	$SOFileDialog.Filter = "CSV (*.csv)| *.csv"
 	$SOFileDialog.ShowDialog() | Out-Null
-	If($SorO -eq 0){ $LoadSrvConfig = "Refresh" ;$Script:ServiceConfigFile = $SOFileDialog.filename ;$WPF_LoadFileTxtBox.Text = $ServiceConfigFile ;RunDisableCheck } Else{ Save_Service $SOFileDialog.filename }
+	If($SorO -eq 0){ $Script:ServiceConfigFile = $SOFileDialog.filename ;$WPF_LoadFileTxtBox.Text = $ServiceConfigFile ;RunDisableCheck } Else{ Save_Service $SOFileDialog.filename }
 }
 
 Function HideCustomSrvStuff {
@@ -365,7 +365,7 @@ Function HideCustomSrvStuff {
 	$WPF_btnOpenFile.Visibility = 'Hidden'
 }
 
-Function Gui-Start {
+Function GuiStart {
 	Clear-Host
 	DisplayOutMenu "Preparing GUI, Please wait..." 15 0 1 0
 	$TPath = $filebase + "BlackViper.csv"
@@ -477,7 +477,7 @@ Function Gui-Start {
 	[void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 	$reader = (New-Object System.Xml.XmlNodeReader $xaml)
 	$Form = [Windows.Markup.XamlReader]::Load( $reader )
-	$xaml.SelectNodes("//*[@Name]") | %{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name) -Scope Script}
+	$xaml.SelectNodes("//*[@Name]") | ForEach-Object{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name) -Scope Script}
 
 	$Runspace = [runspacefactory]::CreateRunspace()
 	$PowerShell = [PowerShell]::Create()
@@ -494,7 +494,7 @@ Function Gui-Start {
 			ForEach($Var In $CNoteList){ $Var.Value.Visibility = 'Visible' }
 			$WPF_LoadFileTxtBox.Visibility = 'Visible'
 			$WPF_btnOpenFile.Visibility = 'Visible'
-		} Else { HideCustomSrvStuff }
+		} Else{ HideCustomSrvStuff }
 		RunDisableCheck
 	})
 
@@ -507,7 +507,7 @@ Function Gui-Start {
 				$Script:RunScript = 0
 			} Else{ $Script:LoadServiceConfig = 1 ;$Script:Black_Viper = 0 }
 		}
-		If($RunScript -eq 1){ Gui-Done }
+		If($RunScript -eq 1){ GuiDone }
 	})
 
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
@@ -522,7 +522,7 @@ Function Gui-Start {
 	$WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
 	$WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
 	$WPF_DonateButton.Add_Click({ OpenWebsite "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" })
-	$WPF_LoadServicesButton.Add_Click({ Generate-Services })
+	$WPF_LoadServicesButton.Add_Click({ GenerateServices })
 	$WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK') })
 
 	$CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
@@ -568,7 +568,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	"WinDefend")
 	For($i=0;$i -ne 5;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
 
-	$Script:CurrServices = Get-Service | Select DisplayName, Name, StartType
+	$Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType
 	$Script:RunScript = 0
 	If($All_or_Min -eq "-full"){ $WPF_RadioAll.IsChecked = $True } Else{ $WPF_RadioMin.IsChecked = $True }
 	If($ScriptLog -eq 1){ $WPF_ScriptLog_CB.IsChecked = $True ;$WPF_LogNameInput.IsEnabled = $True} Else{ $WPF_LogNameInput.IsEnabled = $False }
@@ -578,14 +578,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
 
 	If($WinEdition -eq "Home" -or $EditionCheck -eq "Home"){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
-	If(!($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home")){ $WPF_EditionConfig.IsEnabled = $False } Else{ $WPF_EditionCheck_CB.IsChecked = $True }
+	If($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home"){ $WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheck_CB.IsChecked = $False }
 
 	$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
 	$WPF_LogNameInput.Text = $LogName
 	$WPF_Script_Ver_Txt.Text = "$Script_Version.$Minor_Version ($Script_Date)"
 	$WPF_Service_Ver_Txt.Text = "$ServiceVersion ($ServiceDate)"
 	$WPF_Release_Type_Txt.Text = $Release_Type
-	$Script:ServicesGenerated = $False
 	HideCustomSrvStuff
 	RunDisableCheck
 	Clear-Host
@@ -627,7 +626,7 @@ Function RunDisableCheck {
 	} $WPF_RunScriptButton.content = $Buttontxt
 }
 
-Function Gui-Done {
+Function GuiDone {
 	ForEach($Var In $VarList){ If($Var.Value.IsChecked){ $SetValue = 1 } Else{ $SetValue = 0 } ;Set-Variable -Name ($Var.Name.Split('_')[1]) -Value $SetValue -Scope Script }
 	If($WPF_RadioAll.IsChecked){ $Script:All_or_Min = "-full" } Else{ $Script:All_or_Min = "-min" }
 	If($WPF_ScriptLog_CB.IsChecked){ $Script:LogName = $WPF_LogNameInput.Text }
@@ -638,9 +637,7 @@ Function Gui-Done {
 	Black_Viper_Set $Black_Viper $All_or_Min
 }
 
-Function Generate-Services {
-	#If($ServicesGeneratedA){ $OldBVService = $BVService }
-
+Function GenerateServices {
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
 		$Script:LoadServiceConfig = 1
@@ -658,9 +655,6 @@ Function Generate-Services {
 		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
 	}
 
-	#If((($OldBVService -ne $BVService) -and ($OldBVService -eq "StartType" -or $BVService -eq "StartType")) -or ($LoadSrvConfig -eq "Refresh" -and $BVService -eq "StartType")){ $Script:ServicesGenerated = $False ;$LoadSrvConfig = 0 }
-
-	#If(!($ServicesGenerated)){ [System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath }
 	[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
 	[System.Collections.ArrayList]$DataGridList = @()
 
@@ -681,15 +675,14 @@ Function Generate-Services {
 	$WPF_dataGrid.ItemsSource = $DataGridList
 	$WPF_dataGrid.Items.Refresh()
 
-	If(!($ServicesGeneratedA)){
+	If(!($ServicesGenerated)){
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
 		$WPF_ServiceLegendLabel.Visibility = 'Visible'
 		$WPF_ServiceNote.Visibility = 'Visible'
 		$WPF_CustomBVCB.Visibility = 'Visible'
 		$WPF_SaveCustomSrvButton.Visibility = 'Visible'
 		$WPF_LoadServicesButton.content = "Reload"
-		#$Script:ServicesGenerated = $True
-		$Script:ServicesGeneratedA = $True
+		$Script:ServicesGenerated = $True
 	}
 }
 
@@ -727,10 +720,10 @@ Function LoadWebCSV {
 Function ServiceBAfun([String]$ServiceBA) {
 	If($LogBeforeAfter -eq 1) {
 		$ServiceBAFile = $filebase + $ServiceBA + ".log"
-		If($ServiceBA -eq "Services-Before"){ $CurrServices | Out-File $ServiceBAFile } Else{ Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile }
-		Get-Service | Select DisplayName, StartType | Out-File $ServiceBAFile
+		If($ServiceBA -eq "Services-Before"){ $CurrServices | Out-File $ServiceBAFile } Else{ Get-Service | Select-Object DisplayName, StartType | Out-File $ServiceBAFile }
+		Get-Service | Select-Object DisplayName, StartType | Out-File $ServiceBAFile
 	} ElseIf($LogBeforeAfter -eq 2) {
-		If($ServiceBA -eq "Services-Before"){ $TMPServices = $CurrServices } Else{ $TMPServices = Get-Service | Select DisplayName, Name, StartType }
+		If($ServiceBA -eq "Services-Before"){ $TMPServices = $CurrServices } Else{ $TMPServices = Get-Service | Select-Object DisplayName, Name, StartType }
 		Write-Output "`n$ServiceBA -Start" 4>&1 | Out-File -Filepath $LogFile -Append
 		Write-Output "-------------------------------------" 4>&1 | Out-File -Filepath $LogFile -Append
 		Write-Output $TMPServices 4>&1 | Out-File -Filepath $LogFile -Append
@@ -755,7 +748,7 @@ Function Save_Service([String]$SavePath) {
 	} Else {
 		If($AllService -eq $null) { 
 			$ServiceSavePath += "-Service-Backup.csv"
-			$AllService = Get-Service | Select Name, StartType
+			$AllService = Get-Service | Select-Object Name, StartType
 		} Else{ $ServiceSavePath += "-Custom-Service.csv" }
 		ForEach($Service In $AllService) {
 			$ServiceName = $Service.Name
@@ -778,7 +771,7 @@ Function Save_Service([String]$SavePath) {
 
 Function ServiceSet([String]$BVService) {
 	Clear-Host
-	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select DisplayName, Name, StartType }
+	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
 	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
@@ -1181,7 +1174,7 @@ Function ArgsAndVarSet {
 		LeftLineLog ;DisplayOutMenu "Configuration option was selected.               " 2 0 0 1 ;RightLineLog
 		Error_Bottom
 	} Else {
-		If($AcceptToS -ne 0){ $Script:RunScript = 1 ;Gui-Start } Else{ TOS }
+		If($AcceptToS -ne 0){ $Script:RunScript = 1 ;GuiStart } Else{ TOS }
 	}
 }
 
