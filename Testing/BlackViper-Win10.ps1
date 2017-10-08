@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "7"
-$Script_Date = "Oct-07-2017"
+$Minor_Version = "8"
+$Script_Date = "Oct-08-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -612,8 +612,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$WPF_Script_Ver_Txt.Text = "$Script_Version.$Minor_Version ($Script_Date)"
 	$WPF_Service_Ver_Txt.Text = "$ServiceVersion ($ServiceDate)"
 	$WPF_Release_Type_Txt.Text = $Release_Type
+	$ServiceImport = 1
 	HideCustomSrvStuff
 	RunDisableCheck
+	BuildVSet
 	Clear-Host
 	DisplayOutMenu "Displaying GUI Now" 14 0 1 0
 	$Form.ShowDialog() | Out-Null
@@ -682,13 +684,16 @@ Function GuiDone {
 Function GenerateServices {
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
+		If($Script:ServiceGen -eq 0){ $Script:ServiceImport = 1 }
 		$Script:LoadServiceConfig = 1
 		$ServiceFilePath = $WPF_LoadFileTxtBox.Text
+		$ServiceGen = 1
 	} Else {
+		If($Script:ServiceGen -eq 1){ $Script:ServiceImport = 1 }
 		If($WPF_RadioAll.IsChecked){ $FullMin = "-Full" } Else{ $FullMin = "-Min" }
 		$Script:LoadServiceConfig = 0
 		$ServiceFilePath = $filebase + "BlackViper.csv"
-		BuildVSet
+		$ServiceGen = 0
 	}
 
 	Switch($Black_Viper) {
@@ -698,7 +703,10 @@ Function GenerateServices {
 		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin+$BuildV) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
 	}
 
-	[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
+	If($ServiceImport -eq 1 ) {
+		[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
+		$ServiceImport = 0
+	}
 	[System.Collections.ArrayList]$DataGridList = @()
 
 	ForEach($item In $ServCB) {
@@ -1155,7 +1163,7 @@ Function GetArgs {
 				"-all" { $Script:All_or_Min = "-full" ;Break }
 				"-min" { $Script:All_or_Min = "-min" ;Break }
 				"-log" { $Script:ScriptLog = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
-				"-logc" { $Script:ScriptLog = 2 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
+				"-logc" { $Script:ScriptLog = 2 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break } #To append to logfile (used for update)
 				"-lcsc" { $Script:BV_ArgUsed = 3 ;$Script:LoadServiceConfig = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:ServiceConfigFile = $PassedArg[$i+1] ;$i++ } ;Break }
 				"-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
 				"-baf" { $Script:LogBeforeAfter = 1 ;Break }
@@ -1169,8 +1177,7 @@ Function GetArgs {
 				"-auto" { $Script:Automated = 1 ;$Script:AcceptToS = "Accepted-Automated-Switch" ;Break }
 				"-dry" { $Script:DryRun = 1 ;$Script:ShowNonInstalled = 1 ;Break }
 				"-diag" { $Script:Diagnostic = 1 ;$Script:Automated = 0 ;Break }
-				"-diagt" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break }
-				"-diagf" { $Script:Diagnostic = 3 ;$Script:Automated = 0 ;Break }
+				"-diagf" { $Script:Diagnostic = 2 ;$Script:Automated = 0 ;Break } # Forces Diag Output
 				"-devl" { $Script:DevLog = 1 ;Break }
 				"-sbc" { $Script:BuildCheck = 1 ;Break }
 				"-sech" { $Script:EditionCheck = "Home" ;Break }
@@ -1191,7 +1198,7 @@ Function ArgsAndVarSet {
 
 	$Script:FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
 	$Script:WinEdition = $FullWinEdition.Split(' ')[-1]
-	#  Pro or Home
+	# Pro or Home
 
 	# https://en.wikipedia.org/wiki/Windows_10_version_history
 
@@ -1211,7 +1218,7 @@ Function ArgsAndVarSet {
 	# 1511 = First Major Update
 	# 1507 = First Release
 
-	If($Diagnostic -eq 3){
+	If($Diagnostic -eq 2){
 		Clear-Host
 		DiagnosticCheck 1
 		Exit
