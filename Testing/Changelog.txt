@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-3.7.7 (10-07-2017)
+3.7.8 (10-08-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
 
@@ -14,8 +14,10 @@ Script will use the Service Configuration for Fall's Creator's Update if your on
 If not Script will use the Older Setting
 
 Added Color to Donate, Website and Copyright button
-Improved Listing Method for the Services (added Columns that are sortable) 
+Improved Listing Method for the Services (added Columns that are sortable)
 Minor changes in script
+
+Improved Refresh for the Service Listing
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
