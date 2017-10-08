@@ -99,7 +99,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 --Update Switches--
   -usc           (Checks for Update to Script file before running)
   -use           (Checks for Update to Service file before running)
-  -sic           (Skips Internet Check, if you cant ping GitHub.com for some reason)
+  -sic           (Skips Internet Check, if you can't ping GitHub.com for some reason)
 
 --Log Switches--
   -log           (Makes a log file Script.log)
@@ -272,7 +272,7 @@ Function DiagnosticCheck([Int]$Bypass) {
 }
 
 Function BuildVSet {
-	If($Win10Ver -eq 1803 ) { #change ver of fall creator's update
+	If($Win10Ver -eq 1709 ) { #change ver of fall creator's update
 		$Script:BuildV = "-FCU" #FCU = Fall Creator Update
 	} Else {  
 		$Script:BuildV = ""
@@ -635,7 +635,7 @@ Function RunDisableCheck {
 
 	If(!(($EditionCheck -eq "Home" -or $WinSku -In 100..101) -or ($EditionCheck -eq "Pro" -or $WinSku -eq 48))){ $temp1 = "Edition" ;$tempfail++ }
 
-	If($BuildVer -lt $ForBuild -And $BuildCheck -ne 1){
+	If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1){
 		$tempfail++
 		$temp2 = "Build"
 	}
@@ -936,7 +936,7 @@ Function PreScriptCheck {
 		$EBCount++
 	}
 
-	If($BuildVer -lt $ForBuild -And $BuildCheck -ne 1) {
+	If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1) {
 		If($EditionCheck -eq "Fail"){ $Script:ErrorDi += " & Build" } Else{ $Script:ErrorDi = "Build" }
 		$Script:ErrorDi += " Check Failed"
 		$BuildCheck = "Fail"
@@ -1195,18 +1195,18 @@ Function ArgsAndVarSet {
 
 	# https://en.wikipedia.org/wiki/Windows_10_version_history
 
-	$Script:ForBuild = 15063
+	$Script:MinBuild = 15063
 	$Script:BuildVer = [Environment]::OSVersion.Version.build
-	# 17004 = Falls's Creator's Update ?
-	# 15063 = Creator's Update
+	# 16299 = Fall Creators Update ?
+	# 15063 = Creators Update
 	# 14393 = Anniversary Update
 	# 10586 = First Major Update
 	# 10240 = First Release
 
-	$Script:ForVer = 1703
+	$Script:MinVer = 1703
 	$Script:Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).ReleaseId
-	# 1803 = Falls's Creator's Update ?
-	# 1703 = Creator's Update
+	# 1709 = Fall Creators Update ?
+	# 1703 = Creators Update
 	# 1607 = Anniversary Update
 	# 1511 = First Major Update
 	# 1507 = First Release
