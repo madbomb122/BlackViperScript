@@ -612,7 +612,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$WPF_Script_Ver_Txt.Text = "$Script_Version.$Minor_Version ($Script_Date)"
 	$WPF_Service_Ver_Txt.Text = "$ServiceVersion ($ServiceDate)"
 	$WPF_Release_Type_Txt.Text = $Release_Type
-	$ServiceImport = 1
+	$Script:ServiceImport = 1
 	HideCustomSrvStuff
 	RunDisableCheck
 	BuildVSet
@@ -631,38 +631,33 @@ Function RunDisableCheck {
 		$WPF_EditionConfig.IsEnabled = $False
 	}
 
-	$tempfail = 0
-	$temp1 = ""
-	$temp2 = ""
+	$EBFailCount = 0
+	If(!(($EditionCheck -eq "Home" -or $WinSku -In 100..101) -or ($EditionCheck -eq "Pro" -or $WinSku -eq 48))){ $EBFailCount++ }
+	If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1){ $EBFailCount += 2 }
 
-	If(!(($EditionCheck -eq "Home" -or $WinSku -In 100..101) -or ($EditionCheck -eq "Pro" -or $WinSku -eq 48))){ $temp1 = "Edition" ;$tempfail++ }
-
-	If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1){
-		$tempfail++
-		$temp2 = "Build"
-	}
-	If($tempfail -ne 0) {
+	If($EBFailCount -ne 0) {
 		$Buttontxt = "Run Disabled Due to "
-		If($tempfail -eq 2) {
-			$Buttontxt += $temp1 + " & " + $temp2
+		If($EBFailCount -eq 3) {
+			$Buttontxt += "Edition & Build"
+		} ElseIf($EBFailCount -eq 1) {
+			$Buttontxt += "Edition"
 		} Else {
-			If($temp1 -ne ""){ $Buttontxt += $temp1 }
-			If($temp2 -ne ""){ $Buttontxt += $temp2 }
+			$Buttontxt += "Build"
 		}
 		$WPF_RunScriptButton.IsEnabled = $False
 		$Buttontxt += " Check"
+	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
+		If(!($ServiceConfigFile) -or !(Test-Path $ServiceConfigFile -PathType Leaf)) { 
+			$WPF_RunScriptButton.IsEnabled = $False
+			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
+			$WPF_LoadServicesButton.IsEnabled = $False
+		} Else {
+			$WPF_LoadServicesButton.IsEnabled = $True
+			$Buttontxt = "Run Script with Custom Service List" 
+		}
 	} Else {
 		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
-		If($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
-			If(!($ServiceConfigFile) -or !(Test-Path $ServiceConfigFile -PathType Leaf)) { 
-				$WPF_RunScriptButton.IsEnabled = $False
-				$Buttontxt = "Run Disabled, No Custom Service Selected or Doesn't exist."
-				$WPF_LoadServicesButton.IsEnabled = $False
-			} Else {
-				$WPF_LoadServicesButton.IsEnabled = $True
-			}
-		}
 	}
 	$WPF_RunScriptButton.content = $Buttontxt
 }
@@ -722,9 +717,9 @@ Function GenerateServices {
 				$checkbox = $True
 			}
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
+			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed Start)" }
 			If($SName -Is [system.array]){ $SName = $SName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $SName}).DisplayName
-			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed Start)" }
 			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $SName ;CurrType = $ServiceCurrType ;ChType = $ServiceType ;StartType = $ServiceTypeNum }
 		}
 	}
@@ -1026,7 +1021,7 @@ Function PreScriptCheck {
 			$VersionFile = $Env:Temp + "\Temp.csv"
 			DownloadFile $Version_Url $VersionFile
 			$CSV_Ver = Import-Csv $VersionFile
-			If($ServiceVerCheck -eq 1 -And $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
+			If($LoadServiceConfig -eq 0 -And $ServiceVerCheck -eq 1 -And $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
 				If($ScriptLog -eq 1){ Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -Filepath $LogFile }
 				DownloadFile $Service_Url $ServiceFilePath
 				If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
