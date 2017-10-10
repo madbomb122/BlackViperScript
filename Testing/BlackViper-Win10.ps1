@@ -11,7 +11,7 @@
 #
 $Script_Version = "3.7"
 $Minor_Version = "8"
-$Script_Date = "Oct-08-2017"
+$Script_Date = "Oct-10-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -272,9 +272,10 @@ Function DiagnosticCheck([Int]$Bypass) {
 }
 
 Function BuildVSet {
-	If($Win10Ver -eq 1709 ) { #change ver of fall creator's update
+	If($Win10Ver -ge 1709 ) { #change ver of fall creator's update
 		$Script:BuildV = "-FCU" #FCU = Fall Creator Update
 	} Else {  
+#If($Win10Ver -In 1507..1708 ) { # Use After next Update ?
 		$Script:BuildV = ""
 	}
 }
@@ -456,10 +457,10 @@ Function GuiStart {
     <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" SelectionMode="Single" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" ><DataGrid.Columns>
      <DataGridCheckBoxColumn Binding="{Binding checkboxChecked, UpdateSourceTrigger=PropertyChanged}"><DataGridCheckBoxColumn.ElementStyle>
      <Style TargetType="CheckBox"/></DataGridCheckBoxColumn.ElementStyle></DataGridCheckBoxColumn>
-     <DataGridTextColumn Header="Common Name" Width="125" Binding="{Binding CName}"/>
-     <DataGridTextColumn Header="Service Name" Width="125" Binding="{Binding ServiceName}"/>
-     <DataGridTextColumn Header="Current Status" Width="125"  Binding="{Binding CurrType}"/>
-     <DataGridTextColumn Header="Changed Status" Width="125"  Binding="{Binding ChType}"/>
+     <DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}"/>
+     <DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}"/>
+     <DataGridTextColumn Header="Current Setting" Width="95"  Binding="{Binding CurrType}"/>
+     <DataGridTextColumn Header="Black Viper" Width="95"  Binding="{Binding BVType}"/>
     </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="153,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
@@ -467,7 +468,7 @@ Function GuiStart {
    <Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
    <Label Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,15,0,0" Visibility="Hidden"/>
    <Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
-   <CheckBox Name="CustomBVCB" Content="Use Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
+   <CheckBox Name="CustomBV_CB" Content="Use Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
   </TabItem>
   <TabItem Name="Dev_Option_Tab" Header="Dev Option/Contact/About" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
@@ -527,13 +528,13 @@ Function GuiStart {
 				$Script:Black_Viper = 0
 			}
 		}
-		If($RunScript -eq 1){ GuiDone }
+		If($RunScript -eq 1){ GuiDone } Else{ RunDisableCheck }
 	})
 
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
 	$WPF_ScriptLog_CB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $False })
-	$WPF_CustomBVCB.Add_Checked({ $RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Selection" })
-	$WPF_CustomBVCB.Add_UnChecked({ $RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Current" })
+	$WPF_CustomBV_CB.Add_Checked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Selection" })
+	$WPF_CustomBV_CB.Add_UnChecked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Current" })
 	$WPF_btnOpenFile.Add_Click({ OpenSaveDiaglog 0 })
 	$WPF_SaveCustomSrvButton.Add_Click({ OpenSaveDiaglog 1 })
 	$WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
@@ -656,7 +657,7 @@ Function RunDisableCheck {
 			$Buttontxt = "Run Script with Custom Service List" 
 		}
 	} Else {
-		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
+		If($WPF_CustomBV_CB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
 	}
 	$WPF_RunScriptButton.content = $Buttontxt
@@ -670,7 +671,7 @@ Function GuiDone {
 	If($WPF_RadioAll.IsChecked){ $Script:All_or_Min = "-full" } Else{ $Script:All_or_Min = "-min" }
 	If($WPF_ScriptLog_CB.IsChecked){ $Script:LogName = $WPF_LogNameInput.Text }
 	If($WPF_EditionCheck_CB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text }
-	If($WPF_CustomBVCB.IsChecked){ GetCustomBV }
+	If($WPF_CustomBV_CB.IsChecked){ GetCustomBV }
 
 	$Form.Close()
 	Black_Viper_Set $Black_Viper $All_or_Min
@@ -705,10 +706,10 @@ Function GenerateServices {
 	[System.Collections.ArrayList]$DataGridList = @()
 
 	ForEach($item In $ServCB) {
-		$ServiceTypeNum = $($item.$BVService)
 		$SName = $($item.ServiceName)
 		If($SName -Like "*_*"){ $SName = $SName.Split('_')[0] + "_$ServiceEnd" }
 		If($CurrServices.Name -Contains $SName) {
+			$ServiceTypeNum = $($item.$BVService)
 			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $SName}).StartType
 			If($ServiceTypeNum -eq 0) {
 				$checkbox = $False
@@ -720,7 +721,7 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed Start)" }
 			If($SName -Is [system.array]){ $SName = $SName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $SName}).DisplayName
-			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $SName ;CurrType = $ServiceCurrType ;ChType = $ServiceType ;StartType = $ServiceTypeNum }
+			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $SName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum }
 		}
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridList
@@ -730,7 +731,7 @@ Function GenerateServices {
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
 		$WPF_ServiceLegendLabel.Visibility = 'Visible'
 		$WPF_ServiceNote.Visibility = 'Visible'
-		$WPF_CustomBVCB.Visibility = 'Visible'
+		$WPF_CustomBV_CB.Visibility = 'Visible'
 		$WPF_SaveCustomSrvButton.Visibility = 'Visible'
 		$WPF_LoadServicesButton.content = "Reload"
 		$Script:ServicesGenerated = $True
@@ -789,7 +790,7 @@ Function Save_Service([String]$SavePath) {
 	$ServiceSavePath = $filebase + $Env:computername
 	$SaveService = @()
 
-	If($WPF_CustomBVCB.IsChecked) {
+	If($WPF_CustomBV_CB.IsChecked) {
 		$ServiceSavePath += "-Custom-Service.csv"
 		$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
 		ForEach($item In $ServiceCBList) {
