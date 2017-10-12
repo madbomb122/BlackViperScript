@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-3.7.8 (10-10-2017)
+3.7.9 (10-12-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
 
@@ -17,6 +17,8 @@ Added Color to Donate, Website and Copyright button
 Improved Listing Method for the Services (added Columns that are sortable)
 Serivce Listing Speed Improved
 Minor changes in script
+
+Added a quick test to see if BlackViper.csv is a valid file
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
