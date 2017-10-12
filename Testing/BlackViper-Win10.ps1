@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "8"
-$Script_Date = "Oct-10-2017"
+$Minor_Version = "9"
+$Script_Date = "Oct-12-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -174,6 +174,7 @@ $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
 $Script:RunScript = 2
 $Script:ErrorDi = ""
+$Script:LogStarted = 0
 
 ##########
 # Pre-Script -End
@@ -750,13 +751,14 @@ Function GetCustomBV {
 # GUI -End
 ##########
 
-Function LoadWebCSV {
+Function LoadWebCSV([Int]$ErrorChoice) {
+	If($ErrorChoice -eq 0){ $Pick = " is Missing.             " } Else{ $Pick = " is Invalid or Corrupt.  " }
 	While($LoadWebCSV -ne "Out") {
 		$Script:ErrorDi = "Missing File BlackViper.csv -LoadCSV"
 		Error_Top_Display
-		LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu " is missing.             " 2 0 0 ;RightLine
+		LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu "$Pick" 2 0 0 ;RightLine
 		MenuBlankLine
-		LeftLine ;DisplayOutMenu " Do you want to download the missing file?       " 2 0 0 ;RightLine
+		LeftLine ;DisplayOutMenu " Do you want to download " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu "?         " 2 0 0 ;RightLine
 		MenuBlankLine
 		MenuLine
 		$Invalid = ShowInvalid $Invalid
@@ -767,6 +769,7 @@ Function LoadWebCSV {
 			Default {$Invalid = 1 ;Break }
 		}
 	}
+	If($ErrorChoice -eq 1){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
 	Return
 }
 
@@ -923,11 +926,12 @@ Function CreateLog {
 			Write-Output "--Start of Log ($Time)--" | Out-File -Filepath $LogFile
 		}
 	}
+	$Script:LogStarted = 1
 }
 
 Function PreScriptCheck {
 	If($RunScript -eq 0){ Exit }
-	CreateLog
+	If($LogStarted -eq 0) { CreateLog }
 	$EBCount = 0
 
 	If($EditionCheck -eq "Home" -or $WinSku -In 100..101) {
@@ -1008,7 +1012,7 @@ Function PreScriptCheck {
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 			If($ServiceVerCheck -eq 0) {
 				If($ScriptLog -eq 1){ Write-Output "Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
-				LoadWebCSV
+				LoadWebCSV 0
 			} Else {
 				If($ScriptLog -eq 1){ Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
 				DownloadFile $Service_Url $ServiceFilePath
@@ -1061,13 +1065,26 @@ Function PreScriptCheck {
 	If($LoadServiceConfig -ne 2) { 
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 			$Script:ErrorDi = "Missing File BlackViper.csv"
+			If($ScriptLog -eq 1){ Write-Output "Missing File 'BlackViper.csv' and couldnt not be downloaded" | Out-File -Filepath $LogFile }
 			Error_Top_Display
 			LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
 			Error_Bottom
-		}
+		} <#
+		If(($csv[0]."Def-Pro-Full") -ne "GernetatedByMadBomb122") {
+			If($ScriptLog -eq 1){ Write-Output "The File 'BlackViper.csv' is Invalid or Corrupt." | Out-File -Filepath $LogFile }
+			$Script:ErrorDi = "Invalid/Corrupt BlackViper.csv"
+			If($Automated -ne 1){
+				LoadWebCSV 1
+			} Else {
+				Error_Top_Display
+				LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is Invalid or Corrupt.   " 2 0 0 1 ;RightLineLog
+				MenuBlankLineLog
+				MenuLineLog
+			}
+		} #>
 		$ServiceVersion = ($csv[0]."Def-Home-Full")
-		$ServiceDate = ($csv[0]."Def-Home-Min")
+		$ServiceDate = ($csv[0]."Def-Home-Min")	
 		$csv.RemoveAt(0)
 	}
 }
