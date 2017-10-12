@@ -1070,7 +1070,7 @@ Function PreScriptCheck {
 			LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
 			Error_Bottom
-		}
+		} <#
 		If(($csv[0]."Def-Pro-Full") -ne "GernetatedByMadBomb122") {
 			If($ScriptLog -eq 1){ Write-Output "The File 'BlackViper.csv' is Invalid or Corrupt." | Out-File -Filepath $LogFile }
 			$Script:ErrorDi = "Invalid/Corrupt BlackViper.csv"
@@ -1082,7 +1082,7 @@ Function PreScriptCheck {
 				MenuBlankLineLog
 				MenuLineLog
 			}
-		}
+		} #>
 		$ServiceVersion = ($csv[0]."Def-Home-Full")
 		$ServiceDate = ($csv[0]."Def-Home-Min")	
 		$csv.RemoveAt(0)
