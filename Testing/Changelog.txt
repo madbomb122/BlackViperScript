@@ -18,7 +18,7 @@ Improved Listing Method for the Services (added Columns that are sortable)
 Serivce Listing Speed Improved
 Minor changes in script
 
-Added a quick test to see if BlackViper.csv is a valid file
+Added a quick test to see if BlackViper.csv is a valid file (Disabled till New release)
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
