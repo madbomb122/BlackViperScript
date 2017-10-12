@@ -1,4 +1,4 @@
-Will be adding a gitrelease to download all files to run script after the next update (v 4.0), when BlackViper releases the configuration for the upcoming windows 10 fall creator's update and when i have tested the script with the updates.
+Will be adding a gitrelease to download the files to run script after the next update (v 4.0), when BlackViper releases the configuration for the upcoming windows 10 fall creator's update and when I have tested the script with the updates/new services.
 
 **Current Version** <br />
 **Script:** `3.7.4` (October 4, 2017) <br />
