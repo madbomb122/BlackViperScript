@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.7"
-$Minor_Version = "9"
-$Script_Date = "Oct-12-2017"
+$Minor_Version = "10"
+$Script_Date = "Oct-18-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -138,7 +138,7 @@ If(!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::
 	Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $PassedArg" -Verb RunAs ;Exit
 }
 
-$URL_Base = "https://raw.GitHubusercontent.com/madbomb122/BlackViperScript/master/"
+$URL_Base = "https://raw.githubusercontent.com/madbomb122/BlackViperScript/master/"
 $Version_Url = $URL_Base + "Version/Version.csv"
 $Service_Url = $URL_Base + "BlackViper.csv"
 
@@ -164,11 +164,11 @@ $colors = @(
 "yellow")     #15
 
 $ServicesTypeList = @(
-'',           #0 -Skip Not Installed
-'Disabled',   #1 -Disable
-'Manual',     #2 -Manual
-'Automatic',  #3 -Automatic
-'Automatic')  #4 -Automatic (Delayed Start)
+'',          #0 -Skip Not Installed
+'Disabled',  #1 -Disable
+'Manual',    #2 -Manual
+'Automatic', #3 -Automatic
+'Automatic') #4 -Automatic (Delayed Start)
 
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
@@ -273,7 +273,7 @@ Function DiagnosticCheck([Int]$Bypass) {
 }
 
 Function BuildVSet {
-	If($Win10Ver -ge 1709 ) { #change ver of fall creator's update
+	If($Win10Ver -ge 1709 ) {
 		$Script:BuildV = "-FCU" #FCU = Fall Creator Update
 	} Else {  
 #If($Win10Ver -In 1507..1708 ) { # Use After next Update ?
@@ -469,7 +469,7 @@ Function GuiStart {
    <Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
    <Label Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,15,0,0" Visibility="Hidden"/>
    <Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
-   <CheckBox Name="CustomBV_CB" Content="Use Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
+   <CheckBox Name="CustomBVCB" Content="Use Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
   </TabItem>
   <TabItem Name="Dev_Option_Tab" Header="Dev Option/Contact/About" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
@@ -503,6 +503,8 @@ Function GuiStart {
 	[System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
 	[System.Collections.ArrayList]$VarList = Get-Variable "WPF_*_CB"
 	[System.Collections.ArrayList]$CNoteList = Get-Variable "WPF_CustomNote*"
+	
+	$Script:WinSkuList = @(48,49,98,100,101)
 
 	$WPF_ServiceConfig.add_SelectionChanged({
 		If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
@@ -534,8 +536,8 @@ Function GuiStart {
 
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
 	$WPF_ScriptLog_CB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $False })
-	$WPF_CustomBV_CB.Add_Checked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Selection" })
-	$WPF_CustomBV_CB.Add_UnChecked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Current" })
+	$WPF_CustomBVCB.Add_Checked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Selection" })
+	$WPF_CustomBVCB.Add_UnChecked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Current" })
 	$WPF_btnOpenFile.Add_Click({ OpenSaveDiaglog 0 })
 	$WPF_SaveCustomSrvButton.Add_Click({ OpenSaveDiaglog 1 })
 	$WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
@@ -617,7 +619,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$Script:ServiceImport = 1
 	HideCustomSrvStuff
 	RunDisableCheck
-	BuildVSet
 	Clear-Host
 	DisplayOutMenu "Displaying GUI Now" 14 0 1 0
 	$Form.ShowDialog() | Out-Null
@@ -634,8 +635,9 @@ Function RunDisableCheck {
 	}
 
 	$EBFailCount = 0
-	If(!(($EditionCheck -eq "Home" -or $WinSku -In 100..101) -or ($EditionCheck -eq "Pro" -or $WinSku -eq 48))){ $EBFailCount++ }
-	If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1){ $EBFailCount += 2 }
+	If(!($EditionCheck -eq "Home" -or $EditionCheck -eq "Pro" -or $WinSkuList -Contains $WinSku)){ $EBFailCount++ }
+	#If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1){ $EBFailCount += 2 }
+	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1){ $EBFailCount += 2 }
 
 	If($EBFailCount -ne 0) {
 		$Buttontxt = "Run Disabled Due to "
@@ -658,7 +660,7 @@ Function RunDisableCheck {
 			$Buttontxt = "Run Script with Custom Service List" 
 		}
 	} Else {
-		If($WPF_CustomBV_CB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
+		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
 	}
 	$WPF_RunScriptButton.content = $Buttontxt
@@ -672,7 +674,7 @@ Function GuiDone {
 	If($WPF_RadioAll.IsChecked){ $Script:All_or_Min = "-full" } Else{ $Script:All_or_Min = "-min" }
 	If($WPF_ScriptLog_CB.IsChecked){ $Script:LogName = $WPF_LogNameInput.Text }
 	If($WPF_EditionCheck_CB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text }
-	If($WPF_CustomBV_CB.IsChecked){ GetCustomBV }
+	If($WPF_CustomBVCB.IsChecked){ GetCustomBV }
 
 	$Form.Close()
 	Black_Viper_Set $Black_Viper $All_or_Min
@@ -732,7 +734,7 @@ Function GenerateServices {
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
 		$WPF_ServiceLegendLabel.Visibility = 'Visible'
 		$WPF_ServiceNote.Visibility = 'Visible'
-		$WPF_CustomBV_CB.Visibility = 'Visible'
+		$WPF_CustomBVCB.Visibility = 'Visible'
 		$WPF_SaveCustomSrvButton.Visibility = 'Visible'
 		$WPF_LoadServicesButton.content = "Reload"
 		$Script:ServicesGenerated = $True
@@ -752,9 +754,17 @@ Function GetCustomBV {
 ##########
 
 Function LoadWebCSV([Int]$ErrorChoice) {
-	If($ErrorChoice -eq 0){ $Pick = " is Missing.             " } Else{ $Pick = " is Invalid or Corrupt.  " }
-	While($LoadWebCSV -ne "Out") {
+	If($ErrorChoice -eq 0){
 		$Script:ErrorDi = "Missing File BlackViper.csv -LoadCSV"
+		$Pick = " is Missing.             "
+	} ElseIf($ErrorChoice -eq 1) {
+		$Script:ErrorDi = "Invalid/Corrupt BlackViper.csv"
+		$Pick = " is Invalid or Corrupt.  "
+	} Else {
+		$Script:ErrorDi = "BlackViper.csv Not Valid for current Update"
+		$Pick = " needs to be Updated.    "
+	}
+	While($LoadWebCSV -ne "Out") {
 		Error_Top_Display
 		LeftLine ;DisplayOutMenu " The File " 2 0 0 ;DisplayOutMenu "BlackViper.csv" 15 0 0 ;DisplayOutMenu "$Pick" 2 0 0 ;RightLine
 		MenuBlankLine
@@ -764,12 +774,12 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 		$Invalid = ShowInvalid $Invalid
 		$LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
 		Switch($LoadWebCSV.ToLower()) {
-			{ $_ -eq "n" -or $_ -eq "no" } { Exit ;Break }
+			{ $_ -eq "n" -or $_ -eq "no" } { DisplayOutMenu "For download manually save the following " 2 0 1 ;DisplayOutMenu "https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv" 15 0 0 ;Exit ;Break }
 			{ $_ -eq "y" -or $_ -eq "yes" } { DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = "Out" ;Break }
-			Default {$Invalid = 1 ;Break }
+			Default { $Invalid = 1 ;Break }
 		}
 	}
-	If($ErrorChoice -eq 1){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
+	If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
 	Return
 }
 
@@ -793,7 +803,7 @@ Function Save_Service([String]$SavePath) {
 	$ServiceSavePath = $filebase + $Env:computername
 	$SaveService = @()
 
-	If($WPF_CustomBV_CB.IsChecked) {
+	If($WPF_CustomBVCB.IsChecked) {
 		$ServiceSavePath += "-Custom-Service.csv"
 		$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
 		ForEach($item In $ServiceCBList) {
@@ -890,7 +900,16 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
-	BuildVSet
+	If($BuildV -eq "-FCU" -and $LoadServiceConfig -eq 0 -and $ServiceVersion -lt 3.0) {
+		If($ScriptLog -eq 1){ Write-Output "The File 'BlackViper.csv' is Outdated for Current Update." | Out-File -Filepath $LogFile }
+		If($Automated -ne 1){
+			LoadWebCSV 2
+		} Else {
+			Error_Top_Display
+			LeftLineLog ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is Outdated for Current Build.    " 2 0 0 1 ;RightLineLog
+			Error_Bottom
+		}		
+	}
 	Switch($BVOpt) {
 		{$LoadServiceConfig -In 1..2} { ServiceSet "StartType" ;Break }
 		1 { ServiceSet ("Def"+$WinEdition+$FullMin+$BuildV) ;Break }
@@ -934,9 +953,9 @@ Function PreScriptCheck {
 	If($LogStarted -eq 0) { CreateLog }
 	$EBCount = 0
 
-	If($EditionCheck -eq "Home" -or $WinSku -In 100..101) {
+	If($EditionCheck -eq "Home" -or $WinSku -In 100..101 -or $WinSku -eq 98) {
 		$Script:WinEdition = "-Home"
-	} ElseIf($EditionCheck -eq "Pro" -or $WinSku -eq 48) {
+	} ElseIf($EditionCheck -eq "Pro" -or $WinSku -In 48..49) {
 		$Script:WinEdition = "-Pro"
 	} Else {
 		$Script:ErrorDi = "Edition"
@@ -944,7 +963,8 @@ Function PreScriptCheck {
 		$EBCount++
 	}
 
-	If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1) {
+	#If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1) {
+	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1) {
 		If($EditionCheck -eq "Fail"){ $Script:ErrorDi += " & Build" } Else{ $Script:ErrorDi = "Build" }
 		$Script:ErrorDi += " Check Failed"
 		$BuildCheck = "Fail"
@@ -1062,27 +1082,14 @@ Function PreScriptCheck {
 			}
 		}
 	}
-	If($LoadServiceConfig -ne 2) { 
+	If($LoadServiceConfig -ne 2) {
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 			$Script:ErrorDi = "Missing File BlackViper.csv"
-			If($ScriptLog -eq 1){ Write-Output "Missing File 'BlackViper.csv' and couldnt not be downloaded" | Out-File -Filepath $LogFile }
 			Error_Top_Display
 			LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
 			Error_Bottom
-		} <#
-		If(($csv[0]."Def-Pro-Full") -ne "GernetatedByMadBomb122") {
-			If($ScriptLog -eq 1){ Write-Output "The File 'BlackViper.csv' is Invalid or Corrupt." | Out-File -Filepath $LogFile }
-			$Script:ErrorDi = "Invalid/Corrupt BlackViper.csv"
-			If($Automated -ne 1){
-				LoadWebCSV 1
-			} Else {
-				Error_Top_Display
-				LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is Invalid or Corrupt.   " 2 0 0 1 ;RightLineLog
-				MenuBlankLineLog
-				MenuLineLog
-			}
-		} #>
+		} 
 		$ServiceVersion = ($csv[0]."Def-Home-Full")
 		$ServiceDate = ($csv[0]."Def-Home-Min")	
 		$csv.RemoveAt(0)
@@ -1205,9 +1212,8 @@ Function ArgsAndVarSet {
 	If($PassedArg.Length -gt 0){ GetArgs }
 
 	$Script:WinSku = (Get-WmiObject Win32_OperatingSystem).OperatingSystemSKU
-	#  48 = Pro
-	# 100 = Home (Single Language)
-	# 101 = Home
+	# 48 = Pro, 49 = Pro N
+	# 98 = Home N, 100 = Home (Single Language), 101 = Home
 
 	$Script:FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
 	$Script:WinEdition = $FullWinEdition.Split(' ')[-1]
@@ -1217,7 +1223,7 @@ Function ArgsAndVarSet {
 
 	$Script:MinBuild = 15063
 	$Script:BuildVer = [Environment]::OSVersion.Version.build
-	# 16299 = Fall Creators Update ?
+	# 16299 = Fall Creators Update
 	# 15063 = Creators Update
 	# 14393 = Anniversary Update
 	# 10586 = First Major Update
@@ -1225,11 +1231,13 @@ Function ArgsAndVarSet {
 
 	$Script:MinVer = 1703
 	$Script:Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).ReleaseId
-	# 1709 = Fall Creators Update ?
+	# 1709 = Fall Creators Update
 	# 1703 = Creators Update
 	# 1607 = Anniversary Update
 	# 1511 = First Major Update
 	# 1507 = First Release
+
+	BuildVSet
 
 	If($Diagnostic -eq 2){
 		Clear-Host
