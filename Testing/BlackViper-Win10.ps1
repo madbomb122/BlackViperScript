@@ -1088,15 +1088,7 @@ Function PreScriptCheck {
 }
 
 Function CheckBVcsv {
-	If(($csv[0]."Def-Pro-Full") -ne "GernetatedByMadBomb122") {
-		If($Automated -ne 1){
-			LoadWebCSV 1
-		} Else {
-			Error_Top_Display
-			LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is Invalid or Corrupt.   " 2 0 0 1 ;RightLineLog
-			Error_Bottom
-		}
-	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+	If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 		$Script:ErrorDi = "Missing File BlackViper.csv"
 		Error_Top_Display
 		LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
