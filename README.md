@@ -1,4 +1,3 @@
-Will be adding a gitrelease to download the files to run script after the next update (v 4.0), when BlackViper releases the configuration for the upcoming windows 10 fall creator's update and when I have tested the script with the updates/new services.
 
 **Current Version** <br />
 **Script:** `3.8.0` (October 27, 2017) <br />
@@ -32,7 +31,7 @@ PPS. My Thanks goes out to all that have helped in any way
 
 **Recommended Files** <br />
 [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `12.4 KB`<br /> 
-[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easyer) -Size about `4.85 KB`<br /> 
+[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `4.85 KB`<br /> 
 [README.md](https://github.com/madbomb122/BlackViperScript/raw/master/README.md) (This Readme) <br />
 
 **You can do a `save as` on the filenames above to save them to you computer, you cannot do a `save as` on github's file list**
@@ -45,16 +44,10 @@ PPS. My Thanks goes out to all that have helped in any way
 **---B. Creator's Update** *(`$Script:Build_Check` variable in script or use `-sbc` switch)*<br />
 
 # How to Use/Run
-Download/Save the following files<br />
-Script File: [BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) -Need<br />
-Service Config File: [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) -Need (Not the same as the one on BlackViper's Website)<br />
-Bat File: [_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) -Recommended<br />
-Bat File: [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Recommended<br />
+Download/Save the release file in - [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)<br />
   **Note 1: DO NOT RENAME THE FILES**<br />
   **Note 2: HAVE THE FILES IN THE SAME DIRECTORY**<br />
 Next follow the **Basic Usage** or **Advanced Usage**
-
-**You can do a `save as` on the filenames above to save them to you computer, you cannot do a `save as` on github's file list**
 
 # Basic_Usage
 Run the Script by bat file `_Win10-BlackViper.bat` (Recommended)<br />
