@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "3.7"
-$Minor_Version = "10"
-$Script_Date = "Oct-18-2017"
+$Script_Version = "3.8"
+$Minor_Version = "1"
+$Script_Date = "Oct-19-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -164,11 +164,11 @@ $colors = @(
 "yellow")     #15
 
 $ServicesTypeList = @(
-'',          #0 -Skip Not Installed
-'Disabled',  #1 -Disable
-'Manual',    #2 -Manual
-'Automatic', #3 -Automatic
-'Automatic') #4 -Automatic (Delayed Start)
+'',         #0 -Skip Not Installed
+'Disabled', #1 -Disable
+'Manual',   #2 -Manual
+'Automatic',#3 -Automatic
+'Automatic')#4 -Automatic (Delayed Start)
 
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
@@ -273,10 +273,10 @@ Function DiagnosticCheck([Int]$Bypass) {
 }
 
 Function BuildVSet {
-	If($Win10Ver -ge 1709 ) {
+	If($Win10Ver -ge 1709) {
 		$Script:BuildV = "-FCU" #FCU = Fall Creator Update
 	} Else {  
-#If($Win10Ver -In 1507..1708 ) { # Use After next Update ?
+#If($Win10Ver -In 1507..1708) { # Use After next Update ?
 		$Script:BuildV = ""
 	}
 }
@@ -702,7 +702,7 @@ Function GenerateServices {
 		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin+$BuildV) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
 	}
 
-	If($ServiceImport -eq 1 ) {
+	If($ServiceImport -eq 1) {
 		[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
 		$ServiceImport = 0
 	}
@@ -780,6 +780,7 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 		}
 	}
 	If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
+	CheckBVcsv
 	Return
 }
 
@@ -1046,6 +1047,7 @@ Function PreScriptCheck {
 			$VersionFile = $Env:Temp + "\Temp.csv"
 			DownloadFile $Version_Url $VersionFile
 			$CSV_Ver = Import-Csv $VersionFile
+			Remove-Item $VersionFile
 			If($LoadServiceConfig -eq 0 -And $ServiceVerCheck -eq 1 -And $($CSV_Ver[1].Version) -gt $($csv[0]."Def-Home-Full")) {
 				If($ScriptLog -eq 1){ Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -Filepath $LogFile }
 				DownloadFile $Service_Url $ServiceFilePath
@@ -1082,18 +1084,27 @@ Function PreScriptCheck {
 			}
 		}
 	}
-	If($LoadServiceConfig -ne 2) {
-		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-			$Script:ErrorDi = "Missing File BlackViper.csv"
+	If($LoadServiceConfig -ne 2){ CheckBVcsv ;$csv.RemoveAt(0) }
+}
+
+Function CheckBVcsv {
+	If(($csv[0]."Def-Pro-Full") -ne "GernetatedByMadBomb122") {
+		If($Automated -ne 1){
+			LoadWebCSV 1
+		} Else {
 			Error_Top_Display
-			LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
-			LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is Invalid or Corrupt.   " 2 0 0 1 ;RightLineLog
 			Error_Bottom
-		} 
-		$ServiceVersion = ($csv[0]."Def-Home-Full")
-		$ServiceDate = ($csv[0]."Def-Home-Min")	
-		$csv.RemoveAt(0)
-	}
+		}
+	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+		$Script:ErrorDi = "Missing File BlackViper.csv"
+		Error_Top_Display
+		LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
+		LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
+		Error_Bottom
+	} 
+	$Script:ServiceVersion = ($csv[0]."Def-Home-Full")
+	$Script:ServiceDate = ($csv[0]."Def-Home-Min")
 }
 
 Function UpdateDisplay([String]$FullVer,[String]$DFilename) {
