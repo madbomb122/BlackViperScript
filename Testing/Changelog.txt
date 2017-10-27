@@ -1,5 +1,14 @@
 -----------------------------------------------------------------------------------
-3.7.10 (10-18-2017)
+3.8.1 (10-27-2017)
+
+Getting Script Ready for the New Fall's Creator's Update
+Script will use the Service Configuration for Fall's Creator's Update if your on it,
+If not Script will use the Older Setting
+
+v4.0 will have A quick test to see if BlackViper.csv is a valid file
+
+-----------------------------------------------------------------------------------
+3.8.0 (10-27-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
 
@@ -9,16 +18,10 @@ Bug Fix Issue with Saving Services
 
 Bug Fix Issue with Running Custom Service list
 
-Getting Script Ready for the New Fall's Creator's Update
-Script will use the Service Configuration for Fall's Creator's Update if your on it,
-If not Script will use the Older Setting
-
 Added Color to Donate, Website and Copyright button
 Improved Listing Method for the Services (added Columns that are sortable)
 Serivce Listing Speed Improved
 Minor changes in script
-
-v4.0 will have A quick test to see if BlackViper.csv is a valid file
 
 -----------------------------------------------------------------------------------
 3.7.0 (08-26-2017)
