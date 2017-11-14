@@ -1,11 +1,8 @@
 -----------------------------------------------------------------------------------
-3.8.1 (10-27-2017)
+3.8.1 (11-14-2017)
 
-Getting Script Ready for the New Fall's Creator's Update
-Script will use the Service Configuration for Fall's Creator's Update if your on it,
-If not Script will use the Older Setting
-
-v4.0 will have A quick test to see if BlackViper.csv is a valid file
+Enabled Window Resize 
+(best to resize so the red on bottom and right size are not visable)
 
 -----------------------------------------------------------------------------------
 3.8.0 (10-27-2017)
