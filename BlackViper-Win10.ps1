@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "3.8"
-$Minor_Version = "0"
-$Script_Date = "Oct-27-2017"
+$Minor_Version = "1"
+$Script_Date = "Nov-14-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -387,7 +387,7 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="339" Width="490" ResizeMode="NoResize" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="339" Width="490" BorderBrush="Black" Background="White">
 <Window.Effect> <DropShadowEffect/></Window.Effect><Grid>
  <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,276,0,0" VerticalAlignment="Top" Height="25"/>
  <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
@@ -476,8 +476,8 @@ Function GuiStart {
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,280,0,0" Stroke="Black" Width="1" Height="25" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFB6B6B6" Stroke="Black" Margin="0,300,0,0" Height="10" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFB6B6B6" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/></Grid>
+ <Rectangle Fill="Red" Stroke="Black" Margin="0,300,0,0" Height="10" VerticalAlignment="Top"/>
+ <Rectangle Fill="Red" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/></Grid>
 </Window>
 "@
 
