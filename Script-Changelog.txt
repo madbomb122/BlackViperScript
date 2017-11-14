@@ -1,4 +1,10 @@
 -----------------------------------------------------------------------------------
+3.8.1 (11-14-2017)
+
+Enabled Window Resize 
+(best to resize so the red on bottom and right size are not visable)
+
+-----------------------------------------------------------------------------------
 3.8.0 (10-27-2017)
 
 Changed indent from spaces to tabs to decrease file size about 5 KB
