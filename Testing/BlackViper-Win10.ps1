@@ -11,7 +11,7 @@
 #
 $Script_Version = "3.8"
 $Minor_Version = "1"
-$Script_Date = "Oct-19-2017"
+$Script_Date = "Nov-14-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -272,15 +272,6 @@ Function DiagnosticCheck([Int]$Bypass) {
 	}
 }
 
-Function BuildVSet {
-	If($Win10Ver -ge 1709) {
-		$Script:BuildV = "-FCU" #FCU = Fall Creator Update
-	} Else {  
-#If($Win10Ver -In 1507..1708) { # Use After next Update ?
-		$Script:BuildV = ""
-	}
-}
-
 ##########
 # Multi Use Functions -End
 ##########
@@ -397,7 +388,7 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="339" Width="490" ResizeMode="NoResize" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="339" Width="490" BorderBrush="Black" Background="White">
 <Window.Effect> <DropShadowEffect/></Window.Effect><Grid>
  <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,276,0,0" VerticalAlignment="Top" Height="25"/>
  <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
@@ -486,8 +477,8 @@ Function GuiStart {
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,280,0,0" Stroke="Black" Width="1" Height="25" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFB6B6B6" Stroke="Black" Margin="0,300,0,0" Height="10" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFB6B6B6" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/></Grid>
+ <Rectangle Fill="Red" Stroke="Black" Margin="0,300,0,0" Height="10" VerticalAlignment="Top"/>
+ <Rectangle Fill="Red" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/></Grid>
 </Window>
 "@
 
@@ -697,9 +688,9 @@ Function GenerateServices {
 
 	Switch($Black_Viper) {
 		{$LoadServiceConfig -eq 1} { $Script:BVService = "StartType" ;Break }
-		1 { ($Script:BVService="Def-"+$WinEdition+$FullMin+$BuildV) ;$BVSAlt = "Def-"+$WinEdition+"-Full" ;Break }
-		2 { ($Script:BVService="Safe"+$IsLaptop+$FullMin+$BuildV) ;$BVSAlt = "Safe"+$IsLaptop+"-Full" ;Break }
-		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin+$BuildV) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
+		1 { ($Script:BVService="Def-"+$WinEdition+$FullMin) ;$BVSAlt = "Def-"+$WinEdition+"-Full" ;Break }
+		2 { ($Script:BVService="Safe"+$IsLaptop+$FullMin) ;$BVSAlt = "Safe"+$IsLaptop+"-Full" ;Break }
+		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
 	}
 
 	If($ServiceImport -eq 1) {
@@ -901,21 +892,11 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
-	If($BuildV -eq "-FCU" -and $LoadServiceConfig -eq 0 -and $ServiceVersion -lt 3.0) {
-		If($ScriptLog -eq 1){ Write-Output "The File 'BlackViper.csv' is Outdated for Current Update." | Out-File -Filepath $LogFile }
-		If($Automated -ne 1){
-			LoadWebCSV 2
-		} Else {
-			Error_Top_Display
-			LeftLineLog ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is Outdated for Current Build.    " 2 0 0 1 ;RightLineLog
-			Error_Bottom
-		}		
-	}
 	Switch($BVOpt) {
 		{$LoadServiceConfig -In 1..2} { ServiceSet "StartType" ;Break }
-		1 { ServiceSet ("Def"+$WinEdition+$FullMin+$BuildV) ;Break }
-		2 { ServiceSet ("Safe"+$IsLaptop+$FullMin+$BuildV) ;Break }
-		3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin+$BuildV) ;Break }
+		1 { ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
+		2 { ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
+		3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
 	}
 }
 
@@ -1239,8 +1220,6 @@ Function ArgsAndVarSet {
 	# 1607 = Anniversary Update
 	# 1511 = First Major Update
 	# 1507 = First Release
-
-	BuildVSet
 
 	If($Diagnostic -eq 2){
 		Clear-Host
