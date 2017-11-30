@@ -1,8 +1,8 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)<br />
 
 **Current Version** <br />
-**Script:** `3.8.1` (November 14, 2017) <br />
-**Service:** `2.0` (May 21, 2017) <br />
+**Script:** `4.0.0` (November 30, 2017) <br />
+**Service:** `3.0` (November 29, 2017) <br />
 
 # Description
 This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script. <br />
