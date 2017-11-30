@@ -9,9 +9,9 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-$Script_Version = "3.8"
-$Minor_Version = "1"
-$Script_Date = "Nov-14-2017"
+$Script_Version = "4.0"
+$Minor_Version = "0"
+$Script_Date = "Nov-30-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -477,8 +477,11 @@ Function GuiStart {
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
  <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,280,0,0" Stroke="Black" Width="1" Height="25" VerticalAlignment="Top"/>
- <Rectangle Fill="Red" Stroke="Black" Margin="0,300,0,0" Height="10" VerticalAlignment="Top"/>
- <Rectangle Fill="Red" Stroke="Black" HorizontalAlignment="Left" Width="10" Margin="474,0,0,0"/></Grid>
+ <Rectangle Fill="Yellow" Stroke="Black" Margin="0,300,0,0" Height="16" VerticalAlignment="Top"/>
+ <Rectangle Fill="Yellow" Stroke="Black" HorizontalAlignment="Left" Width="16" Margin="474,0,0,0"/>
+ <Label Content="Dont Resize past this area" HorizontalAlignment="Left" Margin="174,294,0,-11" VerticalAlignment="Top" Width="152" Height="25"/>
+ <Label Content="Dont Resize past this area" HorizontalAlignment="Left" Margin="405,123,-75,0" VerticalAlignment="Top" Width="152" Height="25" RenderTransformOrigin="0.5,0.5">
+ <Label.RenderTransform> <RotateTransform Angle="-90"/></Label.RenderTransform></Label></Grid>
 </Window>
 "@
 
@@ -578,8 +581,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	"WdNisSvc",
 	"SecurityHealthService",
 	"msiserver",
-	"Sense",
-	"WdNisSvc",
+	"MpsSvc",
 	"WinDefend")
 	For($i=0;$i -ne 5;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
 
@@ -1069,7 +1071,15 @@ Function PreScriptCheck {
 }
 
 Function CheckBVcsv {
-	If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+	If(($csv[0]."Def-Pro-Full") -ne "GernetatedByMadBomb122") {
+		If($Automated -ne 1){
+			LoadWebCSV 1
+		} Else {
+			Error_Top_Display
+			LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is Invalid or Corrupt.   " 2 0 0 1 ;RightLineLog
+			Error_Bottom
+		}
+	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 		$Script:ErrorDi = "Missing File BlackViper.csv"
 		Error_Top_Display
 		LeftLineLog ;DisplayOutMenu "The File " 2 0 0 1 ;DisplayOutMenu "BlackViper.csv" 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
