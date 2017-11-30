@@ -1,6 +1,5 @@
 # Currently Testing (Read Notes)
--- Prep for the Fall's Creator's Update --<br />
-Improvement to Service Listing (added Columns that are sortable)
+Nothing ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
