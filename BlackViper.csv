@@ -1,5 +1,5 @@
 ServiceName,Def-Home-Full,Def-Home-Min,Def-Pro-Full,Def-Pro-Min,Safe-Desk-Full,Safe-Desk-Min,Safe-Lap-Full,Safe-Lap-Min,Tweaked-Desk-Full,Tweaked-Desk-Min
-#ServiceVersion,2.0,May-21-2017,0,0,0,0,0,0,0,0
+#ServiceVersion,3.0,Nov-29-2017,GernetatedByMadBomb122,0,0,0,0,0,0,0,0,0
 AxInstSV,2,0,2,0,2,0,2,0,2,0
 AJRouter,2,2,2,2,2,2,2,2,1,1
 AppReadiness,2,0,2,0,2,0,2,0,2,0
@@ -17,6 +17,7 @@ wbengine,2,0,2,0,2,0,2,0,2,0
 BthHFSrv,2,2,2,2,2,2,2,2,1,1
 bthserv,2,2,2,2,2,2,2,2,1,1
 PeerDistSvc,0,0,2,2,1,1,1,1,1,1
+camsvc,2,0,2,0,2,0,2,0,2,0
 CertPropSvc,2,2,2,2,2,2,2,2,1,1
 c2wts,2,0,2,0,2,0,2,0,2,0
 KeyIso,2,0,2,0,2,0,2,0,2,0
@@ -37,6 +38,7 @@ DmEnrollmentSvc,2,0,2,0,2,0,2,0,2,0
 DsmSVC,2,0,2,0,2,0,2,0,2,0
 DevQueryBroker,2,0,2,0,2,0,2,0,2,0
 Dhcp,3,0,3,0,3,0,3,0,3,0
+diagsvc,2,0,2,0,2,0,2,0,2,0
 DPS,3,0,3,0,3,0,3,0,3,0
 WdiServiceHost,2,0,2,0,2,0,2,0,2,0
 WdiSystemHost,2,0,2,0,2,0,2,0,2,0
@@ -54,6 +56,7 @@ fhsvc,2,0,2,0,2,0,2,0,2,0
 fdPHost,2,0,2,0,2,0,2,0,2,0
 FDResPub,2,0,2,0,2,0,2,0,2,0
 lfsvc,2,2,2,2,1,1,1,1,1,1
+GraphicsPerfSvc,2,0,2,0,2,0,2,0,2,0
 HomeGroupListener,2,0,2,0,2,0,2,0,2,0
 HomeGroupProvider,2,0,2,0,2,0,2,0,2,0
 hns,0,0,2,0,2,0,2,0,2,0
@@ -78,7 +81,7 @@ IpxlatCfgSvc,2,2,2,2,2,2,2,2,1,1
 PolicyAgent,2,0,2,0,2,0,2,0,2,0
 KtmRm,2,0,2,0,2,0,2,0,2,0
 lltdsvc,2,0,2,0,2,0,2,0,2,0
-wlpasvc,2,2,2,2,2,2,2,2,1,1
+wlpasvc,2,0,2,0,2,0,2,0,2,0
 LPDSVC,3,0,3,0,3,0,3,0,3,0
 LxssManager,2,0,2,0,2,0,2,0,2,0
 MSMQ,3,0,3,0,3,0,3,0,3,0
@@ -89,6 +92,7 @@ wlidsvc,2,0,2,0,2,0,2,0,2,0
 AppVClient,0,0,1,0,1,0,1,0,1,0
 ftpsvc,3,0,3,0,3,0,3,0,3,0
 MSiSCSI,2,2,2,2,1,1,1,1,1,1
+MsKeyboardFilter,0,0,0,0,0,0,0,0,0,0
 swprv,2,0,2,0,2,0,2,0,2,0
 smphost,2,0,2,0,2,0,2,0,2,0
 SmsRouter,2,2,2,2,1,1,1,1,1,1
@@ -121,6 +125,7 @@ WPDBusEnum,2,0,2,0,2,0,2,0,2,0
 Power,3,0,3,0,3,0,3,0,3,0
 Spooler,3,0,3,0,3,0,3,0,3,0
 PrintNotify,2,0,2,0,2,0,2,0,2,0
+PrintWorkflowUserSvc_?????,2,0,2,0,2,0,2,0,2,0
 wercplsupport,2,0,2,0,2,0,2,0,2,0
 PcaSvc,3,0,3,0,3,0,3,0,3,0
 QWAVE,2,0,2,0,2,0,2,0,2,0
@@ -148,6 +153,7 @@ SCardSvr,1,0,1,0,1,0,1,0,1,0
 ScDeviceEnum,2,2,2,2,1,1,1,1,1,1
 SCPolicySvc,2,2,2,2,1,1,1,1,1,1
 SNMPTRAP,2,2,2,2,1,1,1,1,1,1
+SharedRealitySvc,2,0,2,0,2,0,2,0,2,0
 svsvc,2,0,2,0,2,0,2,0,2,0
 SSDPSRV,2,0,2,0,2,0,2,0,2,0
 WiaRpc,2,0,2,0,2,0,2,0,2,0
@@ -160,7 +166,6 @@ lmhosts,2,0,2,0,2,0,2,0,2,0
 TapiSrv,2,0,2,0,2,0,2,0,2,0
 Themes,3,0,3,0,3,0,3,0,3,0
 TimeBroker,2,0,2,0,2,0,2,0,2,0
-TokenBroker,2,0,2,0,2,0,2,0,2,0
 TabletInputService,2,2,2,2,1,1,2,2,1,1
 UsoSvc,2,0,2,0,2,0,2,0,2,0
 upnphost,2,0,2,0,2,0,2,0,2,0
@@ -171,6 +176,8 @@ vds,2,0,2,0,2,0,2,0,2,0
 VSS,2,0,2,0,2,0,2,0,2,0
 W3LOGSVC,2,0,2,0,2,0,2,0,2,0
 WalletService,2,0,2,0,2,0,2,0,2,0
+WarpJITSvc,2,0,2,0,2,0,2,0,2,0
+TokenBroker,2,0,2,0,2,0,2,0,2,0
 WMSVC,2,0,2,0,2,0,2,0,2,0
 WebClient,2,2,2,2,2,2,2,2,1,1
 WFDSConSvc,2,2,2,2,1,1,2,2,1,1
@@ -187,7 +194,6 @@ WEPHOSTSVC,2,0,2,0,2,0,2,0,2,0
 WerSvc,2,0,2,0,2,0,2,0,2,0
 Wecsvc,2,0,2,0,2,0,2,0,2,0
 EventLog,3,0,3,0,3,0,3,0,3,0
-MpsSvc,3,0,3,0,3,0,3,0,3,0
 FontCache,3,0,3,0,3,0,3,0,3,0
 StiSvc,2,0,2,0,2,0,2,0,2,0
 wisvc,2,2,2,2,1,1,1,1,1,1
@@ -196,11 +202,13 @@ Winmgmt,3,0,3,0,3,0,3,0,3,0
 WMPNetworkSvc,2,2,2,2,1,1,1,1,1,1
 icssvc,2,2,2,2,1,1,1,1,1,1
 TrustedInstaller,2,0,2,0,2,0,2,0,2,0
+spectrum,2,0,2,0,2,0,2,0,2,0
 FontCache3.0.0.0,2,0,2,0,2,0,2,0,2,0
 WAS,2,0,2,0,2,0,2,0,2,0
 WpnService,3,0,3,0,3,0,3,0,3,0
 WinRM,2,2,2,2,1,1,1,1,1,1
 WSearch,4,0,4,0,4,0,4,0,4,0
+InstallService,2,0,2,0,2,0,2,0,2,0
 W32Time,2,0,2,0,2,0,2,0,2,0
 wuauserv,2,0,2,0,2,0,2,0,2,0
 WinHttpAutoProxySvc,2,0,2,0,2,0,2,0,2,0
@@ -212,6 +220,7 @@ LanmanWorkstation,3,0,3,0,3,0,3,0,3,0
 W3SVC,3,0,3,0,3,0,3,0,3,0
 WwanSvc,2,2,2,2,1,1,1,1,1,1
 XboxGipSvc,2,0,2,0,2,0,2,0,2,0
+xbgm,2,2,2,2,1,1,1,1,1,1
 XblAuthManager,2,2,2,2,1,1,1,1,1,1
 XblGameSave,2,2,2,2,1,1,1,1,1,1
 XboxNetApiSvc,2,2,2,2,1,1,1,1,1,1
