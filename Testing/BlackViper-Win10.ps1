@@ -10,8 +10,8 @@
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
 $Script_Version = "4.0"
-$Minor_Version = "0"
-$Script_Date = "Nov-30-2017"
+$Minor_Version = "1"
+$Script_Date = "Dec-03-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -112,6 +112,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -sbc           (Skips Build Check)
 
 --Misc Switches--
+  -sxb           (Skips changes to all XBox Services)
   -bcsc          (Backup Current Service Configuration)
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
@@ -175,6 +176,7 @@ $Script:All_or_Min = "-min"
 $Script:RunScript = 2
 $Script:ErrorDi = ""
 $Script:LogStarted = 0
+$Script:XboxService = 0
 
 ##########
 # Pre-Script -End
@@ -834,6 +836,7 @@ Function Save_Service([String]$SavePath) {
 Function ServiceSet([String]$BVService) {
 	Clear-Host
 	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
+	$XboxServiceArr = @("xbgm","XblAuthManager", "XblGameSave", "XboxNetApiSvc")
 	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
@@ -852,7 +855,10 @@ Function ServiceSet([String]$BVService) {
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			If($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
+			If($ServiceCurrType -eq "Xbox") {
+				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
+				DisplayOut $DispTemp  15 0
+			} ElseIf($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
 				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
 				If($ServiceTypeNum -In 1..4 -And $DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
 				If($ServiceTypeNum -eq 4) {
@@ -878,6 +884,7 @@ Function ServiceSet([String]$BVService) {
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 	If($CurrServices.Name -Contains $S_Name) {
+		If($XboxService -eq 1 -and $XboxServiceArr -Contains $S_Name) { Return "Xbox" }
 		$C_Type = ($CurrServices.Where{$_.Name -eq $S_Name}).StartType
 		If($S_Type -ne $C_Type) {
 			If($S_Name -eq 'lfsvc' -And $C_Type -eq 'disabled' -And (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3")) {
@@ -1126,6 +1133,7 @@ Function ScriptUpdateFun {
 	If($DevLog -eq 1){ $UpArg += "-devl " }
 	If($ScriptLog -eq 1){ $UpArg += "-logc $LogName " }
 	If($All_or_Min -eq "-full"){ $UpArg += "-all " } Else{ $UpArg += "-min " }
+	If($XboxService -eq 1){ $UpArg += "-sxb " }
 	If($BackupServiceConfig -eq 1){ $UpArg += "-bcsc " }
 	If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
 	If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
@@ -1154,7 +1162,7 @@ Function ScriptUpdateFun {
 		DownloadFile $Script_Url $WebScriptFilePath
 		If($BatUpdateScriptFileName -eq 1) {
 			$BatFile = $filebase + "_Win10-BlackViper.bat"
-			If(Test-Path $BatFile -PathType Leaf) { 
+			If(Test-Path $BatFile -PathType Leaf) {
 				(Get-Content -LiteralPath $BatFile) | Foreach-Object {$_ -replace "Set Script_File=.*?$" , "Set Script_File=$DFilename"} | Set-Content -LiteralPath $BatFile -Force
 				MenuBlankLineLog
 				LeftLineLog ;DisplayOutMenu " Updated bat file with new script file name.     " 13 0 0 1 ;RightLineLog
@@ -1195,6 +1203,7 @@ Function GetArgs {
 				"-devl" { $Script:DevLog = 1 ;Break }
 				"-sbc" { $Script:BuildCheck = 1 ;Break }
 				"-sech" { $Script:EditionCheck = "Home" ;Break }
+				"-sxb" { $Script:XboxService = 1 ;Break }
 				{$_ -eq "-secp" -or $_ -eq "-sec"} { $Script:EditionCheck = "Pro" ;Break }
 			}
 		}
@@ -1311,6 +1320,8 @@ $Script:EditionCheck = 0        #0 = Check if Home or Pro Edition
                                 #"Home" = Set Edition as Home (Needs "s)
 
 $Script:BuildCheck = 0          #0 = Check Build (Creator's Update Minimum), 1 = Skips this check
+
+$Script:XboxService = 0         #0 = Change Xbox Services, 1 = Skip Change Xbox Services
 #--------------------------------
 # Best not to use these unless asked to (these stop automated)
 $Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
