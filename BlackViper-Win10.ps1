@@ -1,17 +1,17 @@
 ##########
 # Win 10 Black Viper Service Configuration Script
 #
-# Black Viper's Service Configurations
-#  Author: Charles "Black Viper" Sparks
-# Website: http://www.blackviper.com/
-#
 # Script + Menu(GUI) By
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
+# Black Viper's Service Configurations
+#  Author: Charles "Black Viper" Sparks
+# Website: http://www.blackviper.com/
+#
 $Script_Version = "4.0"
-$Minor_Version = "0"
-$Script_Date = "Nov-30-2017"
+$Minor_Version = "2"
+$Script_Date = "Dec-04-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -111,6 +111,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -sbc           (Skips Build Check)
 
 --Misc Switches--
+  -sxb           (Skips changes to all XBox Services)
   -bcsc          (Backup Current Service Configuration)
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
@@ -174,6 +175,7 @@ $Script:All_or_Min = "-min"
 $Script:RunScript = 2
 $Script:ErrorDi = ""
 $Script:LogStarted = 0
+$Script:XboxService = 0
 
 ##########
 # Pre-Script -End
@@ -420,15 +422,16 @@ Function GuiStart {
   </TabItem>
   <TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-   <Label Content="Log Options" HorizontalAlignment="Left" Margin="4,128,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+   <Label Content="Log Options" HorizontalAlignment="Left" Margin="4,138,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
    <Label Content="Misc Options" HorizontalAlignment="Left" Margin="4,67,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
    <CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="9,90,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
-   <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,150,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
+   <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,160,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
    <CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
    <CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
-   <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,166,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
+   <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,176,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
    <CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,105,0,-11" VerticalAlignment="Top" Height="15" Width="218"/>
-   <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,164,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
+   <CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="9,120,0,0" VerticalAlignment="Top" Height="15" Width="218"/>   
+   <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,174,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
    <CheckBox Name="ScriptVerCheck_CB" Content="Script Update*" HorizontalAlignment="Left" Margin="244,105,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
    <CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="244,120,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
    <CheckBox Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="244,90,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
@@ -833,6 +836,7 @@ Function Save_Service([String]$SavePath) {
 Function ServiceSet([String]$BVService) {
 	Clear-Host
 	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
+	$XboxServiceArr = @("xbgm","XblAuthManager", "XblGameSave", "XboxNetApiSvc")
 	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
@@ -851,7 +855,10 @@ Function ServiceSet([String]$BVService) {
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			If($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
+			If($ServiceCurrType -eq "Xbox") {
+				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
+				DisplayOut $DispTemp  2 0
+			} ElseIf($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
 				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
 				If($ServiceTypeNum -In 1..4 -And $DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
 				If($ServiceTypeNum -eq 4) {
@@ -877,6 +884,7 @@ Function ServiceSet([String]$BVService) {
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 	If($CurrServices.Name -Contains $S_Name) {
+		If($XboxService -eq 1 -and $XboxServiceArr -Contains $S_Name) { Return "Xbox" }
 		$C_Type = ($CurrServices.Where{$_.Name -eq $S_Name}).StartType
 		If($S_Type -ne $C_Type) {
 			If($S_Name -eq 'lfsvc' -And $C_Type -eq 'disabled' -And (Test-Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3")) {
@@ -1125,6 +1133,7 @@ Function ScriptUpdateFun {
 	If($DevLog -eq 1){ $UpArg += "-devl " }
 	If($ScriptLog -eq 1){ $UpArg += "-logc $LogName " }
 	If($All_or_Min -eq "-full"){ $UpArg += "-all " } Else{ $UpArg += "-min " }
+	If($XboxService -eq 1){ $UpArg += "-sxb " }
 	If($BackupServiceConfig -eq 1){ $UpArg += "-bcsc " }
 	If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
 	If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
@@ -1153,7 +1162,7 @@ Function ScriptUpdateFun {
 		DownloadFile $Script_Url $WebScriptFilePath
 		If($BatUpdateScriptFileName -eq 1) {
 			$BatFile = $filebase + "_Win10-BlackViper.bat"
-			If(Test-Path $BatFile -PathType Leaf) { 
+			If(Test-Path $BatFile -PathType Leaf) {
 				(Get-Content -LiteralPath $BatFile) | Foreach-Object {$_ -replace "Set Script_File=.*?$" , "Set Script_File=$DFilename"} | Set-Content -LiteralPath $BatFile -Force
 				MenuBlankLineLog
 				LeftLineLog ;DisplayOutMenu " Updated bat file with new script file name.     " 13 0 0 1 ;RightLineLog
@@ -1194,6 +1203,7 @@ Function GetArgs {
 				"-devl" { $Script:DevLog = 1 ;Break }
 				"-sbc" { $Script:BuildCheck = 1 ;Break }
 				"-sech" { $Script:EditionCheck = "Home" ;Break }
+				"-sxb" { $Script:XboxService = 1 ;Break }
 				{$_ -eq "-secp" -or $_ -eq "-sec"} { $Script:EditionCheck = "Pro" ;Break }
 			}
 		}
@@ -1310,6 +1320,8 @@ $Script:EditionCheck = 0        #0 = Check if Home or Pro Edition
                                 #"Home" = Set Edition as Home (Needs "s)
 
 $Script:BuildCheck = 0          #0 = Check Build (Creator's Update Minimum), 1 = Skips this check
+
+$Script:XboxService = 0         #0 = Change Xbox Services, 1 = Skip Change Xbox Services
 #--------------------------------
 # Best not to use these unless asked to (these stop automated)
 $Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
