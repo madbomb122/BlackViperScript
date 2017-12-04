@@ -1,4 +1,11 @@
 -----------------------------------------------------------------------------------
+4.0.2 (12-04-2017)
+
+New Option and Switch to Skip All Xbox Service
+ Switch         Description of Switch
+  -sxb           Skip All Xbox Service
+
+-----------------------------------------------------------------------------------
 4.0.0 (11-30-2017)
 
 Enabled Window Resize
