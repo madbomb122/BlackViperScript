@@ -1,17 +1,17 @@
 ##########
 # Win 10 Black Viper Service Configuration Script
 #
-# Black Viper's Service Configurations
-#  Author: Charles "Black Viper" Sparks
-# Website: http://www.blackviper.com/
-#
 # Script + Menu(GUI) By
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
+# Black Viper's Service Configurations
+#  Author: Charles "Black Viper" Sparks
+# Website: http://www.blackviper.com/
+#
 $Script_Version = "4.0"
-$Minor_Version = "1"
-$Script_Date = "Dec-03-2017"
+$Minor_Version = "2"
+$Script_Date = "Dec-04-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -423,15 +423,16 @@ Function GuiStart {
   </TabItem>
   <TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-   <Label Content="Log Options" HorizontalAlignment="Left" Margin="4,128,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+   <Label Content="Log Options" HorizontalAlignment="Left" Margin="4,138,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
    <Label Content="Misc Options" HorizontalAlignment="Left" Margin="4,67,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
    <CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="9,90,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
-   <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,150,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
+   <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,160,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
    <CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
    <CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
-   <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,166,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
+   <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,176,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
    <CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,105,0,-11" VerticalAlignment="Top" Height="15" Width="218"/>
-   <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,164,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
+   <CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="9,120,0,0" VerticalAlignment="Top" Height="15" Width="218"/>   
+   <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,174,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
    <CheckBox Name="ScriptVerCheck_CB" Content="Script Update*" HorizontalAlignment="Left" Margin="244,105,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
    <CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="244,120,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
    <CheckBox Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="244,90,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
@@ -857,7 +858,7 @@ Function ServiceSet([String]$BVService) {
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			If($ServiceCurrType -eq "Xbox") {
 				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
-				DisplayOut $DispTemp  15 0
+				DisplayOut $DispTemp  2 0
 			} ElseIf($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
 				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
 				If($ServiceTypeNum -In 1..4 -And $DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
