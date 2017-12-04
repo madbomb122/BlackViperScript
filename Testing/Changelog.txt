@@ -1,7 +1,9 @@
 -----------------------------------------------------------------------------------
-4.0.1 (12-03-2017)
+4.0.2 (12-04-2017)
 
-Adding new switch to skip xbox services (Option not in gui yet)
+New Option and Switch to Skip All Xbox Service
+ Switch         Description of Switch
+  -sxb           Skip All Xbox Service
 
 -----------------------------------------------------------------------------------
 4.0.0 (11-30-2017)
