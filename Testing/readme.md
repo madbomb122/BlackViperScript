@@ -1,5 +1,5 @@
 # Currently Testing (Read Notes)
-Option to skip Xbox Services (option not in GUI at this time)
+Nothing ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
