@@ -5,13 +5,13 @@
 #  Author: Madbomb122
 # Website: https://github.com/madbomb122/BlackViperScript/
 #
-# Black Viper's Service Configurations
+# Black Viper's Service Configurations By
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.0"
-$Minor_Version = "2"
-$Script_Date = "Dec-04-2017"
+$Minor_Version = "3"
+$Script_Date = "Dec-07-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -171,6 +171,7 @@ $ServicesTypeList = @(
 'Automatic',#3 -Automatic
 'Automatic')#4 -Automatic (Delayed Start)
 
+$XboxServiceArr = @("xbgm","XblAuthManager", "XblGameSave", "XboxNetApiSvc")
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
 $Script:RunScript = 2
@@ -698,6 +699,7 @@ Function GenerateServices {
 		3 { ($Script:BVService="Tweaked"+$IsLaptop+$FullMin) ;$BVSAlt = "Tweaked"+$IsLaptop+"-Full" ;Break }
 	}
 
+	If($WPF_XboxService_CB.IsChecked){ $Script:XboxService = 1 } Else{ $Script:XboxService = 0 }
 	If($ServiceImport -eq 1) {
 		[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
 		$ServiceImport = 0
@@ -713,6 +715,8 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 0) {
 				$checkbox = $False
 				$ServiceTypeNum = $($item.$BVSAlt)
+			} ElseIf($XboxService -eq 1 -and $XboxServiceArr -Contains $SName) {
+				$checkbox = $False
 			} Else {
 				$checkbox = $True
 			}
@@ -837,7 +841,6 @@ Function Save_Service([String]$SavePath) {
 Function ServiceSet([String]$BVService) {
 	Clear-Host
 	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
-	$XboxServiceArr = @("xbgm","XblAuthManager", "XblGameSave", "XboxNetApiSvc")
 	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
