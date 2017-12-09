@@ -27,8 +27,8 @@ PPS. My Thanks goes out to all that have helped in any way
 <br />
 
 **_Need Files_** <br />
-[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `65.0 KB`<br />
-[BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `6.54 KB` (Not the same as the one on BlackViper's Website)<br />
+[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `66.4 KB`<br />
+[BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `6.86 KB` (Not the same as the one on BlackViper's Website)<br />
 
 **Recommended Files** <br />
 [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `12.4 KB`<br /> 
@@ -123,12 +123,11 @@ This file will <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
 **Q:** Do you accept any donations? <br />
-**A:** If you would like to donate to me Please Contact me about donating or pick an item from my amazon wishlist. Please also consider donating to Black Viper too. Thanks <br />
+**A:** If you would like to donate to me Please pick an item/giftcard from my amazon wishlist or Contact me about donating, Thanks. <br />
 **Wishlist:** https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/ <br />
-**NOTE:** http://www.blackviper.com/support-bv/  <br />
 
 **Q:** How can I contact you? <br />
-**A:** You can email me @ madbomb122@gmail.com, if it's an issue please post under issue. Before contacting me make sure you have ALL the needed files and the size is right (Look above under requirements)
+**A:** If it's an issue or suggestion please post under issue tab. Otherwise you can email me @ madbomb122@gmail.com. Before contacting me make sure you have ALL the needed files and the size is right (Look above under requirements).
 
 **Q:** The Run button is disabled what do i do? <br />
 **A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).
@@ -160,16 +159,16 @@ This file will <br />
 **A:** Yes, with same or different settings.
 
 **Q:** I've run the script and it did *BLAH*, can I undo it? <br />
-**A:** Yes, run the script again and select again. <br />
+**A:** Yes, run the script again and select again or load the backup configuration (if you made one). <br />
 
 **Q:** Can I use the script or modify it for my / my company's needs? <br />
-**A:** Sure. Just don't forget to include copyright notice as per the license requirements, and leave any Copyright in script too.
+**A:** Sure. Just don't forget to include copyright notice as per the license requirements, and leave any Copyright in script too, if you make money from using it please consider a donation as thanks.
 
 **Q:** The script messed up my computer. <br />
 **A:** The script is as is, any problems you have/had is your own problem.
 
 **Q:** Are you going to add support for other editions of Windows 10 other than Pro or Home? <br />
-**A:** Sorry, I only support the windows 10 configuration listed on Black Viper's website. <br />
+**A:** Sorry, I only support the windows 10 configuration listed on Black Viper's website, you can still use it on other edition but any problems you have are your own. <br />
 
 **Q:** Are you going to add support for builds before the "Creator's Update"? <br />
 **A:** Sorry, since I dont have the configuration from before the "Creator's Update" I can't add it. <br />
@@ -182,7 +181,7 @@ This file will <br />
 **A:** No, my file is not the same. <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
-**A:** Yes, to add/remove edit the file `BlackViper.csv` <br />
+**A:** Yes, to add/remove edit the file `BlackViper.csv` or use the gui and uncheck the services you dont want changed <br />
 ---to remove a service remove the line or put something to change service name, other than symbols (# is fime) <br />
 ---to add put it in the proper format <br />
 **Note:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)` <br />
@@ -194,4 +193,4 @@ This file will <br />
 **A:** No Clue.
 
 **Q:** When do you update the services file (BlackViper.csv)? <br />
-**A:** When Black Viper tells me a change, I see an update on his site, or someone tells me there is an update.
+**A:** When Black Viper tells me there is a change or I see an update on his site, or someone tells me there is an update.
