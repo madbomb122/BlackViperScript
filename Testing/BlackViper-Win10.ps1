@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.0"
-$Minor_Version = "3"
-$Script_Date = "Dec-07-2017"
+$Minor_Version = "4"
+$Script_Date = "Dec-11-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -391,19 +391,19 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="339" Width="490" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="330" Width="490" BorderBrush="Black" Background="White">
 <Window.Effect> <DropShadowEffect/></Window.Effect><Grid>
- <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,276,0,0" VerticalAlignment="Top" Height="25"/>
- <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
- <Button Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="114,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic" Background="#FF8ABEF0"/>
- <Button Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="228,259,0,0" VerticalAlignment="Top" Width="117" FontStyle="Italic" Background="#FFA7D24D"/>
- <Button Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="345,259,0,0" VerticalAlignment="Top" Width="129" FontStyle="Italic" Background="#FFA7D24D"/>
- <Button Name="DonateButton" Content="Donate to me" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic" Background="#FFFFAD2F"/>
- <Button Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="0,238,0,0" VerticalAlignment="Top" Width="474" Height="20" FontWeight="Bold"/>
- <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="125" IsEnabled="False"/>
- <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="345,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="129" IsEnabled="False"/>
- <TextBox Name="Release_Type_Txt" HorizontalAlignment="Left" Height="20" Margin="207,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
- <TabControl Name="TabControl" Height="235" VerticalAlignment="Top">
+ <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,0,0,-1" VerticalAlignment="Bottom" Height="25"/>
+ <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,0,0,-1" VerticalAlignment="Bottom" Height="25"/>
+ <Button Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="114,0,0,21" VerticalAlignment="Bottom" Width="114" FontStyle="Italic" Background="#FF8ABEF0"/>
+ <Button Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="228,0,0,21" VerticalAlignment="Bottom" Width="117" FontStyle="Italic" Background="#FFA7D24D"/>
+ <Button Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="345,0,0,21" VerticalAlignment="Bottom" Width="129" FontStyle="Italic" Background="#FFA7D24D"/>
+ <Button Name="DonateButton" Content="Donate to me" HorizontalAlignment="Left" Margin="0,0,0,21" VerticalAlignment="Bottom" Width="114" FontStyle="Italic" Background="#FFFFAD2F"/>
+ <Button Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="0,0,0,42" VerticalAlignment="Bottom" Width="474" Height="20" FontWeight="Bold"/>
+ <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="82,0,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Bottom" Width="125" IsEnabled="False"/>
+ <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="345,0,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Bottom" Width="129" IsEnabled="False"/>
+ <TextBox Name="Release_Type_Txt" HorizontalAlignment="Left" Height="20" Margin="207,0,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Bottom" Width="48" IsEnabled="False"/>
+ <TabControl Name="TabControl" Margin="0,0,0,65">
   <TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,63,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
    <ComboBox Name="ServiceConfig" HorizontalAlignment="Left" Margin="139,66,0,0" VerticalAlignment="Top" Width="118" Height="23">
@@ -447,7 +447,7 @@ Function GuiStart {
     <ComboBoxItem Content="Pro" HorizontalAlignment="Left" Width="58" IsSelected="True"/>
    </ComboBox>
    <Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="238,5,0,0" FontWeight="Bold"/>
-   <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="210" Margin="236,-2,0,-3" Stroke="Black" VerticalAlignment="Top" Width="1"/></Grid>
+   <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="236,-3,0,-1" Stroke="Black" Width="1"/></Grid>
   </TabItem>
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
     <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" SelectionMode="Single" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" ><DataGrid.Columns>
@@ -477,15 +477,10 @@ Function GuiStart {
    <Label Content="This script lets you set Windows 10's services based on Black Viper's Service &#xD;&#xA;Configurations, your own Service Configuration (If in a proper format), or a backup &#xD;&#xA;of your Service Configurations made by this script.&#xD;&#xA;&#xD;&#xA;This script was created by MadBomb122." HorizontalAlignment="Left" Margin="11,101,0,0" VerticalAlignment="Top" Width="450" Height="91"/></Grid>
   </TabItem>
  </TabControl>
- <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,237,0,0" Stroke="Black" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,280,0,0" Stroke="Black" Width="1" Height="25" VerticalAlignment="Top"/>
- <Rectangle Fill="Yellow" Stroke="Black" Margin="0,300,0,0" Height="16" VerticalAlignment="Top"/>
- <Rectangle Fill="Yellow" Stroke="Black" HorizontalAlignment="Left" Width="16" Margin="474,0,0,0"/>
- <Label Content="Dont Resize past this area" HorizontalAlignment="Left" Margin="174,294,0,-11" VerticalAlignment="Top" Width="152" Height="25"/>
- <Label Content="Dont Resize past this area" HorizontalAlignment="Left" Margin="405,123,-75,0" VerticalAlignment="Top" Width="152" Height="25" RenderTransformOrigin="0.5,0.5">
- <Label.RenderTransform> <RotateTransform Angle="-90"/></Label.RenderTransform></Label></Grid>
+ <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,62" Stroke="Black" VerticalAlignment="Bottom"/>
+ <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,41" Stroke="Black" VerticalAlignment="Bottom"/>
+ <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,20" Stroke="Black" VerticalAlignment="Bottom"/>
+ <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/></Grid>
 </Window>
 "@
 
