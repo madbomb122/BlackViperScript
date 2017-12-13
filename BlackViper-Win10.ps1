@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.0"
-$Minor_Version = "3"
-$Script_Date = "Dec-07-2017"
+$Minor_Version = "5"
+$Script_Date = "Dec-13-2017"
 $Release_Type = "Stable"
 ##########
 
@@ -285,33 +285,33 @@ Function TOSDisplay {
 	$BorderColor = 14
 	If($Release_Type -ne "Stable") {
 		$BorderColor = 15
-		DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+		DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
 	}
 	If($OSType -ne 64) {
 		$BorderColor = 15
-		DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+		DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
 	}
-	DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-	DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-	DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+	DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+	DisplayOut "|                                                   |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOut "|                                                   |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOut "|                                                   |" $BorderColor 0 1
+	DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
 }
 
 Function TOS {
@@ -390,19 +390,19 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="339" Width="490" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="330" Width="490" BorderBrush="Black" Background="White">
 <Window.Effect> <DropShadowEffect/></Window.Effect><Grid>
- <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,276,0,0" VerticalAlignment="Top" Height="25"/>
- <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,276,0,0" VerticalAlignment="Top" Height="25"/>
- <Button Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="114,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic" Background="#FF8ABEF0"/>
- <Button Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="228,259,0,0" VerticalAlignment="Top" Width="117" FontStyle="Italic" Background="#FFA7D24D"/>
- <Button Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="345,259,0,0" VerticalAlignment="Top" Width="129" FontStyle="Italic" Background="#FFA7D24D"/>
- <Button Name="DonateButton" Content="Donate to me" HorizontalAlignment="Left" Margin="0,259,0,0" VerticalAlignment="Top" Width="114" FontStyle="Italic" Background="#FFFFAD2F"/>
- <Button Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="0,238,0,0" VerticalAlignment="Top" Width="474" Height="20" FontWeight="Bold"/>
- <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="82,280,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Top" Width="125" IsEnabled="False"/>
- <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="345,280,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Top" Width="129" IsEnabled="False"/>
- <TextBox Name="Release_Type_Txt" HorizontalAlignment="Left" Height="20" Margin="207,280,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Top" Width="48" IsEnabled="False"/>
- <TabControl Name="TabControl" Height="235" VerticalAlignment="Top">
+ <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,0,0,-1" VerticalAlignment="Bottom" Height="25"/>
+ <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,0,0,-1" VerticalAlignment="Bottom" Height="25"/>
+ <Button Name="CopyrightButton" Content="Copyright" HorizontalAlignment="Left" Margin="114,0,0,21" VerticalAlignment="Bottom" Width="114" FontStyle="Italic" Background="#FF8ABEF0"/>
+ <Button Name="BlackViperWSButton" Content="BlackViper's Website" HorizontalAlignment="Left" Margin="228,0,0,21" VerticalAlignment="Bottom" Width="117" FontStyle="Italic" Background="#FFA7D24D"/>
+ <Button Name="Madbomb122WSButton" Content="Madbomb122's Website" HorizontalAlignment="Left" Margin="345,0,0,21" VerticalAlignment="Bottom" Width="129" FontStyle="Italic" Background="#FFA7D24D"/>
+ <Button Name="DonateButton" Content="Donate to me" HorizontalAlignment="Left" Margin="0,0,0,21" VerticalAlignment="Bottom" Width="114" FontStyle="Italic" Background="#FFFFAD2F"/>
+ <Button Name="RunScriptButton" Content="Run Script" HorizontalAlignment="Left" Margin="0,0,0,42" VerticalAlignment="Bottom" Width="474" Height="20" FontWeight="Bold"/>
+ <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="82,0,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Bottom" Width="125" IsEnabled="False"/>
+ <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="345,0,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Bottom" Width="129" IsEnabled="False"/>
+ <TextBox Name="Release_Type_Txt" HorizontalAlignment="Left" Height="20" Margin="207,0,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Bottom" Width="48" IsEnabled="False"/>
+ <TabControl Name="TabControl" Margin="0,0,0,65">
   <TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,63,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
    <ComboBox Name="ServiceConfig" HorizontalAlignment="Left" Margin="139,66,0,0" VerticalAlignment="Top" Width="118" Height="23">
@@ -446,7 +446,7 @@ Function GuiStart {
     <ComboBoxItem Content="Pro" HorizontalAlignment="Left" Width="58" IsSelected="True"/>
    </ComboBox>
    <Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="238,5,0,0" FontWeight="Bold"/>
-   <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Height="210" Margin="236,-2,0,-3" Stroke="Black" VerticalAlignment="Top" Width="1"/></Grid>
+   <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="236,-3,0,-1" Stroke="Black" Width="1"/></Grid>
   </TabItem>
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
     <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" SelectionMode="Single" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" ><DataGrid.Columns>
@@ -476,15 +476,10 @@ Function GuiStart {
    <Label Content="This script lets you set Windows 10's services based on Black Viper's Service &#xD;&#xA;Configurations, your own Service Configuration (If in a proper format), or a backup &#xD;&#xA;of your Service Configurations made by this script.&#xD;&#xA;&#xD;&#xA;This script was created by MadBomb122." HorizontalAlignment="Left" Margin="11,101,0,0" VerticalAlignment="Top" Width="450" Height="91"/></Grid>
   </TabItem>
  </TabControl>
- <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,237,0,0" Stroke="Black" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,258,0,0" Stroke="Black" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,279,0,0" Stroke="Black" VerticalAlignment="Top"/>
- <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,280,0,0" Stroke="Black" Width="1" Height="25" VerticalAlignment="Top"/>
- <Rectangle Fill="Yellow" Stroke="Black" Margin="0,300,0,0" Height="16" VerticalAlignment="Top"/>
- <Rectangle Fill="Yellow" Stroke="Black" HorizontalAlignment="Left" Width="16" Margin="474,0,0,0"/>
- <Label Content="Dont Resize past this area" HorizontalAlignment="Left" Margin="174,294,0,-11" VerticalAlignment="Top" Width="152" Height="25"/>
- <Label Content="Dont Resize past this area" HorizontalAlignment="Left" Margin="405,123,-75,0" VerticalAlignment="Top" Width="152" Height="25" RenderTransformOrigin="0.5,0.5">
- <Label.RenderTransform> <RotateTransform Angle="-90"/></Label.RenderTransform></Label></Grid>
+ <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,62" Stroke="Black" VerticalAlignment="Bottom"/>
+ <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,41" Stroke="Black" VerticalAlignment="Bottom"/>
+ <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,20" Stroke="Black" VerticalAlignment="Bottom"/>
+ <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/></Grid>
 </Window>
 "@
 
@@ -1208,9 +1203,62 @@ Function GetArgs {
 				"-sech" { $Script:EditionCheck = "Home" ;Break }
 				"-sxb" { $Script:XboxService = 1 ;Break }
 				{$_ -eq "-secp" -or $_ -eq "-sec"} { $Script:EditionCheck = "Pro" ;Break }
+				{$_ -eq "-help" -or $_ -eq "-h"} { ShowHelp ;Break }
 			}
 		}
 	}
+}
+
+Function ShowHelp {
+	Clear-Host
+	DisplayOut "                  List of Switches                   " 13 0
+	DisplayOut "-----------------------------------------------------" 14 0
+	DisplayOut "" 13 0
+	DisplayOut "-- Basic Switches --" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -atos " 15 0 0 ;DisplayOut "           Accepts ToS " 14 0
+	DisplayOutMenu "  -auto " 15 0 0 ;DisplayOut "           Implies -atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Service Configuration Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -default  " 15 0 0 ;DisplayOut "       Runs the script with Services to Default Configuration " 14 0
+	DisplayOutMenu "  -safe " 15 0 0 ;DisplayOut "           Runs the script with Services to Black Viper's Safe Configuration " 14 0
+	DisplayOutMenu "  -tweaked " 15 0 0 ;DisplayOut "        Runs the script with Services to Black Viper's Tweaked Configuration " 14 0
+	DisplayOutMenu "  -lcsc " 15 0 0 ;DisplayOutMenu "File.csv " 11 0 0 ;DisplayOutMenu "  Loads Custom Service Configuration, " 14 0 0 ;DisplayOutMenu "File.csv" 11 0 0 ;DisplayOut " = Name of your backup/custom file " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Service Choice Switches--" 2 0
+	DisplayOutMenu " Switch "  15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -all " 15 0 0 ;DisplayOut "            Every windows services will change " 14 0
+	DisplayOutMenu "  -min " 15 0 0 ;DisplayOut "            Just the services different from the default to safe/tweaked list " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Update Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -usc  " 15 0 0 ;DisplayOut "           Checks for Update to Script file before running " 14 0
+	DisplayOutMenu "  -use  " 15 0 0 ;DisplayOut "           Checks for Update to Service file before running " 14 0
+	DisplayOutMenu "  -sic  " 15 0 0 ;DisplayOut "           Skips Internet Check, if you can't ping GitHub.com for some reason " 14 0
+	DisplayOut "" 13 0	
+	DisplayOut "--Log Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -log " 15 0 0 ;DisplayOut "            Makes a log file Script.log " 14 0
+	DisplayOutMenu "  -baf " 15 0 0 ;DisplayOut "            Log File of Services Configuration Before and After the script " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--AT YOUR OWN RISK Switches--" 13 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -sec  " 15 0 0 ;DisplayOut "           Skips Edition Check by Setting Edition as Pro " 14 0
+	DisplayOutMenu "  -secp  " 15 0 0 ;DisplayOut "          ^Same as Above" 14 0
+	DisplayOutMenu "  -sech  " 15 0 0 ;DisplayOut "          Skips Edition Check by Setting Edition as Home" 14 0
+	DisplayOutMenu "  -sbc  " 15 0 0 ;DisplayOut "           Skips Build Check " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Misc Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -sxb  " 15 0 0 ;DisplayOut "           Skips changes to all XBox Services " 14 0
+	DisplayOutMenu "  -bcsc  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration " 14 0
+	DisplayOutMenu "  -dry  " 15 0 0 ;DisplayOut "           Runs the script and shows what services will be changed " 14 0
+	DisplayOutMenu "  -diag  " 15 0 0 ;DisplayOut "          Shows diagnostic information, Stops -auto " 14 0
+	DisplayOutMenu "  -snis  " 15 0 0 ;DisplayOut "          Show not installed Services " 14 0
+	Write-Host "`nPress Any key to Close..." -ForegroundColor White -BackgroundColor Black
+	$key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+	Exit
 }
 
 Function ArgsAndVarSet {
