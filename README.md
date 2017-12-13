@@ -113,7 +113,7 @@ This file will <br />
 | -W10      | Downloads My Windows 10 Script                                                 |
 | -Both     | Downloads My Black Viper Script & My Windows 10 Script                         |
 | -Test     | Downloads The Test Version of the Script                                       |
-| -Run      | Run the Script after Downloading (Does ntow work with -both)                   |
+| -Run      | Run the Script after Downloading (Does not work with -both)                    |
 | -Bat      | Download the bat file to run script easyer                                     |
 
 ******
