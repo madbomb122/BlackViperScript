@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.0"
-$Minor_Version = "4"
-$Script_Date = "Dec-11-2017"
+$Minor_Version = "5"
+$Script_Date = "Dec-13-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -286,33 +286,33 @@ Function TOSDisplay {
 	$BorderColor = 14
 	If($Release_Type -ne "Stable") {
 		$BorderColor = 15
-		DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+		DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Caution!!!                     " 13 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu " This script is still being tested.              " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
 	}
 	If($OSType -ne 64) {
 		$BorderColor = 15
-		DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-		DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
+		DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                    WARNING!!                    " 13 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "      These settings are ment for x64 Bit.       " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "              USE AT YOUR OWN RISK.              " 14 0 0 ;DisplayOut " |" $BorderColor 0 1
+		DisplayOut "|                                                   |" $BorderColor 0 1
 	}
-	DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
-	DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOutMenu " |" $BorderColor 0 1 0
-	DisplayOutMenu "|                                                   |" $BorderColor 0 1 0
-	DisplayOutMenu "|---------------------------------------------------|" $BorderColor 0 1 0
+	DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "                  Terms of Use                   " 11 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
+	DisplayOut "|                                                   |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This program comes with ABSOLUTELY NO WARRANTY.  " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "This is free software, and you are welcome to    " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "redistribute it under certain conditions.        " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOut "|                                                   |" $BorderColor 0 1
+	DisplayOutMenu "| " $BorderColor 0 0 ;DisplayOutMenu "Read License file for full Terms.                " 2 0 0 ;DisplayOut " |" $BorderColor 0 1
+	DisplayOut "|                                                   |" $BorderColor 0 1
+	DisplayOut "|---------------------------------------------------|" $BorderColor 0 1
 }
 
 Function TOS {
@@ -1204,9 +1204,62 @@ Function GetArgs {
 				"-sech" { $Script:EditionCheck = "Home" ;Break }
 				"-sxb" { $Script:XboxService = 1 ;Break }
 				{$_ -eq "-secp" -or $_ -eq "-sec"} { $Script:EditionCheck = "Pro" ;Break }
+				{$_ -eq "-help" -or $_ -eq "-h"} { ShowHelp ;Break }
 			}
 		}
 	}
+}
+
+Function ShowHelp {
+	Clear-Host
+	DisplayOut "                  List of Switches                   " 13 0
+	DisplayOut "-----------------------------------------------------" 14 0
+	DisplayOut "" 13 0
+	DisplayOut "-- Basic Switches --" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -atos " 15 0 0 ;DisplayOut "           Accepts ToS " 14 0
+	DisplayOutMenu "  -auto " 15 0 0 ;DisplayOut "           Implies -atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Service Configuration Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -default  " 15 0 0 ;DisplayOut "       Runs the script with Services to Default Configuration " 14 0
+	DisplayOutMenu "  -safe " 15 0 0 ;DisplayOut "           Runs the script with Services to Black Viper's Safe Configuration " 14 0
+	DisplayOutMenu "  -tweaked " 15 0 0 ;DisplayOut "        Runs the script with Services to Black Viper's Tweaked Configuration " 14 0
+	DisplayOutMenu "  -lcsc " 15 0 0 ;DisplayOutMenu "File.csv " 11 0 0 ;DisplayOutMenu "  Loads Custom Service Configuration, " 14 0 0 ;DisplayOutMenu "File.csv" 11 0 0 ;DisplayOut " = Name of your backup/custom file " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Service Choice Switches--" 2 0
+	DisplayOutMenu " Switch "  15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -all " 15 0 0 ;DisplayOut "            Every windows services will change " 14 0
+	DisplayOutMenu "  -min " 15 0 0 ;DisplayOut "            Just the services different from the default to safe/tweaked list " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Update Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -usc  " 15 0 0 ;DisplayOut "           Checks for Update to Script file before running " 14 0
+	DisplayOutMenu "  -use  " 15 0 0 ;DisplayOut "           Checks for Update to Service file before running " 14 0
+	DisplayOutMenu "  -sic  " 15 0 0 ;DisplayOut "           Skips Internet Check, if you can't ping GitHub.com for some reason " 14 0
+	DisplayOut "" 13 0	
+	DisplayOut "--Log Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -log " 15 0 0 ;DisplayOut "            Makes a log file Script.log " 14 0
+	DisplayOutMenu "  -baf " 15 0 0 ;DisplayOut "            Log File of Services Configuration Before and After the script " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--AT YOUR OWN RISK Switches--" 13 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -sec  " 15 0 0 ;DisplayOut "           Skips Edition Check by Setting Edition as Pro " 14 0
+	DisplayOutMenu "  -secp  " 15 0 0 ;DisplayOut "          ^Same as Above" 14 0
+	DisplayOutMenu "  -sech  " 15 0 0 ;DisplayOut "          Skips Edition Check by Setting Edition as Home" 14 0
+	DisplayOutMenu "  -sbc  " 15 0 0 ;DisplayOut "           Skips Build Check " 14 0
+	DisplayOut "" 13 0
+	DisplayOut "--Misc Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -sxb  " 15 0 0 ;DisplayOut "           Skips changes to all XBox Services " 14 0
+	DisplayOutMenu "  -bcsc  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration " 14 0
+	DisplayOutMenu "  -dry  " 15 0 0 ;DisplayOut "           Runs the script and shows what services will be changed " 14 0
+	DisplayOutMenu "  -diag  " 15 0 0 ;DisplayOut "          Shows diagnostic information, Stops -auto " 14 0
+	DisplayOutMenu "  -snis  " 15 0 0 ;DisplayOut "          Show not installed Services " 14 0
+	Write-Host "`nPress Any key to Close..." -ForegroundColor White -BackgroundColor Black
+	$key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+	Exit
 }
 
 Function ArgsAndVarSet {
