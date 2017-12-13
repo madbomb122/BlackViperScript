@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.0.4 (12-11-2017)
+4.0.5 (12-13-2017)
 
 New Option and Switch to Skip All Xbox Service
  Switch         Description of Switch
@@ -11,6 +11,8 @@ Skip Xbox Service option (if checked) unchecks Xbox Services in Service List whe
 
 Improved how resize works/shows (size of gui items wont change still)
 Removed the yellow "Dont Resize past this area" boxes
+
+Added switch "-h" to show a list of switches
 
 -----------------------------------------------------------------------------------
 4.0.0 (11-30-2017)
