@@ -76,7 +76,7 @@ Use one of the following Methods you can
 | -min      | Just the services different from the default to safe/tweaked list              |   |
 | -bcsc     | Backup Current Service Configuration                      | Filename will be `COMPUTERNAME-Service-Backup.csv`   |
 | -lcsc File.csv | Loads Custom Service Configuration                             | `File.csv` Name of backup/custom file |
-| -sec      | Skips Edition Check (Home/Pro)                                                 | **USE AT YOUR OWN RISK**         |
+| -sec      | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**         |
 | -secp     | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**         |
 | -sech     | Skips Edition Check (Home/Pro), Sets edition as Home                           | **USE AT YOUR OWN RISK**         |
 | -sbc      | Skips Build Check (Creator's Update)                                           | **USE AT YOUR OWN RISK**         |
