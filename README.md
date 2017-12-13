@@ -114,7 +114,7 @@ This file will <br />
 | -Both     | Downloads My Black Viper Script & My Windows 10 Script                         |
 | -Test     | Downloads The Test Version of the Script                                       |
 | -Run      | Run the Script after Downloading (Does not work with -both)                    |
-| -Bat      | Download the bat file to run script easyer                                     |
+| -Bat      | Download the bat file to run script easier                                     |
 
 ******
 
