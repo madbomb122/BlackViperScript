@@ -1,7 +1,7 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)<br />
 
 **Current Version** <br />
-**Script:** `4.0.3` (December 07, 2017) <br />
+**Script:** `4.0.5` (December 13, 2017) <br />
 **Service:** `3.0` (November 29, 2017) -Fall Creator's Update Version <br />
 
 # Description
@@ -90,6 +90,7 @@ Use one of the following Methods you can
 | -baf      | File of all the services before and after the script                 | `Services-Before.log` and `Services-After.log`    |
 | -dry      | Runs script and shows what will be changed if ran normaly                     | **No Services are changes** |
 | -devl     | Makes a log file with various Diagnostic information                          | **No Services are changes** |
+| -help     | Lists of all the switches                      | Alt `-h`   |
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv` <br />
