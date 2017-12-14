@@ -1,5 +1,6 @@
 @ECHO OFF
-:: Last Updated on June 21th, 2017
+:: Version 1.1
+:: December 14th, 2017
 
 :: Instructions
 :: Bat, Script MUST be in same Folder
@@ -138,5 +139,5 @@ If /i %Log_Before_After%==yes Set Run_Option=!Run_Option! -baf
 If /i %Log%==yes Set Run_Option=!Run_Option! -log %LogFile%
 
 echo "Running !Script_File!"
-PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!Script_Path! !Run_Option!"' -Verb RunAs}";
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '!Script_Path!' !Run_Option!" -Verb RunAs
 ENDLOCAL DISABLEDELAYEDEXPANSION
