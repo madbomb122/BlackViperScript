@@ -1,6 +1,6 @@
 @Echo off
-:: Version 1.2.5
-:: September 24th, 2017
+:: Version 1.3.0
+:: December 14th, 2017
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
@@ -237,7 +237,6 @@ goto Next
 	If !LocalBaseVerW10! lss !WebBaseVerW10! Set DownloadW10=yes
 	If !LocalBaseVerW10!==!WebBaseVerW10! If !LocalSubVerW10! lss !WebSubVerW10! Set DownloadW10=yes
 	If %DownloadW10%==yes (
-		::Echo Windows 10 Script is Test Version
 		Echo Your Windows 10 Script V.!LocalBaseVerW10!.!LocalSubVerW10!
 		Echo Latest Windows 10 Script V.!WebBaseVerW10!.!WebSubVerW10!
 		Echo.
@@ -272,14 +271,14 @@ goto Next
 		goto W10LocalVer
 	)
 	If %UpdateArg%==yes (
-		powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!FilePath! !MiscArg!"' -Verb RunAs}"
+		PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '!FilePath!' !MiscArg!" -Verb RunAs
 		Exit
 	)
 	If %RunArg%==yes (
 		If %DownloadBV-W10%==done (
 			Echo Cannot do a -Run with -Both
 		) else (
-			powershell -NoProfile -ExecutionPolicy Bypass -Command "& {Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File "!FilePath!"' -Verb RunAs}"
+			PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '!FilePath!'" -Verb RunAs
 		)
 		Exit
 	)
