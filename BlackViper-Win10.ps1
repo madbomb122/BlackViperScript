@@ -1301,7 +1301,7 @@ Function ArgsAndVarSet {
 		Error_Top_Display
 		$Script:ErrorDi = "Tweaked + Laptop (Not supported ATM)"
 		If($Automated -eq 1){ LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog }
-		LeftLineLog ;DisplayOutMenu "Laptops can't use Tweaked option ATM.             " 2 0 0 1 ;RightLineLog
+		LeftLineLog ;DisplayOutMenu "Laptops can't use Tweaked option ATM.            " 2 0 0 1 ;RightLineLog
 		Error_Bottom
 	} ElseIf($BV_ArgUsed -In 2..3) {
 		$Script:RunScript = 1
