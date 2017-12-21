@@ -1301,7 +1301,7 @@ Function ArgsAndVarSet {
 		Error_Top_Display
 		$Script:ErrorDi = "Tweaked + Laptop (Not supported ATM)"
 		If($Automated -eq 1){ LeftLineLog ;DisplayOutMenu "Script is set to Automated and...                " 2 0 0 1 ;RightLineLog }
-		LeftLineLog ;DisplayOutMenu "Laptops can't use Twaked option ATM.             " 2 0 0 1 ;RightLineLog
+		LeftLineLog ;DisplayOutMenu "Laptops can't use Tweaked option ATM.            " 2 0 0 1 ;RightLineLog
 		Error_Bottom
 	} ElseIf($BV_ArgUsed -In 2..3) {
 		$Script:RunScript = 1
@@ -1336,35 +1336,35 @@ $Script:AcceptToS = 0           #0 = See ToS, Anything else = Accept ToS
 $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script, 1 = Close on
 # Automated = 1, Implies that you accept the "ToS"
 
-$Script:BackupServiceConfig = 0 #0 = Dont backup Your Current Service Configuration before services are changes
+$Script:BackupServiceConfig = 0 #0 = Don’t backup Your Current Service Configuration before services are changes
                                 #1 = Backup Your Current Service Configuration before services are changes
 # Will be script's directory named "(ComputerName)-Service-Backup.csv"
 
-$Script:DryRun = 0              #0 = Runs script normaly, 1 = Runs script but shows what will be changed
+$Script:DryRun = 0              #0 = Runs script normally, 1 = Runs script but shows what will be changed
 
-$Script:ScriptLog = 0           #0 = Dont make a log file, 1 = Make a log file
+$Script:ScriptLog = 0           #0 = Don’t make a log file, 1 = Make a log file
 # Will be script's directory named `Script.log` (default)
 
 $Script:LogName = "Script.log"  #Name of log file (you can change it)
 
-$Script:LogBeforeAfter = 0      #0 = Dont make a file of all the services before and after the script
+$Script:LogBeforeAfter = 0      #0 = Don’t make a file of all the services before and after the script
                                 #1 = Make a file of all the services before and after the script
 # Will be script's directory named `Services-Before.log` and `Services-After.log`
 
 $Script:ScriptVerCheck = 0      #0 = Skip Check for update of Script File, 1 = Check for update of Script File
 # Note: If found will Auto download and runs that, File name will be "BlackViper-Win10-Ver.(version#).ps1"
 
-$Script:BatUpdateScriptFileName = 1 #0-Dont ->, 1-Update Bat file with new script filename (if update is found)
+$Script:BatUpdateScriptFileName = 1 #0-Don’t ->, 1-Update Bat file with new script filename (if update is found)
 
 $Script:ServiceVerCheck = 0     #0 = Skip Check for update of Service File, 1 = Check for update of Service File
 # Note: If found will Auto download will be used
 
-$Script:ShowAlreadySet = 1      #0 = Dont Show Already set Services, 1 = Show Already set Services
+$Script:ShowAlreadySet = 1      #0 = Don’t Show Already set Services, 1 = Show Already set Services
 
-$Script:ShowNonInstalled = 0    #0 = Dont Show Services not present, 1 = Show Services not present
+$Script:ShowNonInstalled = 0    #0 = Don’t Show Services not present, 1 = Show Services not present
 
 $Script:InternetCheck = 0       #0 = Checks if you have internet, 1 = Bypass check if your pings are blocked
-# Use if Pings are Blocked or cant ping GitHub.com
+# Use if Pings are Blocked or can’t ping GitHub.com
 
 $Script:EditionCheck = 0        #0 = Check if Home or Pro Edition
                                 #"Pro" = Set Edition as Pro (Needs "s)
