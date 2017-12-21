@@ -113,7 +113,7 @@ goto Next
 	Set LocalBaseVerBV=0
 	Set LocalSubVerBV=0
 	Set BVTest=no
-	Echo Checking if Update is aviable for BlackViper Script...
+	Echo Checking if Update is available for BlackViper Script...
 	For /F "tokens=1 delims=$" %%G IN (BlackViper-Win10.ps1) DO (
 		Set /a BVCount=!BVCount!+1
 		If !BVCount!==12 (
