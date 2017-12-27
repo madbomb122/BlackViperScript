@@ -27,12 +27,12 @@ PPS. My Thanks goes out to all that have helped in any way
 <br />
 
 **_Need Files_** <br />
-[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `66.4 KB`<br />
+[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `69.6 KB`<br />
 [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `6.86 KB` (Not the same as the one on BlackViper's Website)<br />
 
 **Recommended Files** <br />
-[Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `12.4 KB`<br /> 
-[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `4.85 KB`<br /> 
+[Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `11.7 KB`<br /> 
+[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `4.77 KB`<br /> 
 [README.md](https://github.com/madbomb122/BlackViperScript/raw/master/README.md) (This Readme) <br />
 
 **You can do a `save as` on the filenames above to save them to you computer, you cannot do a `save as` on github's file list**
