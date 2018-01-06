@@ -183,7 +183,7 @@ This file will <br />
 
 **Q:** Can I add a service to be changed or stop one from changing? <br />
 **A:** Yes, to add/remove edit the file `BlackViper.csv` or use the gui and uncheck the services you dont want changed <br />
----to remove a service remove the line or put something to change service name, other than symbols (# is fime) <br />
+---to remove a service remove the line or put something to change service name, other than symbols (# is fine) <br />
 ---to add put it in the proper format <br />
 **Note:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)` <br />
 
