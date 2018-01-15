@@ -1,5 +1,5 @@
 # Currently Testing (Read Notes)
-Nothing ATM
+Ability to save configuration as a registry file (still a work in progress)
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
