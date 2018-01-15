@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.0.5 (12-13-2017)
+4.0.6 (01-14-2017)
 
 New Option and Switch to Skip All Xbox Service
  Switch         Description of Switch
@@ -13,6 +13,10 @@ Improved how resize works/shows (size of gui items wont change still)
 Removed the yellow "Dont Resize past this area" boxes
 
 Added switch "-h" to show a list of switches
+
+Fixed a Typo/Grammer (thanks to lukemurraynz)
+
+Added Ability to save Configuration as Registry File
 
 -----------------------------------------------------------------------------------
 4.0.0 (11-30-2017)
@@ -43,7 +47,7 @@ Minor changes in script
 3.7.0 (08-26-2017)
 
 Slight Improvement of Gui load speed
-Fixed a Typo  (thanks to Prettyclaire82)
+Fixed a Typo (thanks to Prettyclaire82)
 
 Fixed a bug if you load a custom service file then use the Services List tab then
 load another custom service file, the service list tab wont refresh
