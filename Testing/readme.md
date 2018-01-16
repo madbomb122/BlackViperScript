@@ -1,5 +1,5 @@
 # Currently Testing (Read Notes)
-Ability to save configuration as a registry file (basic done, need testing and custom selection)
+Nothing ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
