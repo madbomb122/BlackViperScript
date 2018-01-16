@@ -9,9 +9,9 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = "4.0"
-$Minor_Version = "6"
-$Script_Date = "Jan-14-2017"
+$Script_Version = "4.1"
+$Minor_Version = "0"
+$Script_Date = "Jan-16-2017"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -364,15 +364,18 @@ Function OpenSaveDiaglog([Int]$SorO) {
 	If($SorO -eq 0){ $SOFileDialog = New-Object System.Windows.Forms.OpenFileDialog } Else{ $SOFileDialog = New-Object System.Windows.Forms.SaveFileDialog }
 	$SOFileDialog.InitialDirectory = $filebase
 	If($SorO -ne 2){ $SOFileDialog.Filter = "CSV (*.csv)| *.csv" } Else{ $SOFileDialog.Filter = "Registration File (*.reg)| *.reg" }
-	$SOFileDialog.ShowDialog() | Out-Null
-	If($SorO -eq 0){
-		$Script:ServiceConfigFile = $SOFileDialog.filename
-		$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
-		RunDisableCheck
-	} ElseIf($SorO -eq 1){
-		Save_Service $SOFileDialog.filename
-	} ElseIf($SorO -eq 2){
-		RegistryServiceFile $SOFileDialog.filename
+	$SOFileDialog.ShowDialog()
+	$SOFPath = $SOFileDialog.filename
+	If($SOFPath){
+		If($SorO -eq 0){
+			$Script:ServiceConfigFile = $SOFPath
+			$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
+			RunDisableCheck
+		} ElseIf($SorO -eq 1){
+			Save_Service $SOFPath
+		} ElseIf($SorO -eq 2){
+			RegistryServiceFile $SOFPath
+		}
 	}
 }
 
@@ -891,18 +894,18 @@ Function ServiceSet([String]$BVService) {
 }
 
 Function RegistryServiceFile([String]$TempFP) {
+	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
 	Write-Output "Windows Registry Editor Version 5.00" | Out-File -Filepath $TempFP
 	Write-Output "" | Out-File -Filepath $TempFP -Append
 
-	ForEach($item In $csv) {
-		$ServiceTypeNum = $($item.$BVService)
-		$ServiceName = $($item.ServiceName)
+	ForEach($item In $ServiceCBList) {
+		$ServiceTypeNum = $item.StartType
+		$ServiceName = $item.ServiceName
 		If($ServiceTypeNum -ne 0) {
 			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			If(!($ServiceCurrType -eq "Xbox")) {
-				$Num = $ServicesRegTypeList[$ServiceTypeNum]
-				$Num = '"Start"=dword:0000000' + $Num
+				$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
 				Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $TempFP -Append
 				Write-Output "$Num" | Out-File -Filepath $TempFP -Append
 				If($ServiceTypeNum -eq 4) { Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $TempFP -Append }
@@ -910,6 +913,7 @@ Function RegistryServiceFile([String]$TempFP) {
 			}
 		}
 	}
+	[Windows.Forms.MessageBox]::Show("Registry File saved as '$TempFP'","File Saved", 'OK')
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
@@ -1083,7 +1087,7 @@ Function PreScriptCheck {
 		} Else {
 			$Script:ErrorDi = "No Internet"
 			Error_Top_Display
-			LeftLineLog ;DisplayOutMenu " Update Failed Because no internet was detected. " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " Update Failed Because no Internet was detected. " 2 0 0 1 ;RightLineLog
 			MenuBlankLineLog
 			LeftLineLog ;DisplayOutMenu " Tested by pinging GitHub.com                    " 2 0 0 1 ;RightLineLog
 			MenuBlankLineLog
