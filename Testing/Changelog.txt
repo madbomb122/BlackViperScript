@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.0.6 (01-14-2017)
+4.1.0 (01-16-2017)
 
 New Option and Switch to Skip All Xbox Service
  Switch         Description of Switch
@@ -16,7 +16,8 @@ Added switch "-h" to show a list of switches
 
 Fixed a Typo/Grammer (thanks to lukemurraynz)
 
-Added Ability to save Configuration as Registry File
+Added Ability to Save Configuration as Registry File
+^Save the Black Viper Setting for what you have checked
 
 -----------------------------------------------------------------------------------
 4.0.0 (11-30-2017)
