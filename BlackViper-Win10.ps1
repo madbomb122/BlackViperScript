@@ -9,10 +9,11 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = "4.0"
-$Minor_Version = "5"
-$Script_Date = "Dec-13-2017"
-$Release_Type = "Stable"
+$Script_Version = "4.1"
+$Minor_Version = "0"
+$Script_Date = "Jan-16-2017"
+$Release_Type = "Testing"
+#$Release_Type = "Stable"
 ##########
 
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -169,6 +170,13 @@ $ServicesTypeList = @(
 'Manual',   #2 -Manual
 'Automatic',#3 -Automatic
 'Automatic')#4 -Automatic (Delayed Start)
+
+$ServicesRegTypeList = @(
+'',  #0 -None
+'4', #1 -Disable
+'3', #2 -Manual
+'2', #3 -Automatic
+'2') #4 -Automatic (Delayed Start)
 
 $XboxServiceArr = @("xbgm","XblAuthManager", "XblGameSave", "XboxNetApiSvc")
 $Script:Black_Viper = 0
@@ -355,14 +363,19 @@ Function Update-Window {
 Function OpenSaveDiaglog([Int]$SorO) {
 	If($SorO -eq 0){ $SOFileDialog = New-Object System.Windows.Forms.OpenFileDialog } Else{ $SOFileDialog = New-Object System.Windows.Forms.SaveFileDialog }
 	$SOFileDialog.InitialDirectory = $filebase
-	$SOFileDialog.Filter = "CSV (*.csv)| *.csv"
-	$SOFileDialog.ShowDialog() | Out-Null
-	If($SorO -eq 0){
-		$Script:ServiceConfigFile = $SOFileDialog.filename
-		$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
-		RunDisableCheck
-	} Else {
-		Save_Service $SOFileDialog.filename
+	If($SorO -ne 2){ $SOFileDialog.Filter = "CSV (*.csv)| *.csv" } Else{ $SOFileDialog.Filter = "Registration File (*.reg)| *.reg" }
+	$SOFileDialog.ShowDialog()
+	$SOFPath = $SOFileDialog.filename
+	If($SOFPath){
+		If($SorO -eq 0){
+			$Script:ServiceConfigFile = $SOFPath
+			$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
+			RunDisableCheck
+		} ElseIf($SorO -eq 1){
+			Save_Service $SOFPath
+		} ElseIf($SorO -eq 2){
+			RegistryServiceFile $SOFPath
+		}
 	}
 }
 
@@ -458,7 +471,8 @@ Function GuiStart {
      <DataGridTextColumn Header="Black Viper" Width="95"  Binding="{Binding BVType}"/>
     </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
-   <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="153,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
+   <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="103,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
+   <Button Name="SaveRegButton" Content="Save Registry" HorizontalAlignment="Left" Margin="198,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
    <Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="3,1,0,0" VerticalAlignment="Top" Width="76"/>
    <Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
    <Label Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,15,0,0" Visibility="Hidden"/>
@@ -532,6 +546,7 @@ Function GuiStart {
 	$WPF_CustomBVCB.Add_UnChecked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Current" })
 	$WPF_btnOpenFile.Add_Click({ OpenSaveDiaglog 0 })
 	$WPF_SaveCustomSrvButton.Add_Click({ OpenSaveDiaglog 1 })
+	$WPF_SaveRegButton.Add_Click({ OpenSaveDiaglog 2 })
 	$WPF_EMail.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
 	$WPF_BuildCheck_CB.Add_Click({ RunDisableCheck })
 	$WPF_EditionCheck_CB.Add_Click({ RunDisableCheck })
@@ -595,9 +610,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	If($IsLaptop -eq "-Lap"){ $WPF_ServiceConfig.Items.RemoveAt(2) }
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
-	ForEach($Var In $VarList){
-		If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False }
-	}
+	ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
 
 	If($WinEdition -eq "Home" -or $EditionCheck -eq "Home"){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
 	If($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home"){ $WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheck_CB.IsChecked = $False }
@@ -627,7 +640,6 @@ Function RunDisableCheck {
 
 	$EBFailCount = 0
 	If(!($EditionCheck -eq "Home" -or $EditionCheck -eq "Pro" -or $WinSkuList -Contains $WinSku)){ $EBFailCount++ }
-	#If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1){ $EBFailCount += 2 }
 	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1){ $EBFailCount += 2 }
 
 	If($EBFailCount -ne 0) {
@@ -730,6 +742,7 @@ Function GenerateServices {
 		$WPF_ServiceNote.Visibility = 'Visible'
 		$WPF_CustomBVCB.Visibility = 'Visible'
 		$WPF_SaveCustomSrvButton.Visibility = 'Visible'
+		$WPF_SaveRegButton.Visibility = 'Visible'
 		$WPF_LoadServicesButton.content = "Reload"
 		$Script:ServicesGenerated = $True
 	}
@@ -880,6 +893,29 @@ Function ServiceSet([String]$BVService) {
 	AutomatedExitCheck 1
 }
 
+Function RegistryServiceFile([String]$TempFP) {
+	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
+	Write-Output "Windows Registry Editor Version 5.00" | Out-File -Filepath $TempFP
+	Write-Output "" | Out-File -Filepath $TempFP -Append
+
+	ForEach($item In $ServiceCBList) {
+		$ServiceTypeNum = $item.StartType
+		$ServiceName = $item.ServiceName
+		If($ServiceTypeNum -ne 0) {
+			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
+			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+			If(!($ServiceCurrType -eq "Xbox")) {
+				$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
+				Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $TempFP -Append
+				Write-Output "$Num" | Out-File -Filepath $TempFP -Append
+				If($ServiceTypeNum -eq 4) { Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $TempFP -Append }
+				Write-Output "" | Out-File -Filepath $TempFP -Append
+			}
+		}
+	}
+	[Windows.Forms.MessageBox]::Show("Registry File saved as '$TempFP'","File Saved", 'OK')
+}
+
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 	If($CurrServices.Name -Contains $S_Name) {
 		If($XboxService -eq 1 -and $XboxServiceArr -Contains $S_Name) { Return "Xbox" }
@@ -952,7 +988,6 @@ Function PreScriptCheck {
 		$EBCount++
 	}
 
-	#If($BuildVer -lt $MinBuild -And $BuildCheck -ne 1) {
 	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1) {
 		If($EditionCheck -eq "Fail"){ $Script:ErrorDi += " & Build" } Else{ $Script:ErrorDi = "Build" }
 		$Script:ErrorDi += " Check Failed"
@@ -975,10 +1010,12 @@ Function PreScriptCheck {
 			LeftLineLog ;DisplayOutMenu " You are using " 2 0 0 1;DisplayOutMenu ("$FullWinEdition" +(" "*(34-$FullWinEdition.Length))) 15 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu " SKU # " 2 0 0 1;DisplayOutMenu ("$WinSku" +(" "*(42-$WinSku.Length))) 15 0 0 1 ;RightLineLog
 			MenuBlankLineLog
-			LeftLineLog ;DisplayOutMenu " If you are using Home or Pro, Please contact me " 2 0 0 1 ;RightLineLog
-			LeftLineLog ;DisplayOutMenu " with what Edition you are using and what it says" 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " If you are using Home or Pro...                  " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " Please contact me with                           " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " 1. What Edition you are using                    " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " 2. What Edition it says you are using            " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " 3. The SKU # listed above                        " 2 0 0 1 ;RightLineLog
 			MenuBlankLineLog
-			LeftLineLog ;DisplayOutMenu " Windows 10 Home and Pro Only                    " 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "EditionCheck" 15 0 0 1 ;DisplayOutMenu " in script file          " 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu " 2. Change " 2 0 0 1 ;DisplayOutMenu "Skip_EditionCheck" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=yes" 15 0 0 1 ;DisplayOutMenu " in bat file" 2 0 0 1 ;RightLineLog
@@ -1050,7 +1087,7 @@ Function PreScriptCheck {
 		} Else {
 			$Script:ErrorDi = "No Internet"
 			Error_Top_Display
-			LeftLineLog ;DisplayOutMenu " Update Failed Because no internet was detected. " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " Update Failed Because no Internet was detected. " 2 0 0 1 ;RightLineLog
 			MenuBlankLineLog
 			LeftLineLog ;DisplayOutMenu " Tested by pinging GitHub.com                    " 2 0 0 1 ;RightLineLog
 			MenuBlankLineLog
@@ -1257,7 +1294,7 @@ Function ShowHelp {
 	DisplayOutMenu "  -diag  " 15 0 0 ;DisplayOut "          Shows diagnostic information, Stops -auto " 14 0
 	DisplayOutMenu "  -snis  " 15 0 0 ;DisplayOut "          Show not installed Services " 14 0
 	Write-Host "`nPress Any key to Close..." -ForegroundColor White -BackgroundColor Black
-	$key = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC")
+	$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC") | out-null
 	Exit
 }
 
@@ -1336,35 +1373,35 @@ $Script:AcceptToS = 0           #0 = See ToS, Anything else = Accept ToS
 $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of Script, 1 = Close on
 # Automated = 1, Implies that you accept the "ToS"
 
-$Script:BackupServiceConfig = 0 #0 = Don’t backup Your Current Service Configuration before services are changes
+$Script:BackupServiceConfig = 0 #0 = Don't backup Your Current Service Configuration before services are changes
                                 #1 = Backup Your Current Service Configuration before services are changes
 # Will be script's directory named "(ComputerName)-Service-Backup.csv"
 
 $Script:DryRun = 0              #0 = Runs script normally, 1 = Runs script but shows what will be changed
 
-$Script:ScriptLog = 0           #0 = Don’t make a log file, 1 = Make a log file
+$Script:ScriptLog = 0           #0 = Don't make a log file, 1 = Make a log file
 # Will be script's directory named `Script.log` (default)
 
 $Script:LogName = "Script.log"  #Name of log file (you can change it)
 
-$Script:LogBeforeAfter = 0      #0 = Don’t make a file of all the services before and after the script
+$Script:LogBeforeAfter = 0      #0 = Don't make a file of all the services before and after the script
                                 #1 = Make a file of all the services before and after the script
 # Will be script's directory named `Services-Before.log` and `Services-After.log`
 
 $Script:ScriptVerCheck = 0      #0 = Skip Check for update of Script File, 1 = Check for update of Script File
 # Note: If found will Auto download and runs that, File name will be "BlackViper-Win10-Ver.(version#).ps1"
 
-$Script:BatUpdateScriptFileName = 1 #0-Don’t ->, 1-Update Bat file with new script filename (if update is found)
+$Script:BatUpdateScriptFileName = 1 #0-Don't ->, 1-Update Bat file with new script filename (if update is found)
 
 $Script:ServiceVerCheck = 0     #0 = Skip Check for update of Service File, 1 = Check for update of Service File
 # Note: If found will Auto download will be used
 
-$Script:ShowAlreadySet = 1      #0 = Don’t Show Already set Services, 1 = Show Already set Services
+$Script:ShowAlreadySet = 1      #0 = Don't Show Already set Services, 1 = Show Already set Services
 
-$Script:ShowNonInstalled = 0    #0 = Don’t Show Services not present, 1 = Show Services not present
+$Script:ShowNonInstalled = 0    #0 = Don't Show Services not present, 1 = Show Services not present
 
 $Script:InternetCheck = 0       #0 = Checks if you have internet, 1 = Bypass check if your pings are blocked
-# Use if Pings are Blocked or can’t ping GitHub.com
+# Use if Pings are Blocked or can't ping GitHub.com
 
 $Script:EditionCheck = 0        #0 = Check if Home or Pro Edition
                                 #"Pro" = Set Edition as Pro (Needs "s)
