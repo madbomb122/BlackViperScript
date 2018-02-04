@@ -1,5 +1,6 @@
 # Currently Testing (Read Notes)
-Nothing ATM
+Ability to save backup of service configuration as ".reg" instead of the script's ".csv" (or you can save as both)
+--Havn't tested it much yet, so be warned it may not work right
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
