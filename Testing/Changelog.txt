@@ -1,4 +1,10 @@
 -----------------------------------------------------------------------------------
+4.1.1 (02-04-2018)
+
+Ability to backup current service configuration as a ".reg" file instead of ".csv"
+ ^or save as both type
+
+-----------------------------------------------------------------------------------
 4.1.0 (01-16-2018)
 
 New Option and Switch to Skip All Xbox Service
