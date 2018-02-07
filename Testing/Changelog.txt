@@ -1,8 +1,13 @@
 -----------------------------------------------------------------------------------
-4.1.1 (02-04-2018)
+4.1.2 (02-07-2018)
 
 Ability to backup current service configuration as a ".reg" file instead of ".csv"
  ^or save as both type
+
+Fixed a bug that made the run button disabled when loading a custom service file
+Fixed a bug in service list tab that list black viper when a custom service is selected
+Added message at end of script if you did a service configuration backup
+Added a thank you and donate message at end of script
 
 -----------------------------------------------------------------------------------
 4.1.0 (01-16-2018)
