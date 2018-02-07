@@ -10,7 +10,7 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.1"
-$Minor_Version = "1"
+$Minor_Version = "2"
 $Script_Date = "Feb-04-2018"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
@@ -666,16 +666,20 @@ Function RunDisableCheck {
 		}
 		$WPF_RunScriptButton.IsEnabled = $False
 		$Buttontxt += " Check"
+		$WPF_dataGrid.Columns[4].Header = "Black Viper"
 	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
 		If(!($ServiceConfigFile) -or !(Test-Path $ServiceConfigFile -PathType Leaf)) { 
 			$WPF_RunScriptButton.IsEnabled = $False
-			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
 			$WPF_LoadServicesButton.IsEnabled = $False
+			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
 		} Else {
 			$WPF_LoadServicesButton.IsEnabled = $True
-			$Buttontxt = "Run Script with Custom Service List" 
+			$WPF_RunScriptButton.IsEnabled = $True
+			$Buttontxt = "Run Script with Custom Service List"
 		}
+		$WPF_dataGrid.Columns[4].Header = "Custom Service"
 	} Else {
+		$WPF_dataGrid.Columns[4].Header = "Black Viper"
 		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
 	}
@@ -859,22 +863,51 @@ Function Save_Service([String]$SavePath) {
 	If($SavePath -ne $null){ [Windows.Forms.MessageBox]::Show("File saved as '$SavePath'","File Saved", 'OK') }
 }
 
+Function Save_ServiceBackup {
+	$ServiceSavePath = $filebase + $Env:computername
+	$SaveService = @()
+	$ServiceSavePath += "-Service-Backup.csv"
+	If($AllService -eq $null) { $AllService = Get-Service | Select-Object Name, StartType }
+
+	ForEach($Service In $AllService) {
+		$ServiceName = $Service.Name
+		If(!($Skip_Services -Contains $ServiceName)) {
+			Switch("$($Service.StartType)") {
+				"Disabled" { $StartType = 1 ;Break }
+				"Manual" { $StartType = 2 ;Break }
+				"Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart ;If($exists -eq 1){ $StartType = 4 } Else{ $StartType = 3 } ;Break }
+				Default { $StartType = "$($Service.StartType)" ;Break }
+			}
+			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
+			$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $StartType }
+		}
+	}
+	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
+}
+
 Function RegistryServiceFileBackup {
 	$SavePath = $filebase + $Env:computername
-	If($AllService -eq $null) { 
-		$SavePath += "-Service-Backup.reg"
-		$AllService = Get-Service | Select-Object Name, StartType
-	}
+	$SavePath += "-Service-Backup.reg"
+	If($AllService -eq $null) { $AllService = Get-Service | Select-Object Name, StartType }
+
 	Write-Output "Windows Registry Editor Version 5.00" | Out-File -Filepath $SavePath
 	Write-Output "" | Out-File -Filepath $SavePath -Append
 	ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
 		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+		Switch("$($Service.StartType)") {
+			"Disabled" { $ServiceTypeNum = 4 ;Break }
+			"Manual" { $ServiceTypeNum = 3 ;Break }
+			"Automatic" { $ServiceTypeNum = 2 ;Break }
+		}
 		If(!($Skip_Services -Contains $ServiceName)) {
-			$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
+			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
 			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $SavePath -Append
 			Write-Output "$Num" | Out-File -Filepath $SavePath -Append
-			If($ServiceTypeNum -eq 4) { Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $SavePath -Append }
+			If($ServiceTypeNum -eq 2) {
+				$exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart 
+				If($exists -eq 1){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $SavePath -Append }
+			}
 			Write-Output "" | Out-File -Filepath $SavePath -Append
 		}
 	}
@@ -924,6 +957,11 @@ Function ServiceSet([String]$BVService) {
 	}
 	DisplayOut "-------------------------------------" 14 0
 	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 ;ThanksDonate } Else{ DisplayOut "List of Service Done..." 14 0 }
+	If($BackupServiceConfig -eq 1){
+		If($BackupServiceType -eq 1){ DisplayOut "Backup of Services Saved as CSV file in script directory." 14 0 }
+		ElseIf($BackupServiceType -eq 0){ DisplayOut "Backup of Services Saved as REG file in script directory." 14 0 }
+		ElseIf($BackupServiceType -eq 2){ DisplayOut "Backup of Services Saved as CSV and REG file in script directory." 14 0 }
+	}
 	ServiceBAfun "Services-After"
 	AutomatedExitCheck 1
 }
@@ -1078,9 +1116,9 @@ Function PreScriptCheck {
 		AutomatedExitCheck 1
 	}
 	If($BackupServiceConfig -eq 1){
-		If($BackupServiceType -eq 1){ Save_Service }
+		If($BackupServiceType -eq 1){ Save_ServiceBackup }
 		ElseIf($BackupServiceType -eq 0){ RegistryServiceFileBackup }
-		ElseIf($BackupServiceType -eq 2){ Save_Service ;RegistryServiceFileBackup }
+		ElseIf($BackupServiceType -eq 2){ Save_ServiceBackup ;RegistryServiceFileBackup }
 	}
 	If($LoadServiceConfig -eq 1) {
 		$ServiceFilePath = $ServiceConfigFile
@@ -1411,7 +1449,7 @@ $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of
 # Automated = 1, Implies that you accept the "ToS"
 
 $Script:BackupServiceConfig = 0 #0 = Don't backup Your Current Service Configuration before services are changes
-                                #1 = Backup Your Current Service Configuration before services are changes
+                                #1 = Backup Your Current Service Configuration before services are changes (Configure type bellow)
 $Script:BackupServiceType = 1
 # 0 = ".reg" file that you can change w/o using script
 # 1 = ".csv' file type that can be imported into script
