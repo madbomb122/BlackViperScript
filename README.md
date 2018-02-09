@@ -1,7 +1,7 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)<br />
 
 **Current Version** <br />
-**Script:** `4.1.0` (January 16, 2018) <br />
+**Script:** `4.1.3` (January 16, 2018) <br />
 **Service:** `3.0` (November 29, 2017) -Fall Creator's Update Version <br />
 
 # Description
@@ -74,7 +74,9 @@ Use one of the following Methods you can
 | -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           |   |
 | -all      | Every windows services will change                                             |   |
 | -min      | Just the services different from the default to safe/tweaked list              |   |
-| -bcsc     | Backup Current Service Configuration                      | Filename will be `COMPUTERNAME-Service-Backup.csv`   |
+| -bscc     | Backup Current Service Configuration (CSV file)                   | Filename will be `COMPUTERNAME-Service-Backup.csv`   |
+| -bscr     | Backup Current Service Configuration (REG file)                   | Filename will be `COMPUTERNAME-Service-Backup.reg`   |
+| -bscB     | Backup Current Service Configuration (CSV and REG file)      | Filename will be `COMPUTERNAME-Service-Backup.FILETYPE`   |
 | -lcsc File.csv | Loads Custom Service Configuration                             | `File.csv` Name of backup/custom file |
 | -sec      | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**         |
 | -secp     | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**         |
