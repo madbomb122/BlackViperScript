@@ -18,7 +18,7 @@ PPS. My Thanks goes out to all that have helped in any way
 
 # Requirements (Make sure to LOOK at this)
 
-|            | Recommended Requirements         | AT YOURN OWN RISK* (See Note Bellow) |
+|            | Recommended Requirements         | AT YOURN OWN RISK* (See Note Below) |
 | :--------- | :--------------------------------| :--------------------------- |
 |**OS**      | Windows 10 x64                   | Windows 10 x32               |
 |**Edition** | Pro or Home                      | All Others                   |
@@ -60,7 +60,7 @@ Select the options you want and then click run script<br />
 
 # Advanced_Usage
 Use one of the following Methods you can 
-1. Run script or bat file with one (or more) of the switches bellow
+1. Run script or bat file with one (or more) of the switches below
 2. Edit the script (bottom of file) to change the values
 3. Edit the bat file (top of file) to change the values to add the switch
 
