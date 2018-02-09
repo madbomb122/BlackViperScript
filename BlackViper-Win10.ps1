@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.1"
-$Minor_Version = "0"
-$Script_Date = "Jan-16-2018"
+$Minor_Version = "3"
+$Script_Date = "Feb-08-2018"
 $Release_Type = "Stable"
 ##########
 
@@ -110,9 +110,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -sech          (Skips Edition Check by Setting Edition as Home)
   -sbc           (Skips Build Check)
 
+--Backup Service Configuration--
+  -bscc          (Backup Current Service Configuration, Csv File)
+  -bscr          (Backup Current Service Configuration, Reg File)
+  -bscb          (Backup Current Service Configuration, Csv and Reg File)
+
 --Misc Switches--
   -sxb           (Skips changes to all XBox Services)
-  -bcsc          (Backup Current Service Configuration)
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
   -snis          (Show not installed Services)
@@ -190,6 +194,13 @@ $Script:XboxService = 0
 ##########
 # Multi Use Functions -Start
 ##########
+
+Function ThanksDonate {
+	DisplayOut "`nThanks for using my script." 11 0
+	DisplayOut "If you like this script please consider giving me a donation." 11 0
+	DisplayOut "`nLink to donation:" 15 0
+	DisplayOut "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" 2 0
+}
 
 Function MenuBlankLineLog { DisplayOutMenu "|                                                   |" 14 0 1 1 }
 Function MenuLineLog { DisplayOutMenu "|---------------------------------------------------|" 14 0 1 1 }
@@ -426,7 +437,7 @@ Function GuiStart {
    <RadioButton Name="RadioAll" Content="All -Change All Services" HorizontalAlignment="Left" Margin="5,26,0,0" VerticalAlignment="Top" IsChecked="True"/>
    <RadioButton Name="RadioMin" Content="Min -Change Services that are Different from Default to Safe/Tweaked" HorizontalAlignment="Left" Margin="5,41,0,0" VerticalAlignment="Top"/>
    <Label Content="Black Viper Configuration Options (BV Services Only)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,3,0,0" FontWeight="Bold"/>
-   <Label Name="CustomNote1" Content="*Note: Configure Bellow" HorizontalAlignment="Left" Margin="262,63,0,0" VerticalAlignment="Top" Width="148" Height="27" FontWeight="Bold"/>
+   <Label Name="CustomNote1" Content="*Note: Configure Below" HorizontalAlignment="Left" Margin="262,63,0,0" VerticalAlignment="Top" Width="148" Height="27" FontWeight="Bold"/>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,97,-6,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="5,120,0,0" VerticalAlignment="Top" Width="66" Height="22"/>
    <TextBox Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="50" Margin="5,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" IsReadOnly="True" Background="#FFECECEC"/>
@@ -441,9 +452,14 @@ Function GuiStart {
    <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="9,160,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
    <CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
    <CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
-   <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,176,0,0" VerticalAlignment="Top" Height="14" Width="76"/>
-   <CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service Configuration" HorizontalAlignment="Left" Margin="9,105,0,-11" VerticalAlignment="Top" Height="15" Width="218"/>
-   <CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="9,120,0,0" VerticalAlignment="Top" Height="15" Width="218"/>   
+   <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="9,176,0,0" VerticalAlignment="Top" Height="18" Width="76"/>
+   <CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="9,105,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
+   <CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service as:" HorizontalAlignment="Left" Margin="9,120,0,0" VerticalAlignment="Top" Height="15" Width="162"/>
+   <ComboBox Name="BackupServiceType" HorizontalAlignment="Left" Margin="171,117,0,0" VerticalAlignment="Top" Width="52" Height="23">
+    <ComboBoxItem Content=".reg" HorizontalAlignment="Left" Width="50"/>
+    <ComboBoxItem Content=".csv" HorizontalAlignment="Left" Width="50" IsSelected="True"/>
+    <ComboBoxItem Content="Both" HorizontalAlignment="Left" Width="50"/>
+   </ComboBox>
    <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="87,174,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
    <CheckBox Name="ScriptVerCheck_CB" Content="Script Update*" HorizontalAlignment="Left" Margin="244,105,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
    <CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="244,120,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
@@ -595,6 +611,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	"msiserver",
 	"MpsSvc",
 	"WinDefend")
+	#"xbgm")
 	For($i=0;$i -ne 5;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
 
 	$Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType
@@ -613,6 +630,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 	If($WinEdition -eq "Home" -or $EditionCheck -eq "Home"){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
 	If($EditionCheck -eq "Pro" -or $EditionCheck -eq "Home"){ $WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheck_CB.IsChecked = $False }
+	$WPF_BackupServiceType.SelectedIndex = 0
 
 	$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
 	$WPF_LogNameInput.Text = $LogName
@@ -652,16 +670,20 @@ Function RunDisableCheck {
 		}
 		$WPF_RunScriptButton.IsEnabled = $False
 		$Buttontxt += " Check"
+		$WPF_dataGrid.Columns[4].Header = "Black Viper"
 	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
 		If(!($ServiceConfigFile) -or !(Test-Path $ServiceConfigFile -PathType Leaf)) { 
 			$WPF_RunScriptButton.IsEnabled = $False
-			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
 			$WPF_LoadServicesButton.IsEnabled = $False
+			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
 		} Else {
 			$WPF_LoadServicesButton.IsEnabled = $True
-			$Buttontxt = "Run Script with Custom Service List" 
+			$WPF_RunScriptButton.IsEnabled = $True
+			$Buttontxt = "Run Script with Custom Service List"
 		}
+		$WPF_dataGrid.Columns[4].Header = "Custom Service"
 	} Else {
+		$WPF_dataGrid.Columns[4].Header = "Black Viper"
 		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
 	}
@@ -677,6 +699,7 @@ Function GuiDone {
 	If($WPF_ScriptLog_CB.IsChecked){ $Script:LogName = $WPF_LogNameInput.Text }
 	If($WPF_EditionCheck_CB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text }
 	If($WPF_CustomBVCB.IsChecked){ GetCustomBV }
+	If($WPF_BackupServiceConfig_CB.IsChecked){ $Script:BackupServiceType = $WPF_BackupServiceType.SelectedIndex }
 
 	$Form.Close()
 	Black_Viper_Set $Black_Viper $All_or_Min
@@ -844,12 +867,63 @@ Function Save_Service([String]$SavePath) {
 	If($SavePath -ne $null){ [Windows.Forms.MessageBox]::Show("File saved as '$SavePath'","File Saved", 'OK') }
 }
 
+Function Save_ServiceBackup {
+	$ServiceSavePath = $filebase + $Env:computername
+	$SaveService = @()
+	$ServiceSavePath += "-Service-Backup.csv"
+	If($AllService -eq $null) { $AllService = Get-Service | Select-Object Name, StartType }
+
+	ForEach($Service In $AllService) {
+		$ServiceName = $Service.Name
+		If(!($Skip_Services -Contains $ServiceName)) {
+			Switch("$($Service.StartType)") {
+				"Disabled" { $StartType = 1 ;Break }
+				"Manual" { $StartType = 2 ;Break }
+				"Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart ;If($exists -eq 1){ $StartType = 4 } Else{ $StartType = 3 } ;Break }
+				Default { $StartType = "$($Service.StartType)" ;Break }
+			}
+			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
+			$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $StartType }
+		}
+	}
+	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
+}
+
+Function RegistryServiceFileBackup {
+	$SavePath = $filebase + $Env:computername
+	$SavePath += "-Service-Backup.reg"
+	If($AllService -eq $null) { $AllService = Get-Service | Select-Object Name, StartType }
+
+	Write-Output "Windows Registry Editor Version 5.00" | Out-File -Filepath $SavePath
+	Write-Output "" | Out-File -Filepath $SavePath -Append
+	ForEach($Service In $AllService) {
+		$ServiceName = $Service.Name
+		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+		Switch("$($Service.StartType)") {
+			"Disabled" { $ServiceTypeNum = 4 ;Break }
+			"Manual" { $ServiceTypeNum = 3 ;Break }
+			"Automatic" { $ServiceTypeNum = 2 ;Break }
+		}
+		If(!($Skip_Services -Contains $ServiceName)) {
+			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
+			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $SavePath -Append
+			Write-Output "$Num" | Out-File -Filepath $SavePath -Append
+			If($ServiceTypeNum -eq 2) {
+				$exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart 
+				If($exists -eq 1){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $SavePath -Append }
+			}
+			Write-Output "" | Out-File -Filepath $SavePath -Append
+		}
+	}
+}
+
 Function ServiceSet([String]$BVService) {
 	Clear-Host
 	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
 	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
+	#$csv = $csv | Where-Object { $_.ServiceName -ne "xbgm" }
 	If($DryRun -ne 1){ DisplayOut "Changing Service Please wait..." 14 0 } Else{ DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
 	DisplayOut "Service_Name - Current -> Change_To" 14 0
 	DisplayOut "-------------------------------------" 14 0
@@ -887,7 +961,12 @@ Function ServiceSet([String]$BVService) {
 		}
 	}
 	DisplayOut "-------------------------------------" 14 0
-	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 } Else{ DisplayOut "List of Service Done..." 14 0 }
+	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 ;ThanksDonate } Else{ DisplayOut "List of Service Done..." 14 0 }
+	If($BackupServiceConfig -eq 1){
+		If($BackupServiceType -eq 1){ DisplayOut "Backup of Services Saved as CSV file in script directory." 14 0 }
+		ElseIf($BackupServiceType -eq 0){ DisplayOut "Backup of Services Saved as REG file in script directory." 14 0 }
+		ElseIf($BackupServiceType -eq 2){ DisplayOut "Backup of Services Saved as CSV and REG file in script directory." 14 0 }
+	}
 	ServiceBAfun "Services-After"
 	AutomatedExitCheck 1
 }
@@ -1041,7 +1120,11 @@ Function PreScriptCheck {
 		}
 		AutomatedExitCheck 1
 	}
-	If($BackupServiceConfig -eq 1){ Save_Service }
+	If($BackupServiceConfig -eq 1){
+		If($BackupServiceType -eq 1){ Save_ServiceBackup }
+		ElseIf($BackupServiceType -eq 0){ RegistryServiceFileBackup }
+		ElseIf($BackupServiceType -eq 2){ Save_ServiceBackup ;RegistryServiceFileBackup }
+	}
 	If($LoadServiceConfig -eq 1) {
 		$ServiceFilePath = $ServiceConfigFile
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
@@ -1086,9 +1169,8 @@ Function PreScriptCheck {
 		} Else {
 			$Script:ErrorDi = "No Internet"
 			Error_Top_Display
-			LeftLineLog ;DisplayOutMenu " Update Failed Because no Internet was detected. " 2 0 0 1 ;RightLineLog
-			MenuBlankLineLog
-			LeftLineLog ;DisplayOutMenu " Tested by pinging GitHub.com                    " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu "No Internet connection detected.                 " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu "Tested by pinging GitHub.com                     " 2 0 0 1 ;RightLineLog
 			MenuBlankLineLog
 			LeftLineLog ;DisplayOutMenu " To skip use one of the following methods        " 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "InternetCheck" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file   " 2 0 0 1 ;RightLineLog
@@ -1168,9 +1250,16 @@ Function ScriptUpdateFun {
 	If($ScriptLog -eq 1){ $UpArg += "-logc $LogName " }
 	If($All_or_Min -eq "-full"){ $UpArg += "-all " } Else{ $UpArg += "-min " }
 	If($XboxService -eq 1){ $UpArg += "-sxb " }
-	If($BackupServiceConfig -eq 1){ $UpArg += "-bcsc " }
 	If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
 	If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
+	If($BackupServiceConfig -eq 1){
+		Switch($BackupServiceType) {
+			0 { $UpArg += "-bscr " ;Break }
+			1 { $UpArg += "-bscc " ;Break }
+			2 { $UpArg += "-bscb " ;Break }
+			Default { Break }
+		}
+	}
 	If($LoadServiceConfig -eq 2) {
 		$TempSrv = $Env:Temp + "\TempSrv.csv"
 		$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding "unicode" -Force -Delimiter ","
@@ -1221,7 +1310,9 @@ Function GetArgs {
 				"-log" { $Script:ScriptLog = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break }
 				"-logc" { $Script:ScriptLog = 2 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:LogName = $PassedArg[$i+1] ;$i++ } ;Break } #To append to logfile (used for update)
 				"-lcsc" { $Script:BV_ArgUsed = 3 ;$Script:LoadServiceConfig = 1 ;If(!($PassedArg[$i+1].StartsWith("-"))){ $Script:ServiceConfigFile = $PassedArg[$i+1] ;$i++ } ;Break }
-				"-bcsc" { $Script:BackupServiceConfig = 1 ;Break }
+				"-bscc" { $Script:BackupServiceConfig = 1 ;$Script:BackupServiceType = 1 ;Break }
+				"-bscr" { $Script:BackupServiceConfig = 1 ;$Script:BackupServiceType = 0 ;Break }
+				"-bscb" { $Script:BackupServiceConfig = 1 ;$Script:BackupServiceType = 2 ;Break }
 				"-baf" { $Script:LogBeforeAfter = 1 ;Break }
 				"-snis" { $Script:ShowNonInstalled = 1 ;Break }
 				"-sss" { $Script:ShowSkipped = 1 ;Break }
@@ -1249,49 +1340,46 @@ Function ShowHelp {
 	Clear-Host
 	DisplayOut "                  List of Switches                   " 13 0
 	DisplayOut "-----------------------------------------------------" 14 0
-	DisplayOut "" 13 0
-	DisplayOut "-- Basic Switches --" 2 0
+	DisplayOut "`n-- Basic Switches --" 2 0
 	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -atos " 15 0 0 ;DisplayOut "           Accepts ToS " 14 0
-	DisplayOutMenu "  -auto " 15 0 0 ;DisplayOut "           Implies -atos...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script " 14 0
-	DisplayOut "" 13 0
-	DisplayOut "--Service Configuration Switches--" 2 0
+	DisplayOutMenu "  -atos " 15 0 0 ;DisplayOut "           Accepts ToS" 14 0
+	DisplayOutMenu "  -auto " 15 0 0 ;DisplayOutMenu "           Implies " 14 0 0 ;DisplayOutMenu "-atos" 15 0 0 ;DisplayOut "...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script" 14 0
+	DisplayOut "`n--Service Configuration Switches--" 2 0
 	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -default  " 15 0 0 ;DisplayOut "       Runs the script with Services to Default Configuration " 14 0
-	DisplayOutMenu "  -safe " 15 0 0 ;DisplayOut "           Runs the script with Services to Black Viper's Safe Configuration " 14 0
-	DisplayOutMenu "  -tweaked " 15 0 0 ;DisplayOut "        Runs the script with Services to Black Viper's Tweaked Configuration " 14 0
-	DisplayOutMenu "  -lcsc " 15 0 0 ;DisplayOutMenu "File.csv " 11 0 0 ;DisplayOutMenu "  Loads Custom Service Configuration, " 14 0 0 ;DisplayOutMenu "File.csv" 11 0 0 ;DisplayOut " = Name of your backup/custom file " 14 0
-	DisplayOut "" 13 0
-	DisplayOut "--Service Choice Switches--" 2 0
+	DisplayOutMenu "  -default  " 15 0 0 ;DisplayOut "       Runs the script with Services to Default Configuration" 14 0
+	DisplayOutMenu "  -safe " 15 0 0 ;DisplayOut "           Runs the script with Services to Black Viper's Safe Configuration" 14 0
+	DisplayOutMenu "  -tweaked " 15 0 0 ;DisplayOut "        Runs the script with Services to Black Viper's Tweaked Configuration" 14 0
+	DisplayOutMenu "  -lcsc " 15 0 0 ;DisplayOutMenu "File.csv " 11 0 0 ;DisplayOutMenu "  Loads Custom Service Configuration, " 14 0 0 ;DisplayOutMenu "File.csv" 11 0 0 ;DisplayOut " = Name of your backup/custom file" 14 0
+	DisplayOut "`n--Service Choice Switches--" 2 0
 	DisplayOutMenu " Switch "  15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -all " 15 0 0 ;DisplayOut "            Every windows services will change " 14 0
-	DisplayOutMenu "  -min " 15 0 0 ;DisplayOut "            Just the services different from the default to safe/tweaked list " 14 0
-	DisplayOut "" 13 0
-	DisplayOut "--Update Switches--" 2 0
+	DisplayOutMenu "  -all " 15 0 0 ;DisplayOut "            Every windows services will change" 14 0
+	DisplayOutMenu "  -min " 15 0 0 ;DisplayOut "            Just the services different from the default to safe/tweaked list" 14 0
+	DisplayOut "`n--Update Switches--" 2 0
 	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -usc  " 15 0 0 ;DisplayOut "           Checks for Update to Script file before running " 14 0
-	DisplayOutMenu "  -use  " 15 0 0 ;DisplayOut "           Checks for Update to Service file before running " 14 0
-	DisplayOutMenu "  -sic  " 15 0 0 ;DisplayOut "           Skips Internet Check, if you can't ping GitHub.com for some reason " 14 0
-	DisplayOut "" 13 0	
-	DisplayOut "--Log Switches--" 2 0
+	DisplayOutMenu "  -usc  " 15 0 0 ;DisplayOut "           Checks for Update to Script file before running" 14 0
+	DisplayOutMenu "  -use  " 15 0 0 ;DisplayOut "           Checks for Update to Service file before running" 14 0
+	DisplayOutMenu "  -sic  " 15 0 0 ;DisplayOut "           Skips Internet Check, if you can't ping GitHub.com for some reason" 14 0
+	DisplayOut "`n--Log Switches--" 2 0
 	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -log " 15 0 0 ;DisplayOut "            Makes a log file Script.log " 14 0
-	DisplayOutMenu "  -baf " 15 0 0 ;DisplayOut "            Log File of Services Configuration Before and After the script " 14 0
-	DisplayOut "" 13 0
-	DisplayOut "--AT YOUR OWN RISK Switches--" 13 0
+	DisplayOutMenu "  -log " 15 0 0 ;DisplayOutMenu "            Makes a log file " 14 0 0 ;DisplayOut "Script.log" 11 0
+	DisplayOutMenu "  -baf " 15 0 0 ;DisplayOut "            Log File of Services Configuration Before and After the script" 14 0
+	DisplayOut "`n--AT YOUR OWN RISK Switches--" 13 0
 	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -sec  " 15 0 0 ;DisplayOut "           Skips Edition Check by Setting Edition as Pro " 14 0
+	DisplayOutMenu "  -sec  " 15 0 0 ;DisplayOut "           Skips Edition Check by Setting Edition as Pro" 14 0
 	DisplayOutMenu "  -secp  " 15 0 0 ;DisplayOut "          ^Same as Above" 14 0
 	DisplayOutMenu "  -sech  " 15 0 0 ;DisplayOut "          Skips Edition Check by Setting Edition as Home" 14 0
-	DisplayOutMenu "  -sbc  " 15 0 0 ;DisplayOut "           Skips Build Check " 14 0
-	DisplayOut "" 13 0
-	DisplayOut "--Misc Switches--" 2 0
+	DisplayOutMenu "  -sbc  " 15 0 0 ;DisplayOut "           Skips Build Check" 14 0
+	DisplayOut "`n--Backup Service Configuration--" 2 0
 	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -sxb  " 15 0 0 ;DisplayOut "           Skips changes to all XBox Services " 14 0
-	DisplayOutMenu "  -bcsc  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration " 14 0
-	DisplayOutMenu "  -dry  " 15 0 0 ;DisplayOut "           Runs the script and shows what services will be changed " 14 0
-	DisplayOutMenu "  -diag  " 15 0 0 ;DisplayOut "          Shows diagnostic information, Stops -auto " 14 0
-	DisplayOutMenu "  -snis  " 15 0 0 ;DisplayOut "          Show not installed Services " 14 0
+	DisplayOutMenu "  -bscc  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration, Csv File" 14 0
+	DisplayOutMenu "  -bscr  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration, Reg File" 14 0
+	DisplayOutMenu "  -bscb  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration, Csv and Reg File" 14 0	
+	DisplayOut "`n--Misc Switches--" 2 0
+	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
+	DisplayOutMenu "  -sxb  " 15 0 0 ;DisplayOut "           Skips changes to all XBox Services" 14 0
+	DisplayOutMenu "  -dry  " 15 0 0 ;DisplayOut "           Runs the script and shows what services will be changed" 14 0
+	DisplayOutMenu "  -diag  " 15 0 0 ;DisplayOutMenu "          Shows diagnostic information, Stops " 14 0 0 ;DisplayOut "-auto" 15 0
+	DisplayOutMenu "  -snis  " 15 0 0 ;DisplayOut "          Show not installed Services" 14 0
 	Write-Host "`nPress Any key to Close..." -ForegroundColor White -BackgroundColor Black
 	$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC") | out-null
 	Exit
@@ -1364,7 +1452,13 @@ Function ArgsAndVarSet {
 }
 
 #--------------------------------------------------------------------------
-# Edit values (Option) to your preferance
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!                                            !!
+## !!            SAFE TO EDIT VALUES             !!
+## !!                                            !!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Edit values (Option) to your preference
 
 # Function = Option             #Choices
 $Script:AcceptToS = 0           #0 = See ToS, Anything else = Accept ToS
@@ -1373,8 +1467,12 @@ $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of
 # Automated = 1, Implies that you accept the "ToS"
 
 $Script:BackupServiceConfig = 0 #0 = Don't backup Your Current Service Configuration before services are changes
-                                #1 = Backup Your Current Service Configuration before services are changes
-# Will be script's directory named "(ComputerName)-Service-Backup.csv"
+                                #1 = Backup Your Current Service Configuration before services are changes (Configure type below)
+$Script:BackupServiceType = 1
+# 0 = ".reg" file that you can change w/o using script
+# 1 = ".csv' file type that can be imported into script
+# 2 = both the above types
+# Will be in script's directory named "(ComputerName)-Service-Backup.(File Type)"
 
 $Script:DryRun = 0              #0 = Runs script normally, 1 = Runs script but shows what will be changed
 
@@ -1399,7 +1497,7 @@ $Script:ShowAlreadySet = 1      #0 = Don't Show Already set Services, 1 = Show A
 
 $Script:ShowNonInstalled = 0    #0 = Don't Show Services not present, 1 = Show Services not present
 
-$Script:InternetCheck = 0       #0 = Checks if you have internet, 1 = Bypass check if your pings are blocked
+$Script:InternetCheck = 0       #0 = Checks if you have Internet, 1 = Bypass check if your pings are blocked
 # Use if Pings are Blocked or can't ping GitHub.com
 
 $Script:EditionCheck = 0        #0 = Check if Home or Pro Edition
