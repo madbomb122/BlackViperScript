@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.1"
-$Minor_Version = "2"
-$Script_Date = "Feb-04-2018"
+$Minor_Version = "3"
+$Script_Date = "Feb-08-2018"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
