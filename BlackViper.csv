@@ -1,5 +1,5 @@
 ServiceName,Def-Home-Full,Def-Home-Min,Def-Pro-Full,Def-Pro-Min,Safe-Desk-Full,Safe-Desk-Min,Safe-Lap-Full,Safe-Lap-Min,Tweaked-Desk-Full,Tweaked-Desk-Min
-#ServiceVersion,3.0,Nov-29-2017,GernetatedByMadBomb122,0,0,0,0,0,0,0,0,0
+#ServiceVersion,3.1,Feb-10-2018,GernetatedByMadBomb122,0,0,0,0,0,0,0,0,0
 AxInstSV,2,0,2,0,2,0,2,0,2,0
 AJRouter,2,2,2,2,2,2,2,2,1,1
 AppReadiness,2,0,2,0,2,0,2,0,2,0
@@ -220,7 +220,6 @@ LanmanWorkstation,3,0,3,0,3,0,3,0,3,0
 W3SVC,3,0,3,0,3,0,3,0,3,0
 WwanSvc,2,2,2,2,1,1,1,1,1,1
 XboxGipSvc,2,0,2,0,2,0,2,0,2,0
-xbgm,2,2,2,2,1,1,1,1,1,1
 XblAuthManager,2,2,2,2,1,1,1,1,1,1
 XblGameSave,2,2,2,2,1,1,1,1,1,1
 XboxNetApiSvc,2,2,2,2,1,1,1,1,1,1
