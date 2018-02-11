@@ -181,7 +181,7 @@ This file will <br />
 **A:** No. <br />
 
 **Q:** What do the letters mean in the release tab after the version number? <br />
-**A:** The letter indicates that something other than the script was updated.. B = Bat file, S = Service file, U = Update Bat file, M = Misc or Multiple Changes.  <br />
+**A:** The letter indicates that something other than the script was updated.. `B = Bat file`, `S = Service file`, `U = Update Bat file`, `M = Misc or Multiple Changes`  <br />
 
 **Q:** Can I download the csv file from Black Viper's website and use that? <br />
 **A:** No, my file is not the same. <br />
