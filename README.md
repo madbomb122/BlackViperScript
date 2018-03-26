@@ -40,7 +40,7 @@ PPS. My Thanks goes out to all that have helped in any way
 
 **Note:**
 **AT YOUR OWN RISK**<br />
-**1. Run the script on x32 w/o changing settings (But shows a warning)**<br />
+**1. Run the script on x86 (32-bit) w/o changing settings (But shows a warning)**<br />
 **2. Skip the check for**<br />
 **---A. Home/Pro** *(`$Script:Edition_Check` variable in script or use `-sec` switch)*<br />
 **---B. Creator's Update** *(`$Script:Build_Check` variable in script or use `-sbc` switch)*<br />
