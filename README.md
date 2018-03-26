@@ -174,8 +174,8 @@ This file will <br />
 **A:** Sorry, I only support the windows 10 configuration listed on Black Viper's website, you can still use it on other edition but any problems you have are your own. <br />
 
 **Q:** Are you going to add support for builds before the "Creator's Update"? <br />
-**A:** Sorry, since I dont have the configuration from before the "Creator's Update" I can't add it. <br />
-**Note:** If you have the configuration please contact me.
+**A:** Sorry, since I dont have Black Viper's configuration from before the "Creator's Update" I can't add it. You can use the configuration for Creator's Update, but at your own risk of possible issues. <br />
+**Note:** If you have Black Viper's configuration for pre-Creator's update please contact me, thanks.
 
 **Q:** Will you make a script for any windows before windows 10? <br />
 **A:** No. <br />
