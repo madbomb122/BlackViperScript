@@ -130,6 +130,9 @@ This file will <br />
 **A:** If you would like to donate to me Please pick an item/giftcard from my amazon wishlist or Contact me about donating, Thanks. <br />
 **Wishlist:** https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/ <br />
 
+**Q:** Are You or Black Viper the developer? <br />
+**A:** [Black Viper](http://www.blackviper.com/) is the creator of the service configuration. I am the developer of the script, the blackviper.csv file uses black viper's configuration. 
+
 **Q:** How can I contact you? <br />
 **A:** If it's an issue or suggestion please post under issue tab. Otherwise you can email me @ madbomb122@gmail.com. Before contacting me make sure you have ALL the needed files and the size is right (Look above under requirements).
 
