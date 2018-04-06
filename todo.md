@@ -4,7 +4,7 @@
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
-Nothing ATM
+- [ ] Ability to use the Service List grid to change start type (Currently in codeing, Not in testing atm)
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
