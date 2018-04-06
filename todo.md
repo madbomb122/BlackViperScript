@@ -4,11 +4,11 @@
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
-Nothing ATM
+- [ ] Ability to use the Service List grid to change start type (Look in testing for what needs testing)
 
 -------------------------------------------------------------------------------------------------------------
 # Codeing (Before Testing Phase)
-- [ ] Ability to use the Service List grid to change start type
+Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
