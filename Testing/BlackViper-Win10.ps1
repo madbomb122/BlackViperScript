@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.1"
-$Minor_Version = "5"
-$Script_Date = "Apr-05-2018"
+$Minor_Version = "6"
+$Script_Date = "Apr-06-2018"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -176,21 +176,21 @@ $ServicesTypeList = @(
 'Disabled', #1 -Disable
 'Manual',   #2 -Manual
 'Automatic',#3 -Automatic
-'Automatic')#4 -Automatic (Delayed Start)
+'Automatic')#4 -Automatic (Delayed)
 
 $ServicesTypeLst = @(
 'Skip',     #0 -Skip Not Installed
 'Disabled', #1 -Disable
 'Manual',   #2 -Manual
 'Automatic',#3 -Automatic
-'Automatic (Delayed)')#4 -Automatic (Delayed Start)
+'Automatic (Delayed)')#4 -Automatic (Delayed)
 
 $ServicesRegTypeList = @(
 '',  #0 -None
 '4', #1 -Disable
 '3', #2 -Manual
 '2', #3 -Automatic
-'2') #4 -Automatic (Delayed Start)
+'2') #4 -Automatic (Delayed)
 
 $XboxServiceArr = @("XblAuthManager", "XblGameSave", "XboxNetApiSvc")
 $Script:Black_Viper = 0
@@ -497,7 +497,7 @@ Function GuiStart {
      <DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}"/>
      <DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}"/>
      <DataGridTemplateColumn Header="Black Viper" Width="95"><DataGridTemplateColumn.CellTemplate><DataTemplate>
-      <ComboBox ItemsSource="{Binding ServicesTypeListC}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"> </ComboBox></DataTemplate>
+      <ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"> </ComboBox></DataTemplate>
      </DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
     </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
@@ -507,7 +507,7 @@ Function GuiStart {
    <Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
    <Label Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,15,0,0" Visibility="Hidden"/>
    <Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
-   <CheckBox Name="CustomBVCB" Content="Use Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
+   <CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
   </TabItem>
   <TabItem Name="Dev_Option_Tab" Header="Dev Option/Contact/About" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
@@ -704,7 +704,7 @@ Function RunDisableCheck {
 		$WPF_dataGrid.Columns[4].Header = "Custom Service"
 	} Else {
 		If($WPF_ServiceConfig.SelectedIndex -eq 0) { $WPF_dataGrid.Columns[4].Header = "Default" } Else { $WPF_dataGrid.Columns[4].Header = "Black Viper" }
-		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
+		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Customize Service List" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
 	}
 	$WPF_RunScriptButton.content = $Buttontxt
@@ -760,6 +760,10 @@ Function GenerateServices {
 		If($CurrServices.Name -Contains $SName) {
 			$ServiceTypeNum = $($item.$BVService)
 			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $SName}).StartType
+			If($ServiceCurrType -eq "Automatic") {
+				$exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart
+				If($exists -eq 1){ $ServiceCurrTypee += " (Delayed)" }
+			}
 			If($ServiceTypeNum -eq 0) {
 				$checkbox = $False
 				$ServiceTypeNum = $($item.$BVSAlt)
@@ -769,10 +773,10 @@ Function GenerateServices {
 				$checkbox = $True
 			}
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
-			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed Start)" }
+			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed)" }
 			If($SName -Is [system.array]){ $SName = $SName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $SName}).DisplayName
-			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $SName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServicesTypeListC = $ServicesTypeLst }
+			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $SName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
 		}
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridList
@@ -790,6 +794,17 @@ Function GenerateServices {
 	}
 }
 
+Function BVTypeNameToNumb([String]$Name) {
+	Switch($Name) {
+		"Skip" { $Numb = 0 ;Break }
+		"Disabled" { $Numb = 1 ;Break }
+		"Manual" { $Numb = 2 ;Break }
+		"Automatic" { $Numb = 3 ;Break }
+		Default { $Numb = 4 ;Break }
+	}
+	Return $Numb
+}
+
 Function GetCustomBV {
 	$Script:LoadServiceConfig = 2
 	[System.Collections.ArrayList]$Script:csvTemp = @()
@@ -797,9 +812,7 @@ Function GetCustomBV {
 	
 	ForEach($item In $ServiceCBList){
 		$SrvName = $item.ServiceName
-		$BVTypeTMP = $item.BVType
-		$BVTypeS = 0
-		For($S = 0;$ServicesTypeLst[$S] -ne $BVTypeTMP; $S++){ $BVTypeS++ }
+		$BVTypeS = BVTypeNameToNumb $item.BVType
 		$Script:csvTemp+= New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
 	}
 						  
@@ -867,9 +880,7 @@ Function Save_Service([String]$SavePath) {
 		
 		ForEach($item In $ServiceCBList) {
 			$ServiceName = $item.ServiceName
-			$BVTypeTMP = $item.BVType
-			$BVTypeS = 0
-			For($S = 0;$ServicesTypeLst[$S] -ne $BVTypeTMP; $S++){ $BVTypeS++ }
+			$BVTypeS = BVTypeNameToNumb $item.BVType
 			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
 			$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $BVTypeS }
 		}
@@ -977,13 +988,13 @@ Function ServiceSet([String]$BVService) {
 				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
 				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
 				If($ServiceTypeNum -eq 4) {
-					$DispTemp += " (Delayed Start)"
+					$DispTemp += " (Delayed)"
 					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name "DelayedAutostart" -Type DWord -Value 1 }
 				}
 				DisplayOut $DispTemp  11 0
 			} ElseIf($ServiceCurrType -eq "Already" -And $ShowAlreadySet -eq 1) {
 				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
-				If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed Start)" }
+				If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed)" }
 				DisplayOut $DispTemp  15 0
 			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
 				$DispTemp = "No service with name $ServiceName"
@@ -1012,10 +1023,7 @@ Function RegistryServiceFile([String]$TempFP) {
 
 	ForEach($item In $ServiceCBList) {
 		$ServiceName = $item.ServiceName
-		$BVTypeTMP = $item.BVType
-		$BVTypeS = 0
-		For($S = 0;$ServicesTypeLst[$S] -ne $BVTypeTMP; $S++){ $BVTypeS++ }
-		$ServiceTypeNum = $BVTypeS
+		$ServiceTypeNum = BVTypeNameToNumb $item.BVType
 				
 		If($ServiceTypeNum -ne 0) {
 			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
