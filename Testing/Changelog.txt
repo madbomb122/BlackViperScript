@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.1.6 (04-06-2018)
+4.1.7 (04-14-2018)
 
 Ability to backup current service configuration as a ".reg" file instead of ".csv"
  ^or save as both type
@@ -25,6 +25,10 @@ Added Ability to use the Service List grid to change start type
 
 Fixed some issues with the new "Ability to use the Service List grid to change start type"
 Changed it so you have to click checkbox to use the changed service list (if you change it from the normal setting) 
+
+Fixed Saving of Reg file so it can use the customized list
+Fixed a bug with services that have a '_' in the name
+Fixed a bug that showed Automatic Delayed as Automatic for current services in "Service List grid"
 
 -----------------------------------------------------------------------------------
 4.1.0 (01-16-2018)
