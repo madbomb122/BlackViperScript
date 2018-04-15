@@ -1,7 +1,7 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)<br />
 
 **Current Version** <br />
-**Script:** `4.1.3` (January 16, 2018) <br />
+**Script:** `4.1.7` (April 14, 2018) <br />
 **Service:** `3.1` (February 10, 2018) -Fall Creator's Update Version <br />
 
 # Description
