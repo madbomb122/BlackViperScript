@@ -69,7 +69,7 @@ Use one of the following Methods you can
 |   Switch  | Description                                                                    | Notes                            |
 | :-------- | :------------------------------------------------------------------------------| :------------------------------- |
 | -atos     | Accepts the ToS                                                                |                                  |
-| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                |
+| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                  |
 | -default  | Runs the script with Services to Default Configuration                         |   |
 | -safe     | Runs the script with Services to Black Viper's Safe Configuration              |   |
 | -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           |   |
@@ -88,12 +88,14 @@ Use one of the following Methods you can
 | -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found |
 | -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found |
 | -snis     | Shows not installed services (that can be changed)                             |  |
+| -sss      | Show Skipped Services                                                         |   |
 | -diag     | Shows some diagnostic information on error messages                            | **Stops automation** |
 | -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
 | -baf      | File of all the services before and after the script                 | `Services-Before.log` and `Services-After.log`    |
 | -dry      | Runs script and shows what will be changed if ran normaly                     | **No Services are changes** |
 | -devl     | Makes a log file with various Diagnostic information                          | **No Services are changes** |
-| -help     | Lists of all the switches                      | Alt `-h`   |
+| -help     | Lists of all the switches                                                     | Alt `-h` |
+
 
 Examples: <br />
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv` <br />
