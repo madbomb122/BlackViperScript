@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.1"
-$Minor_Version = "3"
-$Script_Date = "Feb-08-2018"
+$Minor_Version = "7"
+$Script_Date = "Apr-14-2018"
 $Release_Type = "Stable"
 ##########
 
@@ -30,7 +30,9 @@ $Release_Type = "Stable"
 <#------------------------------------------------------------------------------
 Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
-The MIT License (MIT)
+--------------------------------------------------------------------------------
+
+The MIT License (MIT) + an added Condition
 
 Copyright (c) 2017 Madbomb122 - Black Viper Service Script
 
@@ -41,8 +43,8 @@ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
 of the Software, and to permit persons to whom the Software is furnished to do
 so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice(s), this permission notice and ANY original donation 
+link shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
@@ -54,7 +56,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 
 .Prerequisite to run script
-  System: Windows 10 x64
+  System: Windows 10 x64 (64-bit)
   Edition: Home or Pro     (Can run on other Edition AT YOUR OWN RISK)
   Build: Creator's Update  (Can run on other Build AT YOUR OWN RISK)
   Files: This script and 'BlackViper.csv' (Service Configurations)
@@ -63,7 +65,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  Script that can set services based on Black Viper's Service Configurations.
 
  AT YOUR OWN RISK YOU CAN
-	1. Run the script on x32 w/o changing settings (But shows a warning)
+	1. Run the script on x86 (32-bit) w/o changing settings (But shows a warning)
 	2. Skip the check for
 		A. Home/Pro ($Script:EditionCheck variable bottom of script or use -sec switch)
 		B. Creator's Update ($Script:BuildCheck variable bottom of script or use -sbc switch)
@@ -120,6 +122,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -dry           (Runs the script and shows what services will be changed)
   -diag          (Shows diagnostic information, Stops -auto)
   -snis          (Show not installed Services)
+  -sss           (Show Skipped Services)
 ------------------------------------------------------------------------------#>
 ##########
 # Pre-Script -Start
@@ -147,7 +150,17 @@ $Version_Url = $URL_Base + "Version/Version.csv"
 $Service_Url = $URL_Base + "BlackViper.csv"
 
 If([System.Environment]::Is64BitProcess){ $OSType = 64 }
-$Script:ServiceEnd = (Get-Service "*_*" | Select-Object Name | Select-Object -First 1).Name.Split('_')[1]
+
+Function GetServiceEnd {
+	$ServiceEndL = @()
+	$Tmp1 = ""
+	$ServiceEnd1 = (Get-Service "*_*" | Select-Object Name )
+	ForEach($End in $ServiceEnd1) { $ServiceEndL += $End.Name.Split('_')[1] }
+	ForEach($End in $ServiceEndL) {
+		If($Tmp1 -eq $End) { Return $Tmp1 } Else { $Tmp1 = $End }
+	}
+}
+$Script:ServiceEnd = GetServiceEnd
 
 $colors = @(
 "black",      #0
@@ -172,16 +185,23 @@ $ServicesTypeList = @(
 'Disabled', #1 -Disable
 'Manual',   #2 -Manual
 'Automatic',#3 -Automatic
-'Automatic')#4 -Automatic (Delayed Start)
+'Automatic')#4 -Automatic (Delayed)
+
+$ServicesTypeLst = @(
+'Skip',     #0 -Skip Not Installed
+'Disabled', #1 -Disable
+'Manual',   #2 -Manual
+'Automatic',#3 -Automatic
+'Automatic (Delayed)')#4 -Automatic (Delayed)
 
 $ServicesRegTypeList = @(
 '',  #0 -None
 '4', #1 -Disable
 '3', #2 -Manual
 '2', #3 -Automatic
-'2') #4 -Automatic (Delayed Start)
+'2') #4 -Automatic (Delayed)
 
-$XboxServiceArr = @("xbgm","XblAuthManager", "XblGameSave", "XboxNetApiSvc")
+$XboxServiceArr = @("XblAuthManager", "XblGameSave", "XboxNetApiSvc")
 $Script:Black_Viper = 0
 $Script:All_or_Min = "-min"
 $Script:RunScript = 2
@@ -215,7 +235,7 @@ Function RightLine { DisplayOutMenu " |" 14 0 1 0 }
 Function OpenWebsite([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile([String]$Url,[String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function ShowInvalid([Int]$InvalidA) { If($InvalidA -eq 1) { Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
-Function LaptopCheck { $Script:PCType = (Get-WmiObject -Class Win32_ComputerSystem).PCSystemType ;If($PCType -ne 2) { Return "-Desk" } Return "-Lap" }
+Function LaptopCheck { $Script:PCType = (Get-CimInstance -Class Win32_ComputerSystem).PCSystemType ;If($PCType -ne 2) { Return "-Desk" } Return "-Lap" }
 
 Function DisplayOutMenu([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor,[Int]$NewLine,[Int]$LogOut) {
 	If($NewLine -eq 0) {
@@ -477,13 +497,15 @@ Function GuiStart {
    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="236,-3,0,-1" Stroke="Black" Width="1"/></Grid>
   </TabItem>
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
-    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" SelectionMode="Single" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" ><DataGrid.Columns>
+    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended"><DataGrid.Columns>
      <DataGridCheckBoxColumn Binding="{Binding checkboxChecked, UpdateSourceTrigger=PropertyChanged}"><DataGridCheckBoxColumn.ElementStyle>
      <Style TargetType="CheckBox"/></DataGridCheckBoxColumn.ElementStyle></DataGridCheckBoxColumn>
      <DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}"/>
      <DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}"/>
-     <DataGridTextColumn Header="Current Setting" Width="95"  Binding="{Binding CurrType}"/>
-     <DataGridTextColumn Header="Black Viper" Width="95"  Binding="{Binding BVType}"/>
+     <DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}"/>
+     <DataGridTemplateColumn Header="Black Viper" Width="95" CanUserSort="True"><DataGridTemplateColumn.CellTemplate><DataTemplate>
+      <ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"> </ComboBox></DataTemplate>
+     </DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
     </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="103,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
@@ -492,7 +514,7 @@ Function GuiStart {
    <Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
    <Label Name="ServiceLegendLabel" Content="Service -&gt; Current -&gt; Changed To" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-2,15,0,0" Visibility="Hidden"/>
    <Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
-   <CheckBox Name="CustomBVCB" Content="Use Checked Services" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
+   <CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/></Grid>
   </TabItem>
   <TabItem Name="Dev_Option_Tab" Header="Dev Option/Contact/About" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
    <CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="9,18,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
@@ -573,13 +595,15 @@ Function GuiStart {
 
 	$CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
-The MIT License (MIT)
+--------------------------------------------------------------------------------
+
+The MIT License (MIT) + an added Condition
 
 Copyright (c) 2017 Madbomb122 - Black Viper Service Configuration Script
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice(s), this permission notice and ANY original donation link shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'
 
@@ -610,8 +634,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	"SecurityHealthService",
 	"msiserver",
 	"MpsSvc",
-	"WinDefend")
-	#"xbgm")
+	"WinDefend",
+	"xbgm")
 	For($i=0;$i -ne 5;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
 
 	$Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType
@@ -672,19 +696,24 @@ Function RunDisableCheck {
 		$Buttontxt += " Check"
 		$WPF_dataGrid.Columns[4].Header = "Black Viper"
 	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
+		$WPF_RunScriptButton.IsEnabled = $False
+		$WPF_LoadServicesButton.IsEnabled = $False
 		If(!($ServiceConfigFile) -or !(Test-Path $ServiceConfigFile -PathType Leaf)) { 
-			$WPF_RunScriptButton.IsEnabled = $False
-			$WPF_LoadServicesButton.IsEnabled = $False
 			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
 		} Else {
-			$WPF_LoadServicesButton.IsEnabled = $True
-			$WPF_RunScriptButton.IsEnabled = $True
-			$Buttontxt = "Run Script with Custom Service List"
+			[System.Collections.ArrayList]$Tempcheck = Import-Csv $ServiceConfigFile
+			If($Tempcheck[0].StartType -eq $null -or $Tempcheck[0].ServiceName -eq $null) { 
+				$Buttontxt = "Run Disabled, Invalid Custom Service File."
+			} Else {
+				$WPF_LoadServicesButton.IsEnabled = $True
+				$WPF_RunScriptButton.IsEnabled = $True
+				$Buttontxt = "Run Script with Custom Service List"
+			}
 		}
 		$WPF_dataGrid.Columns[4].Header = "Custom Service"
 	} Else {
-		$WPF_dataGrid.Columns[4].Header = "Black Viper"
-		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Checked Services" } Else{ $Buttontxt = "Run Script" }
+		If($WPF_ServiceConfig.SelectedIndex -eq 0) { $WPF_dataGrid.Columns[4].Header = "Win Default" } Else { $WPF_dataGrid.Columns[4].Header = "Black Viper" }
+		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = "Run Script with Customize Service List" } Else{ $Buttontxt = "Run Script" }
 		$WPF_RunScriptButton.IsEnabled = $True
 	}
 	$WPF_RunScriptButton.content = $Buttontxt
@@ -735,24 +764,29 @@ Function GenerateServices {
 	[System.Collections.ArrayList]$DataGridList = @()
 
 	ForEach($item In $ServCB) {
-		$SName = $($item.ServiceName)
-		If($SName -Like "*_*"){ $SName = $SName.Split('_')[0] + "_$ServiceEnd" }
-		If($CurrServices.Name -Contains $SName) {
+		$ServiceName = $($item.ServiceName)
+		If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
+		If($CurrServices.Name -Contains $ServiceName) {
 			$ServiceTypeNum = $($item.$BVService)
-			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $SName}).StartType
+			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
+			Switch($ServiceCurrType) {
+				"Disabled" { $ServiceCurrType = "Disabled" ;Break }
+				"Manual" { $ServiceCurrType = "Manual" ;Break }
+				"Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart ;If($exists -eq 1){ $ServiceCurrType = "Automatic (Delayed)" } Else{ $ServiceCurrType = "Automatic" } ;Break }
+			}
 			If($ServiceTypeNum -eq 0) {
 				$checkbox = $False
 				$ServiceTypeNum = $($item.$BVSAlt)
-			} ElseIf($XboxService -eq 1 -and $XboxServiceArr -Contains $SName) {
+			} ElseIf($XboxService -eq 1 -and $XboxServiceArr -Contains $ServiceName) {
 				$checkbox = $False
 			} Else {
 				$checkbox = $True
 			}
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
-			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed Start)" }
-			If($SName -Is [system.array]){ $SName = $SName[0] }
-			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $SName}).DisplayName
-			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $SName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum }
+			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed)" }
+			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
+			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
 		}
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridList
@@ -770,11 +804,27 @@ Function GenerateServices {
 	}
 }
 
+Function BVTypeNameToNumb([String]$Name) {
+	Switch($Name) {
+		"Skip" { $Numb = 0 ;Break }
+		"Disabled" { $Numb = 1 ;Break }
+		"Manual" { $Numb = 2 ;Break }
+		"Automatic" { $Numb = 3 ;Break }
+		Default { $Numb = 4 ;Break }
+	}
+	Return $Numb
+}
+
 Function GetCustomBV {
 	$Script:LoadServiceConfig = 2
 	[System.Collections.ArrayList]$Script:csvTemp = @()
 	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
-	ForEach($item In $ServiceCBList){ $Script:csvTemp+= New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $item.StartType } }
+	
+	ForEach($item In $ServiceCBList){
+		$BVTypeS = BVTypeNameToNumb $item.BVType
+		$Script:csvTemp+= New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
+	}
+						  
 	[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 }
 
@@ -829,6 +879,24 @@ Function ServiceBAfun([String]$ServiceBA) {
 	}
 }
 
+Function GenerateSaveService {
+	$TMPServiceL = @()
+	ForEach($Service In $AllService) {
+		$ServiceName = $Service.Name
+		If(!($Skip_Services -Contains $ServiceName)) {
+			Switch("$($Service.StartType)") {
+				"Disabled" { $StartType = 1 ;Break }
+				"Manual" { $StartType = 2 ;Break }
+				"Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart ;If($exists -eq 1){ $StartType = 4 } Else{ $StartType = 3 } ;Break }
+				Default { $StartType = "$($Service.StartType)" ;Break }
+			}
+			If($ServiceName -Like "*_$ServiceEnd"){ $ServiceName = $ServiceName.Split('_')[0] + "_?????" }
+			$TMPServiceL += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $StartType }
+		}
+	}
+	Return $TMPServiceL
+}
+
 Function Save_Service([String]$SavePath) {
 	$ServiceSavePath = $filebase + $Env:computername
 	$SaveService = @()
@@ -836,31 +904,21 @@ Function Save_Service([String]$SavePath) {
 	If($WPF_CustomBVCB.IsChecked) {
 		$ServiceSavePath += "-Custom-Service.csv"
 		$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
+		
 		ForEach($item In $ServiceCBList) {
 			$ServiceName = $item.ServiceName
-			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
-			$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $item.StartType }
+			$BVTypeS = BVTypeNameToNumb $item.BVType
+			If($ServiceName -Like "*_$ServiceEnd"){ $ServiceName = $ServiceName.Split('_')[0] + "_?????" }
+			$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $BVTypeS }
 		}
 	} Else {
 		If($AllService -eq $null) { 
 			$ServiceSavePath += "-Service-Backup.csv"
-			$AllService = Get-Service | Select-Object Name, StartType
+			$Script:AllService = Get-Service | Select-Object Name, StartType
 		} Else {
 			$ServiceSavePath += "-Custom-Service.csv"
 		}
-		ForEach($Service In $AllService) {
-			$ServiceName = $Service.Name
-			If(!($Skip_Services -Contains $ServiceName)) {
-				Switch("$($Service.StartType)") {
-					"Disabled" { $StartType = 1 ;Break }
-					"Manual" { $StartType = 2 ;Break }
-					"Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart ;If($exists -eq 1){ $StartType = 4 } Else{ $StartType = 3 } ;Break }
-					Default { $StartType = "$($Service.StartType)" ;Break }
-				}
-				If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
-				$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $StartType }
-			}
-		}
+		$SaveService = GenerateSaveService
 	}
 	If($SavePath -ne $null){ $ServiceSavePath = $SavePath}
 	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
@@ -872,113 +930,20 @@ Function Save_ServiceBackup {
 	$SaveService = @()
 	$ServiceSavePath += "-Service-Backup.csv"
 	If($AllService -eq $null) { $AllService = Get-Service | Select-Object Name, StartType }
-
-	ForEach($Service In $AllService) {
-		$ServiceName = $Service.Name
-		If(!($Skip_Services -Contains $ServiceName)) {
-			Switch("$($Service.StartType)") {
-				"Disabled" { $StartType = 1 ;Break }
-				"Manual" { $StartType = 2 ;Break }
-				"Automatic" { $exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart ;If($exists -eq 1){ $StartType = 4 } Else{ $StartType = 3 } ;Break }
-				Default { $StartType = "$($Service.StartType)" ;Break }
-			}
-			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "?????" }
-			$SaveService += New-Object PSObject -Property @{ ServiceName = $ServiceName ;StartType = $StartType }
-		}
-	}
+	$SaveService = GenerateSaveService
 	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding "unicode" -force -Delimiter ","
 }
 
-Function RegistryServiceFileBackup {
-	$SavePath = $filebase + $Env:computername
-	$SavePath += "-Service-Backup.reg"
-	If($AllService -eq $null) { $AllService = Get-Service | Select-Object Name, StartType }
-
-	Write-Output "Windows Registry Editor Version 5.00" | Out-File -Filepath $SavePath
-	Write-Output "" | Out-File -Filepath $SavePath -Append
-	ForEach($Service In $AllService) {
-		$ServiceName = $Service.Name
-		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-		Switch("$($Service.StartType)") {
-			"Disabled" { $ServiceTypeNum = 4 ;Break }
-			"Manual" { $ServiceTypeNum = 3 ;Break }
-			"Automatic" { $ServiceTypeNum = 2 ;Break }
-		}
-		If(!($Skip_Services -Contains $ServiceName)) {
-			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
-			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $SavePath -Append
-			Write-Output "$Num" | Out-File -Filepath $SavePath -Append
-			If($ServiceTypeNum -eq 2) {
-				$exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart 
-				If($exists -eq 1){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $SavePath -Append }
-			}
-			Write-Output "" | Out-File -Filepath $SavePath -Append
-		}
-	}
-}
-
-Function ServiceSet([String]$BVService) {
-	Clear-Host
-	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
-	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
-	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
-	ServiceBAfun "Services-Before"
-	#$csv = $csv | Where-Object { $_.ServiceName -ne "xbgm" }
-	If($DryRun -ne 1){ DisplayOut "Changing Service Please wait..." 14 0 } Else{ DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
-	DisplayOut "Service_Name - Current -> Change_To" 14 0
-	DisplayOut "-------------------------------------" 14 0
-	ForEach($item In $csv) {
-		$ServiceTypeNum = $($item.$BVService)
-		$ServiceName = $($item.ServiceName)
-		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-		If($ServiceTypeNum -eq 0 -And $ShowSkipped -eq 1) {
-			If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
-			DisplayOut $DispTemp  14 0
-		} ElseIf($ServiceTypeNum -ne 0) {
-			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
-			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
-			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
-			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			If($ServiceCurrType -eq "Xbox") {
-				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
-				DisplayOut $DispTemp  2 0
-			} ElseIf($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
-				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
-				If($ServiceTypeNum -In 1..4 -And $DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
-				If($ServiceTypeNum -eq 4) {
-					$DispTemp += " (Delayed Start)"
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name "DelayedAutostart" -Type DWord -Value 1 }
-				}
-				DisplayOut $DispTemp  11 0
-			} ElseIf($ServiceCurrType -eq "Already" -And $ShowAlreadySet -eq 1) {
-				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
-				If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed Start)" }
-				DisplayOut $DispTemp  15 0
-			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
-				$DispTemp = "No service with name $ServiceName"
-				DisplayOut $DispTemp  13 0
-			}
-		}
-	}
-	DisplayOut "-------------------------------------" 14 0
-	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 ;ThanksDonate } Else{ DisplayOut "List of Service Done..." 14 0 }
-	If($BackupServiceConfig -eq 1){
-		If($BackupServiceType -eq 1){ DisplayOut "Backup of Services Saved as CSV file in script directory." 14 0 }
-		ElseIf($BackupServiceType -eq 0){ DisplayOut "Backup of Services Saved as REG file in script directory." 14 0 }
-		ElseIf($BackupServiceType -eq 2){ DisplayOut "Backup of Services Saved as CSV and REG file in script directory." 14 0 }
-	}
-	ServiceBAfun "Services-After"
-	AutomatedExitCheck 1
-}
-
-Function RegistryServiceFile([String]$TempFP) {
+Function GenerateRegistryCustom([String]$TempFP) {
 	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
+	
 	Write-Output "Windows Registry Editor Version 5.00" | Out-File -Filepath $TempFP
 	Write-Output "" | Out-File -Filepath $TempFP -Append
 
 	ForEach($item In $ServiceCBList) {
-		$ServiceTypeNum = $item.StartType
 		$ServiceName = $item.ServiceName
+		$ServiceTypeNum = BVTypeNameToNumb $item.BVType
+				
 		If($ServiceTypeNum -ne 0) {
 			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
@@ -991,7 +956,98 @@ Function RegistryServiceFile([String]$TempFP) {
 			}
 		}
 	}
+}
+
+Function RegistryServiceFileBackup {
+	$SavePath = $filebase + $Env:computername
+	$SavePath += "-Service-Backup.reg"
+	If($WPF_CustomBVCB.IsChecked) { GenerateRegistryCustom $SavePath } Else { GenerateRegistryRegular $SavePath }
+}
+
+Function RegistryServiceFile([String]$TempFP) {
+	If($WPF_CustomBVCB.IsChecked) { GenerateRegistryCustom $TempFP } Else { GenerateRegistryRegular $TempFP }
 	[Windows.Forms.MessageBox]::Show("Registry File saved as '$TempFP'","File Saved", 'OK')
+}
+
+Function GenerateRegistryRegular([String]$TempFP) {
+	If($AllService -eq $null) { $Script:AllService = Get-Service | Select-Object Name, StartType }
+	Write-Output "Windows Registry Editor Version 5.00" | Out-File -Filepath $TempFP
+	Write-Output "" | Out-File -Filepath $TempFP -Append
+	ForEach($Service In $AllService) {
+		$ServiceName = $Service.Name
+		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+		Switch("$($Service.StartType)") {
+			"Disabled" { $ServiceTypeNum = 4 ;Break }
+			"Manual" { $ServiceTypeNum = 3 ;Break }
+			"Automatic" { $ServiceTypeNum = 2 ;Break }
+		}
+		If(!($Skip_Services -Contains $ServiceName)) {
+			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
+			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $TempFP -Append
+			Write-Output "$Num" | Out-File -Filepath $TempFP -Append
+			If($ServiceTypeNum -eq 2) {
+				$exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart 
+				If($exists -eq 1){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $TempFP -Append }
+			}
+			Write-Output "" | Out-File -Filepath $TempFP -Append
+		}
+	}
+}
+
+Function ServiceSet([String]$BVService) {
+	Clear-Host
+	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
+	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
+	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
+	ServiceBAfun "Services-Before"
+	If($DryRun -ne 1){ DisplayOut "Changing Service Please wait..." 14 0 } Else{ DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
+	DisplayOut "Service_Name - Current -> Change_To" 14 0
+	DisplayOut "-------------------------------------" 14 0
+	ForEach($item In $csv) {
+		$ServiceTypeNum = $($item.$BVService)
+		$ServiceName = $($item.ServiceName)
+		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
+		If($ServiceTypeNum -eq 0 -And $ShowSkipped -eq 1) {
+			If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
+			DisplayOut $DispTemp  14 0
+		} ElseIf($ServiceTypeNum -ne 0 -and $ServiceTypeNum -In 1..4) {
+			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
+			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
+			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
+			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+			If($ServiceCurrType -eq "Xbox") {
+				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
+				DisplayOut $DispTemp  2 0
+			} ElseIf($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
+				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
+				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
+				If($ServiceTypeNum -eq 4) {
+					$DispTemp += " (Delayed)"
+					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name "DelayedAutostart" -Type DWord -Value 1 }
+				}
+				DisplayOut $DispTemp  11 0
+			} ElseIf($ServiceCurrType -eq "Already" -And $ShowAlreadySet -eq 1) {
+				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+				If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed)" }
+				DisplayOut $DispTemp  15 0
+			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
+				$DispTemp = "No service with name $ServiceName"
+				DisplayOut $DispTemp  13 0
+			}
+		} ElseIf($ServiceTypeNum -NotIn 1..4 -and $ServiceTypeNum -ne 0) {
+			$DispTemp = "Error: $ServiceName does not have a valid Setting."
+			DisplayOut $DispTemp  13 0
+		}
+	}
+	DisplayOut "-------------------------------------" 14 0
+	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 ;ThanksDonate } Else{ DisplayOut "List of Service Done..." 14 0 }
+	If($BackupServiceConfig -eq 1){
+		If($BackupServiceType -eq 1){ DisplayOut "Backup of Services Saved as CSV file in script directory." 14 0 }
+		ElseIf($BackupServiceType -eq 0){ DisplayOut "Backup of Services Saved as REG file in script directory." 14 0 }
+		ElseIf($BackupServiceType -eq 2){ DisplayOut "Backup of Services Saved as CSV and REG file in script directory." 14 0 }
+	}
+	ServiceBAfun "Services-After"
+	AutomatedExitCheck 1
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
@@ -1244,7 +1300,6 @@ Function ScriptUpdateFun {
 	If($Diagnostic -eq 1){ $UpArg += "-diag " }
 	If($LogBeforeAfter -eq 1){ $UpArg += "-baf " }
 	If($DryRun -eq 1){ $UpArg += "-dry " }
-	If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
 	If($ShowSkipped -eq 1){ $UpArg += "-sss " }
 	If($DevLog -eq 1){ $UpArg += "-devl " }
 	If($ScriptLog -eq 1){ $UpArg += "-logc $LogName " }
@@ -1380,6 +1435,7 @@ Function ShowHelp {
 	DisplayOutMenu "  -dry  " 15 0 0 ;DisplayOut "           Runs the script and shows what services will be changed" 14 0
 	DisplayOutMenu "  -diag  " 15 0 0 ;DisplayOutMenu "          Shows diagnostic information, Stops " 14 0 0 ;DisplayOut "-auto" 15 0
 	DisplayOutMenu "  -snis  " 15 0 0 ;DisplayOut "          Show not installed Services" 14 0
+	DisplayOutMenu "  -sss   " 15 0 0 ;DisplayOut "          Show Skipped Services" 14 0	
 	Write-Host "`nPress Any key to Close..." -ForegroundColor White -BackgroundColor Black
 	$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC") | out-null
 	Exit
@@ -1389,18 +1445,18 @@ Function ArgsAndVarSet {
 	$Script:IsLaptop = LaptopCheck
 	If($PassedArg.Length -gt 0){ GetArgs }
 
-	$Script:WinSku = (Get-WmiObject Win32_OperatingSystem).OperatingSystemSKU
+	$Script:WinSku = (Get-CimInstance Win32_OperatingSystem).OperatingSystemSKU
 	# 48 = Pro, 49 = Pro N
 	# 98 = Home N, 100 = Home (Single Language), 101 = Home
 
-	$Script:FullWinEdition = (Get-WmiObject Win32_OperatingSystem).Caption
+	$Script:FullWinEdition = (Get-CimInstance Win32_OperatingSystem).Caption
 	$Script:WinEdition = $FullWinEdition.Split(' ')[-1]
 	# Pro or Home
 
 	# https://en.wikipedia.org/wiki/Windows_10_version_history
-
 	$Script:MinBuild = 15063
 	$Script:BuildVer = [Environment]::OSVersion.Version.build
+	# 17133 = Spring Creators Update	
 	# 16299 = Fall Creators Update
 	# 15063 = Creators Update
 	# 14393 = Anniversary Update
@@ -1409,6 +1465,7 @@ Function ArgsAndVarSet {
 
 	$Script:MinVer = 1703
 	$Script:Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).ReleaseId
+	# 1803 = Spring Creators Update	
 	# 1709 = Fall Creators Update
 	# 1703 = Creators Update
 	# 1607 = Anniversary Update
