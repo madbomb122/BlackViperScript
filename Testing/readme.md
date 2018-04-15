@@ -1,8 +1,5 @@
 # Currently Testing (Read Notes)
-Things that needs Testing
-1. Running Script with custom list (from Service List grid)
-2. Saving Services
-3. Saving Reg File
+Nothing ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
