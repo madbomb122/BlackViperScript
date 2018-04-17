@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.1"
-$Minor_Version = "7"
-$Script_Date = "Apr-14-2018"
+$Minor_Version = "8"
+$Script_Date = "Apr-17-2018"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -498,15 +498,20 @@ Function GuiStart {
    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="236,-3,0,-1" Stroke="Black" Width="1"/></Grid>
   </TabItem>
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
-    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended"><DataGrid.Columns>
-     <DataGridCheckBoxColumn Binding="{Binding checkboxChecked, UpdateSourceTrigger=PropertyChanged}"><DataGridCheckBoxColumn.ElementStyle>
-     <Style TargetType="CheckBox"/></DataGridCheckBoxColumn.ElementStyle></DataGridCheckBoxColumn>
+    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+     <DataGrid.Columns> <DataGridTemplateColumn>
+     <DataGridTemplateColumn.Header> <CheckBox Name="ACUcheckboxChecked"/> </DataGridTemplateColumn.Header>
+     <DataGridTemplateColumn.CellTemplate> <DataTemplate>
+      <CheckBox Name="GDCheckB" IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/>
+     </DataTemplate> </DataGridTemplateColumn.CellTemplate> </DataGridTemplateColumn>
      <DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}"/>
      <DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}"/>
      <DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}"/>
      <DataGridTemplateColumn Header="Black Viper" Width="95" CanUserSort="True"><DataGridTemplateColumn.CellTemplate><DataTemplate>
-      <ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"> </ComboBox></DataTemplate>
+      <ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/> </DataTemplate>
      </DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+<!-- <DataGridTextColumn Header="Description" Width="95" Binding="{Binding SrvDesc}"/> -->
+<!-- <DataGridTextColumn Header="Path" Width="95" Binding="{Binding SrvPath}"/> -->
     </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="103,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
@@ -580,8 +585,8 @@ Function GuiStart {
 
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
 	$WPF_ScriptLog_CB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $False })
-	$WPF_CustomBVCB.Add_Checked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Selection" })
-	$WPF_CustomBVCB.Add_UnChecked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Current" })
+	$WPF_CustomBVCB.Add_Checked({ CustomBVCBFun $True })
+	$WPF_CustomBVCB.Add_UnChecked({ CustomBVCBFun $False })
 	$WPF_btnOpenFile.Add_Click({ OpenSaveDiaglog 0 })
 	$WPF_SaveCustomSrvButton.Add_Click({ OpenSaveDiaglog 1 })
 	$WPF_SaveRegButton.Add_Click({ OpenSaveDiaglog 2 })
@@ -593,6 +598,20 @@ Function GuiStart {
 	$WPF_DonateButton.Add_Click({ OpenWebsite "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" })
 	$WPF_LoadServicesButton.Add_Click({ GenerateServices })
 	$WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK') })
+	$WPF_ACUcheckboxChecked.Add_Checked({ DGUCheckAll $True })
+	$WPF_ACUcheckboxChecked.Add_UnChecked({ DGUCheckAll $False })
+
+Function CustomBVCBFun([String]$Choice) {
+	RunDisableCheck
+	If($Choice){
+		$WPF_SaveCustomSrvButton.content = "Save Selection"
+		$WPF_dataGrid.ItemsSource = $DataGridListCust
+	} Else {
+		$WPF_SaveCustomSrvButton.content = "Save Current"
+		$WPF_dataGrid.ItemsSource = $DataGridListOrig
+	}
+	$WPF_dataGrid.Items.Refresh()
+}
 
 	$CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
@@ -736,6 +755,14 @@ Function GuiDone {
 }
 
 Function GenerateServices {
+<#
+	$SName = $Service.Name
+	$svc = [System.Management.ManagementObject]::new("Win32_Service.Name='$SName'")
+	$SrvDescription = $svc["Description"]
+	$SrvPath = $svc["PathName"]
+	$SName = 'xbgm'
+	Get-CimInstance -Class ("Win32_Service.Name='$SName'") | Select-Object Name,PathName,Description
+#>
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
 		If($Script:ServiceGen -eq 0){ $Script:ServiceImport = 1 }
@@ -763,11 +790,17 @@ Function GenerateServices {
 		$ServiceImport = 0
 	}
 	[System.Collections.ArrayList]$DataGridList = @()
+	[System.Collections.ArrayList]$DataGridListCust = @()
 
 	ForEach($item In $ServCB) {
 		$ServiceName = $($item.ServiceName)
 		If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
 		If($CurrServices.Name -Contains $ServiceName) {
+		<#
+			$svc = [System.Management.ManagementObject]::new("Win32_Service.Name='$ServiceName'")
+			$SrvDescription = $svc["Description"]
+			$SrvPath = $svc["PathName"]
+		#>
 			$ServiceTypeNum = $($item.$BVService)
 			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
 			Switch($ServiceCurrType) {
@@ -787,10 +820,13 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed)" }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
+#			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
 			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
 		}
 	}
-	$WPF_dataGrid.ItemsSource = $DataGridList
+	[System.Collections.ArrayList]$Script:DataGridListCust = $DataGridList
+	[System.Collections.ArrayList]$Script:DataGridListOrig = $DataGridList
+	$WPF_dataGrid.ItemsSource = $DataGridListCust
 	$WPF_dataGrid.Items.Refresh()
 
 	If(!($ServicesGenerated)) {
@@ -816,16 +852,18 @@ Function BVTypeNameToNumb([String]$Name) {
 	Return $Numb
 }
 
+Function DGUCheckAll([String]$Choice) { 
+	If($WPF_CustomBVCB.IsChecked){ ForEach($itm in $WPF_dataGrid.Items) { $itm.checkboxChecked = $Choice } } 
+}
+
 Function GetCustomBV {
 	$Script:LoadServiceConfig = 2
 	[System.Collections.ArrayList]$Script:csvTemp = @()
 	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
-	
 	ForEach($item In $ServiceCBList){
 		$BVTypeS = BVTypeNameToNumb $item.BVType
 		$Script:csvTemp+= New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
 	}
-						  
 	[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 }
 
