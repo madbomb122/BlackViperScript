@@ -601,18 +601,6 @@ Function GuiStart {
 	$WPF_ACUcheckboxChecked.Add_Checked({ DGUCheckAll $True })
 	$WPF_ACUcheckboxChecked.Add_UnChecked({ DGUCheckAll $False })
 
-Function CustomBVCBFun([String]$Choice) {
-	RunDisableCheck
-	If($Choice){
-		$WPF_SaveCustomSrvButton.content = "Save Selection"
-		$WPF_dataGrid.ItemsSource = $DataGridListCust
-	} Else {
-		$WPF_SaveCustomSrvButton.content = "Save Current"
-		$WPF_dataGrid.ItemsSource = $DataGridListOrig
-	}
-	$WPF_dataGrid.Items.Refresh()
-}
-
 	$CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
 --------------------------------------------------------------------------------
@@ -687,6 +675,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	Clear-Host
 	DisplayOutMenu "Displaying GUI Now" 14 0 1 0
 	$Form.ShowDialog() | Out-Null
+}
+
+Function CustomBVCBFun([String]$Choice) {
+	RunDisableCheck
+	If($Choice){
+		$WPF_SaveCustomSrvButton.content = "Save Selection"
+		$WPF_dataGrid.ItemsSource = $DataGridListCust
+	} Else {
+		$WPF_SaveCustomSrvButton.content = "Save Current"
+		$WPF_dataGrid.ItemsSource = $DataGridListOrig
+	}
+	$WPF_dataGrid.Items.Refresh()
 }
 
 Function RunDisableCheck {
@@ -826,7 +826,7 @@ Function GenerateServices {
 	}
 	[System.Collections.ArrayList]$Script:DataGridListCust = $DataGridList
 	[System.Collections.ArrayList]$Script:DataGridListOrig = $DataGridList
-	$WPF_dataGrid.ItemsSource = $DataGridListCust
+	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
 
 	If(!($ServicesGenerated)) {
