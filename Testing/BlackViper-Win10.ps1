@@ -1033,6 +1033,7 @@ Function ServiceSet([String]$BVService) {
 	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
 	If($DryRun -ne 1){ DisplayOut "Changing Service Please wait..." 14 0 } Else{ DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
+	DisplayOutMenu "Service Setting: " 14 0 0 1 ; DisplayOutMenu "$BVSet" 15 0 1 1 
 	DisplayOut "Service_Name - Current -> Change_To" 14 0
 	DisplayOut "-------------------------------------" 14 0
 	ForEach($item In $csv) {
@@ -1102,10 +1103,10 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
 	Switch($BVOpt) {
-		{$LoadServiceConfig -In 1..2} { ServiceSet "StartType" ;Break }
-		1 { ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
-		2 { ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
-		3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
+		{$LoadServiceConfig -In 1..2} { $BVSet = "Custom" ;ServiceSet "StartType" ;Break }
+		1 { $BVSet = "Default" ;ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
+		2 { $BVSet = "Safe" ;ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
+		3 { $BVSet = "Tweaked" ;ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
 	}
 }
 
