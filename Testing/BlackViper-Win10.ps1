@@ -422,6 +422,7 @@ Function HideCustomSrvStuff {
 Function GuiStart {
 	Clear-Host
 	DisplayOutMenu "Preparing GUI, Please wait..." 15 0 1 0
+	$Script:GuiLoad = 1
 	$TPath = $filebase + "BlackViper.csv"
 	If(Test-Path $TPath -PathType Leaf) {
 		$TMP = Import-Csv $TPath
@@ -674,6 +675,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	RunDisableCheck
 	Clear-Host
 	DisplayOutMenu "Displaying GUI Now" 14 0 1 0
+	DisplayOut "`nTo exit you can close the GUI or Powershell Window." 14 0
 	$Form.ShowDialog() | Out-Null
 }
 
@@ -751,7 +753,7 @@ Function GuiDone {
 	If($WPF_CustomBVCB.IsChecked){ GetCustomBV }
 	If($WPF_BackupServiceConfig_CB.IsChecked){ $Script:BackupServiceType = $WPF_BackupServiceType.SelectedIndex }
 
-	$Form.Close()
+#	$Form.Close()
 	Black_Viper_Set $Black_Viper $All_or_Min
 }
 
@@ -1081,7 +1083,7 @@ Function ServiceSet([String]$BVService) {
 		ElseIf($BackupServiceType -eq 2){ DisplayOut "Backup of Services Saved as CSV and REG file in script directory." 14 0 }
 	}
 	ServiceBAfun "Services-After"
-	AutomatedExitCheck 1
+	If($GuiLoad -eq 1){ DisplayOut "`nTo exit you can close the GUI or Powershell Window." 14 0 } Else{ AutomatedExitCheck 1 }
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
