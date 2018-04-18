@@ -1073,7 +1073,8 @@ Function ServiceSet([String]$BVService) {
 		}
 	}
 	DisplayOut "-------------------------------------" 14 0
-	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 ;ThanksDonate } Else{ DisplayOut "List of Service Done..." 14 0 }
+	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 } Else{ DisplayOut "List of Service Done..." 14 0 }
+	ThanksDonate
 	If($BackupServiceConfig -eq 1){
 		If($BackupServiceType -eq 1){ DisplayOut "Backup of Services Saved as CSV file in script directory." 14 0 }
 		ElseIf($BackupServiceType -eq 0){ DisplayOut "Backup of Services Saved as REG file in script directory." 14 0 }
