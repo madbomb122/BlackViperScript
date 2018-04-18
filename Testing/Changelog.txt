@@ -32,6 +32,11 @@ Fixed a bug that showed Automatic Delayed as Automatic for current services in "
 
 Added ability to Check/Uncheck all items for the "Service List" grid
 Changed "Service List" Checkboxes and Comboboxes to be disabled unless "Customize Service" is checked
+Disable item -> Added the ability to show description and service path, Disabled due to longer "Service List" 
+^load time you can re-enable by looking for "#Disabled Description Item" and uncommenting those items
+Changed "Service List" to show the original unchanged "Service List" when "Customize Service" is un-checked
+^and shows the custom  "Service List" when "Customize Service" is checked (if anything was changed)
+
 
 -----------------------------------------------------------------------------------
 4.1.0 (01-16-2018)
