@@ -10,7 +10,7 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.1"
-$Minor_Version = "8"
+$Minor_Version = "9"
 $Script_Date = "Apr-17-2018"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
@@ -510,8 +510,8 @@ Function GuiStart {
      <DataGridTemplateColumn Header="Black Viper" Width="95" CanUserSort="True"><DataGridTemplateColumn.CellTemplate><DataTemplate>
       <ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/> </DataTemplate>
      </DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
-<!-- <DataGridTextColumn Header="Description" Width="95" Binding="{Binding SrvDesc}"/> -->
-<!-- <DataGridTextColumn Header="Path" Width="95" Binding="{Binding SrvPath}"/> -->
+     <DataGridTextColumn Header="Description" Width="95" Binding="{Binding SrvDesc}"/>
+     <DataGridTextColumn Header="Path" Width="95" Binding="{Binding SrvPath}"/>
     </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="103,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
@@ -756,15 +756,10 @@ Function GuiDone {
 }
 
 Function GenerateServices {
-<#
-	#Disabled Description Item
-	$SName = $Service.Name
-	$svc = [System.Management.ManagementObject]::new("Win32_Service.Name='$SName'")
-	$SrvDescription = $svc["Description"]
-	$SrvPath = $svc["PathName"]
-	$SName = 'xbgm'
-	Get-CimInstance -Class ("Win32_Service.Name='$SName'") | Select-Object Name,PathName,Description
-#>
+#   StartMode = StartType
+#	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName
+
+	If($SrvCollected -ne 0) { $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName ;$Script:SrvCollected = 1 }
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
 		If($Script:ServiceGen -eq 0){ $Script:ServiceImport = 1 }
@@ -798,12 +793,9 @@ Function GenerateServices {
 		$ServiceName = $($item.ServiceName)
 		If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
 		If($CurrServices.Name -Contains $ServiceName) {
-		<#
-			#Disabled Description Item
-			$svc = [System.Management.ManagementObject]::new("Win32_Service.Name='$ServiceName'")
-			$SrvDescription = $svc["Description"]
-			$SrvPath = $svc["PathName"]
-		#>
+			$tmp = $ServiceInfo -match $ServiceName
+			$SrvDescription = $tmp.Description
+			$SrvPath = $tmp.PathName
 			$ServiceTypeNum = $($item.$BVService)
 			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
 			Switch($ServiceCurrType) {
@@ -823,11 +815,8 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed)" }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-			#Disabled Description Item (uncomment next 2 lines.. remove 2 after)
-#			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
-#			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
-			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
-			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }		
+			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
+			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
 		}
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
