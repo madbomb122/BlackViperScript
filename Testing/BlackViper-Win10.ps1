@@ -757,6 +757,7 @@ Function GuiDone {
 
 Function GenerateServices {
 <#
+	#Disabled Description Item
 	$SName = $Service.Name
 	$svc = [System.Management.ManagementObject]::new("Win32_Service.Name='$SName'")
 	$SrvDescription = $svc["Description"]
@@ -798,6 +799,7 @@ Function GenerateServices {
 		If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
 		If($CurrServices.Name -Contains $ServiceName) {
 		<#
+			#Disabled Description Item
 			$svc = [System.Management.ManagementObject]::new("Win32_Service.Name='$ServiceName'")
 			$SrvDescription = $svc["Description"]
 			$SrvPath = $svc["PathName"]
@@ -821,11 +823,13 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed)" }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-#			$DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
+			#Disabled Description Item (uncomment next 2 lines.. remove 2 after)
+#			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
+#			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
 			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
+			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }		
 		}
 	}
-	$Script:DataGridListCust = $DataGridListOrig
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
 
