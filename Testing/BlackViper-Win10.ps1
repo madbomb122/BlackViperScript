@@ -677,16 +677,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$Form.ShowDialog() | Out-Null
 }
 
-Function CustomBVCBFun([String]$Choice) {
-	RunDisableCheck
+Function CustomBVCBFun([Bool]$Choice) {
 	If($Choice){
 		$WPF_SaveCustomSrvButton.content = "Save Selection"
 		$WPF_dataGrid.ItemsSource = $DataGridListCust
 	} Else {
 		$WPF_SaveCustomSrvButton.content = "Save Current"
 		$WPF_dataGrid.ItemsSource = $DataGridListOrig
+
 	}
-	$WPF_dataGrid.Items.Refresh()
+	$WPF_dataGrid.Items.Refresh()	
+	RunDisableCheck
 }
 
 Function RunDisableCheck {
@@ -789,8 +790,8 @@ Function GenerateServices {
 		[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
 		$ServiceImport = 0
 	}
-	[System.Collections.ArrayList]$DataGridList = @()
-	[System.Collections.ArrayList]$DataGridListCust = @()
+	[System.Collections.ArrayList]$Script:DataGridListOrig = @{}
+	[System.Collections.ArrayList]$Script:DataGridListCust = @{}
 
 	ForEach($item In $ServCB) {
 		$ServiceName = $($item.ServiceName)
@@ -820,12 +821,11 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed)" }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-#			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
-			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
+#			$DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
+			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
 		}
 	}
-	[System.Collections.ArrayList]$Script:DataGridListCust = $DataGridList
-	[System.Collections.ArrayList]$Script:DataGridListOrig = $DataGridList
+	$Script:DataGridListCust = $DataGridListOrig
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
 
@@ -852,7 +852,7 @@ Function BVTypeNameToNumb([String]$Name) {
 	Return $Numb
 }
 
-Function DGUCheckAll([String]$Choice) { 
+Function DGUCheckAll([Bool]$Choice) { 
 	If($WPF_CustomBVCB.IsChecked){ ForEach($itm in $WPF_dataGrid.Items) { $itm.checkboxChecked = $Choice } } 
 }
 
@@ -862,7 +862,7 @@ Function GetCustomBV {
 	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
 	ForEach($item In $ServiceCBList){
 		$BVTypeS = BVTypeNameToNumb $item.BVType
-		$Script:csvTemp+= New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
+		$Script:csvTemp += New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
 	}
 	[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 }
