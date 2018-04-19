@@ -501,9 +501,9 @@ Function GuiStart {
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
     <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
      <DataGrid.Columns> <DataGridTemplateColumn>
-     <DataGridTemplateColumn.Header> <CheckBox Name="ACUcheckboxChecked"/> </DataGridTemplateColumn.Header>
+     <DataGridTemplateColumn.Header> <CheckBox Name="ACUcheckboxChecked" IsEnabled="False"/> </DataGridTemplateColumn.Header>
      <DataGridTemplateColumn.CellTemplate> <DataTemplate>
-      <CheckBox Name="GDCheckB" IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/>
+      <CheckBox IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/>
      </DataTemplate> </DataGridTemplateColumn.CellTemplate> </DataGridTemplateColumn>
      <DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}"/>
      <DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}"/>
@@ -680,6 +680,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 }
 
 Function CustomBVCBFun([Bool]$Choice) {
+	$WPF_ACUcheckboxChecked.IsEnabled = $Choice
 	If($Choice){
 		$WPF_SaveCustomSrvButton.content = "Save Selection"
 		$WPF_dataGrid.ItemsSource = $DataGridListCust
@@ -847,8 +848,9 @@ Function BVTypeNameToNumb([String]$Name) {
 	Return $Numb
 }
 
-Function DGUCheckAll([Bool]$Choice) { 
-	If($WPF_CustomBVCB.IsChecked){ ForEach($itm in $WPF_dataGrid.Items) { $itm.checkboxChecked = $Choice } } 
+Function DGUCheckAll([Bool]$Choice) {
+	ForEach($item in $DataGridListCust){ $item.checkboxChecked = $Choice }
+	$WPF_dataGrid.Items.Refresh()
 }
 
 Function GetCustomBV {
