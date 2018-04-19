@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.1.9 (04-18-2018)
+4.2.0 (04-19-2018)
 
 Ability to backup current service configuration as a ".reg" file instead of ".csv"
  ^or save as both type
