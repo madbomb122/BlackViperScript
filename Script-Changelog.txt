@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.1.7 (04-14-2018)
+4.2.0 (04-19-2018)
 
 Ability to backup current service configuration as a ".reg" file instead of ".csv"
  ^or save as both type
@@ -29,6 +29,15 @@ Changed it so you have to click checkbox to use the changed service list (if you
 Fixed Saving of Reg file so it can use the customized list
 Fixed a bug with services that have a '_' in the name
 Fixed a bug that showed Automatic Delayed as Automatic for current services in "Service List grid"
+
+Added ability to Check/Uncheck all items for the "Service List" grid
+Changed "Service List" Checkboxes and Comboboxes to be disabled unless "Customize Service" is checked
+Changed "Service List" to show the original unchanged "Service List" when "Customize Service" is un-checked
+^and shows the custom  "Service List" when "Customize Service" is checked (if anything was changed)
+
+Added description and service path to the "Service List" grid
+Gui window does not close now when you run the script incase you want to change something else
+^you can exit the script by closeing the GUI or powershell window
 
 -----------------------------------------------------------------------------------
 4.1.0 (01-16-2018)
