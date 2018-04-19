@@ -9,9 +9,9 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = "4.1"
-$Minor_Version = "7"
-$Script_Date = "Apr-14-2018"
+$Script_Version = "4.2"
+$Minor_Version = "0"
+$Script_Date = "Apr-19-2018"
 $Release_Type = "Stable"
 ##########
 
@@ -421,6 +421,7 @@ Function HideCustomSrvStuff {
 Function GuiStart {
 	Clear-Host
 	DisplayOutMenu "Preparing GUI, Please wait..." 15 0 1 0
+	$Script:GuiLoad = 1
 	$TPath = $filebase + "BlackViper.csv"
 	If(Test-Path $TPath -PathType Leaf) {
 		$TMP = Import-Csv $TPath
@@ -497,15 +498,20 @@ Function GuiStart {
    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="236,-3,0,-1" Stroke="Black" Width="1"/></Grid>
   </TabItem>
   <TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0"><Grid Background="#FFE5E5E5">
-    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" IsReadOnly="True" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended"><DataGrid.Columns>
-     <DataGridCheckBoxColumn Binding="{Binding checkboxChecked, UpdateSourceTrigger=PropertyChanged}"><DataGridCheckBoxColumn.ElementStyle>
-     <Style TargetType="CheckBox"/></DataGridCheckBoxColumn.ElementStyle></DataGridCheckBoxColumn>
+    <DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+     <DataGrid.Columns> <DataGridTemplateColumn>
+     <DataGridTemplateColumn.Header> <CheckBox Name="ACUcheckboxChecked" IsEnabled="False"/> </DataGridTemplateColumn.Header>
+     <DataGridTemplateColumn.CellTemplate> <DataTemplate>
+      <CheckBox IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/>
+     </DataTemplate> </DataGridTemplateColumn.CellTemplate> </DataGridTemplateColumn>
      <DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}"/>
      <DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}"/>
      <DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}"/>
      <DataGridTemplateColumn Header="Black Viper" Width="95" CanUserSort="True"><DataGridTemplateColumn.CellTemplate><DataTemplate>
-      <ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"> </ComboBox></DataTemplate>
+      <ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/> </DataTemplate>
      </DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+     <DataGridTextColumn Header="Description" Width="95" Binding="{Binding SrvDesc}"/>
+     <DataGridTextColumn Header="Path" Width="95" Binding="{Binding SrvPath}"/>
     </DataGrid.Columns></DataGrid>
    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
    <Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="103,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
@@ -579,8 +585,8 @@ Function GuiStart {
 
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
 	$WPF_ScriptLog_CB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $False })
-	$WPF_CustomBVCB.Add_Checked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Selection" })
-	$WPF_CustomBVCB.Add_UnChecked({ RunDisableCheck ;$WPF_SaveCustomSrvButton.content = "Save Current" })
+	$WPF_CustomBVCB.Add_Checked({ CustomBVCBFun $True })
+	$WPF_CustomBVCB.Add_UnChecked({ CustomBVCBFun $False })
 	$WPF_btnOpenFile.Add_Click({ OpenSaveDiaglog 0 })
 	$WPF_SaveCustomSrvButton.Add_Click({ OpenSaveDiaglog 1 })
 	$WPF_SaveRegButton.Add_Click({ OpenSaveDiaglog 2 })
@@ -592,6 +598,8 @@ Function GuiStart {
 	$WPF_DonateButton.Add_Click({ OpenWebsite "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" })
 	$WPF_LoadServicesButton.Add_Click({ GenerateServices })
 	$WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,"Copyright", 'OK') })
+	$WPF_ACUcheckboxChecked.Add_Checked({ DGUCheckAll $True })
+	$WPF_ACUcheckboxChecked.Add_UnChecked({ DGUCheckAll $False })
 
 	$CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
@@ -666,7 +674,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	RunDisableCheck
 	Clear-Host
 	DisplayOutMenu "Displaying GUI Now" 14 0 1 0
+	DisplayOut "`nTo exit you can close the GUI or Powershell Window." 14 0
 	$Form.ShowDialog() | Out-Null
+}
+
+Function CustomBVCBFun([Bool]$Choice) {
+	$WPF_ACUcheckboxChecked.IsEnabled = $Choice
+	If($Choice){
+		$WPF_SaveCustomSrvButton.content = "Save Selection"
+		$WPF_dataGrid.ItemsSource = $DataGridListCust
+	} Else {
+		$WPF_SaveCustomSrvButton.content = "Save Current"
+		$WPF_dataGrid.ItemsSource = $DataGridListOrig
+
+	}
+	$WPF_dataGrid.Items.Refresh()	
+	RunDisableCheck
 }
 
 Function RunDisableCheck {
@@ -730,11 +753,15 @@ Function GuiDone {
 	If($WPF_CustomBVCB.IsChecked){ GetCustomBV }
 	If($WPF_BackupServiceConfig_CB.IsChecked){ $Script:BackupServiceType = $WPF_BackupServiceType.SelectedIndex }
 
-	$Form.Close()
+#	$Form.Close()
 	Black_Viper_Set $Black_Viper $All_or_Min
 }
 
 Function GenerateServices {
+#   StartMode = StartType
+#	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName
+
+	If($SrvCollected -ne 0) { $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName ;$Script:SrvCollected = 1 }
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
 		If($Script:ServiceGen -eq 0){ $Script:ServiceImport = 1 }
@@ -761,12 +788,16 @@ Function GenerateServices {
 		[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
 		$ServiceImport = 0
 	}
-	[System.Collections.ArrayList]$DataGridList = @()
+	[System.Collections.ArrayList]$Script:DataGridListOrig = @{}
+	[System.Collections.ArrayList]$Script:DataGridListCust = @{}
 
 	ForEach($item In $ServCB) {
 		$ServiceName = $($item.ServiceName)
 		If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
 		If($CurrServices.Name -Contains $ServiceName) {
+			$tmp = $ServiceInfo -match $ServiceName
+			$SrvDescription = $tmp.Description
+			$SrvPath = $tmp.PathName
 			$ServiceTypeNum = $($item.$BVService)
 			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
 			Switch($ServiceCurrType) {
@@ -786,10 +817,11 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 4){ $ServiceType += " (Delayed)" }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-			$DataGridList += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst }
+			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
+			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
 		}
 	}
-	$WPF_dataGrid.ItemsSource = $DataGridList
+	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
 
 	If(!($ServicesGenerated)) {
@@ -815,16 +847,19 @@ Function BVTypeNameToNumb([String]$Name) {
 	Return $Numb
 }
 
+Function DGUCheckAll([Bool]$Choice) {
+	ForEach($item in $DataGridListCust){ $item.checkboxChecked = $Choice }
+	$WPF_dataGrid.Items.Refresh()
+}
+
 Function GetCustomBV {
 	$Script:LoadServiceConfig = 2
 	[System.Collections.ArrayList]$Script:csvTemp = @()
 	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $true})
-	
 	ForEach($item In $ServiceCBList){
 		$BVTypeS = BVTypeNameToNumb $item.BVType
-		$Script:csvTemp+= New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
+		$Script:csvTemp += New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
 	}
-						  
 	[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 }
 
@@ -1001,6 +1036,7 @@ Function ServiceSet([String]$BVService) {
 	If($LogBeforeAfter -eq 2) { DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
 	If($DryRun -ne 1){ DisplayOut "Changing Service Please wait..." 14 0 } Else{ DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
+	DisplayOutMenu "Service Setting: " 14 0 0 1 ; DisplayOutMenu "$BVSet" 15 0 1 1 
 	DisplayOut "Service_Name - Current -> Change_To" 14 0
 	DisplayOut "-------------------------------------" 14 0
 	ForEach($item In $csv) {
@@ -1040,14 +1076,15 @@ Function ServiceSet([String]$BVService) {
 		}
 	}
 	DisplayOut "-------------------------------------" 14 0
-	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 ;ThanksDonate } Else{ DisplayOut "List of Service Done..." 14 0 }
+	If($DryRun -ne 1){ DisplayOut "Service Changed..." 14 0 } Else{ DisplayOut "List of Service Done..." 14 0 }
+	ThanksDonate
 	If($BackupServiceConfig -eq 1){
 		If($BackupServiceType -eq 1){ DisplayOut "Backup of Services Saved as CSV file in script directory." 14 0 }
 		ElseIf($BackupServiceType -eq 0){ DisplayOut "Backup of Services Saved as REG file in script directory." 14 0 }
 		ElseIf($BackupServiceType -eq 2){ DisplayOut "Backup of Services Saved as CSV and REG file in script directory." 14 0 }
 	}
 	ServiceBAfun "Services-After"
-	AutomatedExitCheck 1
+	If($GuiLoad -eq 1){ DisplayOut "`nTo exit you can close the GUI or Powershell Window." 14 0 } Else{ AutomatedExitCheck 1 }
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
@@ -1070,10 +1107,10 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
 	Switch($BVOpt) {
-		{$LoadServiceConfig -In 1..2} { ServiceSet "StartType" ;Break }
-		1 { ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
-		2 { ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
-		3 { ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
+		{$LoadServiceConfig -In 1..2} { $BVSet = "Custom" ;ServiceSet "StartType" ;Break }
+		1 { $BVSet = "Default" ;ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
+		2 { $BVSet = "Safe" ;ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
+		3 { $BVSet = "Tweaked" ;ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
 	}
 }
 
