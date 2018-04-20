@@ -1,7 +1,9 @@
 # Currently Testing (Read Notes)
-Testing out a new GUI look in the file 'New-Gui-Test.ps1'.. This is not a working script, it only shows the new GUI, some items do work.<br />
+Please check out a new GUI look i am working on [New-Gui-Test.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/Testing/New-Gui-Test.ps1)
 
-Comments and suggestions would be useful.
+Please leave any Comments/Suggestion in the Issues I created name [Comments/Suggestions on 'New-Gui-Test.ps1'](https://github.com/madbomb122/BlackViperScript/issues/14)
+
+The script for display only (some items do work)
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
