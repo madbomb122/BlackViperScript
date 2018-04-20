@@ -1,3 +1,7 @@
+Please check out a new GUI look i am working on [New-Gui-Test.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/Testing/New-Gui-Test.ps1)
+
+Please leave any Comments/Suggestion in the Issues I created name [Comments/Suggestions on 'New-Gui-Test.ps1'](https://github.com/madbomb122/BlackViperScript/issues/14)
+
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)<br />
 
 **Current Version** <br />
