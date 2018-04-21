@@ -267,18 +267,15 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="355.061" Width="649.877" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="355.061" Width="650" BorderBrush="Black" Background="White">
     <Window.Effect>
         <DropShadowEffect/>
     </Window.Effect>
     <Grid>
-        <Label Content="Service Version:" HorizontalAlignment="Left" Margin="256,0,0,-1" VerticalAlignment="Bottom" Height="25"/>
-        <Label Content="Script Version:" HorizontalAlignment="Left" Margin="1,0,0,-1" VerticalAlignment="Bottom" Height="25"/>
         <Button Name="RunScriptButton" Content="Run Script" Margin="0,0,0,21" VerticalAlignment="Bottom" Height="20" FontWeight="Bold"/>
-        <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="82,0,0,0" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Bottom" Width="125" IsEnabled="False"/>
-        <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="345,0,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Bottom" Width="129" IsEnabled="False"/>
-        <TextBox Name="Release_Type_Txt" HorizontalAlignment="Left" Height="20" Margin="207,0,0,0" TextWrapping="Wrap" Text="Testing" VerticalAlignment="Bottom" Width="48" IsEnabled="False"/>
-        <TabControl Name="TabControl" Margin="0,17,0,42">
+        <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="2.8.0 (6-21-2017)" VerticalAlignment="Bottom" Width="325" IsEnabled="False" HorizontalContentAlignment="Center"/>
+        <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="326,0,0,0" TextWrapping="Wrap" Text="2.0 (5-21-2017)" VerticalAlignment="Bottom" Width="316" IsEnabled="False" HorizontalContentAlignment="Center"/>
+        <TabControl Name="TabControl" Margin="0,22,0,42">
             <TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0">
                 <Grid Background="#FFE5E5E5">
                     <Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,63,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
@@ -339,15 +336,15 @@ Function GuiStart {
         </TabControl>
         <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,41" Stroke="Black" VerticalAlignment="Bottom"/>
         <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,20" Stroke="Black" VerticalAlignment="Bottom"/>
-        <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="255,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/>
-        <Menu Height="17" VerticalAlignment="Top">
-            <MenuItem Header="_File" Height="17" Width="27">
+        <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="325,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/>
+        <Menu Height="22" VerticalAlignment="Top">
+            <MenuItem Header="_File" Height="22" Width="27">
                 <MenuItem Name="Open" Header="Open File" Height="17" Margin="0"/>
                 <MenuItem Name="Save" Header="Save File" Height="17"/>
                 <Separator Height="2"/>
                 <MenuItem Name="Exit_B" Header="_Exit" Height="17"/>
             </MenuItem>
-            <MenuItem Header="Options" Height="17" Width="50">
+            <MenuItem Header="Options" Height="22" Width="50">
                 <MenuItem Header="Service Options" Height="17">
                     <MenuItem Name="XboxService_CB" Header="Skip Xbox Services" Height="17" IsCheckable="True"/>
                     <MenuItem Name="Dryrun_CB" Header="Dryrun -Show what will be changed (when ran)" Height="17" IsCheckable="True"/>
@@ -384,12 +381,12 @@ Function GuiStart {
                     <MenuItem Name="Diagnostic_CB" Header="Diagnostic Output (on Error)" Height="17" IsCheckable="True"/>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Name="ContactButton" Header="Contact Me" Height="17" Width="70"/>
-            <MenuItem Name="AboutButton" Header="About" Height="17" Width="43"/>
-            <MenuItem Name="DonateButton" Header="Donate to Me" Height="17" Width="88" Background="#FFFFAD2F" FontWeight="Bold"/>
-            <MenuItem Name="CopyrightButton" Header="Copyright" Height="17" Width="67" Background="#FF8ABEF0" FontWeight="Bold"/>
-            <MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="17" Width="128" Background="#FFA7D24D" FontWeight="Bold"/>
-            <MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="17" Width="140" Background="#FFFFE677" FontWeight="Bold"/>
+            <MenuItem Name="ContactButton" Header="Contact Me" Height="22" Width="70"/>
+            <MenuItem Name="AboutButton" Header="About" Height="22" Width="43"/>
+            <MenuItem Name="DonateButton" Header="Donate to Me" Height="22" Width="88" Background="#FFFFAD2F" FontWeight="Bold"/>
+            <MenuItem Name="CopyrightButton" Header="Copyright" Height="22" Width="67" Background="#FF8ABEF0" FontWeight="Bold"/>
+            <MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="22" Width="128" Background="#FFA7D24D" FontWeight="Bold"/>
+            <MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="22" Width="140" Background="#FFFFE677" FontWeight="Bold"/>
         </Menu>
     </Grid>
 </Window>
@@ -505,9 +502,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
 	$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
-	$WPF_Script_Ver_Txt.Text = "$Script_Version.$Minor_Version ($Script_Date)"
-	$WPF_Service_Ver_Txt.Text = "$ServiceVersion ($ServiceDate)"
-	$WPF_Release_Type_Txt.Text = $Release_Type
+	$WPF_Script_Ver_Txt.Text = "Script Version: $Script_Version.$Minor_Version ($Script_Date) -$Release_Type"
+	$WPF_Service_Ver_Txt.Text = "Service Version: $ServiceVersion ($ServiceDate)"
 	$Script:ServiceImport = 1
 	HideCustomSrvStuff
 	RunDisableCheck
