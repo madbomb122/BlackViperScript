@@ -268,6 +268,19 @@ Function GuiStart {
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   Title="Black Viper Service Configuration Script By: MadBomb122" Height="355.061" Width="650" BorderBrush="Black" Background="White">
+    <Window.Resources>
+        <Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Separator}">
+                        <Border Height="24" SnapsToDevicePixels="true" Background="#FF7E7E7E" BorderBrush="#FF7E7E7E" BorderThickness="0,0,0,1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Window.Effect>
         <DropShadowEffect/>
     </Window.Effect>
@@ -338,13 +351,13 @@ Function GuiStart {
         <Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,20" Stroke="Black" VerticalAlignment="Bottom"/>
         <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="325,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/>
         <Menu Height="22" VerticalAlignment="Top">
-            <MenuItem Header="_File" Height="22" Width="27">
-                <MenuItem Name="Open" Header="Open File" Height="17" Margin="0"/>
-                <MenuItem Name="Save" Header="Save File" Height="17"/>
-                <Separator Height="2"/>
-                <MenuItem Name="Exit_B" Header="_Exit" Height="17"/>
+            <MenuItem Header="_File" Height="22" Width="30">
+                <MenuItem Name="Open" Header="Open File" Height="17" Background="#FFF0F0F0" Padding="-20,0,-30,0"/>
+                <MenuItem Name="Save" Header="Save File" Height="17" Background="#FFF0F0F0" Padding="-20,0,-30,0"/>
+                <Separator Height="2" Margin="-30,0,0,0"/>
+                <MenuItem Name="Exit_B" Header="_Exit" Height="17" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
             </MenuItem>
-            <MenuItem Header="Options" Height="22" Width="50">
+            <MenuItem Header="Options" Height="22" Width="50" Padding="2,0,0,0">
                 <MenuItem Header="Service Options" Height="17">
                     <MenuItem Name="XboxService_CB" Header="Skip Xbox Services" Height="17" IsCheckable="True"/>
                     <MenuItem Name="Dryrun_CB" Header="Dryrun -Show what will be changed (when ran)" Height="17" IsCheckable="True"/>
@@ -364,9 +377,9 @@ Function GuiStart {
                     <MenuItem Name="ScriptLog_CB" Header="Save a Script Log" Height="17" IsCheckable="True"/>
                 </MenuItem>
                 <MenuItem Header="Backup Current Services" Height="17">
-                    <MenuItem Name="BackupServiceTypeCsv" Header="Csv File" Height="17"  IsCheckable="True"/>
-                    <MenuItem Name="BackupServiceTypeReg" Header="Reg File" Height="17"  IsCheckable="True"/>
-                    <MenuItem Name="BackupServiceTypeBoth" Header="Csv + Reg File" Height="17"  IsCheckable="True"/>
+                    <MenuItem Name="BackupServiceTypeCsv" Header="Csv File" Height="17" IsCheckable="True"/>
+                    <MenuItem Name="BackupServiceTypeReg" Header="Reg File" Height="17" IsCheckable="True"/>
+                    <MenuItem Name="BackupServiceTypeBoth" Header="Csv + Reg File" Height="17" IsCheckable="True"/>
                 </MenuItem>
                 <Separator Height="2"/>
                 <MenuItem Header="SKIP CHECK AT YOUR OWN RISK!" Height="17" FontWeight="Bold" IsEnabled="False"/>
@@ -381,12 +394,20 @@ Function GuiStart {
                     <MenuItem Name="Diagnostic_CB" Header="Diagnostic Output (on Error)" Height="17" IsCheckable="True"/>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Name="ContactButton" Header="Contact Me" Height="22" Width="70"/>
-            <MenuItem Name="AboutButton" Header="About" Height="22" Width="43"/>
-            <MenuItem Name="DonateButton" Header="Donate to Me" Height="22" Width="88" Background="#FFFFAD2F" FontWeight="Bold"/>
-            <MenuItem Name="CopyrightButton" Header="Copyright" Height="22" Width="67" Background="#FF8ABEF0" FontWeight="Bold"/>
-            <MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="22" Width="128" Background="#FFA7D24D" FontWeight="Bold"/>
-            <MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="22" Width="140" Background="#FFFFE677" FontWeight="Bold"/>
+            <MenuItem Header="Help" Height="22" Width="34" Padding="3,0,0,0">
+                <MenuItem Name="FeedbackButton" Header="Feedback" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
+                <MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
+                <MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
+                <MenuItem Name="AboutButton" Header="About" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
+                <MenuItem Name="CopyrightButton" Header="Copyright" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
+                <Separator Height="2" Margin="-30,0,0,0"/>
+                <MenuItem Name="CheckUpButton" Header="Check for Updates" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
+                <Separator Height="2" Margin="-30,0,0,0"/>
+                <MenuItem Name="ContactButton" Header="Contact Me" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
+            </MenuItem>
+            <Separator Width="3" Style="{DynamicResource SeparatorStyle1}">
+            </Separator>
+            <MenuItem Name="DonateButton" Header="Donate to Me" Height="24" Width="88" Background="#FFFFAD2F" FontWeight="Bold" Margin="-1,-1,0,0"/>
         </Menu>
     </Grid>
 </Window>
@@ -502,8 +523,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
 	$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
+	#$WPF_Script_Ver_Txt.Text = "Script Version: $Script_Version.$Minor_Version ($Script_Date) -$Release_Type"
 	$WPF_Script_Ver_Txt.Text = "Script Version: $Script_Version.$Minor_Version ($Script_Date) -$Release_Type"
 	$WPF_Service_Ver_Txt.Text = "Service Version: $ServiceVersion ($ServiceDate)"
+	#$WPF_Release_Type_Txt.Text = $Release_Type
 	$Script:ServiceImport = 1
 	HideCustomSrvStuff
 	RunDisableCheck
