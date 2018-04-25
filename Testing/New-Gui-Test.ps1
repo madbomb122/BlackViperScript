@@ -9,9 +9,9 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = "0.0"
+$Script_Version = "0.1"
 $Minor_Version = "0"
-$Script_Date = "Apr-20-2018"
+$Script_Date = "Apr-24-2018"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -267,7 +267,7 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="355.061" Width="650" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="355" Width="655" BorderBrush="Black" Background="White">
     <Window.Resources>
         <Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -275,7 +275,7 @@ Function GuiStart {
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Separator}">
-                        <Border Height="24" SnapsToDevicePixels="true" Background="#FF7E7E7E" BorderBrush="#FF7E7E7E" BorderThickness="0,0,0,1"/>
+                        <Border Height="24" SnapsToDevicePixels="true" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -348,43 +348,46 @@ Function GuiStart {
             </TabItem>
             <TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0">
                 <Grid Background="#FFE5E5E5">
-                    <Label Content="Display Options" HorizontalAlignment="Left" Margin="4,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                    <Label Content="Log Options" HorizontalAlignment="Left" Margin="180,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                    <Label Content="Misc Options" HorizontalAlignment="Left" Margin="2,88,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                    <CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="7,111,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
-                    <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="185,27,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
-                    <CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="9,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
-                    <CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="9,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
-                    <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="185,43,0,0" VerticalAlignment="Top" Height="18" Width="76"/>
-                    <CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="7,126,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
-                    <CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service as:" HorizontalAlignment="Left" Margin="7,141,0,0" VerticalAlignment="Top" Height="15" Width="162"/>
-                    <ComboBox Name="BackupServiceType" HorizontalAlignment="Left" Margin="169,138,0,0" VerticalAlignment="Top" Width="52" Height="23">
+                    <Label Content="Display Options" HorizontalAlignment="Left" Margin="2,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <Label Content="Log Options" HorizontalAlignment="Left" Margin="178,5,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <Label Content="Misc Options" HorizontalAlignment="Left" Margin="2,80,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="7,103,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
+                    <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="183,28,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
+                    <CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="7,28,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
+                    <CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="7,43,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
+                    <CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="183,43,0,0" VerticalAlignment="Top" Height="18" Width="76"/>
+                    <CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="7,118,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
+                    <CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service as:" HorizontalAlignment="Left" Margin="7,133,0,0" VerticalAlignment="Top" Height="15" Width="162"/>
+                    <ComboBox Name="BackupServiceType" HorizontalAlignment="Left" Margin="169,130,0,0" VerticalAlignment="Top" Width="52" Height="23">
                         <ComboBoxItem Content=".reg" HorizontalAlignment="Left" Width="50"/>
                         <ComboBoxItem Content=".csv" HorizontalAlignment="Left" Width="50" IsSelected="True"/>
                         <ComboBoxItem Content="Both" HorizontalAlignment="Left" Width="50"/>
                     </ComboBox>
-                    <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="263,41,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="140" IsEnabled="False"/>
-                    <CheckBox Name="ScriptVerCheck_CB" Content="Script Update*" HorizontalAlignment="Left" Margin="236,126,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
-                    <CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="236,141,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
-                    <CheckBox Name="ServiceUpdateCB" Content="Service Update" HorizontalAlignment="Left" Margin="236,111,0,0" VerticalAlignment="Top" Height="15" Width="99"/>
-                    <CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="236,156,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
-                    <Label Content="*Will run and use current settings&#xA;**If update.bat isnt avilable" HorizontalAlignment="Left" Margin="230,165,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-                    <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="231,88,0,0" FontWeight="Bold"/>
-                    <CheckBox Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="412,28,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
-                    <CheckBox Name="EditionCheck_CB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="412,43,0,0" VerticalAlignment="Top" Height="15" Width="160"/>
-                    <ComboBox Name="EditionConfig" HorizontalAlignment="Left" Margin="572,40,0,0" VerticalAlignment="Top" Width="60" Height="23">
+                    <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="261,41,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="137" IsEnabled="False"/>
+                    <CheckBox Name="ScriptVerCheck_CB" Content="Auto Script Update*" HorizontalAlignment="Left" Margin="239,118,0,0" VerticalAlignment="Top" Height="15" Width="126"/>
+                    <CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="239,133,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
+                    <Button Name="CheckUpdateSerButton" Content="Check for Service Update Now" HorizontalAlignment="Left" Margin="460,101,0,0" VerticalAlignment="Top" Width="168"/>
+                    <Button Name="CheckUpdateSrpButton" Content="Check for Script Update Now" HorizontalAlignment="Left" Margin="460,126,0,0" VerticalAlignment="Top" Width="161"/>
+                    <Button Name="CheckUpdateBothButtonn" Content="Check for Both Update Now" HorizontalAlignment="Left" Margin="460,151,0,0" VerticalAlignment="Top" Width="153"/>
+                    <CheckBox Name="ServiceUpdateCB" Content="Auto Service Update" HorizontalAlignment="Left" Margin="239,103,0,0" VerticalAlignment="Top" Height="15" Width="131"/>
+                    <CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="239,148,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
+                    <Label Content="*Will run and use current settings&#xA;**If update.bat isnt avilable" HorizontalAlignment="Left" Margin="233,157,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="234,80,0,0" FontWeight="Bold"/>
+                    <CheckBox Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="409,28,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
+                    <CheckBox Name="EditionCheck_CB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="409,43,0,0" VerticalAlignment="Top" Height="15" Width="160"/>
+                    <ComboBox Name="EditionConfig" HorizontalAlignment="Left" Margin="569,40,0,0" VerticalAlignment="Top" Width="60" Height="23">
                         <ComboBoxItem Content="Home" HorizontalAlignment="Left" Width="58"/>
                         <ComboBoxItem Content="Pro" HorizontalAlignment="Left" Width="58" IsSelected="True"/>
                     </ComboBox>
-                    <CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="455,109,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-                    <CheckBox Name="DevLog_CB" Content="Dev Log" HorizontalAlignment="Left" Margin="455,124,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-                    <Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="406,5,0,0" FontWeight="Bold"/>
-                    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="180,-3,0,0" Stroke="Black" Width="1" Height="82" VerticalAlignment="Top"/>
-                    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="408,-3,0,0" Stroke="Black" Width="1" Height="83" VerticalAlignment="Top"/>
-                    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,79,0,0" Stroke="Black" VerticalAlignment="Top"/>
-                    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="229,79,0,0" Stroke="Black" Width="1"/>
-                    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="451,79,0,0" Stroke="Black" Width="1"/>
-                    <Label Content="Dev Options" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="455,85,0,0" FontWeight="Bold"/>
+                    <CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="7,188,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+                    <CheckBox Name="DevLog_CB" Content="Dev Log" HorizontalAlignment="Left" Margin="7,203,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+                    <Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="409,5,0,0" FontWeight="Bold"/>
+                    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="176,-3,0,0" Stroke="Black" Width="1" Height="79" VerticalAlignment="Top"/>
+                    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="403,-3,0,0" Stroke="Black" Width="1" Height="79" VerticalAlignment="Top"/>
+                    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,76,0,0" Stroke="Black" VerticalAlignment="Top"/>
+                    <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="229,77,0,0" Stroke="Black" Width="1"/>
+                    <Label Content="Dev Options" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,164,0,0" FontWeight="Bold"/>
+                    <Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,165,0,0" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left" Width="235"/>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -398,14 +401,16 @@ Function GuiStart {
                 <Separator Height="2" Margin="-30,0,0,0"/>
                 <MenuItem Name="Exit_B" Header="_Exit" Height="17" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
             </MenuItem>
+            <Separator Width="2" Style="{DynamicResource SeparatorStyle1}"/>
             <MenuItem Header="Options" Height="22" Width="50" Padding="2,0,0,0">
                 <MenuItem Header="Service Options" Height="17">
                     <MenuItem Header="Skip Xbox Services" Height="17" IsCheckable="True"/>
                     <MenuItem Header="Dryrun -Show what will be changed (when ran)" Height="17" IsCheckable="True"/>
                 </MenuItem>
                 <MenuItem Header="Update Options" Height="17">
-                    <MenuItem Header="Check for Service Update" Height="17" IsCheckable="True"/>
-                    <MenuItem Header="Check for Script" Height="17" IsCheckable="True"/>
+                    <MenuItem Header="Check for Service Update Now" Height="17"/>
+                    <MenuItem Header="Check for Script Update Now" Height="17"/>
+                    <MenuItem Header="Check for Both Update Now" Height="17"/>
                     <MenuItem Header="Skip Internet Check" Height="17" IsCheckable="True"/>
                     <MenuItem Header="Update Script name in bat" Height="17" IsCheckable="True"/>
                 </MenuItem>
@@ -435,20 +440,18 @@ Function GuiStart {
                     <MenuItem Header="Diagnostic Output (on Error)" Height="17" IsCheckable="True"/>
                 </MenuItem>
             </MenuItem>
+            <Separator Width="2" Style="{DynamicResource SeparatorStyle1}"/>
             <MenuItem Header="Help" Height="22" Width="34" Padding="3,0,0,0">
-                <MenuItem Name="FeedbackButton" Header="Feedback" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
-                <MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
-                <MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
+                <MenuItem Name="FeedbackButton" Header="Feedback/Bug Report" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
                 <MenuItem Name="AboutButton" Header="About" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
                 <MenuItem Name="CopyrightButton" Header="Copyright" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
                 <Separator Height="2" Margin="-30,0,0,0"/>
-                <MenuItem Name="CheckUpButton" Header="Check for Updates" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
-                <Separator Height="2" Margin="-30,0,0,0"/>
                 <MenuItem Name="ContactButton" Header="Contact Me" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
             </MenuItem>
-            <Separator Width="3" Style="{DynamicResource SeparatorStyle1}">
-            </Separator>
+            <Separator Width="2" Style="{DynamicResource SeparatorStyle1}"/>
             <MenuItem Name="DonateButton" Header="Donate to Me" Height="24" Width="88" Background="#FFFFAD2F" FontWeight="Bold" Margin="-1,-1,0,0"/>
+            <MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="24" Width="130" Background="#FF3FDA62" FontWeight="Bold"/>
+            <MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="24" Width="142" Background="#FFFFDF4F" FontWeight="Bold"/>
         </Menu>
     </Grid>
 </Window>
@@ -770,7 +773,7 @@ Function PreScriptCheck {
 			LeftLineLog ;DisplayOutMenu " Lowest Build Recommended is Creator's Update    " 2 0 0 1 ;RightLineLog
 			MenuBlankLineLog
 			LeftLineLog ;DisplayOutMenu " You are using Build " 2 0 0 1 ;DisplayOutMenu ("$BuildVer" +(" "*(24-$BuildVer.Length))) 15 0 0 1 ;RightLineLog
-			LeftLineLog ;DisplayOutMenu " You are using Version " 2 0 0 1 ;DisplayOutMenu ("$Win10Ver" +(" "*(23-$BuildVer.Length))) 15 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu " You are using Version " 2 0 0 1 ;DisplayOutMenu ("$Win10Ver" +(" "*(22-$Win10Ver.Length))) 15 0 0 1 ;RightLineLog
 			MenuBlankLineLog
 			LeftLineLog ;DisplayOutMenu " To skip use one of the following methods		" 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu " 1. Change " 2 0 0 1 ;DisplayOutMenu "BuildCheck" 15 0 0 1 ;DisplayOutMenu " to " 2 0 0 1 ;DisplayOutMenu "=1" 15 0 0 1 ;DisplayOutMenu " in script file	  " 2 0 0 1 ;RightLineLog
@@ -889,7 +892,7 @@ Function ArgsAndVarSet {
 	# https://en.wikipedia.org/wiki/Windows_10_version_history
 	$Script:MinBuild = 15063
 	$Script:BuildVer = [Environment]::OSVersion.Version.build
-	# 17133 = Spring Creators Update	
+	# 17133 = April Update
 	# 16299 = Fall Creators Update
 	# 15063 = Creators Update
 	# 14393 = Anniversary Update
@@ -898,7 +901,7 @@ Function ArgsAndVarSet {
 
 	$Script:MinVer = 1703
 	$Script:Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).ReleaseId
-	# 1803 = Spring Creators Update	
+	# 1803 = April Update
 	# 1709 = Fall Creators Update
 	# 1703 = Creators Update
 	# 1607 = Anniversary Update
