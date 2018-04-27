@@ -1,4 +1,12 @@
 -----------------------------------------------------------------------------------
+4.2.1 (04-26-2018)
+
+Look of the GUI changed, more changes may come
+Renamed the Check for update to Auto update
+Added a Check NOW for update (While in GUI)
+Fixed some text display issues
+
+-----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
 
 Ability to backup current service configuration as a ".reg" file instead of ".csv"
