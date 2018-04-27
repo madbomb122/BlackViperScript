@@ -1,9 +1,7 @@
 # Currently Testing (Read Notes)
-Please check out a new GUI look i am working on [New-Gui-Test.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/Testing/New-Gui-Test.ps1)
+Tell me what you think of the newer GUI look.
 
-Please leave any Comments/Suggestion in the Issues I created name [Comments/Suggestions on 'New-Gui-Test.ps1'](https://github.com/madbomb122/BlackViperScript/issues/14)
-
-The script for display only (some items do work)
+Please leave any Comments/Suggestion in the Issues I created name [Comments/Suggestions on New GUI look in 'BlackViper-Win10.ps1'](https://github.com/madbomb122/BlackViperScript/issues/14)
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
