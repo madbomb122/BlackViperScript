@@ -1,10 +1,16 @@
 -----------------------------------------------------------------------------------
-4.2.1 (04-26-2018)
+4.2.2 (04-28-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
 Added a Check NOW for update (While in GUI)
 Fixed some text display issues
+
+Fixed bug with scriptlog name
+Run button is NOW disabled while script is changing services
+Console window will now HIDE when GUI is first shown (checkbox to unhide in options)
+Options changed in the "Script Options" tab will now save in a setting file "BVSetting.xml"
+Settings will now load from "BVSetting.xml" the file is aviable
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
