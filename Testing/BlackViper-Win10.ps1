@@ -497,8 +497,8 @@ public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
  <Window.Effect><DropShadowEffect/></Window.Effect>
  <Grid>
   <Button Name="RunScriptButton" Content="Run Script" Margin="0,0,0,21" VerticalAlignment="Bottom" Height="20" FontWeight="Bold"/>
-  <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" Text="Script Ver" VerticalAlignment="Bottom" Width="327" IsEnabled="False" HorizontalContentAlignment="Center"/>
-  <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="328,0,0,0" TextWrapping="Wrap" Text="Service Ver" VerticalAlignment="Bottom" Width="319" IsEnabled="False" HorizontalContentAlignment="Center"/>
+  <TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="327" IsEnabled="False" HorizontalContentAlignment="Center"/>
+  <TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="328,0,0,0" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="319" IsEnabled="False" HorizontalContentAlignment="Center"/>
   <TabControl Name="TabControl" Margin="0,22,0,42">
    <TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0">
     <Grid Background="#FFE5E5E5">
@@ -566,7 +566,7 @@ public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
       <ComboBoxItem Content=".csv" HorizontalAlignment="Left" Width="50" IsSelected="True"/>
       <ComboBoxItem Content="Both" HorizontalAlignment="Left" Width="50"/>
      </ComboBox>
-     <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="261,38,0,0" TextWrapping="Wrap" Text="Script.log" VerticalAlignment="Top" Width="137" IsEnabled="False"/>
+     <TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="261,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="137" IsEnabled="False"/>
      <CheckBox Name="ScriptVerCheck_CB" Content="Auto Script Update*" HorizontalAlignment="Left" Margin="239,111,0,0" VerticalAlignment="Top" Height="15" Width="126"/>
      <CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="239,126,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
      <Button Name="CheckUpdateSerButton" Content="Services" HorizontalAlignment="Left" Margin="494,98,0,0" VerticalAlignment="Top" Width="109"/>
