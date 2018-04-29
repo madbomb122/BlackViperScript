@@ -10,7 +10,7 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.2"
-$Minor_Version = "2"
+$Minor_Version = "3"
 $Script_Date = "Apr-28-2018"
 $Release_Type = "Stable"
 ##########
@@ -194,6 +194,11 @@ $ServicesTypeLst = @(
 'Manual',   #2 -Manual
 'Automatic',#3 -Automatic
 'Automatic (Delayed)')#4 -Automatic (Delayed)
+
+$EBErrLst = @(
+'Edition',
+'Build',
+'Edition & Build')
 
 $ServicesRegTypeList = @(
 '',  #0 -None
@@ -812,18 +817,12 @@ Function RunDisableCheck {
 	}
 
 	$EBFailCount = 0
-	If(!($EditionCheck -eq "Home" -or $EditionCheck -eq "Pro" -or $WinSkuList -Contains $WinSku)){ $EBFailCount++ }
+	If(!($EditionCheck -eq "Home" -or $EditionCheck -eq "Pro" -or $WinSkuList -Contains $WinSku)){ $EBFailCount = 1 }
 	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1){ $EBFailCount += 2 }
 
 	If($EBFailCount -ne 0) {
 		$Buttontxt = "Run Disabled Due to "
-		If($EBFailCount -eq 3) {
-			$Buttontxt += "Edition & Build"
-		} ElseIf($EBFailCount -eq 1) {
-			$Buttontxt += "Edition"
-		} Else {
-			$Buttontxt += "Build"
-		}
+		$Buttontxt += $EBErrLst[$EBFailCount -1]
 		$WPF_RunScriptButton.IsEnabled = $False
 		$Buttontxt += " Check"
 		$WPF_dataGrid.Columns[4].Header = "Black Viper"
@@ -1609,49 +1608,49 @@ Function GetArgs {
 
 Function ShowHelp {
 	Clear-Host
-	DisplayOut "                  List of Switches                   " 13 0
-	DisplayOut "-----------------------------------------------------" 14 0
-	DisplayOut "`n-- Basic Switches --" 2 0
-	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -atos " 15 0 0 ;DisplayOut "           Accepts ToS" 14 0
-	DisplayOutMenu "  -auto " 15 0 0 ;DisplayOutMenu "           Implies " 14 0 0 ;DisplayOutMenu "-atos" 15 0 0 ;DisplayOut "...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script" 14 0
-	DisplayOut "`n--Service Configuration Switches--" 2 0
-	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -default  " 15 0 0 ;DisplayOut "       Runs the script with Services to Default Configuration" 14 0
-	DisplayOutMenu "  -safe " 15 0 0 ;DisplayOut "           Runs the script with Services to Black Viper's Safe Configuration" 14 0
-	DisplayOutMenu "  -tweaked " 15 0 0 ;DisplayOut "        Runs the script with Services to Black Viper's Tweaked Configuration" 14 0
-	DisplayOutMenu "  -lcsc " 15 0 0 ;DisplayOutMenu "File.csv " 11 0 0 ;DisplayOutMenu "  Loads Custom Service Configuration, " 14 0 0 ;DisplayOutMenu "File.csv" 11 0 0 ;DisplayOut " = Name of your backup/custom file" 14 0
-	DisplayOut "`n--Service Choice Switches--" 2 0
-	DisplayOutMenu " Switch "  15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -all " 15 0 0 ;DisplayOut "            Every windows services will change" 14 0
-	DisplayOutMenu "  -min " 15 0 0 ;DisplayOut "            Just the services different from the default to safe/tweaked list" 14 0
-	DisplayOut "`n--Update Switches--" 2 0
-	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -usc  " 15 0 0 ;DisplayOut "           Checks for Update to Script file before running" 14 0
-	DisplayOutMenu "  -use  " 15 0 0 ;DisplayOut "           Checks for Update to Service file before running" 14 0
-	DisplayOutMenu "  -sic  " 15 0 0 ;DisplayOut "           Skips Internet Check, if you can't ping GitHub.com for some reason" 14 0
-	DisplayOut "`n--Log Switches--" 2 0
-	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -log " 15 0 0 ;DisplayOutMenu "            Makes a log file " 14 0 0 ;DisplayOut "Script.log" 11 0
-	DisplayOutMenu "  -baf " 15 0 0 ;DisplayOut "            Log File of Services Configuration Before and After the script" 14 0
-	DisplayOut "`n--AT YOUR OWN RISK Switches--" 13 0
-	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -sec  " 15 0 0 ;DisplayOut "           Skips Edition Check by Setting Edition as Pro" 14 0
-	DisplayOutMenu "  -secp  " 15 0 0 ;DisplayOut "          ^Same as Above" 14 0
-	DisplayOutMenu "  -sech  " 15 0 0 ;DisplayOut "          Skips Edition Check by Setting Edition as Home" 14 0
-	DisplayOutMenu "  -sbc  " 15 0 0 ;DisplayOut "           Skips Build Check" 14 0
-	DisplayOut "`n--Backup Service Configuration--" 2 0
-	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -bscc  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration, Csv File" 14 0
-	DisplayOutMenu "  -bscr  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration, Reg File" 14 0
-	DisplayOutMenu "  -bscb  " 15 0 0 ;DisplayOut "          Backup Current Service Configuration, Csv and Reg File" 14 0	
-	DisplayOut "`n--Misc Switches--" 2 0
-	DisplayOutMenu " Switch " 15 0 0 ;DisplayOut "          Description of Switch" 14 0
-	DisplayOutMenu "  -sxb  " 15 0 0 ;DisplayOut "           Skips changes to all XBox Services" 14 0
-	DisplayOutMenu "  -dry  " 15 0 0 ;DisplayOut "           Runs the script and shows what services will be changed" 14 0
-	DisplayOutMenu "  -diag  " 15 0 0 ;DisplayOutMenu "          Shows diagnostic information, Stops " 14 0 0 ;DisplayOut "-auto" 15 0
-	DisplayOutMenu "  -snis  " 15 0 0 ;DisplayOut "          Show not installed Services" 14 0
-	DisplayOutMenu "  -sss   " 15 0 0 ;DisplayOut "          Show Skipped Services" 14 0	
+	DisplayOutMenu "                  List of Switches                   " 13 0 1 0
+	DisplayOutMenu "-----------------------------------------------------" 14 0 1 0
+	DisplayOutMenu "-- Basic Switches --" 2 0 1 0
+	DisplayOutMenu " Switch " 15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -atos " 15 0 0 0 ;DisplayOutMenu "           Accepts ToS" 14 0 1 0
+	DisplayOutMenu "  -auto " 15 0 0 0 ;DisplayOutMenu "           Implies " 14 0 0 0 ;DisplayOutMenu "-atos" 15 0 0 0 ;DisplayOutMenu "...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script" 14 0 1 0
+	DisplayOutMenu "`n--Service Configuration Switches--" 2 0 1 0
+	DisplayOutMenu " Switch " 15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -default  " 15 0 0 0 ;DisplayOutMenu "       Runs the script with Services to Default Configuration" 14 0 1 0
+	DisplayOutMenu "  -safe " 15 0 0 0 ;DisplayOutMenu "           Runs the script with Services to Black Viper's Safe Configuration" 14 0 1 0
+	DisplayOutMenu "  -tweaked " 15 0 0 0 ;DisplayOutMenu "        Runs the script with Services to Black Viper's Tweaked Configuration" 14 0 1 0
+	DisplayOutMenu "  -lcsc " 15 0 0 0 ;DisplayOutMenu "File.csv " 11 0 0 ;DisplayOutMenu "  Loads Custom Service Configuration, "  14 0 0 0 ;DisplayOutMenu "File.csv" 11 0 0 0 ;DisplayOutMenu " = Name of your backup/custom file" 14 0 1 0
+	DisplayOutMenu "`n--Service Choice Switches--" 2 0 1 0
+	DisplayOutMenu " Switch "  15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -all " 15 0 0 0 ;DisplayOutMenu "            Every windows services will change" 14 0 1 0
+	DisplayOutMenu "  -min " 15 0 0 0 ;DisplayOutMenu "            Just the services different from the default to safe/tweaked list" 14 0 1 0
+	DisplayOutMenu "`n--Update Switches--" 2 0 1 0
+	DisplayOutMenu " Switch " 15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -usc  " 15 0 0 0 ;DisplayOutMenu "           Checks for Update to Script file before running" 14 0 1 0
+	DisplayOutMenu "  -use  " 15 0 0 0 ;DisplayOutMenu "           Checks for Update to Service file before running" 14 0 1 0
+	DisplayOutMenu "  -sic  " 15 0 0 0 ;DisplayOutMenu "           Skips Internet Check, if you can't ping GitHub.com for some reason" 14 0 1 0
+	DisplayOutMenu "`n--Log Switches--" 2 0 1 0
+	DisplayOutMenu " Switch " 15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -log " 15 0 0 0 ;DisplayOutMenu "            Makes a log file "  14 0 0 0 ;DisplayOutMenu "Script.log" 11 0 1 0
+	DisplayOutMenu "  -baf " 15 0 0 0 ;DisplayOutMenu "            Log File of Services Configuration Before and After the script" 14 0 1 0
+	DisplayOutMenu "`n--AT YOUR OWN RISK Switches--"  13 0 1 0
+	DisplayOutMenu " Switch " 15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -sec  " 15 0 0 0 ;DisplayOutMenu "           Skips Edition Check by Setting Edition as Pro" 14 0 1 0
+	DisplayOutMenu "  -secp  " 15 0 0 0 ;DisplayOutMenu "          ^Same as Above" 14 0 1 0
+	DisplayOutMenu "  -sech  " 15 0 0 0 ;DisplayOutMenu "          Skips Edition Check by Setting Edition as Home" 14 0 1 0
+	DisplayOutMenu "  -sbc  " 15 0 0 0 ;DisplayOutMenu "           Skips Build Check" 14 0 1 0
+	DisplayOutMenu "`n--Backup Service Configuration--" 2 0 1 0
+	DisplayOutMenu " Switch " 15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -bscc  " 15 0 0 0 ;DisplayOutMenu "          Backup Current Service Configuration, Csv File" 14 0 1 0
+	DisplayOutMenu "  -bscr  " 15 0 0 0 ;DisplayOutMenu "          Backup Current Service Configuration, Reg File" 14 0 1 0
+	DisplayOutMenu "  -bscb  " 15 0 0 0 ;DisplayOutMenu "          Backup Current Service Configuration, Csv and Reg File" 14 0 1 0	
+	DisplayOutMenu "`n--Misc Switches--" 2 0 1 0
+	DisplayOutMenu " Switch " 15 0 0 0 ;DisplayOutMenu "          Description of Switch" 14 0 1 0
+	DisplayOutMenu "  -sxb  " 15 0 0 0 ;DisplayOutMenu "           Skips changes to all XBox Services" 14 0 1 0
+	DisplayOutMenu "  -dry  " 15 0 0 0 ;DisplayOutMenu "           Runs the script and shows what services will be changed" 14 0 1 0
+	DisplayOutMenu "  -diag  " 15 0 0 0 ;DisplayOutMenu "          Shows diagnostic information, Stops "  14 0 0 0 ;DisplayOutMenu "-auto" 15 0 1 0
+	DisplayOutMenu "  -snis  " 15 0 0 0 ;DisplayOutMenu "          Show not installed Services" 14 0 1 0
+	DisplayOutMenu "  -sss   " 15 0 0 0 ;DisplayOutMenu "          Show Skipped Services" 14 0 1 0	
 	Write-Host "`nPress Any key to Close..." -ForegroundColor White -BackgroundColor Black
 	$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown,AllowCtrlC") | out-null
 	Exit
