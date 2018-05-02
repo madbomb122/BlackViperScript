@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = "4.2"
-$Minor_Version = "2"
-$Script_Date = "Apr-28-2018"
+$Minor_Version = "4"
+$Script_Date = "May-01-2018"
 $Release_Type = "Testing"
 #$Release_Type = "Stable"
 ##########
@@ -343,12 +343,11 @@ Function SaveSetting {
 	$Settings += New-Object PSObject -Property @{ Var = "DryRun" ;Val=$DryRun }
 	$Settings += New-Object PSObject -Property @{ Var = "ShowNonInstalled" ;Val=$ShowNonInstalled }
 	$Settings += New-Object PSObject -Property @{ Var = "ShowAlreadySet" ;Val=$ShowAlreadySet }
+	If($Donated -eq "Yes"){ $Settings += New-Object PSObject -Property @{ Var = "Donated" ;Val="Yes" } }
 	$Settings | Export-Clixml $SettingPath
 }
 
-Function ImportSetting {
-	If(Test-Path $SettingPath -PathType Leaf){ Import-Clixml BVSetting.xml | ForEach-Object { Set-Variable $_.Var $_.Val -Scope Script } }
-}
+Function ImportSetting{ Import-Clixml BVSetting.xml | ForEach-Object { Set-Variable $_.Var $_.Val -Scope Script } }
 
 ##########
 # Multi Use Functions -End
@@ -475,12 +474,9 @@ Function HideConsole{ [Console.Window]::ShowWindow($consolePtr, 0) }
 
 Function GuiStart {
 Add-Type -Name Window -Namespace Console -MemberDefinition '
-[DllImport("Kernel32.dll")]
-public static extern IntPtr GetConsoleWindow();
+[DllImport("Kernel32.dll")] public static extern IntPtr GetConsoleWindow();
+[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);'
 
-[DllImport("user32.dll")]
-public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
-'
 	$Script:consolePtr = [Console.Window]::GetConsoleWindow()
 
 	Clear-Host
@@ -495,7 +491,7 @@ public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
    <Setter Property="SnapsToDevicePixels" Value="True"/>
    <Setter Property="Margin" Value="0,0,0,0"/>
    <Setter Property="Template">
-    <Setter.Value><ControlTemplate TargetType="{x:Type Separator}"><Border Height="24" SnapsToDevicePixels="true" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/></ControlTemplate></Setter.Value>
+   <Setter.Value><ControlTemplate TargetType="{x:Type Separator}"><Border Height="24" SnapsToDevicePixels="true" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/></ControlTemplate></Setter.Value>
    </Setter>
   </Style>
  </Window.Resources>
@@ -559,7 +555,7 @@ public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
      <Label Content="Display Options" HorizontalAlignment="Left" Margin="2,2,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
      <Label Content="Log Options" HorizontalAlignment="Left" Margin="178,2,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
      <Label Content="Misc Options" HorizontalAlignment="Left" Margin="2,73,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-     <CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="7,96,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
+     <CheckBox Name="Dryrun_CB" Content="Dry Run -Shows what will be changed" HorizontalAlignment="Left" Margin="7,96,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
      <CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="183,25,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
      <CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="7,25,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
      <CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="7,40,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
@@ -599,6 +595,13 @@ public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
      <Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="459,73,0,0" Stroke="Black" Width="1"/>
      <Label Content="Check for Update Now for:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,73,0,0" FontWeight="Bold"/>
      <CheckBox Name="ShowWindow" Content="Show Console Window" HorizontalAlignment="Left" Margin="7,208,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
+    </Grid>
+   </TabItem>
+   <TabItem Name="ServiceChanges" Header="Service Changes" Margin="-2,0,2,0" Visibility="Hidden">
+    <Grid Background="#FFE5E5E5">
+     <ScrollViewer VerticalScrollBarVisibility="Visible">
+      <TextBlock Name="ServiceListing" TextTrimming="CharacterEllipsis" Background="White" FontSize="14"/>
+     </ScrollViewer >
     </Grid>
    </TabItem>
   </TabControl>
@@ -697,7 +700,7 @@ public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
 	$WPF_ContactButton.Add_Click({ OpenWebsite "mailto:madbomb122@gmail.com" })
 	$WPF_BlackViperWSButton.Add_Click({ OpenWebsite "http://www.blackviper.com/" })
 	$WPF_Madbomb122WSButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/" })
-	$WPF_DonateButton.Add_Click({ OpenWebsite "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" })
+	$WPF_DonateButton.Add_Click({ ClickedDonate })
 	$WPF_FeedbackButton.Add_Click({ OpenWebsite "https://github.com/madbomb122/BlackViperScript/issues" })
 	$WPF_LoadServicesButton.Add_Click({ GenerateServices })
 	$WPF_ACUcheckboxChecked.Add_Checked({ DGUCheckAll $True })
@@ -856,7 +859,9 @@ Function GuiDone {
 	$WPF_RunScriptButton.content = "Run Disabled while changing services."
 	If($WPF_CustomBVCB.IsChecked){ GetCustomBV }
 #	$Form.Close()
-	ShowConsole
+	$WPF_TabControl.Items[3].IsSelected = $True
+	$WPF_TabControl.Items[3].Visibility = 'Visible'
+	#ShowConsole
 	Black_Viper_Set $Black_Viper $All_or_Min
 }
 
@@ -977,6 +982,43 @@ Function GetCustomBV {
 		$Script:csvTemp += New-Object PSObject -Property @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS } 
 	}
 	[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
+}
+
+Function TBoxMessage([String]$Message,[Int]$Clr) {
+	Switch($Clr) {
+		2 { $Clr1 = 7 ;Break }
+		14 { $Clr1 = 0 ;Break }
+		15 { $Clr1 = 1 ;Break }
+		Default { $Clr1 = $Clr ;Break } 
+	}
+    $WPF_ServiceListing.Dispatcher.invoke(
+        [action]{ 
+            $Run = New-Object System.Windows.Documents.Run
+            $Run.Foreground = $colors[$Clr1]
+            $Run.Text = $message
+            $WPF_ServiceListing.Inlines.Add($Run)
+            $WPF_ServiceListing.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
+        }, "Normal"
+    )
+    DisplayOut $Message $Clr 0
+}
+
+Function TBoxMessageNNL([String]$Message,[Int]$Clr) {
+	Switch($Clr) {
+		2 { $Clr1 = 7 ;Break }
+		14 { $Clr1 = 0 ;Break }
+		15 { $Clr1 = 1 ;Break }
+		Default { $Clr1 = $Clr ;Break } 
+	}
+    $WPF_ServiceListing.Dispatcher.invoke(
+        [action]{ 
+            $Run = New-Object System.Windows.Documents.Run
+            $Run.Foreground = $colors[$Clr1]
+            $Run.Text = $message
+            $WPF_ServiceListing.Inlines.Add($Run)
+        }, "Normal"
+    )
+    DisplayOutMenu $Message $Clr 0 0 1
 }
 
 ##########
@@ -1107,17 +1149,24 @@ Function ScriptUpdateFun {
 	$FullVer = "$WebScriptVer.$WebScriptMinorVer"
 	$UpdateFile = $filebase + "Update.bat"
 	$UpArg = ""
-
-	If($Automated -eq 1){ $UpArg += "-auto " }
+	If($GuiLoad -ne 1) {
+		If($Black_Viper -eq 1){ $UpArg += "-default " }
+		If($Black_Viper -eq 2){ $UpArg += "-safe " }
+		If($Black_Viper -eq 3){ $UpArg += "-tweaked " }
+		If($Automated -eq 1){ $UpArg += "-auto " }
+		If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
+		If($LoadServiceConfig -eq 2) {
+			$TempSrv = $Env:Temp + "\TempSrv.csv"
+			$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding "unicode" -Force -Delimiter ","
+			$UpArg += "-lcsc $TempSrv "
+		} 
+	}
 	If($AcceptToS -ne 0){ $UpArg += "-atosu " }
 	If($ServiceVerCheck -eq 1){ $UpArg += "-use " }
 	If($InternetCheck -eq 1){ $UpArg += "-sic " }
 	If($EditionCheck -eq "Home"){ $UpArg += "-sech " }
 	If($EditionCheck -eq "Pro"){ $UpArg += "-secp " }
 	If($BuildCheck -eq 1){ $UpArg += "-sbc " }
-	If($Black_Viper -eq 1){ $UpArg += "-default " }
-	If($Black_Viper -eq 2){ $UpArg += "-safe " }
-	If($Black_Viper -eq 3){ $UpArg += "-tweaked " }
 	If($Diagnostic -eq 1){ $UpArg += "-diag " }
 	If($LogBeforeAfter -eq 1){ $UpArg += "-baf " }
 	If($DryRun -eq 1){ $UpArg += "-dry " }
@@ -1127,7 +1176,6 @@ Function ScriptUpdateFun {
 	If($All_or_Min -eq "-full"){ $UpArg += "-all " } Else{ $UpArg += "-min " }
 	If($XboxService -eq 1){ $UpArg += "-sxb " }
 	If($ShowNonInstalled -eq 1){ $UpArg += "-snis " }
-	If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
 	If($BackupServiceConfig -eq 1) {
 		Switch($BackupServiceType) {
 			0 { $UpArg += "-bscr " ;Break }
@@ -1135,11 +1183,6 @@ Function ScriptUpdateFun {
 			2 { $UpArg += "-bscb " ;Break }
 		}
 	}
-	If($LoadServiceConfig -eq 2) {
-		$TempSrv = $Env:Temp + "\TempSrv.csv"
-		$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding "unicode" -Force -Delimiter ","
-		$UpArg += "-lcsc $TempSrv "
-	} 
 
 	If(Test-Path $UpdateFile -PathType Leaf) {
 		$DFilename = "BlackViper-Win10.ps1"
@@ -1337,11 +1380,12 @@ Function GenerateRegistryRegular([String]$TempFP) {
 
 Function ServiceSet([String]$BVService) {
 	Clear-Host
+
 	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
 	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
 	If($LogBeforeAfter -eq 2){ DiagnosticCheck 1 }
 	ServiceBAfun "Services-Before"
-	If($DryRun -ne 1){ DisplayOut "Changing Service Please wait..." 14 0 } Else{ DisplayOut "List of Service that would be changed on Non-Dryrun..." 14 0 }
+	If($DryRun -ne 1){ DisplayOut "Changing Service Please wait..." 14 0 } Else{ DisplayOut "List of Service that would be changed on Non-Dry Run..." 14 0 }
 	DisplayOutMenu "Service Setting: " 14 0 0 1 ; DisplayOutMenu "$BVSet" 15 0 1 1 
 	DisplayOut "Service_Name - Current -> Change_To" 14 0
 	DisplayOut "-------------------------------------" 14 0
@@ -1390,8 +1434,82 @@ Function ServiceSet([String]$BVService) {
 		ElseIf($BackupServiceType -eq 2){ DisplayOut "Backup of Services Saved as CSV and REG file in script directory." 14 0 }
 	}
 	ServiceBAfun "Services-After"
-	If($GuiLoad -eq 1){ DisplayOut "`nTo exit you can close the GUI or Powershell Window." 14 0 ;RunDisableCheck } Else{ AutomatedExitCheck 1 }
+	AutomatedExitCheck 1
 }
+
+Function ServiceSetGUI([String]$BVService) {
+	Clear-Host
+	If(!($CurrServices)){ $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType }
+	$NetTCP = @("NetMsmqActivator","NetPipeActivator","NetTcpActivator")
+	If($LogBeforeAfter -eq 2){ DiagnosticCheck 1 }
+	ServiceBAfun "Services-Before"
+	$WPF_ServiceListing.text = ''
+	If($DryRun -ne 1){ TBoxMessage "Changing Service Please wait..." 14 } Else{ TBoxMessage "List of Service that would be changed on Non-Dry Run..." 14 }
+	TBoxMessageNNL "Service Setting: " 14 ; TBoxMessage "$BVSet" 15
+	TBoxMessage "Service_Name - Current -> Change_To" 14
+	TBoxMessage "-------------------------------------" 14
+	ForEach($item In $csv) {
+		$ServiceTypeNum = $($item.$BVService)
+		$ServiceName = $($item.ServiceName)
+		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
+		If($ServiceTypeNum -eq 0 -And $ShowSkipped -eq 1) {
+			If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
+			TBoxMessage $DispTemp  14
+		} ElseIf($ServiceTypeNum -ne 0 -and $ServiceTypeNum -In 1..4) {
+			If($ServiceName -Like "*_*"){ $ServiceName = $ServiceName.Split('_')[0] + "_$ServiceEnd" }
+			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
+			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
+			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+			If($ServiceCurrType -eq "Xbox") {
+				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
+				TBoxMessage $DispTemp  2
+			} ElseIf($ServiceCurrType -ne $False -And $ServiceCurrType -ne "Already") {
+				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
+				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
+				If($ServiceTypeNum -eq 4) {
+					$DispTemp += " (Delayed)"
+					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name "DelayedAutostart" -Type DWord -Value 1 }
+				}
+				TBoxMessage $DispTemp  11
+			} ElseIf($ServiceCurrType -eq "Already" -And $ShowAlreadySet -eq 1) {
+				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+				If($ServiceTypeNum -eq 4){ $DispTemp += " (Delayed)" }
+				TBoxMessage $DispTemp  15
+			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
+				$DispTemp = "No service with name $ServiceName"
+				TBoxMessage $DispTemp  13
+			}
+		} ElseIf($ServiceTypeNum -NotIn 1..4 -and $ServiceTypeNum -ne 0) {
+			$DispTemp = "Error: $ServiceName does not have a valid Setting."
+			TBoxMessage $DispTemp  13
+		}
+	}
+	TBoxMessage "-------------------------------------" 14
+	If($DryRun -ne 1){ TBoxMessage "Service Changed..." 14 } Else{ TBoxMessage "List of Service Done..." 14 }
+	If($BackupServiceConfig -eq 1){
+		If($BackupServiceType -eq 1){ TBoxMessage "Backup of Services Saved as CSV file in script directory." 14 }
+		ElseIf($BackupServiceType -eq 0){ TBoxMessage "Backup of Services Saved as REG file in script directory." 14 }
+		ElseIf($BackupServiceType -eq 2){ TBoxMessage "Backup of Services Saved as CSV and REG file in script directory." 14 }
+	}
+	ServiceBAfun "Services-After"
+	TBoxMessage "`nTo exit you can close the GUI or Powershell Window." 14
+	ThanksDonate
+	ThanksDonateGui
+	RunDisableCheck
+}
+
+Function ThanksDonateGui{
+	If($Donated -ne "Yes"){
+		$thanks = "Thanks for using my script. 
+If you like this script please consider giving me a donation.
+	
+Would you like to Donate?"
+	$DonatePick = [Windows.Forms.MessageBox]::Show($thanks,"Thank You",'YesNo','Question')
+	If($DonatePick -eq "yes"){ ClickedDonate } 
+}
+}
+
+Function ClickedDonate{ OpenWebsite "https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/" ;$Script:Donated = "Yes" }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 	If($CurrServices.Name -Contains $S_Name) {
@@ -1413,10 +1531,15 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
 	Switch($BVOpt) {
-		{$LoadServiceConfig -In 1..2} { $BVSet = "Custom" ;ServiceSet "StartType" ;Break }
-		1 { $BVSet = "Default" ;ServiceSet ("Def"+$WinEdition+$FullMin) ;Break }
-		2 { $BVSet = "Safe" ;ServiceSet ("Safe"+$IsLaptop+$FullMin) ;Break }
-		3 { $BVSet = "Tweaked" ;ServiceSet ("Tweaked"+$IsLaptop+$FullMin) ;Break }
+		{$LoadServiceConfig -In 1..2} { $BVSet = "Custom" ;$ServiceSetOpt = "StartType" ;Break }
+		1 { $BVSet = "Default" ;$ServiceSetOpt = ("Def"+$WinEdition+$FullMin) ;Break }
+		2 { $BVSet = "Safe" ;$ServiceSetOpt = ("Safe"+$IsLaptop+$FullMin) ;Break }
+		3 { $BVSet = "Tweaked" ;$ServiceSetOpt = ("Tweaked"+$IsLaptop+$FullMin) ;Break }
+	}
+	If($GuiLoad -eq 1) {
+		ServiceSetGUI $ServiceSetOpt
+	} Else {
+		ServiceSet $ServiceSetOpt
 	}
 }
 
@@ -1658,7 +1781,7 @@ Function ShowHelp {
 }
 
 Function ArgsAndVarSet {
-	ImportSetting
+	If(Test-Path $SettingPath -PathType Leaf){ ImportSetting }
 	$Script:IsLaptop = LaptopCheck
 	If($PassedArg.Length -gt 0){ GetArgs }
 
@@ -1671,22 +1794,15 @@ Function ArgsAndVarSet {
 	# Pro or Home
 
 	# https://en.wikipedia.org/wiki/Windows_10_version_history
-	$Script:MinBuild = 15063
 	$Script:BuildVer = [Environment]::OSVersion.Version.build
-	# 17133 = April Update	
-	# 16299 = Fall Creators Update
-	# 15063 = Creators Update
-	# 14393 = Anniversary Update
-	# 10586 = First Major Update
-	# 10240 = First Release
 
 	$Script:MinVer = 1703
 	$Script:Win10Ver = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseID).ReleaseId
-	# 1803 = April Update		
+	# 1803 = April 2018 Update		
 	# 1709 = Fall Creators Update
 	# 1703 = Creators Update
 	# 1607 = Anniversary Update
-	# 1511 = First Major Update
+	# 1511 = November Update (First Major Update)
 	# 1507 = First Release
 
 	If($Diagnostic -eq 2) {
