@@ -130,7 +130,7 @@ This file will <br />
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
 **Q:** Do you accept any donations? <br />
-**A:** If you would like to donate to me Please pick an item/giftcard from my amazon wishlist or Contact me about donating, Thanks. <br />
+**A:** If you would like to donate to me Please pick an item/giftcard from my amazon wishlist or Contact me about donating, Thanks. BTW The giftcard amount can be changed to a min of $1. <br />
 **Wishlist:** https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/ <br />
 
 **Q:** Are You or Black Viper the developer? <br />
