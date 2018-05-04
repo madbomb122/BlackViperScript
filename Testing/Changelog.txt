@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.2.5 (05-03-2018)
+4.2.6 (05-04-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
@@ -20,6 +20,8 @@ Fixed bug with Check NOW for update (service configuration wont be remembered)
 Internal script changes (Organized code/function some)
 Fixed a bug with services that have a '_' in the name
 Fixed a bug with 'service list' if you ran the script first
+
+Internal Script changes (Organized code/function some) -More
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
