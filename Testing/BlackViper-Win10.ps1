@@ -229,7 +229,7 @@ $ServicesRegTypeList = @(
 $XboxServiceArr = @('XblAuthManager', 'XblGameSave', 'XboxNetApiSvc')
 $Script:SettingPath = $filebase + 'BVSetting.xml'
 $Script:Black_Viper = 0
-$Script:All_or_Min = '-min'
+$Script:All_or_Min = '-Min'
 $Script:RunScript = 2
 $Script:ErrorDi = ''
 $Script:LogStarted = 0
@@ -882,10 +882,9 @@ Function GenerateServices {
 	Switch($Black_Viper) {
 		{$LoadServiceConfig -eq 1} { $Script:BVService = 'StartType' ;Break }
 		1 { ($Script:BVService='Def-'+$WinEdition+$FullMin) ;$BVSAlt = 'Def-'+$WinEdition+'-Full' ;Break }
-		2 { ($Script:BVService='Safe-'+$IsLaptop+$FullMin) ;$BVSAlt = 'Safe-'+$IsLaptop+'-Full' ;Break }
-		3 { ($Script:BVService='Tweaked-'+$IsLaptop+$FullMin) ;$BVSAlt = 'Tweaked-'+$IsLaptop+'-Full' ;Break }
+		2 { ($Script:BVService='Safe'+$IsLaptop+$FullMin) ;$BVSAlt = 'Safe'+$IsLaptop+'-Full' ;Break }
+		3 { ($Script:BVService='Tweaked'+$IsLaptop+$FullMin) ;$BVSAlt = 'Tweaked'+$IsLaptop+'-Full' ;Break }
 	}
-
 	If($WPF_XboxService_CB.IsChecked){ $Script:XboxService = 1 } Else{ $Script:XboxService = 0 }
 	If($ServiceImport -eq 1) {
 		[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
@@ -1381,8 +1380,8 @@ Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	Switch($BVOpt) {
 		{$LoadServiceConfig -In 1..2} { $BVSet = 'Custom' ;$ServiceSetOpt = 'StartType' ;Break }
 		1 { $BVSet = 'Default' ;$ServiceSetOpt = ('Def-'+$WinEdition+$FullMin) ;Break }
-		2 { $BVSet = 'Safe' ;$ServiceSetOpt = ('Safe-'+$IsLaptop+$FullMin) ;Break }
-		3 { $BVSet = 'Tweaked' ;$ServiceSetOpt = ('Tweaked-'+$IsLaptop+$FullMin) ;Break }
+		2 { $BVSet = 'Safe' ;$ServiceSetOpt = ('Safe'+$IsLaptop+$FullMin) ;Break }
+		3 { $BVSet = 'Tweaked' ;$ServiceSetOpt = ('Tweaked'+$IsLaptop+$FullMin) ;Break }
 	}
 	If($GuiLoad -eq 1){ ServiceSetGUI $ServiceSetOpt } Else{ ServiceSet $ServiceSetOpt }
 }
