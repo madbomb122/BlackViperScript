@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.2.6 (05-04-2018)
+4.2.7 (05-06-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
@@ -15,13 +15,16 @@ Settings will now load from "BVSetting.xml" the file is available
 Fixed Display of the '-h' switch
 
 List of services changed show in Gui instead of powershell window (Unless automated)
-Fixed bug with Check NOW for update (service configuration wont be remembered)
+Fixed bug with Check NOW for update
 
 Internal script changes (Organized code/function some)
 Fixed a bug with services that have a '_' in the name
-Fixed a bug with 'service list' if you ran the script first
+Fixed a bug with 'Services List' if you ran the script first
 
 Internal Script changes (Organized code/function some) -More
+
+Added Tooltip in 'Services List' that show service description on mouseover
+Fixed a bug that showed some Service Descriptions and Path showing as 'System.Object[]'
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
@@ -30,7 +33,7 @@ Ability to backup current service configuration as a ".reg" file instead of ".cs
  ^or save as both type
 
 Fixed a bug that made the run button disabled when loading a custom service file
-Fixed a bug in service list tab that list black viper when a custom service is selected
+Fixed a bug in 'Services List' tab that list black viper when a custom service is selected
 Added message at end of script if you did a service configuration backup
 Added a thank you and donate message at end of script
 
