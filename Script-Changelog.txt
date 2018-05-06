@@ -1,18 +1,30 @@
 -----------------------------------------------------------------------------------
-4.2.3 (04-28-2018)
+4.2.7 (05-06-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
-Added a Check NOW for update (While in GUI)
+Added a Check NOW for update (While in Gui)
 Fixed some text display issues
 
-Fixed bug with scriptlog name
+Fixed bug with script log
 Run button is NOW disabled while script is changing services
 Console window will now HIDE when GUI is first shown (checkbox to unhide in options)
 Options changed in the "Script Options" tab will now save in a setting file "BVSetting.xml"
-Settings will now load from "BVSetting.xml" the file is aviable
+Settings will now load from "BVSetting.xml" the file is available
 
 Fixed Display of the '-h' switch
+
+List of services changed show in Gui instead of powershell window (Unless automated)
+Fixed bug with Check NOW for update
+
+Internal script changes (Organized code/function some)
+Fixed a bug with services that have a '_' in the name
+Fixed a bug with 'Services List' if you ran the script first
+
+Internal Script changes (Organized code/function some) -More
+
+Added Tooltip in 'Services List' that show service description on mouseover
+Fixed a bug that showed some Service Descriptions and Path showing as 'System.Object[]'
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
@@ -21,7 +33,7 @@ Ability to backup current service configuration as a ".reg" file instead of ".cs
  ^or save as both type
 
 Fixed a bug that made the run button disabled when loading a custom service file
-Fixed a bug in service list tab that list black viper when a custom service is selected
+Fixed a bug in 'Services List' tab that list black viper when a custom service is selected
 Added message at end of script if you did a service configuration backup
 Added a thank you and donate message at end of script
 
@@ -53,7 +65,7 @@ Changed "Service List" to show the original unchanged "Service List" when "Custo
 
 Added description and service path to the "Service List" grid
 Gui window does not close now when you run the script incase you want to change something else
-^you can exit the script by closeing the GUI or powershell window
+^you can exit the script by closing the GUI or powershell window
 
 -----------------------------------------------------------------------------------
 4.1.0 (01-16-2018)
@@ -71,7 +83,7 @@ Removed the yellow "Dont Resize past this area" boxes
 
 Added switch "-h" to show a list of switches
 
-Fixed a Typo/Grammer (thanks to lukemurraynz)
+Fixed a Typo/Grammar (thanks to lukemurraynz)
 
 Added Ability to Save Configuration as Registry File
 ^Save the Black Viper Setting for what you have checked
@@ -80,7 +92,7 @@ Added Ability to Save Configuration as Registry File
 4.0.0 (11-30-2017)
 
 Enabled Window Resize
-(best to resize so the yellow on bottom and right size are not visable)
+(best to resize so the yellow on bottom and right size are not visible)
 ^ Yellow block shows "Dont Resize past this area"
 
 Added a quick check to see if downloaded blackviper.csv is correct
@@ -98,7 +110,7 @@ Bug Fix Issue with Running Custom Service list
 
 Added Color to Donate, Website and Copyright button
 Improved Listing Method for the Services (added Columns that are sortable)
-Serivce Listing Speed Improved
+Service Listing Speed Improved
 Minor changes in script
 
 -----------------------------------------------------------------------------------
@@ -113,7 +125,7 @@ load another custom service file, the service list tab wont refresh
 Script Improvements
 Script now updates bat file with new script name if update is downloaded using script
 
-Updates will use Update.bat if avaiable (will overwrite script file instead of creating new file)
+Updates will use Update.bat if available (will overwrite script file instead of creating new file)
 
 Fixed Bug that didnt set services with switches being used
 Fixed Bug that didnt show error when using the -tweaked switch on laptops
@@ -180,7 +192,7 @@ Fixed a bug that made services not change (thanks to bubbismith for posting issu
 
 Script now show Common Name and System when showing the output
 Can go to GUI even if not meeting build or edition requirements
-Changed the input to GUI with more options and easyer to use
+Changed the input to GUI with more options and easier to use
 Removed all Switch for "-Set"
 Some various script improvements
 Ability to Deselect services to be changed
@@ -228,7 +240,7 @@ Added switch
  Switches       Description of Switch
   -snis          Shows not installed services (that can be changed)
   -dry           Runs script but shows what will be changed
-  -devl          Used to make a log file that is ment to be sent to me
+  -devl          Used to make a log file that is meant to be sent to me
 
 -----------------------------------------------------------------------------------
 2.2 (05-29-2017)
@@ -307,7 +319,7 @@ Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
 1.1 (04-23-2017)
 
 Various internal script changes
-Added another check for 'BlackViper.csv', in a certin case script would have ran w/o it
+Added another check for 'BlackViper.csv', in a certain case script would have ran w/o it
 Fixed download link to BlackViper.csv
 Fixed an issue with script failing edition check on non english versions of windows
 Fixed an issue with edition check showing blank error
