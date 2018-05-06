@@ -21,12 +21,13 @@ $colors = @(
     <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Test" Height="355" Width="655" BorderBrush="Black" Background="White">
         <Grid>
-            <DataGrid Name="dgtest" RowStyle="{StaticResource RowStyle}" AutoGenerateColumns="False">
+         <DataGrid Name="dgtest" AutoGenerateColumns="False">
                 <DataGrid.RowStyle>
-                    <Style x:Key="RowStyle" TargetType="{x:Type DataGridRow}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                <Setter Property="Background" Value="Blue"/>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Style.Triggers> 
+                            <DataTrigger Binding="{Binding Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="Background" Value="DarkBlue"/>
+                                <Setter Property="Foreground" Value="White"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
