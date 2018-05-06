@@ -2,3 +2,5 @@
 /Version export-ignore
 .gitattributes export-ignore
 todo.md export-ignore
+/.github/ISSUE_TEMPLATE/Bug_report.md
+/.github/ISSUE_TEMPLATE/Feature_request.md
