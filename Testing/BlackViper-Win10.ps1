@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '4.2'
-$Minor_Version = '6'
-$Script_Date = 'May-04-2018'
+$Minor_Version = '7'
+$Script_Date = 'May-06-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -416,7 +416,7 @@ Function SetServiceVersion {
 	}
 }
 
-Function ClickedDonate{ OpenWebsite 'https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/' ;$Script:Donated = 'Yes' }
+Function ClickedDonate{ OpenWebsite 'https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/' ;$Script:ConsideredDonation = 'Yes' }
 
 Function SaveSetting {
 	#Updates Variables then Saves Settings
@@ -452,7 +452,7 @@ Function SaveSetting {
 	$Settings += New-Object PSObject -Property @{ Var = 'DryRun' ;Val=$DryRun }
 	$Settings += New-Object PSObject -Property @{ Var = 'ShowNonInstalled' ;Val=$ShowNonInstalled }
 	$Settings += New-Object PSObject -Property @{ Var = 'ShowAlreadySet' ;Val=$ShowAlreadySet }
-	If($Donated -eq 'Yes'){ $Settings += New-Object PSObject -Property @{ Var = 'Donated' ;Val='Yes' } }
+	If($ConsideredDonation -eq 'Yes'){ $Settings += New-Object PSObject -Property @{ Var = 'ConsideredDonation' ;Val='Yes' } }
 	$Settings | Export-Clixml $SettingPath
 }
 
@@ -479,6 +479,7 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 				<Setter.Value> <ControlTemplate TargetType="{x:Type Separator}"><Border Height="24" SnapsToDevicePixels="True" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/></ControlTemplate></Setter.Value>
 			</Setter>
 		</Style>
+		<Style TargetType="{x:Type ToolTip}"><Setter Property="Background" Value="#FFFFFFBF"/></Style>
 	</Window.Resources>
 	<Window.Effect><DropShadowEffect/></Window.Effect>
 	<Grid>
@@ -509,19 +510,28 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 			<TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
 					<DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+						<DataGrid.RowStyle>
+							<Style TargetType="{x:Type DataGridRow}">
+								<Style.Triggers>
+									<Trigger Property="IsMouseOver" Value="True">
+										<Setter Property="ToolTip"><Setter.Value><TextBlock Text="{Binding SrvDesc}" TextWrapping="Wrap" Width="400" Background="#FFFFFFBF" Foreground="Black"/></Setter.Value></Setter>
+									</Trigger>
+								</Style.Triggers>
+							</Style>
+						</DataGrid.RowStyle>
 						<DataGrid.Columns>
-							<DataGridTemplateColumn>
+							<DataGridTemplateColumn SortMemberPath="checkboxChecked" CanUserSort="True">
 								<DataGridTemplateColumn.Header><CheckBox Name="ACUcheckboxChecked" IsEnabled="False"/></DataGridTemplateColumn.Header>
 								<DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox Name="GDCheckB" IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}"/>
-							<DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}"/>
-							<DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}"/>
-							<DataGridTemplateColumn Header="Black Viper" Width="95" CanUserSort="False">
+							<DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}" CanUserSort="True" IsReadOnly="True"/>
+							<DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}" IsReadOnly="True"/>
+							<DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}" IsReadOnly="True"/>
+							<DataGridTemplateColumn Header="Black Viper" Width="95" SortMemberPath="BVType" CanUserSort="True">
 								<DataGridTemplateColumn.CellTemplate><DataTemplate><ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Description" Width="95" Binding="{Binding SrvDesc}"/>
-							<DataGridTextColumn Header="Path" Width="95" Binding="{Binding SrvPath}"/>
+							<DataGridTextColumn Header="Description" Width="95" Binding="{Binding SrvDesc}" CanUserSort="False" IsReadOnly="True"/>
+							<DataGridTextColumn Header="Path" Width="95" Binding="{Binding SrvPath}" CanUserSort="False" IsReadOnly="True"/>
 						</DataGrid.Columns>
 					</DataGrid>
 					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
@@ -578,7 +588,7 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="459,73,0,0" Stroke="Black" Width="1"/>
 					<Label Content="Check for Update Now for:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,73,0,0" FontWeight="Bold"/>
 					<CheckBox Name="ShowWindow" Content="Show Console Window" HorizontalAlignment="Left" Margin="7,208,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
-					<Label Content="*Wont remember service &#xD;&#xA;   options." HorizontalAlignment="Left" Margin="464,171,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="167" Height="51"/>
+					<Label Content="*Wont remember Settings in&#xD;&#xA;'Service Options' or 'Services&#xD;&#xA;List' Tab" HorizontalAlignment="Left" Margin="464,171,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="177" Height="61"/>
 				</Grid>
 			</TabItem>
 			<TabItem Name="ServiceChanges" Header="Service Changes" Margin="-2,0,2,0" Visibility="Hidden">
@@ -902,7 +912,9 @@ Function GenerateServices {
 		If($CurrServices.Name -Contains $ServiceName) {
 			$tmp = $ServiceInfo -match $ServiceName
 			$SrvDescription = $tmp.Description
+			If($SrvDescription -Is [system.array]){ $SrvDescription = $SrvDescription[0] }
 			$SrvPath = $tmp.PathName
+			If($SrvPath -Is [system.array]){ $SrvPath = $SrvPath[0] }
 			$ServiceTypeNum = $($item.$BVService)
 			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
 			Switch($ServiceCurrType) {
@@ -1267,12 +1279,12 @@ Function GenerateRegistryRegular([String]$TempFP) {
 	ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
 		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-		Switch($($Service.StartType)) {
-			'Disabled' { $ServiceTypeNum = 4 ;Break }
-			'Manual' { $ServiceTypeNum = 3 ;Break }
-			'Automatic' { $ServiceTypeNum = 2 ;Break }
-		}
 		If(!($Skip_Services -Contains $ServiceName)) {
+			Switch($($Service.StartType)) {
+				'Disabled' { $ServiceTypeNum = 4 ;Break }
+				'Manual' { $ServiceTypeNum = 3 ;Break }
+				'Automatic' { $ServiceTypeNum = 2 ;Break }
+			}
 			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
 			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $TempFP -Append
 			Write-Output $Num | Out-File -Filepath $TempFP -Append
@@ -1297,7 +1309,7 @@ Function GenerateRegistryCustom([String]$TempFP) {
 				$ServiceName = Get-Service $ServNameTmp | Select-Object Name
 			}
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			If(!($ServiceCurrType -eq 'Xbox')) {
+			If(!($Skip_Services -Contains $ServiceName)) {
 				$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
 				Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $TempFP -Append
 				Write-Output $Num | Out-File -Filepath $TempFP -Append
@@ -1506,11 +1518,11 @@ Function ServiceSetGUI([String]$BVService) {
 	ServiceBAfun 'Services-After'
 	TBoxMessage "`nTo exit you can close the GUI or Powershell Window." 14
 	ThanksDonate
-	If($Donated -ne 'Yes'){
+	If($ConsideredDonation -ne 'Yes'){
 		$thanks = 'Thanks for using my script. 
 If you like this script please consider giving me a donation.
 	
-Would you like to Donate?'
+Would you Consider giving a Donation?'
 
 		If([Windows.Forms.MessageBox]::Show($thanks,'Thank You','YesNo','Question') -eq 'Yes'){ ClickedDonate } 
 	}
