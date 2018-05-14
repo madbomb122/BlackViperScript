@@ -166,7 +166,7 @@ This file will <br />
 **A:** Post it as an issue using github's issues tab up top.
 
 **Q:** Can I run the script safely? <br />
-**A:** The script itself is safe, but changes to services may cause problems for certin programs.
+**A:** Yes/No, it's safe to change the services back to default. Using the Safe or Tweaked option may cause problems for a program(s) that is depended on one of those services.
 
 **Q:** Can I run the script repeatedly? <br />
 **A:** Yes, with same or different settings.
@@ -177,8 +177,8 @@ This file will <br />
 **Q:** Can I use the script or modify it for my / my company's needs? <br />
 **A:** Sure. Just don't forget to include copyright notice as per the license requirements, and leave any Copyright in script too, if you make money from using it please consider a donation as thanks.
 
-**Q:** The script messed up my computer. <br />
-**A:** The script is as is, any problems you have/had is your own problem.
+**Q:** The script messed up my computer because it did *BLAH*. <br />
+**A:** Any problems you have/had is your own problem.
 
 **Q:** Are you going to add support for other editions of Windows 10 other than Pro or Home? <br />
 **A:** Sorry, I only support the windows 10 configuration listed on Black Viper's website, you can still use it on other edition but any problems you have are your own. <br />
@@ -191,7 +191,7 @@ This file will <br />
 **A:** No. <br />
 
 **Q:** What do the letters mean in the release tab after the version number? <br />
-**A:** The letter indicates that something other than the script was updated.. `B = Bat file`, `S = Service file`, `U = Update Bat file`, `M = Misc or Multiple Changes`  <br />
+**A:** The letter indicates that something other than the script was updated when the script version hasn't changed.. `B = Bat file`, `S = Service file`, `U = Update Bat file`, `M = Misc or Multiple Changes`  <br />
 
 **Q:** Can I download the csv file from Black Viper's website and use that? <br />
 **A:** No, my file is not the same. <br />
@@ -202,11 +202,11 @@ This file will <br />
 ---to add put it in the proper format <br />
 **Note:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)` <br />
 
-**Q:** I have a suggestion for the script, how do i suggest it? <br />
+**Q:** I have a suggestion for the script, how do I suggest it? <br />
 **A:** Do a pull request with the change or submit it as an issue with the suggestion. <br />
 
 **Q:** How long are you going to maintain the script? <br />
 **A:** No Clue.
 
-**Q:** When do you update the services file (BlackViper.csv)? <br />
-**A:** When Black Viper tells me there is a change or I see an update on his site, or someone tells me there is an update.
+**Q:** When do you update the services file 'BlackViper.csv'? <br />
+**A:** When I get told or see there has been an update to the services. Some updates may take a while if changes in the script it required, like from Window's Big Update Patches.
