@@ -54,11 +54,6 @@ $colors = @(
     $Form = [Windows.Markup.XamlReader]::Load( (New-Object System.Xml.XmlNodeReader $xaml) )
     $xaml.SelectNodes("//*[@Name]") | ForEach-Object{Set-Variable -Name "WPF_$($_.Name)" -Value $Form.FindName($_.Name) -Scope Script }
 
-    $Runspace = [runspacefactory]::CreateRunspace()
-    $PowerShell = [PowerShell]::Create()
-    $PowerShell.RunSpace = $Runspace
-    $Runspace.Open()
-    [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
     $i=0
     [System.Collections.ArrayList]$Script:DataGridListOrig = @{}
     Foreach($itm in $colors){
