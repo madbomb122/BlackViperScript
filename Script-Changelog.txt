@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.2.7 (05-06-2018)
+4.2.8 (05-16-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
@@ -25,6 +25,9 @@ Internal Script changes (Organized code/function some) -More
 
 Added Tooltip in 'Services List' that show service description on mouseover
 Fixed a bug that showed some Service Descriptions and Path showing as 'System.Object[]'
+
+Added Link to FAQ (readme) in Gui's Help menu
+Added 'Services List' tab, rows colored in green are services that will be used (checked services)
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
