@@ -1,7 +1,5 @@
 # Currently Testing (Read Notes)
-Tell me what you think of the newer GUI look.
-
-Please leave any Comments/Suggestion in the Issues I created name [Comments/Suggestions on New GUI look in 'BlackViper-Win10.ps1'](https://github.com/madbomb122/BlackViperScript/issues/14)
+Nothing ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
