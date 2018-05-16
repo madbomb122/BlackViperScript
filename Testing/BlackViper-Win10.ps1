@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '4.2'
-$Minor_Version = '7'
-$Script_Date = 'May-06-2018'
+$Minor_Version = '8'
+$Script_Date = 'May-16-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -509,29 +509,35 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 			</TabItem>
 			<TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
-					<DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="1" HeadersVisibility="Column" Margin="-2,38,0,-2" AlternatingRowBackground="#FFD8D8D8" CanUserResizeRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+					<DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,38,0,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
 						<DataGrid.RowStyle>
 							<Style TargetType="{x:Type DataGridRow}">
 								<Style.Triggers>
+									<Trigger Property="AlternationIndex" Value="0"><Setter Property="Background" Value="White" /></Trigger>
+									<Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="#FFD8D8D8" /></Trigger>
 									<Trigger Property="IsMouseOver" Value="True">
 										<Setter Property="ToolTip"><Setter.Value><TextBlock Text="{Binding SrvDesc}" TextWrapping="Wrap" Width="400" Background="#FFFFFFBF" Foreground="Black"/></Setter.Value></Setter>
 									</Trigger>
+<!--									<DataTrigger Binding="{Binding Matches}" Value="False"><Setter Property="Background" Value="LightGreen"/></DataTrigger> -->
+<!--									<DataTrigger Binding="{Binding checkboxChecked}" Value="True"><Setter Property="FontWeight" Value="Bold"/></DataTrigger> -->
+									<DataTrigger Binding="{Binding checkboxChecked}" Value="True"><Setter Property="Background" Value="LightGreen"/></DataTrigger>
 								</Style.Triggers>
 							</Style>
 						</DataGrid.RowStyle>
 						<DataGrid.Columns>
 							<DataGridTemplateColumn SortMemberPath="checkboxChecked" CanUserSort="True">
 								<DataGridTemplateColumn.Header><CheckBox Name="ACUcheckboxChecked" IsEnabled="False"/></DataGridTemplateColumn.Header>
-								<DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox Name="GDCheckB" IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
+								<DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox Name="GDCheckB" IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
 							<DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}" CanUserSort="True" IsReadOnly="True"/>
 							<DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}" IsReadOnly="True"/>
 							<DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}" IsReadOnly="True"/>
-							<DataGridTemplateColumn Header="Black Viper" Width="95" SortMemberPath="BVType" CanUserSort="True">
-								<DataGridTemplateColumn.CellTemplate><DataTemplate><ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
+							<DataGridTemplateColumn Header="Black Viper" Width="105" SortMemberPath="BVType" CanUserSort="True">
+								<DataGridTemplateColumn.CellTemplate><DataTemplate><ComboBox 
+								ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Description" Width="95" Binding="{Binding SrvDesc}" CanUserSort="False" IsReadOnly="True"/>
-							<DataGridTextColumn Header="Path" Width="95" Binding="{Binding SrvPath}" CanUserSort="False" IsReadOnly="True"/>
+							<DataGridTextColumn Header="Description" Width="120" Binding="{Binding SrvDesc}" CanUserSort="False" IsReadOnly="True"/>
+							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="False" IsReadOnly="True"/>
 						</DataGrid.Columns>
 					</DataGrid>
 					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
@@ -603,6 +609,7 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 		<Menu Height="22" VerticalAlignment="Top">
 			<MenuItem Header="Help" Height="22" Width="34" Padding="3,0,0,0">
 				<MenuItem Name="FeedbackButton" Header="Feedback/Bug Report" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
+				<MenuItem Name="FAQButton" Header="FAQ" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
 				<MenuItem Name="AboutButton" Header="About" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
 				<MenuItem Name="CopyrightButton" Header="Copyright" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
 				<Separator Height="2" Margin="-30,0,0,0"/>
@@ -688,6 +695,18 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 		}
 	})
 
+	[System.Windows.RoutedEventHandler]$DGclickEvent = {
+		If($WPF_dataGrid.SelectedItem){
+			If($DataGridLCust) {
+				$WPF_dataGrid.ItemsSource = $DataGridListOrig
+				$WPF_dataGrid.ItemsSource = $DataGridListCust
+			}
+			$WPF_dataGrid.Items.Refresh()
+		}
+	}
+	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::CheckedEvent,$DGclickEvent)
+	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::UnCheckedEvent,$DGclickEvent)
+
 	$WPF_EditionConfig.add_SelectionChanged({ RunDisableCheck ;SaveSetting })
 	$WPF_BuildCheck_CB.Add_Click({ RunDisableCheck ;SaveSetting })
 	$WPF_EditionCheck_CB.Add_Click({ RunDisableCheck ;SaveSetting })
@@ -721,6 +740,7 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 	$WPF_Madbomb122WSButton.Add_Click({ OpenWebsite 'https://github.com/madbomb122/' })
 	$WPF_DonateButton.Add_Click({ ClickedDonate })
 	$WPF_FeedbackButton.Add_Click({ OpenWebsite 'https://github.com/madbomb122/BlackViperScript/issues' })
+	$WPF_FAQButton.Add_Click({ OpenWebsite 'https://github.com/madbomb122/BlackViperScript/blob/master/README.md' })
 	$WPF_LoadServicesButton.Add_Click({ GenerateServices })
 	$WPF_ACUcheckboxChecked.Add_Checked({ DGUCheckAll $True })
 	$WPF_ACUcheckboxChecked.Add_UnChecked({ DGUCheckAll $False })
@@ -816,12 +836,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 Function CustomBVCBFun([Bool]$Choice) {
 	$WPF_ACUcheckboxChecked.IsEnabled = $Choice
 	If($Choice) {
+		$Script:DataGridLCust = $true
 		$WPF_SaveCustomSrvButton.content = 'Save Selection'
 		$WPF_dataGrid.ItemsSource = $DataGridListCust
 	} Else {
+		$Script:DataGridLCust = $false
 		$WPF_SaveCustomSrvButton.content = 'Save Current'
 		$WPF_dataGrid.ItemsSource = $DataGridListOrig
-
 	}
 	$WPF_dataGrid.Items.Refresh()	
 	RunDisableCheck
@@ -874,6 +895,7 @@ Function RunDisableCheck {
 Function GenerateServices {
 #   StartMode = StartType
 #	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName
+#	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName | Out-GridView
 
 	If($SrvCollected -ne 0) { $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName ;$Script:SrvCollected = 1 }
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
@@ -940,6 +962,7 @@ Function GenerateServices {
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
+	#$DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView
 
 	If(!($ServicesGenerated)) {
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
