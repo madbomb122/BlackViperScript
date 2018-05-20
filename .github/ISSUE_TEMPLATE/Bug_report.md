@@ -27,4 +27,4 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
  - Script Version: [e.g. 3.0.1]
- - Script Type: [e.g. Stable or Testing]
+ - Release Type: [e.g. Stable or Testing]
