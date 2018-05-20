@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.2.9 (05-18-2018)
+4.2.9 (05-20-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
