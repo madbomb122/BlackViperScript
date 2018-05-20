@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '4.2'
-$Minor_Version = '8'
-$Script_Date = 'May-16-2018'
+$Minor_Version = '9'
+$Script_Date = 'May-20-2018'
 $Release_Type = 'Stable'
 ##########
 
@@ -57,13 +57,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 --------------------------------------------------------------------------------
 
 .Prerequisite to run script
-  System: Windows 10 x64 (64-bit)
-  Edition: Home or Pro     (Can run on other Edition AT YOUR OWN RISK)
-  Build: Creator's Update  (Can run on other Build AT YOUR OWN RISK)
-  Files: This script and 'BlackViper.csv' (Service Configurations)
+	System: Windows 10 x64 (64-bit) (Can run on x32/32-bit AT YOUR OWN RISK)
+	Edition: Home or Pro     (Can run on other Edition AT YOUR OWN RISK)
+	Build: Creator's Update  (Can run on other Build AT YOUR OWN RISK)
+	Files: This script and 'BlackViper.csv' (Service Configurations)
 
 .DESCRIPTION
- Script that can set services based on Black Viper's Service Configurations.
+	Script that can set services based on Black Viper's Service Configurations
+	or your own custom services, or backup services (created by this script)
 
  AT YOUR OWN RISK YOU CAN
 	1. Run the script on x86 (32-bit) w/o changing settings (But shows a warning)
@@ -72,16 +73,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		B. Creator's Update ($Script:BuildCheck variable bottom of script or use -sbc switch)
 
 .BASIC USAGE
-  Run script with powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
-  or Use bat file provided
+	Run script with powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
+	or Use bat file provided
 
-  Then Use the Gui and Select the desired Choices
+	Then Use the Gui and Select the desired Choices
 
 .ADVANCED USAGE
- One of the following Methods...
-  1. Edit values at bottom of the script then run script
-  2. Edit bat file and run
-  3. Run the script with one of these arguments/switches (space between multiple)
+	One of the following Methods...
+		1. Edit values at bottom of the script then run script
+		2. Edit bat file and run
+		3. Run the script with one of these arguments/switches (space between multiple)
 
 --Basic Switches--
  Switches       Description of Switch
@@ -160,6 +161,7 @@ Function GetServiceEnd {
 	$Tmp1 = ''
 	$ServiceEndL = Get-Service '*_*' | Select-Object Name | Foreach-Object { $_.Name.Split('_')[1] }
 	ForEach($End in $ServiceEndL){ If($Tmp1 -eq $End){ Return $Tmp1 } Else{ $Tmp1 = $End } }
+	Return $ServiceEndL[0]
 }
 $Script:ServiceEnd = GetServiceEnd
 
@@ -213,19 +215,16 @@ $ServicesTypeLst = @(
 'Automatic',#3 -Automatic
 'Automatic (Delayed)')#4 -Automatic (Delayed)
 
-$EBErrLst = @(
-'Edition',
-'Build',
-'Edition & Build')
+$EBErrLst = @('Edition','Build','Edition & Build')
 
 $ServicesRegTypeList = @(
-'',  #0 -None
-'4', #1 -Disable
-'3', #2 -Manual
-'2', #3 -Automatic
-'2') #4 -Automatic (Delayed)
+'', #0 -None
+'4',#1 -Disable
+'3',#2 -Manual
+'2',#3 -Automatic
+'2')#4 -Automatic (Delayed)
 
-$XboxServiceArr = @('XblAuthManager', 'XblGameSave', 'XboxNetApiSvc')
+$XboxServiceArr = @('XblAuthManager','XblGameSave','XboxNetApiSvc')
 $Script:SettingPath = $filebase + 'BVSetting.xml'
 $Script:Black_Viper = 0
 $Script:All_or_Min = '-Min'
@@ -418,7 +417,6 @@ Function SetServiceVersion {
 Function ClickedDonate{ OpenWebsite 'https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/' ;$Script:ConsideredDonation = 'Yes' }
 
 Function SaveSetting {
-	#Updates Variables then Saves Settings
 	ForEach($Var In $VarList) {
 		If($Var.Value.IsChecked){ $SetValue = 1 } Else{ $SetValue = 0 }
 		Set-Variable -Name ($Var.Name.Split('_')[1]) -Value $SetValue -Scope Script
@@ -431,37 +429,37 @@ Function SaveSetting {
 	$Script:BackupServiceType = $WPF_BackupServiceType.SelectedIndex
 
 	[System.Collections.ArrayList]$Settings = @{}
-	$Settings += New-Object PSObject -Property @{ Var = 'AcceptToS' ;Val=$AcceptToS }
-	$Settings += New-Object PSObject -Property @{ Var = 'Automated' ;Val=$Automated }
-	$Settings += New-Object PSObject -Property @{ Var = 'BackupServiceConfig' ;Val=$BackupServiceConfig }
-	$Settings += New-Object PSObject -Property @{ Var = 'BackupServiceType' ;Val=$BackupServiceType }
-	$Settings += New-Object PSObject -Property @{ Var = 'ScriptVerCheck' ;Val=$ScriptVerCheck }
-	$Settings += New-Object PSObject -Property @{ Var = 'BatUpdateScriptFileName' ;Val=$BatUpdateScriptFileName }
-	$Settings += New-Object PSObject -Property @{ Var = 'ServiceVerCheck' ;Val=$ServiceVerCheck }
-	$Settings += New-Object PSObject -Property @{ Var = 'InternetCheck' ;Val=$InternetCheck }
-	$Settings += New-Object PSObject -Property @{ Var = 'EditionCheck' ;Val=$EditionCheck }
-	$Settings += New-Object PSObject -Property @{ Var = 'BuildCheck' ;Val=$BuildCheck }
-	$Settings += New-Object PSObject -Property @{ Var = 'ScriptLog' ;Val=$ScriptLog }
-	$Settings += New-Object PSObject -Property @{ Var = 'LogName' ;Val=$LogName }
-	$Settings += New-Object PSObject -Property @{ Var = 'LogBeforeAfter' ;Val=$LogBeforeAfter }
-	$Settings += New-Object PSObject -Property @{ Var = 'ShowConsole' ;Val=$ShowConsole }
-	$Settings += New-Object PSObject -Property @{ Var = 'DevLog' ;Val=$DevLog }
-	$Settings += New-Object PSObject -Property @{ Var = 'Diagnostic' ;Val=$Diagnostic }
-	$Settings += New-Object PSObject -Property @{ Var = 'XboxService' ;Val=$XboxService }
-	$Settings += New-Object PSObject -Property @{ Var = 'DryRun' ;Val=$DryRun }
-	$Settings += New-Object PSObject -Property @{ Var = 'ShowNonInstalled' ;Val=$ShowNonInstalled }
-	$Settings += New-Object PSObject -Property @{ Var = 'ShowAlreadySet' ;Val=$ShowAlreadySet }
+	$Settings += New-Object PSObject -Property @{ Var = 'AcceptToS' ;Val = $AcceptToS }
+	$Settings += New-Object PSObject -Property @{ Var = 'Automated' ;Val = $Automated }
+	$Settings += New-Object PSObject -Property @{ Var = 'BackupServiceConfig' ;Val = $BackupServiceConfig }
+	$Settings += New-Object PSObject -Property @{ Var = 'BackupServiceType' ;Val = $BackupServiceType }
+	$Settings += New-Object PSObject -Property @{ Var = 'ScriptVerCheck' ;Val = $ScriptVerCheck }
+	$Settings += New-Object PSObject -Property @{ Var = 'BatUpdateScriptFileName' ;Val = $BatUpdateScriptFileName }
+	$Settings += New-Object PSObject -Property @{ Var = 'ServiceVerCheck' ;Val = $ServiceVerCheck }
+	$Settings += New-Object PSObject -Property @{ Var = 'InternetCheck' ;Val = $InternetCheck }
+	$Settings += New-Object PSObject -Property @{ Var = 'EditionCheck' ;Val = $EditionCheck }
+	$Settings += New-Object PSObject -Property @{ Var = 'BuildCheck' ;Val = $BuildCheck }
+	$Settings += New-Object PSObject -Property @{ Var = 'ScriptLog' ;Val = $ScriptLog }
+	$Settings += New-Object PSObject -Property @{ Var = 'LogName' ;Val = $LogName }
+	$Settings += New-Object PSObject -Property @{ Var = 'LogBeforeAfter' ;Val = $LogBeforeAfter }
+	$Settings += New-Object PSObject -Property @{ Var = 'ShowConsole' ;Val = $ShowConsole }
+	$Settings += New-Object PSObject -Property @{ Var = 'DevLog' ;Val = $DevLog }
+	$Settings += New-Object PSObject -Property @{ Var = 'Diagnostic' ;Val = $Diagnostic }
+	$Settings += New-Object PSObject -Property @{ Var = 'XboxService' ;Val = $XboxService }
+	$Settings += New-Object PSObject -Property @{ Var = 'DryRun' ;Val = $DryRun }
+	$Settings += New-Object PSObject -Property @{ Var = 'ShowNonInstalled' ;Val = $ShowNonInstalled }
+	$Settings += New-Object PSObject -Property @{ Var = 'ShowAlreadySet' ;Val = $ShowAlreadySet }
 	If($ConsideredDonation -eq 'Yes'){ $Settings += New-Object PSObject -Property @{ Var = 'ConsideredDonation' ;Val='Yes' } }
 	$Settings | Export-Clixml $SettingPath
 }
 
-Function ShowConsole([Int]$Choice){ [Console.Window]::ShowWindow($consolePtr, $Choice) } #0 = Hide, 5 = Show
+Function ShowConsole([Int]$Choice){ [Console.Window]::ShowWindow($ConsolePtr, $Choice) }#0 = Hide, 5 = Show
 
 Function GuiStart {
 Add-Type -Name Window -Namespace Console -MemberDefinition '
 [DllImport("Kernel32.dll")] public static extern IntPtr GetConsoleWindow();
 [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);'
-	$Script:consolePtr = [Console.Window]::GetConsoleWindow()
+$Script:ConsolePtr = [Console.Window]::GetConsoleWindow()
 
 	Clear-Host
 	DisplayOutMenu 'Preparing GUI, Please wait...' 15 0 1 0
@@ -469,7 +467,7 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="355" Width="655" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="369" Width="660" BorderBrush="Black" Background="White">
 	<Window.Resources>
 		<Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">
 			<Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -508,18 +506,36 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 			</TabItem>
 			<TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
-					<DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,38,0,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+					<DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,47,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
 						<DataGrid.RowStyle>
 							<Style TargetType="{x:Type DataGridRow}">
 								<Style.Triggers>
-									<Trigger Property="AlternationIndex" Value="0"><Setter Property="Background" Value="White" /></Trigger>
-									<Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="#FFD8D8D8" /></Trigger>
+									<Trigger Property="AlternationIndex" Value="0"><Setter Property="Background" Value="White"/></Trigger>
+									<Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="#FFD8D8D8"/></Trigger>
 									<Trigger Property="IsMouseOver" Value="True">
 										<Setter Property="ToolTip"><Setter.Value><TextBlock Text="{Binding SrvDesc}" TextWrapping="Wrap" Width="400" Background="#FFFFFFBF" Foreground="Black"/></Setter.Value></Setter>
 									</Trigger>
-<!--									<DataTrigger Binding="{Binding Matches}" Value="False"><Setter Property="Background" Value="LightGreen"/></DataTrigger> -->
-<!--									<DataTrigger Binding="{Binding checkboxChecked}" Value="True"><Setter Property="FontWeight" Value="Bold"/></DataTrigger> -->
-									<DataTrigger Binding="{Binding checkboxChecked}" Value="True"><Setter Property="Background" Value="LightGreen"/></DataTrigger>
+									<MultiDataTrigger>
+										<MultiDataTrigger.Conditions>
+											<Condition Binding="{Binding checkboxChecked}" Value="True"/>
+											<Condition Binding="{Binding Matches}" Value="False"/>
+										</MultiDataTrigger.Conditions>
+										<Setter Property="Background" Value="#F08080"/>
+									</MultiDataTrigger>
+									<MultiDataTrigger>
+										<MultiDataTrigger.Conditions>
+											<Condition Binding="{Binding checkboxChecked}" Value="False"/>
+											<Condition Binding="{Binding Matches}" Value="False"/>
+										</MultiDataTrigger.Conditions>
+										<Setter Property="Background" Value="#FFFFFF64"/>
+									</MultiDataTrigger>
+									<MultiDataTrigger>
+										<MultiDataTrigger.Conditions>
+											<Condition Binding="{Binding checkboxChecked}" Value="True"/>
+											<Condition Binding="{Binding Matches}" Value="True"/>
+										</MultiDataTrigger.Conditions>
+										<Setter Property="Background" Value="LightGreen"/>
+									</MultiDataTrigger>
 								</Style.Triggers>
 							</Style>
 						</DataGrid.RowStyle>
@@ -539,13 +555,16 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="False" IsReadOnly="True"/>
 						</DataGrid.Columns>
 					</DataGrid>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,37,2,0" Stroke="Black" VerticalAlignment="Top"/>
+					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,46,-2,0" Stroke="Black" VerticalAlignment="Top"/>
 					<Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
-					<Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="3,1,0,0" VerticalAlignment="Top" Width="76"/>
-					<Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="103,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
-					<Button Name="SaveRegButton" Content="Save Registry" HorizontalAlignment="Left" Margin="198,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
-					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="196,15,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
-					<CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="288,3,0,0" VerticalAlignment="Top" Width="158" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/>
+					<Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="2,1,0,0" VerticalAlignment="Top" Width="76"/>
+					<Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="81,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
+					<Button Name="SaveRegButton" Content="Save Registry" HorizontalAlignment="Left" Margin="164,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
+					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="-2,23,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+					<CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="248,4,0,0" VerticalAlignment="Top" Width="119" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/>
+					<TextBlock Name="TableLegend" HorizontalAlignment="Left" Margin="373,0,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="270" Height="46" FontWeight="Bold" Visibility="Hidden"><Run Background="LightGreen" Text=" Checked &amp; Service is Same as Current                "/><LineBreak/><Run Background="LightCoral" Text=" Checked &amp; Service is NOT Same as Current       "/><LineBreak/><Run Background="#FFFFFF64" Text=" NOT Checked &amp; Service is NOT Same as current "/></TextBlock>
+					<Rectangle Name="Div1" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="372,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
+					<Rectangle Name="Div2" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="640,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
 				</Grid>
 			</TabItem>
 			<TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0">
@@ -598,7 +617,7 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 			</TabItem>
 			<TabItem Name="ServiceChanges" Header="Service Changes" Margin="-2,0,2,0" Visibility="Hidden">
 				<Grid Background="#FFE5E5E5">
-					<ScrollViewer VerticalScrollBarVisibility="Visible"><TextBlock Name="ServiceListing" TextTrimming="CharacterEllipsis" Background="White"/></ScrollViewer >
+					<ScrollViewer VerticalScrollBarVisibility="Visible"><TextBlock Name="ServiceListing" TextTrimming="CharacterEllipsis" Background="White"/></ScrollViewer>
 				</Grid>
 			</TabItem>
 		</TabControl>
@@ -615,9 +634,9 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 				<MenuItem Name="ContactButton" Header="Contact Me" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
 			</MenuItem>
 			<Separator Width="2" Style="{DynamicResource SeparatorStyle1}"/>
-			<MenuItem Name="DonateButton" Header="Donate to Me" Height="24" Width="88" Background="#FFFFAD2F" FontWeight="Bold" Margin="-1,-1,0,0"/>
+			<MenuItem Name="DonateButton" Header="Donate to Me" Height="24" Width="88" Background="Orange" FontWeight="Bold" Margin="-1,-1,0,0"/>
 			<MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="24" Width="130" Background="#FF3FDA62" FontWeight="Bold"/>
-			<MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="24" Width="142" Background="#FFFFDF4F" FontWeight="Bold"/>
+			<MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="24" Width="142" Background="Gold" FontWeight="Bold"/>
 		</Menu>
 	</Grid>
 </Window>
@@ -674,6 +693,8 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 			$Script:RanScript = 1
 			$WPF_RunScriptButton.IsEnabled = $False
 			$WPF_RunScriptButton.content = 'Run Disabled while changing services.'
+			$WPF_TabControl.Items[3].Visibility = 'Visible'
+			$WPF_TabControl.Items[3].IsSelected = $True
 			If($WPF_CustomBVCB.IsChecked) { 
 				$Script:LoadServiceConfig = 2
 				[System.Collections.ArrayList]$Script:csvTemp = @()
@@ -684,10 +705,7 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 				}
 				[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 			}
-			$WPF_TabControl.Items[3].Visibility = 'Visible'
-			$WPF_TabControl.Items[3].IsSelected = $True
 #			$Form.Close()
-#			ShowConsole 5
 			Black_Viper_Set $Black_Viper $All_or_Min
 		} Else{
 			RunDisableCheck
@@ -697,6 +715,12 @@ Add-Type -Name Window -Namespace Console -MemberDefinition '
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
 		If($WPF_dataGrid.SelectedItem){
 			If($DataGridLCust) {
+				$TmpName = $WPF_dataGrid.SelectedItem.Name
+				$DataGridListCust = $DataGridListCust | ForEach-Object { 
+					If($_.Name -eq $TmpName) {
+						If($_.CurrType -eq $_.BVType){ $_.Matches = $True } Else{ $_.Matches = $False } $_
+					}
+				}
 				$WPF_dataGrid.ItemsSource = $DataGridListOrig
 				$WPF_dataGrid.ItemsSource = $DataGridListCust
 			}
@@ -894,7 +918,6 @@ Function RunDisableCheck {
 Function GenerateServices {
 #   StartMode = StartType
 #	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName
-#	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName | Out-GridView
 
 	If($SrvCollected -ne 0) { $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName ;$Script:SrvCollected = 1 }
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
@@ -955,8 +978,9 @@ Function GenerateServices {
 			If($ServiceTypeNum -eq 4){ $ServiceType += ' (Delayed)' }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
-			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName=$ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum; ServiceTypeListDG = $ServicesTypeLst; SrvDesc = $SrvDescription; SrvPath = $SrvPath }
+			If($ServiceType -eq  $ServiceCurrType){ $Match = $True } Else{ $Match = $False }
+			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeLst ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
+			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeLst ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
 		}
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
@@ -969,6 +993,9 @@ Function GenerateServices {
 		$WPF_CustomBVCB.Visibility = 'Visible'
 		$WPF_SaveCustomSrvButton.Visibility = 'Visible'
 		$WPF_SaveRegButton.Visibility = 'Visible'
+		$WPF_TableLegend.Visibility = 'Visible'
+		$WPF_Div1.Visibility = 'Visible'
+		$WPF_Div2.Visibility = 'Visible'
 		$WPF_LoadServicesButton.content = 'Reload'
 		$Script:ServicesGenerated = $True
 	}
@@ -998,7 +1025,7 @@ Function TBoxMessage([String]$Message,[Int]$ClrNum) {
             $Run.Text = $message
             $WPF_ServiceListing.Inlines.Add($Run)
             $WPF_ServiceListing.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
-        }, "Normal"
+        },"Normal"
     )
     DisplayOut $Message $ClrNum 0
 }
@@ -1010,7 +1037,7 @@ Function TBoxMessageNNL([String]$Message,[Int]$ClrNum) {
             $Run.Foreground = $colorsGUI[$ClrNum]
             $Run.Text = $message
             $WPF_ServiceListing.Inlines.Add($Run)
-        }, "Normal"
+        },"Normal"
     )
     DisplayOutMenu $Message $ClrNum 0 0 1
 }
@@ -1426,7 +1453,7 @@ Function ServiceSet([String]$BVService) {
 	If($LogBeforeAfter -eq 2){ DiagnosticCheck 1 }
 	ServiceBAfun 'Services-Before'
 	If($DryRun -ne 1){ DisplayOut 'Changing Service Please wait...' 14 0 } Else{ DisplayOut 'List of Service that would be changed on Non-Dry Run...' 14 0 }
-	DisplayOutMenu 'Service Setting: ' 14 0 0 1 ; DisplayOutMenu $BVSet 15 0 1 1 
+	DisplayOutMenu 'Service Setting: ' 14 0 0 1 ;DisplayOutMenu $BVSet 15 0 1 1 
 	DisplayOut 'Service_Name - Current -> Change_To' 14 0
 	DisplayOut '-------------------------------------' 14 0
 	ForEach($item In $csv) {
@@ -1488,7 +1515,7 @@ Function ServiceSetGUI([String]$BVService) {
 	ServiceBAfun 'Services-Before'
 	$WPF_ServiceListing.text = ''
 	If($DryRun -ne 1){ TBoxMessage 'Changing Service Please wait...' 14 } Else{ TBoxMessage 'List of Service that would be changed on Non-Dry Run...' 14 }
-	TBoxMessageNNL 'Service Setting: ' 14 ; TBoxMessage $BVSet 15
+	TBoxMessageNNL 'Service Setting: ' 14 ;TBoxMessage $BVSet 15
 	TBoxMessage 'Service_Name - Current -> Change_To' 14
 	TBoxMessage '-------------------------------------' 14
 	ForEach($item In $csv) {
@@ -1729,7 +1756,7 @@ Function CheckBVcsv {
 }
 
 Function GetArgs {
-	For($i=0; $i -lt $PassedArg.Length; $i++) {
+	For($i=0 ;$i -lt $PassedArg.Length ;$i++) {
 		If($PassedArg[$i].StartsWith('-')) {
 			Switch($PassedArg[$i]) {
 				'-default' { $Script:Black_Viper = 1 ;$Script:BV_ArgUsed = 2 ;Break }
@@ -1894,6 +1921,7 @@ $Script:Automated = 0           #0 = Pause on - User input, On Errors, or End of
 
 $Script:BackupServiceConfig = 0 #0 = Don't backup Your Current Service Configuration before services are changes
                                 #1 = Backup Your Current Service Configuration before services are changes (Configure type below)
+
 $Script:BackupServiceType = 1
 # 0 = ".reg" file that you can change w/o using script
 # 1 = ".csv' file type that can be imported into script
