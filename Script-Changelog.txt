@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.2.8 (05-16-2018)
+4.2.9 (05-20-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
@@ -27,7 +27,12 @@ Added Tooltip in 'Services List' that show service description on mouseover
 Fixed a bug that showed some Service Descriptions and Path showing as 'System.Object[]'
 
 Added Link to FAQ (readme) in Gui's Help menu
-Added 'Services List' tab, rows colored in green are services that will be used (checked services)
+Added in 'Services List' tab, rows colored in green are services that will be used (checked services)
+
+Colors for the 'Services List' tab.. Yellow and Red Added
+--Green  = Checked and Service is the Same as Current
+--Red    = Checked and Service is NOT the Same as Current
+--Yellow = NOT Checked and Service is NOT the Same as Current
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
