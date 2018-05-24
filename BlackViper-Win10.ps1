@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '4.2'
-$Minor_Version = '9'
-$Script_Date = 'May-20-2018'
+$Minor_Version = '10'
+$Script_Date = 'May-24-2018'
 $Release_Type = 'Stable'
 ##########
 
@@ -203,17 +203,17 @@ $colorsGUI = @(
 
 $ServicesTypeList = @(
 '',         #0 -Skip Not Installed
-'Disabled', #1 -Disable
-'Manual',   #2 -Manual
+'Disabled', #1
+'Manual',   #2
 'Automatic',#3 -Automatic
 'Automatic')#4 -Automatic (Delayed)
 
 $ServicesTypeLst = @(
-'Skip',     #0 -Skip Not Installed
-'Disabled', #1 -Disable
-'Manual',   #2 -Manual
-'Automatic',#3 -Automatic
-'Automatic (Delayed)')#4 -Automatic (Delayed)
+'Skip',     #0
+'Disabled', #1
+'Manual',   #2
+'Automatic',#3
+'Automatic (Delayed)')#4
 
 $EBErrLst = @('Edition','Build','Edition & Build')
 
@@ -456,10 +456,9 @@ Function SaveSetting {
 Function ShowConsole([Int]$Choice){ [Console.Window]::ShowWindow($ConsolePtr, $Choice) }#0 = Hide, 5 = Show
 
 Function GuiStart {
-Add-Type -Name Window -Namespace Console -MemberDefinition '
-[DllImport("Kernel32.dll")] public static extern IntPtr GetConsoleWindow();
-[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);'
-$Script:ConsolePtr = [Console.Window]::GetConsoleWindow()
+	#Needed to Hide Console window
+	Add-Type -Name Window -Namespace Console -MemberDefinition '[DllImport("Kernel32.dll")] public static extern IntPtr GetConsoleWindow() ;[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);'
+	$Script:ConsolePtr = [Console.Window]::GetConsoleWindow()
 
 	Clear-Host
 	DisplayOutMenu 'Preparing GUI, Please wait...' 15 0 1 0
@@ -514,6 +513,7 @@ $Script:ConsolePtr = [Console.Window]::GetConsoleWindow()
 									<Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="#FFD8D8D8"/></Trigger>
 									<Trigger Property="IsMouseOver" Value="True">
 										<Setter Property="ToolTip"><Setter.Value><TextBlock Text="{Binding SrvDesc}" TextWrapping="Wrap" Width="400" Background="#FFFFFFBF" Foreground="Black"/></Setter.Value></Setter>
+										<Setter Property="ToolTipService.ShowDuration" Value="360000000"/>
 									</Trigger>
 									<MultiDataTrigger>
 										<MultiDataTrigger.Conditions>
@@ -660,7 +660,7 @@ $Script:ConsolePtr = [Console.Window]::GetConsoleWindow()
 		If($RanScript -ne 1) {
 			If([windows.forms.messagebox]::show('Are you sure you want to exit?','Exit','YesNo') -eq 'No'){ $_.cancel = $True }
 		}
-		SaveSetting 
+		SaveSetting
 	})
 
 	$WPF_ServiceConfig.add_SelectionChanged({
@@ -851,7 +851,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	Clear-Host
 	DisplayOutMenu 'Displaying GUI Now' 14 0 1 0
 	DisplayOutMenu "`nTo exit you can close the GUI or Powershell Window." 14 0 1 0
-	If($Release_Type -eq 'Stable' -and $ShowConsole -eq 0){ ShowConsole 5 }
+	If($Release_Type -eq 'Stable' -and $ShowConsole -eq 0){ ShowConsole 0 }
 	$Form.ShowDialog() | Out-Null
 	If($ShowConsole -eq 1){ $WPF_ShowWindow.IsChecked = $True }
 }
@@ -916,7 +916,7 @@ Function RunDisableCheck {
 }
 
 Function GenerateServices {
-#   StartMode = StartType
+#	StartMode = StartType
 #	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName
 
 	If($SrvCollected -ne 0) { $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName ;$Script:SrvCollected = 1 }
@@ -985,7 +985,6 @@ Function GenerateServices {
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
-	#$DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView
 
 	If(!($ServicesGenerated)) {
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
