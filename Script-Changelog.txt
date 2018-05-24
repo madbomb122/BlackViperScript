@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.2.9 (05-20-2018)
+4.2.10 (05-24-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
@@ -33,6 +33,9 @@ Colors for the 'Services List' tab.. Yellow and Red Added
 --Green  = Checked and Service is the Same as Current
 --Red    = Checked and Service is NOT the Same as Current
 --Yellow = NOT Checked and Service is NOT the Same as Current
+
+'Services List' tab tooltips should now show for as long as you are moused over
+Fixed bug with console window showing when it shouldnt be
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
