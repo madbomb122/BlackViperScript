@@ -1017,28 +1017,28 @@ Function DGUCheckAll([Bool]$Choice) {
 }
 
 Function TBoxMessage([String]$Message,[Int]$ClrNum) {
-    $WPF_ServiceListing.Dispatcher.invoke(
-        [action]{ 
-            $Run = New-Object System.Windows.Documents.Run
-            $Run.Foreground = $colorsGUI[$ClrNum]
-            $Run.Text = $message
-            $WPF_ServiceListing.Inlines.Add($Run)
-            $WPF_ServiceListing.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
-        },"Normal"
-    )
-    DisplayOut $Message $ClrNum 0
+	$WPF_ServiceListing.Dispatcher.invoke(
+		[action]{ 
+			$Run = New-Object System.Windows.Documents.Run
+			$Run.Foreground = $colorsGUI[$ClrNum]
+			$Run.Text = $message
+			$WPF_ServiceListing.Inlines.Add($Run)
+			$WPF_ServiceListing.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
+		},"Normal"
+	)
+	DisplayOut $Message $ClrNum 0
 }
 
 Function TBoxMessageNNL([String]$Message,[Int]$ClrNum) {
-    $WPF_ServiceListing.Dispatcher.invoke(
-        [action]{ 
-            $Run = New-Object System.Windows.Documents.Run
-            $Run.Foreground = $colorsGUI[$ClrNum]
-            $Run.Text = $message
-            $WPF_ServiceListing.Inlines.Add($Run)
-        },"Normal"
-    )
-    DisplayOutMenu $Message $ClrNum 0 0 1
+	$WPF_ServiceListing.Dispatcher.invoke(
+		[action]{ 
+			$Run = New-Object System.Windows.Documents.Run
+			$Run.Foreground = $colorsGUI[$ClrNum]
+			$Run.Text = $message
+			$WPF_ServiceListing.Inlines.Add($Run)
+		},"Normal"
+	)
+	DisplayOutMenu $Message $ClrNum 0 0 1
 }
 
 ##########
@@ -1079,7 +1079,7 @@ Function UpdateCheckAuto {
 }
 
 Function UpdateCheckNow([Int]$Switch) {
-    SaveSetting
+	SaveSetting
 	If(InternetCheck) {
 		UpdateCheck $Switch
 	} Else {
