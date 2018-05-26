@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-4.2.10 (05-24-2018)
+4.3.0 (05-26-2018)
 
 Look of the GUI changed, more changes may come
 Renamed the Check for update to Auto update
@@ -36,6 +36,9 @@ Colors for the 'Services List' tab.. Yellow and Red Added
 
 'Services List' tab tooltips should now show for as long as you are moused over
 Fixed bug with console window showing when it shouldnt be
+
+Added ability to 'Enable' Tweaked Option for Laptops (Use this with EXTREME CAUTION)
+^this setting must be re-enabled every time you want to use this settting
 
 -----------------------------------------------------------------------------------
 4.2.0 (04-19-2018)
