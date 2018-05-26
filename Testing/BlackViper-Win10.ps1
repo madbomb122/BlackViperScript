@@ -9,9 +9,9 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '4.2'
-$Minor_Version = '10'
-$Script_Date = 'May-24-2018'
+$Script_Version = '4.3'
+$Minor_Version = '0'
+$Script_Date = 'May-26-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -234,6 +234,7 @@ $Script:ErrorDi = ''
 $Script:LogStarted = 0
 $Script:LoadServiceConfig = 0
 $Script:RanScript = 0
+$Script:LaptopTweaked = 0
 $Script:errcount = $error.count
 $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType
 
@@ -467,7 +468,7 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="369" Width="660" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="375" Width="660" BorderBrush="Black" Background="White">
 	<Window.Resources>
 		<Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">
 			<Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -572,48 +573,51 @@ Function GuiStart {
 				<Grid Background="#FFE5E5E5">
 					<Label Content="Display Options" HorizontalAlignment="Left" Margin="2,2,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
 					<Label Content="Log Options" HorizontalAlignment="Left" Margin="178,2,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-					<Label Content="Misc Options" HorizontalAlignment="Left" Margin="2,73,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-					<CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="7,96,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
+					<Label Content="Misc Options" HorizontalAlignment="Left" Margin="2,65,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+					<CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="7,88,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
 					<CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="183,25,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
 					<CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="7,25,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
 					<CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="7,40,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
 					<CheckBox Name="ScriptLog_CB" Content="Script Log:" HorizontalAlignment="Left" Margin="183,40,0,0" VerticalAlignment="Top" Height="18" Width="76"/>
-					<CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="7,111,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
-					<CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service as:" HorizontalAlignment="Left" Margin="7,126,0,0" VerticalAlignment="Top" Height="15" Width="162"/>
-					<ComboBox Name="BackupServiceType" HorizontalAlignment="Left" Margin="169,124,0,0" VerticalAlignment="Top" Width="52" Height="23">
+					<CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="7,103,0,0" VerticalAlignment="Top" Height="15" Width="218"/>
+					<CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service as:" HorizontalAlignment="Left" Margin="7,118,0,0" VerticalAlignment="Top" Height="15" Width="162"/>
+					<ComboBox Name="BackupServiceType" HorizontalAlignment="Left" Margin="169,116,0,0" VerticalAlignment="Top" Width="52" Height="23">
 						<ComboBoxItem Content=".reg" HorizontalAlignment="Left" Width="50"/>
 						<ComboBoxItem Content=".csv" HorizontalAlignment="Left" Width="50" IsSelected="True"/>
 						<ComboBoxItem Content="Both" HorizontalAlignment="Left" Width="50"/>
 					</ComboBox>
 					<TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="261,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="137" IsEnabled="False"/>
-					<CheckBox Name="ScriptVerCheck_CB" Content="Auto Script Update*" HorizontalAlignment="Left" Margin="239,111,0,0" VerticalAlignment="Top" Height="15" Width="126"/>
-					<CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="239,126,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
-					<Button Name="CheckUpdateSerButton" Content="Services" HorizontalAlignment="Left" Margin="494,98,0,0" VerticalAlignment="Top" Width="109"/>
-					<Button Name="CheckUpdateSrpButton" Content="Script*" HorizontalAlignment="Left" Margin="494,123,0,0" VerticalAlignment="Top" Width="109"/>
-					<Button Name="CheckUpdateBothButton" Content="Services &amp; Script*" HorizontalAlignment="Left" Margin="494,148,0,0" VerticalAlignment="Top" Width="109"/>
-					<CheckBox Name="ServiceUpdateCB" Content="Auto Service Update" HorizontalAlignment="Left" Margin="239,96,0,0" VerticalAlignment="Top" Height="15" Width="131"/>
-					<CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="239,141,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
-					<Label Content="*Will run and use current settings&#xA;**If update.bat isnt avilable&#xD;&#xA;--Update checks happen before &#xD;&#xA;	services are changed." HorizontalAlignment="Left" Margin="233,150,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="220"/>
-					<Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="234,73,0,0" FontWeight="Bold"/>
+					<CheckBox Name="ScriptVerCheck_CB" Content="Auto Script Update*" HorizontalAlignment="Left" Margin="239,103,0,0" VerticalAlignment="Top" Height="15" Width="126"/>
+					<CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="239,118,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
+					<Button Name="CheckUpdateSerButton" Content="Services" HorizontalAlignment="Left" Margin="494,92,0,0" VerticalAlignment="Top" Width="109"/>
+					<Button Name="CheckUpdateSrpButton" Content="Script*" HorizontalAlignment="Left" Margin="494,117,0,0" VerticalAlignment="Top" Width="109"/>
+					<Button Name="CheckUpdateBothButton" Content="Services &amp; Script*" HorizontalAlignment="Left" Margin="494,142,0,0" VerticalAlignment="Top" Width="109"/>
+					<CheckBox Name="ServiceUpdateCB" Content="Auto Service Update" HorizontalAlignment="Left" Margin="239,88,0,0" VerticalAlignment="Top" Height="15" Width="131"/>
+					<CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="239,133,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
+					<Label Content="*Will run and use current settings&#xA;**If update.bat isnt avilable&#xD;&#xA;--Update checks happen before &#xD;&#xA;	services are changed." HorizontalAlignment="Left" Margin="233,142,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="220"/>
+					<Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="234,65,0,0" FontWeight="Bold"/>
 					<CheckBox Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="409,25,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
 					<CheckBox Name="EditionCheck_CB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="409,40,0,0" VerticalAlignment="Top" Height="15" Width="160"/>
 					<ComboBox Name="EditionConfig" HorizontalAlignment="Left" Margin="569,37,0,0" VerticalAlignment="Top" Width="60" Height="23">
 						<ComboBoxItem Content="Home" HorizontalAlignment="Left" Width="58"/>
 						<ComboBoxItem Content="Pro" HorizontalAlignment="Left" Width="58" IsSelected="True"/>
 					</ComboBox>
-					<CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="7,178,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-					<CheckBox Name="DevLog_CB" Content="Dev Log" HorizontalAlignment="Left" Margin="7,193,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+					<CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="7,169,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
+					<CheckBox Name="DevLog_CB" Content="Dev Log" HorizontalAlignment="Left" Margin="7,184,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
 					<Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="409,2,0,0" FontWeight="Bold"/>
-					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="176,-3,0,0" Stroke="Black" Width="1" Height="75" VerticalAlignment="Top"/>
-					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="403,-3,0,0" Stroke="Black" Width="1" Height="76" VerticalAlignment="Top"/>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,72,0,0" Stroke="Black" VerticalAlignment="Top"/>
-					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="229,73,0,0" Stroke="Black" Width="1"/>
-					<Label Content="Dev Options" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,154,0,0" FontWeight="Bold"/>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,153,0,0" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left" Width="235"/>
-					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="459,73,0,0" Stroke="Black" Width="1"/>
-					<Label Content="Check for Update Now for:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,73,0,0" FontWeight="Bold"/>
-					<CheckBox Name="ShowWindow" Content="Show Console Window" HorizontalAlignment="Left" Margin="7,208,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
-					<Label Content="*Wont remember Settings in&#xD;&#xA;'Service Options' or 'Services&#xD;&#xA;List' Tab" HorizontalAlignment="Left" Margin="464,171,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="177" Height="61"/>
+					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="176,-3,0,0" Stroke="Black" Width="1" Height="69" VerticalAlignment="Top"/>
+					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="403,-3,0,0" Stroke="Black" Width="1" Height="70" VerticalAlignment="Top"/>
+					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,66,0,0" Stroke="Black" VerticalAlignment="Top"/>
+					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="229,67,0,0" Stroke="Black" Width="1" Height="152" VerticalAlignment="Top"/>
+					<Label Content="Dev Options" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,145,0,0" FontWeight="Bold"/>
+					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,146,0,0" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left" Width="235"/>
+					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="459,67,0,0" Stroke="Black" Width="1"/>
+					<Label Content="Check for Update Now for:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,65,0,0" FontWeight="Bold"/>
+					<CheckBox Name="ShowWindow" Content="Show Console Window" HorizontalAlignment="Left" Margin="7,199,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
+					<Label Content="*Wont remember Settings in&#xD;&#xA;'Service Options' or 'Services&#xD;&#xA;List' Tab" HorizontalAlignment="Left" Margin="464,165,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="177" Height="61"/>
+					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,218,0,0" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left" Width="465"/>
+					<CheckBox Name="LaptopTweaked_CB" Content="Enable Tweak Setting on Laptop" HorizontalAlignment="Left" Margin="7,225,0,0" VerticalAlignment="Top" Height="15" Width="193"/>
+					<Label Name="LaptopTweaked_txt" Content="*CAUTION: Use this with EXTREME CAUTION" HorizontalAlignment="Left" Margin="194,220,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="263"/>
 				</Grid>
 			</TabItem>
 			<TabItem Name="ServiceChanges" Header="Service Changes" Margin="-2,0,2,0" Visibility="Hidden">
@@ -750,6 +754,24 @@ Function GuiStart {
 	$WPF_ScriptLog_CB.Add_Click({ SaveSetting })
 	$WPF_BackupServiceConfig_CB.Add_Click({ SaveSetting })
 
+	$WPF_LaptopTweaked_CB.Add_Checked({ 
+		If($WPF_ServiceConfig.Items.Count -eq 3) {
+			$WPF_ServiceConfig.Items.RemoveAt(2)
+			$WPF_ServiceConfig.Items.Add('Tweaked')
+			$WPF_ServiceConfig.Items.Add('Custom Setting *')
+			$Script:LaptopTweaked = 1
+			$Script:BVCount++
+		}
+	})
+
+	$WPF_LaptopTweaked_CB.Add_UnChecked({
+		If($WPF_ServiceConfig.Items.Count -eq 4) {
+			$WPF_ServiceConfig.Items.RemoveAt(2)
+			$Script:LaptopTweaked = 0
+			$Script:BVCount--
+		}
+	})
+
 	$WPF_ShowWindow.Add_Checked({ ShowConsole 5 ;SaveSetting }) #5 = Show
 	$WPF_ShowWindow.Add_UnChecked({ ShowConsole 0 ;SaveSetting }) #0 = Hide
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True ;SaveSetting })
@@ -831,7 +853,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		$WPF_ScriptLog_CB.IsChecked = $True
 		$WPF_LogNameInput.IsEnabled = $True
 	}
-	If($IsLaptop -eq '-Lap'){ $WPF_ServiceConfig.Items.RemoveAt(2) }
+	If($IsLaptop -eq '-Lap'){
+		$WPF_ServiceConfig.Items.RemoveAt(2)
+	} Else {
+		$WPF_LaptopTweaked_CB.Visibility = 'Hidden'
+		$WPF_LaptopTweaked_txt.Visibility = 'Hidden'
+	}
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
 	ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
@@ -917,7 +944,7 @@ Function RunDisableCheck {
 }
 
 Function GenerateServices {
-#   StartMode = StartType
+#	StartMode = StartType
 #	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName
 
 	If($SrvCollected -ne 0) { $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName ;$Script:SrvCollected = 1 }
@@ -936,9 +963,17 @@ Function GenerateServices {
 	}
 	Switch($Black_Viper) {
 		{$LoadServiceConfig -eq 1} { $Script:BVService = 'StartType' ;Break }
-		1 { ($Script:BVService='Def-'+$WinEdition+$FullMin) ;$BVSAlt = 'Def-'+$WinEdition+'-Full' ;Break }
-		2 { ($Script:BVService='Safe'+$IsLaptop+$FullMin) ;$BVSAlt = 'Safe'+$IsLaptop+'-Full' ;Break }
-		3 { ($Script:BVService='Tweaked'+$IsLaptop+$FullMin) ;$BVSAlt = 'Tweaked'+$IsLaptop+'-Full' ;Break }
+		1 { $Script:BVService='Def-'+$WinEdition+$FullMin ;$BVSAlt = 'Def-'+$WinEdition+'-Full' ;Break }
+		2 { $Script:BVService='Safe'+$IsLaptop+$FullMin ;$BVSAlt = 'Safe'+$IsLaptop+'-Full' ;Break }
+		3 { If($LaptopTweaked -eq 1 -and $IsLaptop -eq '-Lap') {
+				$Script:BVService='Tweaked-Desk'+$FullMin 
+				$BVSAlt = 'Tweaked-Desk-Full'
+			} Else {
+				$Script:BVService='Tweaked'+$IsLaptop+$FullMin 
+				$BVSAlt = 'Tweaked'+$IsLaptop+'-Full'
+			}
+			Break
+		  }
 	}
 	If($WPF_XboxService_CB.IsChecked){ $Script:XboxService = 1 } Else{ $Script:XboxService = 0 }
 	If($ServiceImport -eq 1) {
@@ -986,6 +1021,8 @@ Function GenerateServices {
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
+	#$DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView
+	#$test = $DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView -PassThru
 
 	If(!($ServicesGenerated)) {
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
@@ -1018,28 +1055,28 @@ Function DGUCheckAll([Bool]$Choice) {
 }
 
 Function TBoxMessage([String]$Message,[Int]$ClrNum) {
-    $WPF_ServiceListing.Dispatcher.invoke(
-        [action]{ 
-            $Run = New-Object System.Windows.Documents.Run
-            $Run.Foreground = $colorsGUI[$ClrNum]
-            $Run.Text = $message
-            $WPF_ServiceListing.Inlines.Add($Run)
-            $WPF_ServiceListing.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
-        },"Normal"
-    )
-    DisplayOut $Message $ClrNum 0
+	$WPF_ServiceListing.Dispatcher.invoke(
+		[action]{ 
+			$Run = New-Object System.Windows.Documents.Run
+			$Run.Foreground = $colorsGUI[$ClrNum]
+			$Run.Text = $message
+			$WPF_ServiceListing.Inlines.Add($Run)
+			$WPF_ServiceListing.Inlines.Add((New-Object System.Windows.Documents.LineBreak))
+		},"Normal"
+	)
+	DisplayOut $Message $ClrNum 0
 }
 
 Function TBoxMessageNNL([String]$Message,[Int]$ClrNum) {
-    $WPF_ServiceListing.Dispatcher.invoke(
-        [action]{ 
-            $Run = New-Object System.Windows.Documents.Run
-            $Run.Foreground = $colorsGUI[$ClrNum]
-            $Run.Text = $message
-            $WPF_ServiceListing.Inlines.Add($Run)
-        },"Normal"
-    )
-    DisplayOutMenu $Message $ClrNum 0 0 1
+	$WPF_ServiceListing.Dispatcher.invoke(
+		[action]{ 
+			$Run = New-Object System.Windows.Documents.Run
+			$Run.Foreground = $colorsGUI[$ClrNum]
+			$Run.Text = $message
+			$WPF_ServiceListing.Inlines.Add($Run)
+		},"Normal"
+	)
+	DisplayOutMenu $Message $ClrNum 0 0 1
 }
 
 ##########
@@ -1080,7 +1117,7 @@ Function UpdateCheckAuto {
 }
 
 Function UpdateCheckNow([Int]$Switch) {
-    SaveSetting
+	SaveSetting
 	If(InternetCheck) {
 		UpdateCheck $Switch
 	} Else {
@@ -1442,7 +1479,14 @@ Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 		{$LoadServiceConfig -In 1..2} { $BVSet = 'Custom' ;$ServiceSetOpt = 'StartType' ;Break }
 		1 { $BVSet = 'Default' ;$ServiceSetOpt = ('Def-'+$WinEdition+$FullMin) ;Break }
 		2 { $BVSet = 'Safe' ;$ServiceSetOpt = ('Safe'+$IsLaptop+$FullMin) ;Break }
-		3 { $BVSet = 'Tweaked' ;$ServiceSetOpt = ('Tweaked'+$IsLaptop+$FullMin) ;Break }
+		3 { If($LaptopTweaked -eq 1 -and $IsLaptop -eq '-Lap') {
+				$ServiceSetOpt = ('Tweaked-Desk'+$FullMin)
+			} Else {
+				$ServiceSetOpt = ('Tweaked'+$IsLaptop+$FullMin)
+			}
+			$BVSet = 'Tweaked'
+			Break
+		  }
 	}
 	If($GuiLoad -eq 1){ ServiceSetGUI $ServiceSetOpt } Else{ ServiceSet $ServiceSetOpt }
 }
@@ -1951,6 +1995,8 @@ $Script:ShowAlreadySet = 1      #0 = Don't Show Already set Services, 1 = Show A
 
 $Script:ShowNonInstalled = 0    #0 = Don't Show Services not present, 1 = Show Services not present
 
+$Script:XboxService = 0         #0 = Change Xbox Services, 1 = Skip Change Xbox Services
+
 $Script:InternetCheck = 0       #0 = Checks if you have Internet, 1 = Bypass check if your pings are blocked
 # Use if Pings are Blocked or can't ping GitHub.com
 
@@ -1960,7 +2006,6 @@ $Script:EditionCheck = 0        #0 = Check if Home or Pro Edition
 
 $Script:BuildCheck = 0          #0 = Check Build (Creator's Update Minimum), 1 = Skips this check
 
-$Script:XboxService = 0         #0 = Change Xbox Services, 1 = Skip Change Xbox Services
 #--------------------------------
 # Best not to use these unless asked to (these stop automated)
 $Script:Diagnostic = 0          #0 = Doesn't show Shows diagnostic information
