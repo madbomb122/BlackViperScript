@@ -9,9 +9,9 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '4.3'
+$Script_Version = '5.0'
 $Minor_Version = '0'
-$Script_Date = 'May-26-2018'
+$Script_Date = 'May-29-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -296,6 +296,8 @@ Function Error_Bottom {
 	AutomatedExitCheck 1
 }
 
+Function GetAllServices { $Script:AllService = Get-CimInstance Win32_service | Select-Object Name,@{ Name = 'StartType' ;Expression = {$_.StartMode} } }
+
 ##########
 # Multi Use Functions -End
 ##########
@@ -468,7 +470,7 @@ Function GuiStart {
 
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="375" Width="660" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="375" Width="669" BorderBrush="Black" Background="White">
 	<Window.Resources>
 		<Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">
 			<Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -553,8 +555,8 @@ Function GuiStart {
 								<DataGridTemplateColumn.CellTemplate><DataTemplate><ComboBox 
 								ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Description" Width="120" Binding="{Binding SrvDesc}" CanUserSort="False" IsReadOnly="True"/>
-							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="False" IsReadOnly="True"/>
+							<DataGridTextColumn Header="Description" Width="120" Binding="{Binding SrvDesc}" CanUserSort="True" IsReadOnly="True"/>
+							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="True" IsReadOnly="True"/>
 						</DataGrid.Columns>
 					</DataGrid>
 					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,46,-2,0" Stroke="Black" VerticalAlignment="Top"/>
@@ -564,9 +566,8 @@ Function GuiStart {
 					<Button Name="SaveRegButton" Content="Save Registry" HorizontalAlignment="Left" Margin="164,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
 					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="-2,23,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 					<CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="248,4,0,0" VerticalAlignment="Top" Width="119" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/>
-					<TextBlock Name="TableLegend" HorizontalAlignment="Left" Margin="373,0,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="270" Height="46" FontWeight="Bold" Visibility="Hidden"><Run Background="LightGreen" Text=" Checked &amp; Service is Same as Current                "/><LineBreak/><Run Background="LightCoral" Text=" Checked &amp; Service is NOT Same as Current       "/><LineBreak/><Run Background="#FFFFFF64" Text=" NOT Checked &amp; Service is NOT Same as current "/></TextBlock>
+					<TextBlock Name="TableLegend" HorizontalAlignment="Left" Margin="373,0,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="275" Height="46" FontWeight="Bold" Visibility="Hidden"><Run Background="LightGreen" Text=" Checked &amp; Service is Same as Current                  "/><LineBreak/><Run Background="LightCoral" Text=" Checked &amp; Service is NOT Same as Current          "/><LineBreak/><Run Background="#FFFFFF64" Text=" NOT Checked &amp; Service is NOT Same as Current "/></TextBlock>
 					<Rectangle Name="Div1" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="372,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
-					<Rectangle Name="Div2" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="640,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
 				</Grid>
 			</TabItem>
 			<TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0">
@@ -815,37 +816,6 @@ The above copyright notice(s), this permission notice and ANY original donation 
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.'
 
-	$Skip_Services = @(
-	'PimIndexMaintenanceSvc_',
-	'DevicesFlowUserSvc_',
-	'UserDataSvc_',
-	'UnistoreSvc_',
-	'WpnUserService_',
-	'AppXSVC',
-	'BrokerInfrastructure',
-	'ClipSVC',
-	'CoreMessagingRegistrar',
-	'DcomLaunch',
-	'EntAppSvc',
-	'gpsvc',
-	'LSM',
-	'NgcSvc',
-	'NgcCtnrSvc',
-	'RpcSs',
-	'RpcEptMapper',
-	'sppsvc',
-	'StateRepository',
-	'SystemEventsBroker',
-	'Schedule',
-	'tiledatamodelsvc',
-	'WdNisSvc',
-	'SecurityHealthService',
-	'msiserver',
-	'MpsSvc',
-	'WinDefend',
-	'xbgm')
-	For($i=0;$i -ne 5;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
-
 	$Script:RunScript = 0
 	If($All_or_Min -eq '-full'){ $WPF_RadioAll.IsChecked = $True } Else{ $WPF_RadioMin.IsChecked = $True }
 	$WPF_LogNameInput.Text = $LogName
@@ -1032,7 +1002,6 @@ Function GenerateServices {
 		$WPF_SaveRegButton.Visibility = 'Visible'
 		$WPF_TableLegend.Visibility = 'Visible'
 		$WPF_Div1.Visibility = 'Visible'
-		$WPF_Div2.Visibility = 'Visible'
 		$WPF_LoadServicesButton.content = 'Reload'
 		$Script:ServicesGenerated = $True
 	}
@@ -1310,7 +1279,7 @@ Function Save_Service([String]$SavePath) {
 	} Else {
 		If($AllService -eq $null) { 
 			$ServiceSavePath += '-Service-Backup.csv'
-			If($AllService -eq $null){ $Script:AllService = Get-Service | Select-Object Name, StartType }
+			GetAllServices
 		} Else {
 			$ServiceSavePath += '-Custom-Service.csv'
 		}
@@ -1325,7 +1294,7 @@ Function Save_ServiceBackup {
 	$ServiceSavePath = $filebase + $Env:computername
 	$SaveService = @()
 	$ServiceSavePath += '-Service-Backup.csv'
-	If($AllService -eq $null){ $AllService = Get-Service | Select-Object Name, StartType }
+	If($AllService -eq $null){ GetAllServices }
 	$SaveService = GenerateSaveService
 	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding 'unicode' -force -Delimiter ','
 }
@@ -1360,7 +1329,7 @@ Function RegistryServiceFile([String]$TempFP) {
 }
 
 Function GenerateRegistryRegular([String]$TempFP) {
-	If($AllService -eq $null){ $Script:AllService = Get-Service | Select-Object Name, StartType }
+	If($AllService -eq $null){ GetAllServices }
 	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -Filepath $TempFP
 	ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
@@ -1522,21 +1491,20 @@ Function ServiceSet([String]$BVService) {
 					$DispTemp += ' (Delayed)'
 					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
 				}
-				DisplayOut $DispTemp  11 0
+				DisplayOut $DispTemp 11 0
 			} ElseIf($ServiceCurrType -eq 'Already' -And $ShowAlreadySet -eq 1) {
 				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
 				If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
-				DisplayOut $DispTemp  15 0
+				DisplayOut $DispTemp 15 0
 			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
-				$DispTemp = "No service with name $ServiceName"
-				DisplayOut $DispTemp  13 0
+				DisplayOut "No service with name $ServiceName"  13 0
 			} ElseIf($ServiceCurrType -eq 'Xbox') {
-				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
-				DisplayOut $DispTemp  2 0
+				DisplayOut "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2 0
+			} ElseIf($ServiceCurrType -eq 'Denied' -and $Release_Type -eq 'Testing') {
+				DisplayOut "$ServiceCommName ($ServiceName) can't be changed." 14 0
 			}
 		} ElseIf($ServiceTypeNum -NotIn 1..4 -and $ServiceTypeNum -ne 0) {
-			$DispTemp = "Error: $ServiceName does not have a valid Setting."
-			DisplayOut $DispTemp  13 0
+			DisplayOut "Error: $ServiceName does not have a valid Setting." 13 0
 		}
 	}
 	DisplayOut '-------------------------------------' 14 0
@@ -1584,21 +1552,20 @@ Function ServiceSetGUI([String]$BVService) {
 					$DispTemp += ' (Delayed)'
 					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
 				}
-				TBoxMessage $DispTemp  11
+				TBoxMessage $DispTemp 11
 			} ElseIf($ServiceCurrType -eq 'Already' -And $ShowAlreadySet -eq 1) {
 				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
 				If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
-				TBoxMessage $DispTemp  15
+				TBoxMessage $DispTemp 15
 			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
-				$DispTemp = "No service with name $ServiceName"
-				TBoxMessage $DispTemp  13
+				TBoxMessage "No service with name $ServiceName" 13
 			} ElseIf($ServiceCurrType -eq 'Xbox') {
-				$DispTemp = "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
-				TBoxMessage $DispTemp  2
+				TBoxMessage "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2
+			} ElseIf($ServiceCurrType -eq 'Denied' -and $Release_Type -eq 'Testing') {
+				TBoxMessage "$ServiceCommName ($ServiceName) can't be changed." 14
 			}
 		} ElseIf($ServiceTypeNum -NotIn 1..4 -and $ServiceTypeNum -ne 0) {
-			$DispTemp = "Error: $ServiceName does not have a valid Setting."
-			TBoxMessage $DispTemp  13
+			TBoxMessage "Error: $ServiceName does not have a valid Setting." 13
 		}
 	}
 	TBoxMessage '-------------------------------------' 14
@@ -1619,11 +1586,13 @@ Would you Consider giving a Donation?'
 
 		If([Windows.Forms.MessageBox]::Show($thanks,'Thank You','YesNo','Question') -eq 'Yes'){ ClickedDonate } 
 	}
+	$Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType
 	RunDisableCheck
 	If($DevLog -eq 1 -and $error.count -gt $errcount){ Write-Output $error 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
+	If($Skip_Services -Contains $S_Name){ Return 'Denied' }
 	If($CurrServices.Name -Contains $S_Name) {
 		If($XboxService -eq 1 -and $XboxServiceArr -Contains $S_Name) { Return 'Xbox' }
 		$C_Type = ($CurrServices.Where{$_.Name -eq $S_Name}).StartType
@@ -1647,6 +1616,7 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 ##########
 
 Function LoadWebCSV([Int]$ErrorChoice) {
+	ShowConsole 5
 	If($ErrorChoice -eq 0) {
 		$Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV'
 		$Pick = ' is Missing.             '
@@ -1781,7 +1751,8 @@ Function PreScriptCheck {
 }
 
 Function CheckBVcsv {
-	If(($csv[0].'Def-Pro-Full') -ne 'GernetatedByMadBomb122') {
+	$GenBy = $csv[0].'Def-Pro-Full'
+	If($GenBy -ne 'GernetatedByMadBomb122' -and $GenBy -ne 'GeneratedByMadBomb122') {
 		If($Automated -ne 1) {
 			LoadWebCSV 1
 		} Else {
@@ -1887,7 +1858,7 @@ Function ShowHelp {
 }
 
 Function ArgsAndVarSet {
-	If(Test-Path $SettingPath -PathType Leaf){ Import-Clixml BVSetting.xml | ForEach-Object { Set-Variable $_.Var $_.Val -Scope Script } }
+	If(Test-Path $SettingPath -PathType Leaf){ Import-Clixml $SettingPath  | ForEach-Object { Set-Variable $_.Var $_.Val -Scope Script } }
 	$Script:PCType = (Get-CimInstance -Class Win32_ComputerSystem).PCSystemType 
 	If($PCType -ne 2){ $Script:IsLaptop = '-Desk' } Else{ $Script:IsLaptop = '-Lap' }
 	If($PassedArg.Length -gt 0){ GetArgs }
@@ -1911,6 +1882,42 @@ Function ArgsAndVarSet {
 	# 1607 = Anniversary Update
 	# 1511 = November Update (First Major Update)
 	# 1507 = First Release
+
+	$Skip_Services = @(
+	'PimIndexMaintenanceSvc_',
+	'DevicesFlowUserSvc_',
+	'BcastDVRUserService_',
+	'PrintWorkflowUserSvc_',
+	'UserDataSvc_',
+	'UnistoreSvc_',
+	'WpnUserService_',
+	'AppXSVC',
+	'BrokerInfrastructure',
+	'ClipSVC',
+	'CoreMessagingRegistrar',
+	'DcomLaunch',
+	'EntAppSvc',
+	'gpsvc',
+	'LSM',
+	'NgcSvc',
+	'NgcCtnrSvc',
+	'RpcSs',
+	'RpcEptMapper',
+	'sppsvc',
+	'StateRepository',
+	'SystemEventsBroker',
+	'Schedule',
+	'tiledatamodelsvc',
+	'UsoSvc',
+	'WdNisSvc',
+	'WinDefend',
+	'SecurityHealthService',
+	'msiserver',
+	'MpsSvc',
+	'xbgm')
+
+	For($i=0;$i -ne 7;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
+	If($Win10Ver -eq 1803){ $Skip_Services += 'UsoSvc' }
 
 	If($Diagnostic -eq 2) {
 		Clear-Host
