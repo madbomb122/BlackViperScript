@@ -1,4 +1,4 @@
-ServiceName,Def-Home-Full,Def-Home-Min,Def-Pro-Full,Def-Pro-Min,Safe-Desk-Full,Safe-Desk-Min,Safe-Lap-Full,Safe-Lap-Min,Tweaked-Desk-Full,Tweaked-Desk-Min,Def-Home-Full-FCU,Def-Home-Min-FCU,Def-Pro-Full-FCU,Def-Pro-Min-FCU,Safe-Desk-Full-FCU,Safe-Desk-Min-FCU,Safe-Lap-Full-FCU,Safe-Lap-Min-FCU,Tweaked-Desk-Full-FCU,Tweaked-Desk-Min-FCU
+ServiceName,Def-Home-Full,Def-Home-Min,Def-Pro-Full,Def-Pro-Min,Safe-Desk-Full,Safe-Desk-Min,Safe-Lap-Full,Safe-Lap-Min,Tweaked-Desk-Full,Tweaked-Desk-Min
 #ServiceVersion,4.0,May-29-2018,GernetatedByMadBomb122,0,0,0,0,0,0,0
 AxInstSV,2,0,2,0,2,0,2,0,2,0
 AJRouter,2,2,2,2,2,2,2,2,1,1
