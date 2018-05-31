@@ -1,10 +1,13 @@
 -----------------------------------------------------------------------------------
-5.0.0 (05-29-2018)
+5.0.1 (05-31-2018)
 
 Black Viper services for 1803 support added
 Fixed issue in 'Services List' tab with sorting Description and Path
 Fixed issue in 'Services List' tab with current Setting didnt update (after running script)
 ^ You still need to click 'Reload' to update the Table
+
+Fixed bug if script ran with an invalid 'blackviper.csv' causing script to need input on console (when it's hidden)
+Fixed UsoSvc service being skipped for versions before 1803
 
 -----------------------------------------------------------------------------------
 4.3.0 (05-26-2018)
