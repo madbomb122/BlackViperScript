@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '5.0'
-$Minor_Version = '0'
-$Script_Date = 'May-29-2018'
+$Minor_Version = '1'
+$Script_Date = 'May-31-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -985,14 +985,15 @@ Function GenerateServices {
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
 			If($ServiceType -eq  $ServiceCurrType){ $Match = $True } Else{ $Match = $False }
-			$Script:DataGridListOrig += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeLst ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
-			$Script:DataGridListCust += New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeLst ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
+			$ArrayAdd = New-Object PSObject -Property @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeLst ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
+			$Script:DataGridListOrig += $ArrayAdd
+			$Script:DataGridListCust += $ArrayAdd
 		}
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	$WPF_dataGrid.Items.Refresh()
-	#$DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView
-	#$test = $DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView -PassThru
+#	$DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView
+#	$test = $DataGridListOrig | Select-Object checkboxChecked, CName, ServiceName, CurrType, BVType, SrvDesc, SrvPath | Out-GridView -PassThru
 
 	If(!($ServicesGenerated)) {
 		$WPF_ServiceClickLabel.Visibility = 'Hidden'
@@ -1612,11 +1613,10 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 ##########
 # Service Change Functions -End
 ##########
-# MiscFunctions -Start
+# Misc Functions -Start
 ##########
 
 Function LoadWebCSV([Int]$ErrorChoice) {
-	ShowConsole 5
 	If($ErrorChoice -eq 0) {
 		$Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV'
 		$Pick = ' is Missing.             '
@@ -1645,6 +1645,35 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 	If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
 	CheckBVcsv
 	Return
+}
+
+Function LoadWebCSVGUI {
+	ShowConsole 5
+	If($ErrorChoice -eq 0) {
+		$Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV'
+		$ErrMessage = "The File 'BlackViper.csv' is Missing.
+Do you want to download the file 'BlackViper.csv'?"
+	} ElseIf($ErrorChoice -eq 1) {
+		$Script:ErrorDi = 'Invalid/Corrupt BlackViper.csv'
+		$ErrMessage = "The File 'BlackViper.csv' is Invalid or Corrupt.
+Do you want to download the file 'BlackViper.csv'?"
+	} Else {
+		$Script:ErrorDi = 'BlackViper.csv Not Valid for current Update'
+		$ErrMessage = "The File 'BlackViper.csv' needs to be Updated.
+Do you want to download the file 'BlackViper.csv'?"
+	}
+	$Choice = [windows.forms.messagebox]::show($ErrMessage,'Error','YesNo','Error')
+	If($Choice -eq 'Yes'){
+		DownloadFile $Service_Url $ServiceFilePath
+		[System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath
+		CheckBVcsv
+		Return
+	} Else {
+		$Message = "To get The File 'BlackViper.csv' go to https://github.com/madbomb122/BlackViperScript to save it.
+Without the file the script won't run"
+		[Windows.Forms.MessageBox]::Show($Message,'Information', 'OK','Information') | Out-Null
+		Exit
+	}
 }
 
 Function PreScriptCheck {
@@ -1737,7 +1766,7 @@ Function PreScriptCheck {
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 			If($ServiceVerCheck -eq 0) {
 				If($ScriptLog -eq 1){ Write-Output "Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
-				LoadWebCSV 0
+				If($GuiLoad -eq 1){ LoadWebCSVGUI 0 } Else{ LoadWebCSV 0 }
 			} Else {
 				If($ScriptLog -eq 1){ Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
 				DownloadFile $Service_Url $ServiceFilePath
@@ -1754,18 +1783,24 @@ Function CheckBVcsv {
 	$GenBy = $csv[0].'Def-Pro-Full'
 	If($GenBy -ne 'GernetatedByMadBomb122' -and $GenBy -ne 'GeneratedByMadBomb122') {
 		If($Automated -ne 1) {
-			LoadWebCSV 1
+			If($GuiLoad -eq 1){ LoadWebCSVGUI 1 } Else{ LoadWebCSV 1 }
 		} Else {
 			Error_Top_Display
 			LeftLineLog ;DisplayOutMenu 'The File ' 2 0 0 1 ;DisplayOutMenu 'BlackViper.csv' 15 0 0 1 ;DisplayOutMenu ' is Invalid or Corrupt.   ' 2 0 0 1 ;RightLineLog
 			Error_Bottom
 		}
 	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
-		$Script:ErrorDi = 'Missing File BlackViper.csv'
-		Error_Top_Display
-		LeftLineLog ;DisplayOutMenu 'The File ' 2 0 0 1 ;DisplayOutMenu 'BlackViper.csv' 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
-		LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
-		Error_Bottom
+		If($GuiLoad -eq 1){
+			$Message = "The File 'BlackViper.csv' is missing and couldn't be downloaded.
+For Manual download go to https://github.com/madbomb122/BlackViperScript"
+			[Windows.Forms.MessageBox]::Show($Message,'Information', 'OK','Information') | Out-Null
+		} Else{
+			$Script:ErrorDi = 'Missing File BlackViper.csv'
+			Error_Top_Display
+			LeftLineLog ;DisplayOutMenu 'The File ' 2 0 0 1 ;DisplayOutMenu 'BlackViper.csv' 15 0 0 1 ;DisplayOutMenu " is missing and couldn't  " 2 0 0 1 ;RightLineLog
+			LeftLineLog ;DisplayOutMenu "couldn't download for some reason.               " 2 0 0 1 ;RightLineLog
+			Error_Bottom
+		}
 	} 
 	If($GuiLoad -eq 1){ $WPF_LoadServicesButton.IsEnabled = SetServiceVersion } Else{ SetServiceVersion | Out-Null } 
 }
@@ -1908,7 +1943,6 @@ Function ArgsAndVarSet {
 	'SystemEventsBroker',
 	'Schedule',
 	'tiledatamodelsvc',
-	'UsoSvc',
 	'WdNisSvc',
 	'WinDefend',
 	'SecurityHealthService',
@@ -1917,7 +1951,7 @@ Function ArgsAndVarSet {
 	'xbgm')
 
 	For($i=0;$i -ne 7;$i++){ $Skip_Services[$i] = $Skip_Services[$i] + $ServiceEnd }
-	If($Win10Ver -eq 1803){ $Skip_Services += 'UsoSvc' }
+	If($Win10Ver -ge 1803){ $Skip_Services += 'UsoSvc' }
 
 	If($Diagnostic -eq 2) {
 		Clear-Host
@@ -1953,7 +1987,7 @@ Function ArgsAndVarSet {
 }
 
 ##########
-# MiscFunctions -End
+# Misc Functions -End
 ##########
 #--------------------------------------------------------------------------
 ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
