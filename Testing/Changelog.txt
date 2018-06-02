@@ -9,7 +9,7 @@ Fixed issue in 'Services List' tab with current Setting didnt update (after runn
 Fixed bug if script ran with an invalid 'blackviper.csv' causing script to need input on console (when it's hidden)
 Fixed UsoSvc service being skipped for versions before 1803
 
-Fixed bug that caused trying to Customize Services to freeze script
+Fixed bug that caused trying to Customize Services to freeze script (thanks to bubbismith for letting me know)
 Updated an outdated powershell command (PSObject)
 Improvement to update check function
 Settings saved now ONLY on the following.. Closing Script, Running Script, or Update Check
