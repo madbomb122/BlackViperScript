@@ -1,5 +1,5 @@
 # To Do/Done (If you have a suggestion let me know)
-- [ ] Support for "April Update" settings (When avilable from Black Viper) -or whatever it's called
+Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
