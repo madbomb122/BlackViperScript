@@ -10,22 +10,21 @@ To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122
 **Service:** `4.0` (May 29, 2018) -April 2018 Update Version <br/>
 
 # Description
-This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script. <br/>
+This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), a backup of your Service Configurations made by this script, or a Custom Configuration using the script. <br/>
 
 Black Viper's Service Configurations from http://www.blackviper.com/
 
-**Note 1: Script is ment for Windows 10 Home x64 / Windows 10 Pro x64.. With Creator's Update or newer Installed**  <br/>
-**Note 2: If you are using a non english version of Windows and get an Edition Check Error, please let me know**  <br/>
+**Note: This Script is ment for Windows 10 Home x64 / Windows 10 Pro x64.. With Creator's Update or newer Installed**  <br/>
 
 PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10Script  <br/>
 
-PPS. My Thanks goes out to all that have helped in any way
+PPS. My Thanks goes out to all that have helped in any way.
 
 # Requirements (Make sure to LOOK at this)
 
-|            | Recommended Requirements         | AT YOURN OWN RISK* (See Note Below) |
+|            | Recommended Requirements         | AT YOUR OWN RISK* (See Note Below) |
 | :--------- | :--------------------------------| :--------------------------- |
-|**OS**      | Windows 10                       | Cant use pre-Win 10          |
+|**OS**      | Windows 10                       | Windows 10 ONLY              |
 |**Bit**     | 64-bit (x64)                     | 32-bit (x86)                 |
 |**Edition** | Pro or Home                      | All Others                   |
 |**Build**   | Creator's Update                 | Pre-Creator's Update         |
@@ -45,7 +44,7 @@ PPS. My Thanks goes out to all that have helped in any way
 
 **Note:**
 **AT YOUR OWN RISK**<br/>
-**1. Run the script on x86 (32-bit) w/o changing settings (But shows a warning)**<br/>
+**1. Run the script on x86 (32-bit) ,But shows a warning**<br/>
 **2. Skip the check for**<br/>
 **---A. Home/Pro** *(`$Script:Edition_Check` variable in script or use `-sec` switch)*<br/>
 **---B. Creator's Update** *(`$Script:Build_Check` variable in script or use `-sbc` switch)*<br/>
@@ -107,7 +106,7 @@ Use one of the following Methods you can
 | -help     | Lists of all the switches                                                     | Alt `-h` |
 
 
-Examples: <br/>
+Switch Examples: <br/>
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv` <br/>
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br/>
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec` <br/>
@@ -134,7 +133,6 @@ This file will <br/>
 ******
 
 # FAQ
-
 **Q:** The script file looks all messy in notepad, How do i view it? <br/>
 **A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
 
