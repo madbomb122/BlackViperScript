@@ -24,7 +24,7 @@ PPS. My Thanks goes out to all that have helped in any way.
 
 |            | Recommended Requirements         | AT YOUR OWN RISK* (See Note Below) |
 | :--------- | :--------------------------------| :--------------------------- |
-|**OS**      | Windows 10                       | Windows 10 ONLY              |
+|**OS**      | Windows 10                       |                              |
 |**Bit**     | 64-bit (x64)                     | 32-bit (x86)                 |
 |**Edition** | Pro or Home                      | All Others                   |
 |**Build**   | Creator's Update                 | Pre-Creator's Update         |
