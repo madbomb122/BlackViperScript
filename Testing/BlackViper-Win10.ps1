@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '5.0'
-$Minor_Version = '2'
-$Script_Date = 'Jun-02-2018'
+$Minor_Version = '3'
+$Script_Date = 'Jun-11-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -133,7 +133,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Function AutomatedExitCheck([Int]$ExitBit) {
 	If($Automated -ne 1){ Read-Host -Prompt "`nPress Any key to Close..." }
-	If($ExitBit -eq 1){ Exit }
+	If($ExitBit -eq 1){ If($GuiLoad -eq 1){ $Form.Close() } ;Exit }
 }
 
 $Script:WindowVersion = [Environment]::OSVersion.Version.Major
@@ -209,7 +209,7 @@ $ServicesTypeList = @(
 'Automatic',#3 -Automatic
 'Automatic')#4 -Automatic (Delayed)
 
-$ServicesTypeLst = @(
+$ServicesTypeFull = @(
 'Skip',     #0
 'Disabled', #1
 'Manual',   #2
@@ -223,6 +223,7 @@ $ServicesRegTypeList = @(
 '2',#3 -Automatic
 '2')#4 -Automatic (Delayed)
 
+$WinSkuList = @(48,49,98,100,101)
 $EBErrLst = @('Edition','Build','Edition & Build')
 $XboxServiceArr = @('XblAuthManager','XblGameSave','XboxNetApiSvc','XboxGipSvc','xbgm')
 $NetTCP = @('NetMsmqActivator','NetPipeActivator','NetTcpActivator')
@@ -264,6 +265,7 @@ Function RightLine { DisplayOutMenu ' |' 14 0 1 0 }
 Function OpenWebsite([String]$Url) { [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile([String]$Url,[String]$FilePath) { (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function ShowInvalid([Int]$InvalidA) { If($InvalidA -eq 1) { Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
+Function GetAllServices { $Script:AllService = Get-CimInstance Win32_service | Select-Object Name,@{ Name = 'StartType' ;Expression = {$_.StartMode} } }
 
 Function DisplayOutMenu([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor,[Int]$NewLine,[Int]$LogOut) {
 	If($NewLine -eq 0) {
@@ -295,8 +297,6 @@ Function Error_Bottom {
 	If($Diagnostic -eq 1){ DiagnosticCheck 0 }
 	AutomatedExitCheck 1
 }
-
-Function GetAllServices { $Script:AllService = Get-CimInstance Win32_service | Select-Object Name,@{ Name = 'StartType' ;Expression = {$_.StartMode} } }
 
 ##########
 # Multi Use Functions -End
@@ -426,9 +426,7 @@ Function SaveSetting {
 		Set-Variable -Name ($Var.Name.Split('_')[1]) -Value $SetValue -Scope Script
 	}
 	If($WPF_RadioAll.IsChecked){ $Script:All_or_Min = '-full' } Else{ $Script:All_or_Min = '-min' }
-	If($WPF_EditionCheck_CB.IsChecked){
-		If($WPF_EditionConfig.SelectedIndex -eq 0){ $Script:EditionCheck = 'Home' } Else{ $Script:EditionCheck = 'Pro' }
-	}
+	If($WPF_EditionCheckCB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text }
 	$Script:LogName = $WPF_LogNameInput.Text
 	$Script:BackupServiceType = $WPF_BackupServiceType.SelectedIndex
 
@@ -484,8 +482,9 @@ Function GuiStart {
 	<Window.Effect><DropShadowEffect/></Window.Effect>
 	<Grid>
 		<Button Name="RunScriptButton" Content="Run Script" Margin="0,0,0,21" VerticalAlignment="Bottom" Height="20" FontWeight="Bold"/>
-		<TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="327" IsEnabled="False" HorizontalContentAlignment="Center"/>
-		<TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="328,0,0,0" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="319" IsEnabled="False" HorizontalContentAlignment="Center"/>
+		<TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="330" IsEnabled="False" HorizontalContentAlignment="Center"/>
+		<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="330,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/>
+		<TextBox Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" Margin="331,0,0,0" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="330" IsEnabled="False" HorizontalContentAlignment="Center"/>
 		<TabControl Name="TabControl" Margin="0,22,0,42">
 			<TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
@@ -546,16 +545,15 @@ Function GuiStart {
 						<DataGrid.Columns>
 							<DataGridTemplateColumn SortMemberPath="checkboxChecked" CanUserSort="True">
 								<DataGridTemplateColumn.Header><CheckBox Name="ACUcheckboxChecked" IsEnabled="False"/></DataGridTemplateColumn.Header>
-								<DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox Name="GDCheckB" IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
+								<DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
 							</DataGridTemplateColumn>
 							<DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}" CanUserSort="True" IsReadOnly="True"/>
 							<DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}" IsReadOnly="True"/>
 							<DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}" IsReadOnly="True"/>
 							<DataGridTemplateColumn Header="Black Viper" Width="105" SortMemberPath="BVType" CanUserSort="True">
-								<DataGridTemplateColumn.CellTemplate><DataTemplate><ComboBox 
-								ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
-
-							</DataGridTemplateColumn>
+								<DataGridTemplateColumn.CellTemplate><DataTemplate>
+									<ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
 							<DataGridTextColumn Header="Description" Width="120" Binding="{Binding SrvDesc}" CanUserSort="True" IsReadOnly="True"/>
 							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="True" IsReadOnly="True"/>
 						</DataGrid.Columns>
@@ -599,7 +597,7 @@ Function GuiStart {
 					<Label Content="*Will run and use current settings&#xA;**If update.bat isnt avilable&#xD;&#xA;--Update checks happen before &#xD;&#xA;	services are changed." HorizontalAlignment="Left" Margin="233,142,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="220"/>
 					<Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="234,65,0,0" FontWeight="Bold"/>
 					<CheckBox Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="409,25,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
-					<CheckBox Name="EditionCheck_CB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="409,40,0,0" VerticalAlignment="Top" Height="15" Width="160"/>
+					<CheckBox Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="409,40,0,0" VerticalAlignment="Top" Height="15" Width="160"/>
 					<ComboBox Name="EditionConfig" HorizontalAlignment="Left" Margin="569,37,0,0" VerticalAlignment="Top" Width="60" Height="23">
 						<ComboBoxItem Content="Home" HorizontalAlignment="Left" Width="58"/>
 						<ComboBoxItem Content="Pro" HorizontalAlignment="Left" Width="58" IsSelected="True"/>
@@ -630,7 +628,6 @@ Function GuiStart {
 		</TabControl>
 		<Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,41" Stroke="Black" VerticalAlignment="Bottom"/>
 		<Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,20" Stroke="Black" VerticalAlignment="Bottom"/>
-		<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="327,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/>
 		<Menu Height="22" VerticalAlignment="Top">
 			<MenuItem Header="Help" Height="22" Width="34" Padding="3,0,0,0">
 				<MenuItem Name="FeedbackButton" Header="Feedback/Bug Report" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
@@ -660,8 +657,6 @@ Function GuiStart {
 	[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
 	[System.Collections.ArrayList]$VarList = Get-Variable 'WPF_*_CB'
 	[System.Collections.ArrayList]$CNoteList = Get-Variable 'WPF_CustomNote*'
-
-	$Script:WinSkuList = @(48,49,98,100,101)
 
 	$Form.add_closing({
 		If($RanScript -ne 1) {
@@ -721,16 +716,14 @@ Function GuiStart {
 
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
 		If($WPF_dataGrid.SelectedItem){
-			If($DataGridLCust) {
-				$TmpName = $WPF_dataGrid.SelectedItem.Name
-				$DataGridListCust = $DataGridListCust | ForEach-Object {
-					If($_.Name -eq $TmpName) {
-						If($_.CurrType -eq $_.BVType){ $_.Matches = $True } Else{ $_.Matches = $False } $_
-					}
+			$TmpName = $WPF_dataGrid.SelectedItem.Name
+			$DataGridListCust = $DataGridListCust | ForEach-Object {
+				If($_.Name -eq $TmpName) {
+					If($_.CurrType -eq $_.BVType){ $_.Matches = $True } Else{ $_.Matches = $False } $_
 				}
-				$WPF_dataGrid.ItemsSource = $DataGridListOrig
-				$WPF_dataGrid.ItemsSource = $DataGridListCust
 			}
+			$WPF_dataGrid.ItemsSource = $DataGridListOrig
+			$WPF_dataGrid.ItemsSource = $DataGridListCust
 			$WPF_dataGrid.Items.Refresh()
 		}
 	}
@@ -739,7 +732,7 @@ Function GuiStart {
 
 	$WPF_EditionConfig.add_SelectionChanged({ RunDisableCheck })
 	$WPF_BuildCheck_CB.Add_Click({ RunDisableCheck })
-	$WPF_EditionCheck_CB.Add_Click({ RunDisableCheck })
+	$WPF_EditionCheckCB.Add_Click({ RunDisableCheck })
 
 	$WPF_LaptopTweaked_CB.Add_Checked({
 		If($WPF_ServiceConfig.Items.Count -eq 3) {
@@ -818,14 +811,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
 	ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
-
+	If($EditionCheck -ne 0){ $WPF_EditionCheckCB.IsChecked = $True ;$WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheckCB.IsChecked = $False }
 	If($WinEdition -eq 'Home' -or $EditionCheck -eq 'Home'){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
-	If($EditionCheck -eq 'Pro' -or $EditionCheck -eq 'Home'){ $WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheck_CB.IsChecked = $False }
 	$WPF_BackupServiceType.SelectedIndex = $BackupServiceType
 	If($Release_Type -ne 'Stable'){ $WPF_ShowWindow.Visibility = 'Hidden' }
 
 	$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
-
 	$WPF_LoadServicesButton.IsEnabled = SetServiceVersion
 	$WPF_Script_Ver_Txt.Text = "Script Version: $Script_Version.$Minor_Version ($Script_Date) -$Release_Type"
 	$WPF_Service_Ver_Txt.Text = "Service Version: $ServiceVersion ($ServiceDate)"
@@ -838,6 +829,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	If($Release_Type -eq 'Stable' -and $ShowConsole -eq 0){ ShowConsole 0 }
 	$Form.ShowDialog() | Out-Null
 	If($ShowConsole -eq 1){ $WPF_ShowWindow.IsChecked = $True }
+	$WPF_RunScriptButton.IsEnabled = $True
 }
 
 Function CustomBVCBFun([Bool]$Choice) {
@@ -857,8 +849,8 @@ Function CustomBVCBFun([Bool]$Choice) {
 
 Function RunDisableCheck {
 	If($WPF_BuildCheck_CB.IsChecked){ $Script:BuildCheck = 1 } Else{ $Script:BuildCheck = 0 }
-	If($WPF_EditionCheck_CB.IsChecked) {
-		$Script:EditionCheck = $WPF_EditionConfig.Text
+	If($WPF_EditionCheckCB.IsChecked) {
+		If($WPF_EditionConfig.SelectedIndex -eq 0){ $Script:EditionCheck = 'Home' } Else{ $Script:EditionCheck = 'Pro' }
 		$WPF_EditionConfig.IsEnabled = $True
 	} Else {
 		$Script:EditionCheck = 0
@@ -971,11 +963,8 @@ Function GenerateServices {
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
 			If($ServiceType -eq  $ServiceCurrType){ $Match = $True } Else{ $Match = $False }
-#			$ArrayAdd = [PSCustomObject] @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
-#			$Script:DataGridListOrig += $ArrayAdd
-#			$Script:DataGridListCust += $ArrayAdd
-			$Script:DataGridListOrig += [PSCustomObject] @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeLst ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
-			$Script:DataGridListCust += [PSCustomObject] @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeLst ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
+			$Script:DataGridListOrig += [PSCustomObject] @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
+			$Script:DataGridListCust += [PSCustomObject] @{ checkboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
 		}
 	}
 	$WPF_dataGrid.ItemsSource = $DataGridListOrig
@@ -1043,7 +1032,7 @@ Function TBoxMessageNNL([String]$Message,[Int]$ClrNum) {
 # Update Functions -Start
 ##########
 
-Function InternetCheck { If($InternetCheck -eq 1 -or (Test-Connection -Computer GitHub.com -Count 1 -Quiet)){ Return $True } Return $False }
+Function InternetCheck { If($InternetCheck -eq 1 -or (Test-Connection www.GitHub.com -Count 1 -Quiet)){ Return $True } Return $False }
 
 Function UpdateCheckAuto {
 	If(InternetCheck) {
@@ -1226,6 +1215,7 @@ Function ScriptUpdateFun {
 		}
 		Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
 	}
+	If($GuiLoad -eq 1){ $Form.Close() }
 	Exit
 }
 
@@ -1576,9 +1566,9 @@ Would you Consider giving a Donation?'
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
-	If($Skip_Services -Contains $S_Name){ Return 'Denied' }
 	If($CurrServices.Name -Contains $S_Name) {
-		If($XboxService -eq 1 -and $XboxServiceArr -Contains $S_Name) { Return 'Xbox' }
+		If($XboxService -eq 1 -and $XboxServiceArr -Contains $S_Name){ Return 'Xbox' }
+		If($Skip_Services -Contains $S_Name){ Return 'Denied' }
 		$C_Type = ($CurrServices.Where{$_.Name -eq $S_Name}).StartType
 		If($S_Type -ne $C_Type) {
 			If($S_Name -eq 'lfsvc' -And $C_Type -eq 'disabled' -And (Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\TriggerInfo\3')) {
@@ -1654,12 +1644,13 @@ Do you want to download the file 'BlackViper.csv'?"
 		$Message = "To get The File 'BlackViper.csv' go to https://github.com/madbomb122/BlackViperScript to save it.
 Without the file the script won't run"
 		[Windows.Forms.MessageBox]::Show($Message,'Information','OK','Information') | Out-Null
+		$Form.Close()
 		Exit
 	}
 }
 
 Function PreScriptCheck {
-	If($RunScript -eq 0){ Exit }
+	If($RunScript -eq 0){ If($GuiLoad -eq 1){ $Form.Close() } ;Exit }
 	If($LogStarted -eq 0){ CreateLog }
 	$EBCount = 0
 
@@ -1748,7 +1739,7 @@ Function PreScriptCheck {
 		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 			If($ServiceVerCheck -eq 0) {
 				If($ScriptLog -eq 1){ Write-Output "Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
-				#If($GuiLoad -eq 1){ LoadWebCSVGUI 0 } Else{ LoadWebCSV 0 }
+				If($GuiLoad -eq 1){ LoadWebCSVGUI 0 } Else{ LoadWebCSV 0 }
 				LoadWebCSV 0
 			} Else {
 				If($ScriptLog -eq 1){ Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
@@ -1766,8 +1757,7 @@ Function CheckBVcsv {
 	$GenBy = $csv[0].'Def-Pro-Full'
 	If($GenBy -ne 'GernetatedByMadBomb122' -and $GenBy -ne 'GeneratedByMadBomb122') {
 		If($Automated -ne 1) {
-			#If($GuiLoad -eq 1){ LoadWebCSVGUI 1 } Else{ LoadWebCSV 1 }
-			LoadWebCSV 1
+			If($GuiLoad -eq 1){ LoadWebCSVGUI 1 } Else{ LoadWebCSV 1 }
 		} Else {
 			Error_Top_Display
 			LeftLineLog ;DisplayOutMenu 'The File ' 2 0 0 1 ;DisplayOutMenu 'BlackViper.csv' 15 0 0 1 ;DisplayOutMenu ' is Invalid or Corrupt.   ' 2 0 0 1 ;RightLineLog
@@ -1940,6 +1930,7 @@ Function ArgsAndVarSet {
 	If($Diagnostic -eq 2) {
 		Clear-Host
 		DiagnosticCheck 1
+		If($GuiLoad -eq 1){ $Form.Close() }
 		Exit
 	} ElseIf($BV_ArgUsed -eq 1) {
 		CreateLog
