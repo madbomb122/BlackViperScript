@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.0.3 (06-11-2018)
+5.0.4 (06-22-2018)
 
 Black Viper services for 1803 support added
 Fixed issue in 'Services List' tab with sorting Description and Path
@@ -17,6 +17,9 @@ Settings saved now ONLY on the following.. Closing Script, Running Script, or Up
 
 Fixed bug with loading edition from setting file (if it was for home edition)
 Fixed rare bug were GUI still showed when script was closed
+
+Added Option to Stop Running services that you Disable
+Fixed bug that didnt show service setting when changing services (for GUI)
 
 -----------------------------------------------------------------------------------
 4.3.0 (05-26-2018)
