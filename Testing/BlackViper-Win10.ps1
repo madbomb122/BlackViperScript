@@ -451,6 +451,7 @@ Function SaveSetting {
 	$Settings += [PSCustomObject] @{ Var = 'DryRun' ;Val = $DryRun }
 	$Settings += [PSCustomObject] @{ Var = 'ShowNonInstalled' ;Val = $ShowNonInstalled }
 	$Settings += [PSCustomObject] @{ Var = 'ShowAlreadySet' ;Val = $ShowAlreadySet }
+	$Settings += [PSCustomObject] @{ Var = 'StopDisabled' ;Val = $StopDisabled }
 	If($ConsideredDonation -eq 'Yes'){ $Settings += [PSCustomObject] @{ Var = 'ConsideredDonation' ;Val='Yes' } }
 	$Settings | Export-Clixml $SettingPath
 }
