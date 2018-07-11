@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '5.0'
-$Minor_Version = '5'
-$Script_Date = 'Jul-03-2018'
+$Minor_Version = '6'
+$Script_Date = 'July-10-2018'
 $Release_Type = 'Stable'
 ##########
 
@@ -159,7 +159,6 @@ $Service_Url = $URL_Base + 'BlackViper.csv'
 If([System.Environment]::Is64BitProcess){ $OSType = 64 }
 
 Function GetServiceEnd {
-	$Tmp1 = ''
 	$ServiceEndL = Get-Service '*_*' | Select-Object Name | Foreach-Object { $_.Name.Split('_')[1] }
 	ForEach($End in $ServiceEndL){ If($Tmp1 -eq $End){ Return $Tmp1 } Else{ $Tmp1 = $End } }
 	Return $ServiceEndL[0]
@@ -237,7 +236,7 @@ $Script:LogStarted = 0
 $Script:LoadServiceConfig = 0
 $Script:RanScript = 0
 $Script:LaptopTweaked = 0
-$Script:errcount = $error.count
+$Script:ErrCount = $error.count
 $Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType, Status
 
 ##########
@@ -263,10 +262,13 @@ Function MenuLine { DisplayOutMenu '|'.PadRight(52,'-') 14 0 0 0 ;DisplayOut '|'
 Function LeftLine { DisplayOutMenu '| ' 14 0 0 0 }
 Function RightLine { DisplayOutMenu ' |' 14 0 1 0 }
 
+Function TOSLine([Int]$BC){ DisplayOutMenu '|'.PadRight(52,'-') $BC 0 0 ;DisplayOut '|' $BC 0 1 }
+Function TOSBlankLine([Int]$BC){ DisplayOutMenu '|'.PadRight(52) $BC 0 0 ;DisplayOut '|' $BC 0 1 }
+
 Function OpenWebsite([String]$Url){ [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile([String]$Url,[String]$FilePath){ (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function ShowInvalid([Int]$InvalidA){ If($InvalidA -eq 1){ Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
-Function GetAllServices { $Script:AllService = Get-CimInstance Win32_service | Select-Object Name,@{ Name = 'StartType' ;Expression = {$_.StartMode} } }
+Function GetAllServices { $Script:AllService = Get-CimInstance Win32_service | Select-Object Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} } }
 
 Function DisplayOutMenu([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor,[Int]$NewLine,[Int]$LogOut) {
 	If($NewLine -eq 0) {
@@ -306,34 +308,36 @@ Function Error_Bottom {
 ##########
 Function TOSDisplay {
 	Clear-Host
-	If($OSType -ne 64 -or $Release_Type -ne 'Stable'){ $BorderColor = 15 } Else{ $BorderColor = 14 }
+	$BorderColor = 14
 	If($Release_Type -ne 'Stable') {
-		DisplayOutMenu '|'.PadRight(52,'-') $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-		DisplayOutMenu '|'.PadRight(20) $BorderColor 0 0 ;DisplayOutMenu 'Caution!!!'.PadRight(31) 13 0 0 ;DisplayOut ' |' $BorderColor 0 1
-		DisplayOutMenu '|'.PadRight(52) $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-		DisplayOutMenu '| ' $BorderColor 0 0 ;DisplayOutMenu '       This script is still being tested.        ' 14 0 0 ;DisplayOut ' |' $BorderColor 0 1	
-		DisplayOutMenu '|'.PadRight(16) $BorderColor 0 0 ;DisplayOutMenu 'USE AT YOUR OWN RISK.'.PadRight(35) 14 0 0 ;DisplayOut ' |' $BorderColor 0 1
-		DisplayOutMenu '|'.PadRight(52) $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
+		$BorderColor = 15
+		TOSLine 15
+		DisplayOutMenu '|'.PadRight(20) 15 0 0 ;DisplayOutMenu 'Caution!!!'.PadRight(32) 13 0 0 ;DisplayOut '|' 15 0 1
+		TOSBlankLine 15
+		DisplayOutMenu '|' 15 0 0 ;DisplayOutMenu '        This script is still being tested.         ' 14 0 0 ;DisplayOut '|' 15 0 1
+		DisplayOutMenu '|'.PadRight(16) 15 0 0 ;DisplayOutMenu 'USE AT YOUR OWN RISK.'.PadRight(36) 14 0 0 ;DisplayOut '|' 15 0 1
+		TOSBlankLine 15
 	}
 	If($OSType -ne 64) {
-		DisplayOutMenu '|'.PadRight(52,'-') $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-		DisplayOutMenu '|'.PadRight(20) $BorderColor 0 0 ;DisplayOutMenu 'WARNING!!'.PadRight(31) 13 0 0 ;DisplayOut ' |' $BorderColor 0 1
-		DisplayOutMenu '|'.PadRight(52) $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-		DisplayOutMenu '| ' $BorderColor 0 0 ;DisplayOutMenu '      These settings are ment for x64 Bit.'.PadRight(49) 14 0 0 ;DisplayOut ' |' $BorderColor 0 1
-		DisplayOutMenu '|'.PadRight(16) $BorderColor 0 0 ;DisplayOutMenu 'USE AT YOUR OWN RISK.'.PadRight(35) 14 0 0 ;DisplayOut ' |' $BorderColor 0 1
-		DisplayOutMenu '|'.PadRight(52) $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
+		$BorderColor = 15
+		TOSLine 15
+		DisplayOutMenu '|'.PadRight(22) 15 0 0 ;DisplayOutMenu 'WARNING!!'.PadRight(30) 13 0 0 ;DisplayOut '|' 15 0 1
+		TOSBlankLine 15
+		DisplayOutMenu '|' 15 0 0 ;DisplayOutMenu '       These settings are ment for x64 Bit.'.PadRight(51) 14 0 0 ;DisplayOut '|' 15 0 1
+		DisplayOutMenu '|'.PadRight(16) 15 0 0 ;DisplayOutMenu 'USE AT YOUR OWN RISK.'.PadRight(36) 14 0 0 ;DisplayOut '|' 15 0 1
+		TOSBlankLine 15
 	}
-	DisplayOutMenu '|'.PadRight(52,'-') $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-	DisplayOutMenu '|'.PadRight(20) $BorderColor 0 0 ;DisplayOutMenu 'Terms of Use'.PadRight(31) 11 0 0 ;DisplayOut ' |' $BorderColor 0 1
-	DisplayOutMenu '|'.PadRight(52,'-') $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-	DisplayOutMenu '|'.PadRight(52) $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-	DisplayOutMenu '| ' $BorderColor 0 0 ;DisplayOutMenu 'This program comes with ABSOLUTELY NO WARRANTY.  ' 2 0 0 ;DisplayOut ' |' $BorderColor 0 1
-	DisplayOutMenu '| ' $BorderColor 0 0 ;DisplayOutMenu 'This is free software, and you are welcome to    ' 2 0 0 ;DisplayOut ' |' $BorderColor 0 1
-	DisplayOutMenu '| ' $BorderColor 0 0 ;DisplayOutMenu 'redistribute it under certain conditions.'.PadRight(49) 2 0 0 ;DisplayOut ' |' $BorderColor 0 1
-	DisplayOutMenu '|'.PadRight(52) $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-	DisplayOutMenu '| ' $BorderColor 0 0 ;DisplayOutMenu 'Read License file for full Terms.'.PadRight(49) 2 0 0 ;DisplayOut ' |' $BorderColor 0 1
-	DisplayOutMenu '|'.PadRight(52) $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
-	DisplayOutMenu '|'.PadRight(52,'-') $BorderColor 0 0 ;DisplayOut '|' $BorderColor 0 1
+	TOSLine $BorderColor
+	DisplayOutMenu '|'.PadRight(20) $BorderColor 0 0 ;DisplayOutMenu 'Terms of Use'.PadRight(32) 11 0 0 ;DisplayOut '|' $BorderColor 0 1
+	TOSLine $BorderColor
+	TOSBlankLine $BorderColor
+	DisplayOutMenu '|' $BorderColor 0 0 ;DisplayOutMenu ' This program comes with ABSOLUTELY NO WARRANTY.   ' 2 0 0 ;DisplayOut '|' $BorderColor 0 1
+	DisplayOutMenu '|' $BorderColor 0 0 ;DisplayOutMenu ' This is free software, and you are welcome to     ' 2 0 0 ;DisplayOut '|' $BorderColor 0 1
+	DisplayOutMenu '|' $BorderColor 0 0 ;DisplayOutMenu ' redistribute it under certain conditions.'.PadRight(51) 2 0 0 ;DisplayOut '|' $BorderColor 0 1
+	TOSBlankLine $BorderColor
+	DisplayOutMenu '|' $BorderColor 0 0 ;DisplayOutMenu ' Read License file for full Terms.'.PadRight(51) 2 0 0 ;DisplayOut '|' $BorderColor 0 1
+	TOSBlankLine $BorderColor
+	TOSLine $BorderColor
 }
 
 Function TOS {
@@ -381,14 +385,10 @@ Function OpenSaveDiaglog([Int]$SorO) {
 	$SOFileDialog.ShowDialog()
 	$SOFPath = $SOFileDialog.filename
 	If($SOFPath) {
-		If($SorO -eq 0) {
-			$Script:ServiceConfigFile = $SOFPath
-			$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
-			RunDisableCheck
-		} ElseIf($SorO -eq 1) {
-			Save_Service $SOFPath
-		} ElseIf($SorO -eq 2) {
-			RegistryServiceFile $SOFPath
+		Switch($SorO) {
+			0 { $Script:ServiceConfigFile = $SOFPath ;$WPF_LoadFileTxtBox.Text = $ServiceConfigFile ;RunDisableCheck ;Break }
+			1 { Save_Service $SOFPath ;Break }
+			2 { RegistryServiceFile $SOFPath ;Break }
 		}
 	}
 }
@@ -718,9 +718,7 @@ Function GuiStart {
 		If($WPF_dataGrid.SelectedItem) {
 			$TmpName = $WPF_dataGrid.SelectedItem.Name
 			$DataGridListCust = $DataGridListCust | ForEach-Object {
-				If($_.Name -eq $TmpName) {
-					If($_.CurrType -eq $_.BVType){ $_.Matches = $True } Else{ $_.Matches = $False } $_
-				}
+				If($_.Name -eq $TmpName){ If($_.CurrType -eq $_.BVType){ $_.Matches = $True } Else{ $_.Matches = $False } $_ }
 			}
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
 			$WPF_dataGrid.ItemsSource = $DataGridListCust
@@ -774,12 +772,8 @@ Function GuiStart {
 	$WPF_CheckUpdateSrpButton.Add_Click({ UpdateCheckNow 2 })
 	$WPF_CheckUpdateBothButton.Add_Click({ UpdateCheckNow 3 })
 
+	$WPF_AboutButton.Add_Click({ [Windows.Forms.MessageBox]::Show("This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script.`n`nThis script was created by MadBomb122.",'About', 'OK') | Out-Null })
 	$WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($CopyrightItems,'Copyright', 'OK') | Out-Null })
-	$WPF_AboutButton.Add_Click({ [Windows.Forms.MessageBox]::Show($AboutItems,'About', 'OK') | Out-Null })
-
-	$AboutItems = "This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script.
-
-This script was created by MadBomb122."
 
 	$CopyrightItems = 'Copyright (c) 1999-2017 Charles "Black Viper" Sparks - Services Configuration
 
@@ -911,17 +905,9 @@ Function GenerateServices {
 	}
 	Switch($Black_Viper) {
 		{$LoadServiceConfig -eq 1} { $Script:BVService = 'StartType' ;Break }
-		1 { $Script:BVService='Def-'+$WinEdition+$FullMin ;$BVSAlt = 'Def-'+$WinEdition+'-Full' ;Break }
-		2 { $Script:BVService='Safe'+$IsLaptop+$FullMin ;$BVSAlt = 'Safe'+$IsLaptop+'-Full' ;Break }
-		3 { If($LaptopTweaked -eq 1 -and $IsLaptop -eq '-Lap') {
-				$Script:BVService='Tweaked-Desk'+$FullMin
-				$BVSAlt = 'Tweaked-Desk-Full'
-			} Else {
-				$Script:BVService='Tweaked'+$IsLaptop+$FullMin
-				$BVSAlt = 'Tweaked'+$IsLaptop+'-Full'
-			}
-			Break
-		  }
+		1 { $Script:BVService = "Def-$WinEdition$FullMin" ;$BVSAlt = "Def-$WinEdition-Full" ;Break }
+		2 { $Script:BVService = "Safe$IsLaptop$FullMin" ;$BVSAlt = "Safe$IsLaptop-Full" ;Break }
+		3 { $Script:BVService = "Tweaked-Desk$FullMin" ;$BVSAlt = "Tweaked-Desk-Full" ;Break }
 	}
 	If($WPF_XboxService_CB.IsChecked){ $Script:XboxService = 1 } Else{ $Script:XboxService = 0 }
 	If($ServiceImport -eq 1) {
@@ -933,10 +919,7 @@ Function GenerateServices {
 
 	ForEach($item In $ServCB) {
 		$ServiceName = $($item.ServiceName)
-		If($ServiceName -Like '*_*'){
-			$ServNameTmp = $ServiceName.Split('_')[0]+ '_*'
-			$ServiceName = Get-Service $ServNameTmp | Select-Object Name
-		}
+		If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 		If($CurrServices.Name -Contains $ServiceName) {
 			$tmp = $ServiceInfo -match $ServiceName
 			$SrvDescription = $tmp.Description
@@ -1116,17 +1099,10 @@ Function UpdateCheck([Int]$USwitch) {
 		$WebScriptMinorVer =  $CSV_Ver[$CSVLine].MinorVersion
 		If(($WebScriptVer -gt $Script_Version) -or ($WebScriptVer -eq $Script_Version -And $WebScriptMinorVer -gt $Minor_Version)){
 			$Choice = 'Yes'
-			If($Switch -eq 1) {
-				$UpdateFound = "Update Script File from $Script_Version.$Minor_Version to $WebScriptVer.$WebScriptMinorVer ?"
-				$Choice = [windows.forms.messagebox]::show($UpdateFound,'Update Found','YesNo')
-			}
+			If($Switch -eq 1){ $Choice = [windows.forms.messagebox]::show("Update Script File from $Script_Version.$Minor_Version to $WebScriptVer.$WebScriptMinorVer ?",'Update Found','YesNo') }
 			If($Choice -eq 'Yes'){ ScriptUpdateFun } ElseIf($Message -eq ''){ $Switch = 0 }
 		} ElseIf($Switch -eq 1) {
-			If($Message -eq '') {
-				$Message = 'No Script update Found.'
-			} Else {
-				$Message = 'Congrats you have the latest Service and Script version.'
-			}
+			If($Message -eq ''){ $Message = 'No Script update Found.' } Else{ $Message = 'Congrats you have the latest Service and Script version.' }
 		}
 	}
 	If($Switch -eq 1){ [windows.forms.messagebox]::show($Message,'Update','OK') }
@@ -1150,22 +1126,24 @@ Function ScriptUpdateFun {
 	$UpdateFile = $filebase + 'Update.bat'
 	$UpArg = ''
 	If($GuiLoad -ne 1) {
-		If($Black_Viper -eq 1){ $UpArg += '-default ' }
-		If($Black_Viper -eq 2){ $UpArg += '-safe ' }
-		If($Black_Viper -eq 3){ $UpArg += '-tweaked ' }
-		If($Automated -eq 1){ $UpArg += '-auto ' }
-		If($LoadServiceConfig -eq 1){ $UpArg += "-lcsc $ServiceConfigFile " }
-		If($LoadServiceConfig -eq 2) {
-			$TempSrv = $Env:Temp + '\TempSrv.csv'
-			$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding 'unicode' -Force -Delimiter ','
-			$UpArg += "-lcsc $TempSrv "
+		Switch($Black_Viper) {
+			1 { $UpArg += '-default ' ;Break }
+			2 { $UpArg += '-safe ' ;Break }
+			3 { $UpArg += '-tweaked ' ;Break }
 		}
+		Switch($LoadServiceConfig) {
+			1 { $UpArg += "-lcsc $ServiceConfigFile " ;Break }
+			2 { $TempSrv = $Env:Temp + '\TempSrv.csv' ;$Script:csv | Export-Csv -LiteralPath $TempSrv -Encoding 'unicode' -Force -Delimiter ',' ;$UpArg += "-lcsc $TempSrv " ;Break }
+		}
+		If($Automated -eq 1){ $UpArg += '-auto ' }
+	}
+	Switch($EditionCheck) {
+		'Home' { $UpArg += '-sech ' ;Break }
+		'Pro' { $UpArg += '-secp ' ;Break }
 	}
 	If($AcceptToS -ne 0){ $UpArg += '-atosu ' }
 	If($ServiceVerCheck -eq 1){ $UpArg += '-use ' }
 	If($InternetCheck -eq 1){ $UpArg += '-sic ' }
-	If($EditionCheck -eq 'Home'){ $UpArg += '-sech ' }
-	If($EditionCheck -eq 'Pro'){ $UpArg += '-secp ' }
 	If($BuildCheck -eq 1){ $UpArg += '-sbc ' }
 	If($Diagnostic -eq 1){ $UpArg += '-diag ' }
 	If($LogBeforeAfter -eq 1){ $UpArg += '-baf ' }
@@ -1333,10 +1311,7 @@ Function GenerateRegistryCustom([String]$TempFP) {
 		$ServiceName = $item.ServiceName
 		$ServiceTypeNum = BVTypeNameToNumb $item.BVType
 		If($ServiceTypeNum -ne 0) {
-			If($ServiceName -Like '*_*'){
-				$ServNameTmp = $ServiceName.Split('_')[0]+ '_*'
-				$ServiceName = Get-Service $ServNameTmp | Select-Object Name
-			}
+			If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			If(!($Skip_Services -Contains $ServiceName)) {
 				$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
@@ -1420,16 +1395,9 @@ Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
 	Switch($BVOpt) {
 		{$LoadServiceConfig -In 1..2} { $SrvSetting = 'Custom' ;$ServiceSetOpt = 'StartType' ;Break }
-		1 { $SrvSetting = 'Default' ;$ServiceSetOpt = ('Def-'+$WinEdition+$FullMin) ;Break }
-		2 { $SrvSetting = 'Safe' ;$ServiceSetOpt = ('Safe'+$IsLaptop+$FullMin) ;Break }
-		3 { If($LaptopTweaked -eq 1 -and $IsLaptop -eq '-Lap') {
-				$ServiceSetOpt = ('Tweaked-Desk'+$FullMin)
-			} Else {
-				$ServiceSetOpt = ('Tweaked'+$IsLaptop+$FullMin)
-			}
-			$SrvSetting = 'Tweaked'
-			Break
-		  }
+		1 { $SrvSetting = 'Default' ;$ServiceSetOpt = "Def-$WinEdition$FullMin" ;Break }
+		2 { $SrvSetting = 'Safe' ;$ServiceSetOpt = "Safe$IsLaptop$FullMin" ;Break }
+		3 { $SrvSetting = 'Tweaked' ;$ServiceSetOpt = "Tweaked-Desk$FullMin" ;Break }
 	}
 	If($GuiLoad -eq 1){ ServiceSetGUI $ServiceSetOpt $SrvSetting } Else{ ServiceSet $ServiceSetOpt $SrvSetting }
 }
@@ -1450,10 +1418,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 			If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
 			DisplayOut $DispTemp  14 0
 		} ElseIf($ServiceTypeNum -ne 0 -and $ServiceTypeNum -In 1..4) {
-			If($ServiceName -Like '*_*'){
-				$ServNameTmp = $ServiceName.Split('_')[0]+ '_*'
-				$ServiceName = Get-Service $ServNameTmp | Select-Object Name
-			}
+			If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
@@ -1493,12 +1458,14 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 	If($DryRun -ne 1){ DisplayOut 'Service Changed...' 14 0 } Else{ DisplayOut 'List of Service Done...' 14 0 }
 	ThanksDonate
 	If($BackupServiceConfig -eq 1){
-		If($BackupServiceType -eq 1){ DisplayOut 'Backup of Services Saved as CSV file in script directory.' 14 0 }
-		ElseIf($BackupServiceType -eq 0){ DisplayOut 'Backup of Services Saved as REG file in script directory.' 14 0 }
-		ElseIf($BackupServiceType -eq 2){ DisplayOut 'Backup of Services Saved as CSV and REG file in script directory.' 14 0 }
+		Switch($BackupServiceType) {
+			1 { DisplayOut 'Backup of Services Saved as CSV file in script directory.' 14 0 ;Break }
+			0 { DisplayOut 'Backup of Services Saved as REG file in script directory.' 14 0 ;Break }
+			2 { DisplayOut 'Backup of Services Saved as CSV and REG file in script directory.' 14 0 ;Break }
+		}
 	}
 	ServiceBAfun 'Services-After'
-	If($DevLog -eq 1 -and $error.count -gt $errcount){ Write-Output $error 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
+	If($DevLog -eq 1 -and $error.count -gt $ErrCount){ Write-Output $error 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
 	AutomatedExitCheck 1
 }
 
@@ -1519,10 +1486,7 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 			If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
 			TBoxMessage $DispTemp  14
 		} ElseIf($ServiceTypeNum -ne 0 -and $ServiceTypeNum -In 1..4) {
-			If($ServiceName -Like '*_*'){
-				$ServNameTmp = $ServiceName.Split('_')[0]+ '_*'
-				$ServiceName = Get-Service $ServNameTmp | Select-Object Name
-			}
+			If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
@@ -1560,24 +1524,21 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 	TBoxMessage ''.PadRight(40,'-') 14
 	If($DryRun -ne 1){ TBoxMessage 'Service Changed...' 14 } Else{ TBoxMessage 'List of Service Done...' 14 }
 	If($BackupServiceConfig -eq 1){
-		If($BackupServiceType -eq 1){ TBoxMessage 'Backup of Services Saved as CSV file in script directory.' 14 }
-		ElseIf($BackupServiceType -eq 0){ TBoxMessage 'Backup of Services Saved as REG file in script directory.' 14 }
-		ElseIf($BackupServiceType -eq 2){ TBoxMessage 'Backup of Services Saved as CSV and REG file in script directory.' 14 }
+		Switch($BackupServiceType) {
+			1 { TBoxMessage 'Backup of Services Saved as CSV file in script directory.' 14 ;Break }
+			0 { TBoxMessage 'Backup of Services Saved as REG file in script directory.' 14 ;Break }
+			2 { TBoxMessage 'Backup of Services Saved as CSV and REG file in script directory.' 14 ;Break }
+		}
 	}
 	ServiceBAfun 'Services-After'
 	TBoxMessage "`nTo exit you can close the GUI or Powershell Window." 14
 	ThanksDonate
 	If($ConsideredDonation -ne 'Yes'){
-		$thanks = 'Thanks for using my script.
-If you like this script please consider giving me a donation.
-
-Would you Consider giving a Donation?'
-
-		If([Windows.Forms.MessageBox]::Show($thanks,'Thank You','YesNo','Question') -eq 'Yes'){ ClickedDonate }
+		If([Windows.Forms.MessageBox]::Show("Thanks for using my script.`nIf you like this script please consider giving me a donation.`n`nWould you Consider giving a Donation?",'Thank You','YesNo','Question') -eq 'Yes'){ ClickedDonate }
 	}
 	$Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType, Status
 	RunDisableCheck
-	If($DevLog -eq 1 -and $error.count -gt $errcount){ Write-Output $error 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
+	If($DevLog -eq 1 -and $error.count -gt $ErrCount){ Write-Output $error 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
@@ -1605,15 +1566,10 @@ Function ServiceCheck([String]$S_Name,[String]$S_Type) {
 ##########
 
 Function LoadWebCSV([Int]$ErrorChoice) {
-	If($ErrorChoice -eq 0) {
-		$Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV'
-		$Pick = ' is Missing.'
-	} ElseIf($ErrorChoice -eq 1) {
-		$Script:ErrorDi = 'Invalid/Corrupt BlackViper.csv'
-		$Pick = ' is Invalid or Corrupt.'
-	} Else {
-		$Script:ErrorDi = 'BlackViper.csv Not Valid for current Update'
-		$Pick = ' needs to be Updated.'
+	Switch($ErrorChoice) {
+		0 { $Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV' ;$Pick = ' is Missing.' ;Break }
+		1 { $Script:ErrorDi = 'Invalid/Corrupt BlackViper.csv' ;$Pick = ' is Invalid or Corrupt.' ;Break }
+		Default { $Script:ErrorDi = 'BlackViper.csv Not Valid for current Update' ;$Pick = ' needs to be Updated.' ;Break }
 	}
 	$Pick = "$Pick".PadRight(25)
 	While($LoadWebCSV -ne 'Out') {
@@ -1638,28 +1594,17 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 
 Function LoadWebCSVGUI {
 	ShowConsole 5
-	If($ErrorChoice -eq 0) {
-		$Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV'
-		$ErrMessage = "The File 'BlackViper.csv' is Missing.
-Do you want to download the file 'BlackViper.csv'?"
-	} ElseIf($ErrorChoice -eq 1) {
-		$Script:ErrorDi = 'Invalid/Corrupt BlackViper.csv'
-		$ErrMessage = "The File 'BlackViper.csv' is Invalid or Corrupt.
-Do you want to download the file 'BlackViper.csv'?"
-	} Else {
-		$Script:ErrorDi = 'BlackViper.csv Not Valid for current Update'
-		$ErrMessage = "The File 'BlackViper.csv' needs to be Updated.
-Do you want to download the file 'BlackViper.csv'?"
+	Switch($ErrorChoice) {
+		0 { $Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV' ;$ErrMessage = "The File 'BlackViper.csv' is Missing.`nDo you want to download the file 'BlackViper.csv'?" ;Break }
+		1 { $Script:ErrorDi = 'Invalid/Corrupt BlackViper.csv' ;$ErrMessage = "The File 'BlackViper.csv' is Invalid or Corrupt.`nDo you want to download the file 'BlackViper.csv'?" ;Break }
+		Default { $Script:ErrorDi = 'BlackViper.csv Not Valid for current Update' ;$ErrMessage = "The File 'BlackViper.csv' needs to be Updated.`nDo you want to download the file 'BlackViper.csv'?" ;Break }
 	}
-	$Choice = [windows.forms.messagebox]::show($ErrMessage,'Error','YesNo','Error')
-	If($Choice -eq 'Yes'){
+	If([windows.forms.messagebox]::show($ErrMessage,'Error','YesNo','Error') -eq 'Yes'){
 		DownloadFile $Service_Url $ServiceFilePath
 		If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
 		CheckBVcsv
 	} Else {
-		$Message = "To get The File 'BlackViper.csv' go to https://github.com/madbomb122/BlackViperScript to save it.
-Without the file the script won't run"
-		[Windows.Forms.MessageBox]::Show($Message,'Information','OK','Information') | Out-Null
+		[Windows.Forms.MessageBox]::Show("To get The File 'BlackViper.csv' go to https://github.com/madbomb122/BlackViperScript to save it.`nWithout the file the script won't run",'Information','OK','Information') | Out-Null
 		$Form.Close()
 		Exit
 	}
@@ -1734,9 +1679,11 @@ Function PreScriptCheck {
 		AutomatedExitCheck 1
 	}
 	If($BackupServiceConfig -eq 1){
-		If($BackupServiceType -eq 1){ Save_ServiceBackup }
-		ElseIf($BackupServiceType -eq 0){ RegistryServiceFileBackup }
-		ElseIf($BackupServiceType -eq 2){ Save_ServiceBackup ;RegistryServiceFileBackup }
+		Switch($BackupServiceType) {
+			1 { Save_ServiceBackup ;Break }
+			0 { RegistryServiceFileBackup ;Break }
+			2 { Save_ServiceBackup ;RegistryServiceFileBackup ;Break }
+		}
 	}
 	If($LoadServiceConfig -eq 1) {
 		$ServiceFilePath = $ServiceConfigFile
@@ -1780,9 +1727,7 @@ Function CheckBVcsv {
 		}
 	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
 		If($GuiLoad -eq 1){
-			$Message = "The File 'BlackViper.csv' is missing and couldn't be downloaded.
-For Manual download go to https://github.com/madbomb122/BlackViperScript"
-			[Windows.Forms.MessageBox]::Show($Message,'Information', 'OK','Information') | Out-Null
+			[Windows.Forms.MessageBox]::Show("The File 'BlackViper.csv' is missing and couldn't be downloaded.`nFor Manual download go to https://github.com/madbomb122/BlackViperScript",'Information', 'OK','Information') | Out-Null
 		} Else{
 			$Script:ErrorDi = 'Missing File BlackViper.csv'
 			Error_Top_Display
