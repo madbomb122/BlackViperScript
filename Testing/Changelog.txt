@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.0.5 (07-03-2018)
+5.0.6 (07-10-2018)
 
 Black Viper services for 1803 support added
 Fixed issue in 'Services List' tab with sorting Description and Path
@@ -23,6 +23,8 @@ Fixed bug that didnt show service setting when changing services (for GUI)
 
 Before & After Service log file name now starts with computer name
 Internal Script Changes (decreased size of script a little)
+
+Internal Script Improvements (decreased size of script a little, slight speed improvement)
 
 -----------------------------------------------------------------------------------
 4.3.0 (05-26-2018)
