@@ -10,8 +10,8 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '5.0'
-$Minor_Version = '6'
-$Script_Date = 'July-10-2018'
+$Minor_Version = '7'
+$Script_Date = 'July-14-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -228,6 +228,7 @@ $EBErrLst = @('Edition','Build','Edition & Build')
 $XboxServiceArr = @('XblAuthManager','XblGameSave','XboxNetApiSvc','XboxGipSvc','xbgm')
 $NetTCP = @('NetMsmqActivator','NetPipeActivator','NetTcpActivator')
 $Script:SettingPath = $filebase + 'BVSetting.xml'
+
 $Script:Black_Viper = 0
 $Script:Automated = 0
 $Script:All_or_Min = '-Min'
@@ -273,16 +274,16 @@ Function GetAllServices { $Script:AllService = Get-CimInstance Win32_service | S
 
 Function DisplayOutMenu([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor,[Int]$NewLine,[Int]$LogOut) {
 	If($NewLine -eq 0) {
-		If($ScriptLog -eq 1 -And $LogOut -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
+		If($ScriptLog -eq 1 -And $LogOut -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -LiteralPath $LogFile -NoNewline -Append }
 		Write-Host -NoNewline $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
 	} Else {
-		If($ScriptLog -eq 1 -And $LogOut -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -Filepath $LogFile -Append }
+		If($ScriptLog -eq 1 -And $LogOut -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -LiteralPath $LogFile -Append }
 		Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
 	}
 }
 
 Function DisplayOut([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor) {
-	If($ScriptLog -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -Filepath $LogFile -Append }
+	If($ScriptLog -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -LiteralPath $LogFile -Append }
 	Write-Host $TxtToDisplay -ForegroundColor $colors[$TxtColor] -BackgroundColor $colors[$BGColor]
 }
 
@@ -347,8 +348,8 @@ Function TOS {
 		$Invalid = ShowInvalid $Invalid
 		$TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
 		Switch($TOS.ToLower()) {
-			{$_ -eq 'n' -or $_ -eq 'no'} { Exit ;Break }
-			{$_ -eq 'y' -or $_ -eq 'yes'} { $TOS = 'Out' ;TOSyes ;Break }
+			{$_ -in 'n','no'} { Exit ;Break }
+			{$_ -in 'y','yes'} { $TOS = 'Out' ;TOSyes ;Break }
 			Default { $Invalid = 1 ;Break }
 		}
 	} Return
@@ -405,8 +406,8 @@ Function HideCustomSrvStuff {
 
 Function SetServiceVersion {
 	$TPath = $filebase + 'BlackViper.csv'
-	If(Test-Path $TPath -PathType Leaf) {
-		$TMP = Import-Csv $TPath
+	If(Test-Path -LiteralPath $TPath -PathType Leaf) {
+		$TMP = Import-Csv -LiteralPath $TPath
 		$Script:ServiceVersion = $TMP[0].'Def-Home-Full'
 		$Script:ServiceDate = $TMP[0].'Def-Home-Min'
 		Return $True
@@ -451,7 +452,7 @@ Function SaveSetting {
 	$Settings += [PSCustomObject] @{ Var = 'ShowAlreadySet' ;Val = $ShowAlreadySet }
 	$Settings += [PSCustomObject] @{ Var = 'StopDisabled' ;Val = $StopDisabled }
 	If($ConsideredDonation -eq 'Yes'){ $Settings += [PSCustomObject] @{ Var = 'ConsideredDonation' ;Val='Yes' } }
-	$Settings | Export-Clixml $SettingPath
+	$Settings | Export-Clixml -LiteralPath $SettingPath
 }
 
 Function ShowConsole([Int]$Choice){ [Console.Window]::ShowWindow($ConsolePtr, $Choice) }#0 = Hide, 5 = Show
@@ -684,7 +685,7 @@ Function GuiStart {
 		$Script:RunScript = 1
 		$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 		If($Black_Viper -eq $BVCount) {
-			If(!(Test-Path $ServiceConfigFile -PathType Leaf) -And $ServiceConfigFile -ne $null) {
+			If(!(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf) -And $ServiceConfigFile -ne $null) {
 				[Windows.Forms.MessageBox]::Show("The File '$ServiceConfigFile' does not exist",'Error', 'OK') | Out-Null
 				$Script:RunScript = 0
 			} Else {
@@ -865,10 +866,10 @@ Function RunDisableCheck {
 	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
 		$WPF_RunScriptButton.IsEnabled = $False
 		$WPF_LoadServicesButton.IsEnabled = $False
-		If(!($ServiceConfigFile) -or !(Test-Path $ServiceConfigFile -PathType Leaf)) {
+		If(!($ServiceConfigFile) -or !(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf)) {
 			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
 		} Else {
-			[System.Collections.ArrayList]$Tempcheck = Import-Csv $ServiceConfigFile
+			[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $ServiceConfigFile
 			If($Tempcheck[0].StartType -eq $null -or $Tempcheck[0].ServiceName -eq $null) {
 				$Buttontxt = 'Run Disabled, Invalid Custom Service File.'
 			} Else {
@@ -912,7 +913,7 @@ Function GenerateServices {
 	}
 	If($WPF_XboxService_CB.IsChecked){ $Script:XboxService = 1 } Else{ $Script:XboxService = 0 }
 	If($ServiceImport -eq 1) {
-		[System.Collections.ArrayList]$ServCB = Import-Csv $ServiceFilePath
+		[System.Collections.ArrayList]$ServCB = Import-Csv -LiteralPath $ServiceFilePath
 		$ServiceImport = 0
 	}
 	[System.Collections.ArrayList]$Script:DataGridListOrig = @{}
@@ -1034,7 +1035,7 @@ Function UpdateCheckAuto {
 		LeftLineLog ;DisplayOutMenu ' 3. Run Script or Bat file with ' 2 0 0 1 ;DisplayOutMenu '-sic' 15 0 0 1 ;DisplayOutMenu ' argument    ' 2 0 0 1 ;RightLineLog
 		MenuBlankLineLog
 		MenuLineLog
-		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+		If(!(Test-Path -LiteralPath $ServiceFilePath -PathType Leaf)) {
 			MenuBlankLineLog
 			LeftLineLog ;DisplayOutMenu 'The File ' 2 0 0 1 ;DisplayOutMenu 'BlackViper.csv' 15 0 0 1 ;DisplayOutMenu ' is missing and the script' 2 0 0 1 ;RightLineLog
 			LeftLineLog ;DisplayOutMenu "can't run w/o it.".PadRight(49) 2 0 0 1 ;RightLineLog
@@ -1084,9 +1085,9 @@ Function UpdateCheck([Int]$USwitch) {
 				$Choice = [windows.forms.messagebox]::show($UpdateFound,$UpdateTitle,'YesNo')
 			}
 			If($Choice -eq 'Yes') {
-				If($ScriptLog -eq 1){ Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -Filepath $LogFile }
+				If($ScriptLog -eq 1){ Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -LiteralPath $LogFile }
 				DownloadFile $Service_Url $ServiceFilePath
-				If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
+				If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
 			} ElseIf($SrpCheck -ne 1) {
 				$Switch = 0
 			}
@@ -1163,7 +1164,7 @@ Function ScriptUpdateFun {
 		}
 	}
 
-	If(Test-Path $UpdateFile -PathType Leaf) {
+	If(Test-Path -LiteralPath $UpdateFile -PathType Leaf) {
 		$DFilename = 'BlackViper-Win10.ps1'
 		$UpArg += '-u -bv '
 		If($Release_Type -ne 'Stable'){ $UpArg += '-test ' }
@@ -1182,7 +1183,7 @@ Function ScriptUpdateFun {
 		DownloadFile $Script_Url $WebScriptFilePath
 		If($BatUpdateScriptFileName -eq 1) {
 			$BatFile = $filebase + '_Win10-BlackViper.bat'
-			If(Test-Path $BatFile -PathType Leaf) {
+			If(Test-Path -LiteralPath $BatFile -PathType Leaf) {
 				(Get-Content -LiteralPath $BatFile) | Foreach-Object {$_ -replace "Set Script_File=.*?$" , "Set Script_File=$DFilename"} | Set-Content -LiteralPath $BatFile -Force
 				MenuBlankLineLog
 				LeftLineLog ;DisplayOutMenu ' Updated bat file with new script file name.     ' 13 0 0 1 ;RightLineLog
@@ -1205,14 +1206,14 @@ Function ScriptUpdateFun {
 Function ServiceBAfun([String]$ServiceBA) {
 	If($LogBeforeAfter -eq 1) {
 		$ServiceBAFile = "$filebase$Env:computername-$ServiceBA.log"
-		If($ServiceBA -eq 'Services-Before'){ $CurrServices | Out-File $ServiceBAFile } Else{ Get-Service | Select-Object DisplayName, StartType | Out-File $ServiceBAFile }
+		If($ServiceBA -eq 'Services-Before'){ $CurrServices | Out-File -LiteralPath $ServiceBAFile } Else{ Get-Service | Select-Object DisplayName, StartType | Out-File -LiteralPath $ServiceBAFile }
 	} ElseIf($LogBeforeAfter -eq 2) {
 		If($ServiceBA -eq 'Services-Before'){ $TMPServices = $CurrServices } Else{ $TMPServices = Get-Service | Select-Object DisplayName, Name, StartType }
-		Write-Output "`n$ServiceBA -Start" 4>&1 | Out-File -Filepath $LogFile -Append
-		Write-Output '-------------------------------------' 4>&1 | Out-File -Filepath $LogFile -Append
-		Write-Output $TMPServices 4>&1 | Out-File -Filepath $LogFile -Append
-		Write-Output '-------------------------------------' 4>&1 | Out-File -Filepath $LogFile -Append
-		Write-Output "$ServiceBA -End`n" 4>&1 | Out-File -Filepath $LogFile -Append
+		Write-Output "`n$ServiceBA -Start" 4>&1 | Out-File -LiteralPath $LogFile -Append
+		Write-Output '-------------------------------------' 4>&1 | Out-File -LiteralPath $LogFile -Append
+		Write-Output $TMPServices 4>&1 | Out-File -LiteralPath $LogFile -Append
+		Write-Output '-------------------------------------' 4>&1 | Out-File -LiteralPath $LogFile -Append
+		Write-Output "$ServiceBA -End`n" 4>&1 | Out-File -LiteralPath $LogFile -Append
 	}
 }
 
@@ -1283,7 +1284,7 @@ Function RegistryServiceFile([String]$TempFP) {
 
 Function GenerateRegistryRegular([String]$TempFP) {
 	If($AllService -eq $null){ GetAllServices }
-	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -Filepath $TempFP
+	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -LiteralPath $TempFP
 	ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
 		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
@@ -1294,20 +1295,20 @@ Function GenerateRegistryRegular([String]$TempFP) {
 				'Automatic' { $ServiceTypeNum = 2 ;Break }
 			}
 			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
-			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $TempFP -Append
-			Write-Output $Num | Out-File -Filepath $TempFP -Append
+			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -LiteralPath $TempFP -Append
+			Write-Output $Num | Out-File -LiteralPath $TempFP -Append
 			If($ServiceTypeNum -eq 2) {
 				$exists = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$ServiceName\").DelayedAutostart
-				If($exists -eq 1){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $TempFP -Append }
+				If($exists -eq 1){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -LiteralPath $TempFP -Append }
 			}
-			Write-Output '' | Out-File -Filepath $TempFP -Append
+			Write-Output '' | Out-File -LiteralPath $TempFP -Append
 		}
 	}
 }
 
 Function GenerateRegistryCustom([String]$TempFP) {
 	$ServiceCBList = $WPF_dataGrid.Items.Where({$_.checkboxChecked -eq $True})
-	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -Filepath $TempFP
+	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -LiteralPath $TempFP
 	ForEach($item In $ServiceCBList) {
 		$ServiceName = $item.ServiceName
 		$ServiceTypeNum = BVTypeNameToNumb $item.BVType
@@ -1316,10 +1317,10 @@ Function GenerateRegistryCustom([String]$TempFP) {
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			If(!($Skip_Services -Contains $ServiceName)) {
 				$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
-				Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -Filepath $TempFP -Append
-				Write-Output $Num | Out-File -Filepath $TempFP -Append
-				If($ServiceTypeNum -eq 4){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -Filepath $TempFP -Append }
-				Write-Output '' | Out-File -Filepath $TempFP -Append
+				Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -LiteralPath $TempFP -Append
+				Write-Output $Num | Out-File -LiteralPath $TempFP -Append
+				If($ServiceTypeNum -eq 4){ Write-Output '"DelayedAutostart"=dword:00000001' | Out-File -LiteralPath $TempFP -Append }
+				Write-Output '' | Out-File -LiteralPath $TempFP -Append
 			}
 		}
 	}
@@ -1342,11 +1343,11 @@ Function CreateLog {
 		$Script:LogFile = $filebase + $LogName
 		$Time = Get-Date -Format g
 		If($ScriptLog -eq 2) {
-			Write-Output 'Updated Script File running' 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append
-			Write-Output "--Start of Log ($Time)--" | Out-File -Filepath $LogFile -NoNewline -Append
+			Write-Output 'Updated Script File running' 4>&1 | Out-File -LiteralPath $LogFile -NoNewline -Append
+			Write-Output "--Start of Log ($Time)--" | Out-File -LiteralPath $LogFile -NoNewline -Append
 			$ScriptLog = 1
 		} Else{
-			Write-Output "--Start of Log ($Time)--" | Out-File -Filepath $LogFile
+			Write-Output "--Start of Log ($Time)--" | Out-File -LiteralPath $LogFile
 		}
 	}
 	$Script:LogStarted = 1
@@ -1415,42 +1416,43 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		$ServiceTypeNum = $($item.$BVService)
 		$ServiceName = $($item.ServiceName)
 		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-		If($ServiceTypeNum -eq 0 -And $ShowSkipped -eq 1) {
-			If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
-			DisplayOut $DispTemp  14 0
-		} ElseIf($ServiceTypeNum -ne 0 -and $ServiceTypeNum -In 1..4) {
+		If($ServiceTypeNum -eq 0) {
+			If($ShowSkipped -eq 1) {
+				If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
+				DisplayOut $DispTemp  14 0
+			}
+		} ElseIf($ServiceTypeNum -In 1..4) {
 			If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			If($ServicesTypeList -Contains $ServiceCurrType) {
-				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
-				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
-				If($ServiceTypeNum -eq 4) {
-					$DispTemp += ' (Delayed)'
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
-				}
-				If($StopDisabled -eq 1 -and $ServiceTypeNum -eq 1){
-					If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Running') {
-						Stop-Service $ServiceName
-						$DispTemp += ', Stopping Service'
-					} Else {
-						$DispTemp += ', Already Stopped'
+			Switch($ServiceCurrType) {
+				{$ServicesTypeList -Contains $_} {
+					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
+					If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
+					If($ServiceTypeNum -eq 4) {
+						$DispTemp += ' (Delayed)'
+						If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
 					}
+					If($StopDisabled -eq 1 -and $ServiceTypeNum -eq 1){
+						If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Running') {
+							Stop-Service $ServiceName ;$DispTemp += ', Stopping Service'
+						} Else {
+							$DispTemp += ', Already Stopped'
+						}
+					}
+					DisplayOut $DispTemp 11 0 ;Break 
 				}
-				DisplayOut $DispTemp 11 0
-			} ElseIf($ServiceCurrType -eq 'Already' -And $ShowAlreadySet -eq 1) {
-				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
-				If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
-				DisplayOut $DispTemp 15 0
-			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
-				DisplayOut "No service with name $ServiceName"  13 0
-			} ElseIf($ServiceCurrType -eq 'Xbox') {
-				DisplayOut "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2 0
-			} ElseIf($ServiceCurrType -eq 'Denied' -and $Release_Type -eq 'Testing') {
-				DisplayOut "$ServiceCommName ($ServiceName) can't be changed." 14 0
-			}
-		} ElseIf($ServiceTypeNum -NotIn 1..4 -and $ServiceTypeNum -ne 0) {
+				'Already' { If($ShowAlreadySet -eq 1) {
+					$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+					If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
+					DisplayOut $DispTemp 15 0
+				} ;Break }
+				$False { If($ShowNonInstalled -eq 1){ DisplayOut "No service with name $ServiceName"  13 0 } ;Break }
+				'Xbox' { DisplayOut "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2 0 ;Break }
+				'Denied' { If($Release_Type -eq 'Testing'){ DisplayOut "$ServiceCommName ($ServiceName) can't be changed." 14 0 } ;Break }
+			}			
+		} Else {
 			DisplayOut "Error: $ServiceName does not have a valid Setting." 13 0
 		}
 	}
@@ -1466,7 +1468,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		}
 	}
 	ServiceBAfun 'Services-After'
-	If($DevLog -eq 1 -and $error.count -gt $ErrCount){ Write-Output $error 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
+	If($DevLog -eq 1 -and $error.count -gt $ErrCount){ Write-Output $error 4>&1 | Out-File -LiteralPath $LogFile -NoNewline -Append }
 	AutomatedExitCheck 1
 }
 
@@ -1483,42 +1485,43 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 		$ServiceTypeNum = $($item.$BVService)
 		$ServiceName = $($item.ServiceName)
 		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
-		If($ServiceTypeNum -eq 0 -And $ShowSkipped -eq 1) {
-			If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
-			TBoxMessage $DispTemp  14
-		} ElseIf($ServiceTypeNum -ne 0 -and $ServiceTypeNum -In 1..4) {
+		If($ServiceTypeNum -eq 0) {
+			If($ShowSkipped -eq 1) {
+				If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
+				TBoxMessage $DispTemp  14
+			}
+		} ElseIf($ServiceTypeNum -In 1..4) {
 			If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 			$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			If($ServicesTypeList -Contains $ServiceCurrType) {
-				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
-				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
-				If($ServiceTypeNum -eq 4) {
-					$DispTemp += ' (Delayed)'
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
-				}
-				If($StopDisabled -eq 1 -and $ServiceTypeNum -eq 1){
-					If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Running') {
-						Stop-Service $ServiceName
-						$DispTemp += ', Stopping Service'
-					} Else {
-						$DispTemp += ', Already Stopped'
+			Switch($ServiceCurrType) {
+				{$ServicesTypeList -Contains $_} {
+					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
+					If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
+					If($ServiceTypeNum -eq 4) {
+						$DispTemp += ' (Delayed)'
+						If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
 					}
+					If($StopDisabled -eq 1 -and $ServiceTypeNum -eq 1){
+						If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Running') {
+							Stop-Service $ServiceName ;$DispTemp += ', Stopping Service'
+						} Else {
+							$DispTemp += ', Already Stopped'
+						}
+					}
+					TBoxMessage $DispTemp 11 ;Break 
 				}
-				TBoxMessage $DispTemp 11
-			} ElseIf($ServiceCurrType -eq 'Already' -And $ShowAlreadySet -eq 1) {
-				$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
-				If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
-				TBoxMessage $DispTemp 15
-			} ElseIf($ServiceCurrType -eq $False -And $ShowNonInstalled -eq 1) {
-				TBoxMessage "No service with name $ServiceName" 13
-			} ElseIf($ServiceCurrType -eq 'Xbox') {
-				TBoxMessage "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2
-			} ElseIf($ServiceCurrType -eq 'Denied' -and $Release_Type -eq 'Testing') {
-				TBoxMessage "$ServiceCommName ($ServiceName) can't be changed." 14
-			}
-		} ElseIf($ServiceTypeNum -NotIn 1..4 -and $ServiceTypeNum -ne 0) {
+				'Already' { If($ShowAlreadySet -eq 1) {
+					$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+					If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
+					TBoxMessage $DispTemp 15
+				} ;Break }
+				$False { If($ShowNonInstalled -eq 1){ TBoxMessage "No service with name $ServiceName"  13 } ;Break }
+				'Xbox' { TBoxMessage "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2 ;Break }
+				'Denied' { If($Release_Type -eq 'Testing'){ TBoxMessage "$ServiceCommName ($ServiceName) can't be changed." 14 } ;Break }
+			}			
+		} Else {
 			TBoxMessage "Error: $ServiceName does not have a valid Setting." 13
 		}
 	}
@@ -1539,7 +1542,7 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 	}
 	$Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType, Status
 	RunDisableCheck
-	If($DevLog -eq 1 -and $error.count -gt $ErrCount){ Write-Output $error 4>&1 | Out-File -Filepath $LogFile -NoNewline -Append }
+	If($DevLog -eq 1 -and $error.count -gt $ErrCount){ Write-Output $error 4>&1 | Out-File -LiteralPath $LogFile -NoNewline -Append }
 }
 
 Function ServiceCheck([String]$S_Name,[String]$S_Type) {
@@ -1583,12 +1586,12 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 		$Invalid = ShowInvalid $Invalid
 		$LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
 		Switch($LoadWebCSV.ToLower()) {
-			{ $_ -eq 'y' -or $_ -eq 'yes' } { DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = 'Out' ;Break }
-			{ $_ -eq 'n' -or $_ -eq 'no' } { DisplayOutMenu 'For manual download save the following File: ' 2 0 1 ;DisplayOutMenu 'https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv' 15 0 0 ;Exit ;Break }
+			{$_ -in 'y','yes'} { DownloadFile $Service_Url $ServiceFilePath ;$LoadWebCSV = 'Out' ;Break }
+			{$_ -in 'n','no'} { DisplayOutMenu 'For manual download save the following File: ' 2 0 1 ;DisplayOutMenu 'https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv' 15 0 0 ;Exit ;Break }
 			Default { $Invalid = 1 ;Break }
 		}
 	}
-	If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
+	If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
 	CheckBVcsv
 	Return
 }
@@ -1602,7 +1605,7 @@ Function LoadWebCSVGUI {
 	}
 	If([windows.forms.messagebox]::show($ErrMessage,'Error','YesNo','Error') -eq 'Yes'){
 		DownloadFile $Service_Url $ServiceFilePath
-		If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
+		If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
 		CheckBVcsv
 	} Else {
 		[Windows.Forms.MessageBox]::Show("To get The File 'BlackViper.csv' go to https://github.com/madbomb122/BlackViperScript to save it.`nWithout the file the script won't run",'Information','OK','Information') | Out-Null
@@ -1688,7 +1691,7 @@ Function PreScriptCheck {
 	}
 	If($LoadServiceConfig -eq 1) {
 		$ServiceFilePath = $ServiceConfigFile
-		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+		If(!(Test-Path -LiteralPath $ServiceFilePath -PathType Leaf)) {
 			$Script:ErrorDi = 'Missing File $ServiceConfigFile'
 			Error_Top_Display
 			LeftLineLog ;DisplayOutMenu 'The File ' 2 0 0 1 ;DisplayOutMenu $ServiceConfigFile.PadRight(28) 15 0 0 1 ;DisplayOutMenu ' is missing.' 2 0 0 1 ;RightLineLog
@@ -1699,19 +1702,19 @@ Function PreScriptCheck {
 		# Yes this is supposed to be EMPTY
 	} Else {
 		$ServiceFilePath = $filebase + 'BlackViper.csv'
-		If(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+		If(!(Test-Path -LiteralPath $ServiceFilePath -PathType Leaf)) {
 			If($ServiceVerCheck -eq 0) {
-				If($ScriptLog -eq 1){ Write-Output "Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
+				If($ScriptLog -eq 1){ Write-Output "Missing File 'BlackViper.csv'" | Out-File -LiteralPath $LogFile }
 				If($GuiLoad -eq 1){ LoadWebCSVGUI 0 } Else{ LoadWebCSV 0 }
 				LoadWebCSV 0
 			} Else {
-				If($ScriptLog -eq 1){ Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -Filepath $LogFile }
+				If($ScriptLog -eq 1){ Write-Output "Downloading Missing File 'BlackViper.csv'" | Out-File -LiteralPath $LogFile }
 				DownloadFile $Service_Url $ServiceFilePath
 			}
 			$ServiceVerCheck = 0
 		}
 	}
-	If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv $ServiceFilePath }
+	If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
 	If($ScriptVerCheck -eq 1 -or $ServiceVerCheck -eq 1){ UpdateCheckAuto }
 	If($LoadServiceConfig -ne 2){ CheckBVcsv ;$csv.RemoveAt(0) }
 }
@@ -1726,7 +1729,7 @@ Function CheckBVcsv {
 			LeftLineLog ;DisplayOutMenu 'The File ' 2 0 0 1 ;DisplayOutMenu 'BlackViper.csv' 15 0 0 1 ;DisplayOutMenu ' is Invalid or Corrupt.   ' 2 0 0 1 ;RightLineLog
 			Error_Bottom
 		}
-	} ElseIf(!(Test-Path $ServiceFilePath -PathType Leaf)) {
+	} ElseIf(!(Test-Path -LiteralPath $ServiceFilePath -PathType Leaf)) {
 		If($GuiLoad -eq 1){
 			[Windows.Forms.MessageBox]::Show("The File 'BlackViper.csv' is missing and couldn't be downloaded.`nFor Manual download go to https://github.com/madbomb122/BlackViperScript",'Information', 'OK','Information') | Out-Null
 		} Else{
@@ -1771,8 +1774,8 @@ Function GetArgs {
 				'-sbc' { $Script:BuildCheck = 1 ;Break }
 				'-sech' { $Script:EditionCheck = 'Home' ;Break }
 				'-sxb' { $Script:XboxService = 1 ;Break }
-				{$_ -eq '-secp' -or $_ -eq '-sec'} { $Script:EditionCheck = 'Pro' ;Break }
-				{$_ -eq '-help' -or $_ -eq '-h'} { ShowHelp ;Break }
+				{$_ -in '-secp','-sec'} { $Script:EditionCheck = 'Pro' ;Break }
+				{$_ -in '-help','-h'} { ShowHelp ;Break }
 			}
 		}
 	}
@@ -1827,7 +1830,7 @@ Function ShowHelp {
 }
 
 Function ArgsAndVarSet {
-	If(Test-Path $SettingPath -PathType Leaf){ Import-Clixml $SettingPath  | ForEach-Object { Set-Variable $_.Var $_.Val -Scope Script } }
+	If(Test-Path -LiteralPath $SettingPath -PathType Leaf){ Import-Clixml -LiteralPath $SettingPath  | ForEach-Object { Set-Variable $_.Var $_.Val -Scope Script } }
 	$Script:PCType = (Get-CimInstance -Class Win32_ComputerSystem).PCSystemType
 	If($PCType -ne 2){ $Script:IsLaptop = '-Desk' } Else{ $Script:IsLaptop = '-Lap' }
 	If($PassedArg.Length -gt 0){ GetArgs }
