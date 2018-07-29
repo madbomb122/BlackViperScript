@@ -134,17 +134,22 @@ This file will <br/>
 
 # FAQ
 **Q:** The script file looks all messy in notepad, How do i view it? <br/>
-**A:** Try using wordpad or what I recommend, Notepad++ https://notepad-plus-plus.org/
+**A:** Try using wordpad or what I recommend, Notepad++ [https://notepad-plus-plus.org/](https://notepad-plus-plus.org/) 
 
 **Q:** Do you accept any donations? <br/>
 **A:** If you would like to donate to me Please pick an item/giftcard from my amazon wishlist or Contact me about donating, Thanks. BTW The giftcard amount can be changed to a min of $1. <br/>
-**Wishlist:** https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/ <br/>
+**Wishlist:** [https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/](https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/)<br/>
 
 **Q:** Are You or Black Viper the developer? <br/>
 **A:** [Black Viper](http://www.blackviper.com/) is the creator of the service configuration. I am the developer of the script, the blackviper.csv file uses black viper's configuration. 
 
+**Q:** I have a suggestion/Issue for the script, how do I suggest it? <br/>
+**A:** Do a pull request with the change or submit it as an issue with the suggestion. <br/>
+
 **Q:** How can I contact you? <br/>
-**A:** If it's an issue or suggestion please post under issue tab. Otherwise you can email me @ madbomb122@gmail.com. Before contacting me make sure you have ALL the needed files and the size is right (Look above under requirements).
+**A:** 1. You can also PM me on reddit /u/madbomb122 [https://www.reddit.com/user/madbomb122](https://www.reddit.com/user/madbomb122) <br/>
+2. You can email me @ madbomb122@gmail.com. <br/>
+**Note** Before contacting me, please make sure you have ALL the needed files and the size is right (Look above under requirements). 
 
 **Q:** The Run button is disabled what do i do? <br/>
 **A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).
@@ -205,9 +210,6 @@ This file will <br/>
 ---to remove a service remove the line or put something to change service name, other than symbols (# is fine) <br/>
 ---to add put it in the proper format <br/>
 **Note:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)` <br/>
-
-**Q:** I have a suggestion for the script, how do I suggest it? <br/>
-**A:** Do a pull request with the change or submit it as an issue with the suggestion. <br/>
 
 **Q:** How long are you going to maintain the script? <br/>
 **A:** No Clue.
