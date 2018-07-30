@@ -1,4 +1,10 @@
 -----------------------------------------------------------------------------------
+5.1.1 (07-30-2018)
+
+Fixed Issue with using using the 'Custom Service' option in service tab didnt work
+Fixed bug were for switching between Automatic and Automatic (Delayed) wouldnt work
+
+-----------------------------------------------------------------------------------
 5.1.0 (07-29-2018)
 
 Black Viper services for 1803 support added
