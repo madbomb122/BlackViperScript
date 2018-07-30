@@ -40,7 +40,7 @@ PPS. My Thanks goes out to all that have helped in any way.
 [_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `5.49 KB`<br/> 
 [README.md](https://github.com/madbomb122/BlackViperScript/raw/master/README.md) (This Readme) <br/>
 
-**You can do a `save as` on the filenames above to save them to you computer, you cannot do a `save as` on github's file list**
+**You CAN do a `save as` on the filenames above to save them to you computer, you CANNOT do a `save as` on github's file list**
 
 **Note:**
 **AT YOUR OWN RISK**<br/>
@@ -141,7 +141,7 @@ This file will <br/>
 **Wishlist:** [https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/](https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/)<br/>
 
 **Q:** Are You or Black Viper the developer? <br/>
-**A:** [Black Viper](http://www.blackviper.com/) is the creator of the service configuration. I am the developer of the script, the blackviper.csv file uses black viper's configuration. 
+**A:** [Black Viper](http://www.blackviper.com/) is the creator of the service configuration. I am the developer of the script and the blackviper.csv file the script uses. 
 
 **Q:** I have a suggestion/Issue for the script, how do I suggest it? <br/>
 **A:** Do a pull request with the change or submit it as an issue with the suggestion. <br/>
