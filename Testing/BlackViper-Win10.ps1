@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '5.1.0'
-$Script_Date = 'July-29-2018'
+$Script_Version = '5.1.1'
+$Script_Date = 'July-30-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -248,7 +248,11 @@ Function OpenWebsite([String]$Url){ [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile([String]$Url,[String]$FilePath){ (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function ShowInvalid([Int]$InvalidA){ If($InvalidA -eq 1){ Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
 Function GetAllServices { $Script:AllService = Get-CimInstance Win32_service | Select-Object Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} } }
-Function AutoDelayTest([String]$Srv) { Return (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$Srv\").DelayedAutostart }
+
+Function AutoDelayTest([String]$Srv) {
+	$tmp = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$Srv\").DelayedAutostart
+	If($tmp -ne $null){ Return $tmp } Else{ Return 0 }
+}
 
 Function DisplayOutMenu([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor,[Int]$NewLine,[Int]$LogOut) {
 	If($NewLine -eq 0) {
@@ -1364,14 +1368,14 @@ Function DiagnosticCheck([Int]$Bypass) {
 
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
-	If($LoadServiceConfig -eq 1) {
-		$SrvSetting = 'Custom' ;$ServiceSetOpt = 'StartType'
+	If($LoadServiceConfig -In 1,2) {
+		$ServiceSetOpt = 'StartType' ;$SrvSetting = 'Custom'
 	} ElseIf($Black_Viper -eq 1) {
-		$SrvSetting = 'Default' ;$ServiceSetOpt = "Def-$WinEdition$FullMin"
+		$ServiceSetOpt = "Def-$WinEdition$FullMin" ;$SrvSetting = 'Default'
 	} ElseIf($Black_Viper -eq 2) {
-		$SrvSetting = 'Safe' ;$ServiceSetOpt = "Safe$IsLaptop$FullMin"
+		$ServiceSetOpt = "Safe$IsLaptop$FullMin" ;$SrvSetting = 'Safe'
 	} ElseIf($Black_Viper -eq 3) {
-		$SrvSetting = 'Tweaked' ;$ServiceSetOpt = "Tweaked-Desk$FullMin"
+		$ServiceSetOpt = "Tweaked-Desk$FullMin" ;$SrvSetting = 'Tweaked'
 	}
 	Clear-Host
 	If($LogBeforeAfter -eq 2){ DiagnosticCheck 1 }
@@ -1413,10 +1417,21 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 				}
 				DisplayOut $DispTemp 11 0
 			} ElseIf($ServiceCurrType -eq 'Already') {
-				If($ShowAlreadySet -eq 1) {
-					$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
-					If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
-					DisplayOut $DispTemp 15 0
+				$ADT = AutoDelayTest $ServiceName
+				If($ADT -eq 1 -and $ServiceTypeNum -eq 3) {
+					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType (Delayed) -> $ServiceType"
+					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 0 }
+					DisplayOut $DispTemp 11 0
+				} ElseIf($ADT -eq 0 -and $ServiceTypeNum -eq 4) {
+					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType -> $ServiceType (Delayed)"
+					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
+					DisplayOut $DispTemp 11 0
+				} Else {
+					If($ShowAlreadySet -eq 1) {
+						$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+						If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
+						DisplayOut $DispTemp 15 0
+					}
 				}
 			} ElseIf($ServiceCurrType -eq 'None') {
 				If($ShowNonInstalled -eq 1){ DisplayOut "No service with name $ServiceName"  13 0 }
@@ -1469,7 +1484,6 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
 		If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 		$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
-
 		If($ServiceTypeNum -eq 0) {
 			If($ShowSkipped -eq 1) {
 				If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
@@ -1493,10 +1507,21 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 				}
 				TBoxMessage $DispTemp 11
 			} ElseIf($ServiceCurrType -eq 'Already') {
-				If($ShowAlreadySet -eq 1) {
-					$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
-					If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
-					TBoxMessage $DispTemp 15
+				$ADT = AutoDelayTest $ServiceName
+				If($ADT -eq 1 -and $ServiceTypeNum -eq 3) {
+					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType (Delayed) -> $ServiceType"
+					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 0 }
+					TBoxMessage $DispTemp 11
+				} ElseIf($ADT -eq 0 -and $ServiceTypeNum -eq 4) {
+					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType -> $ServiceType (Delayed)"
+					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
+					TBoxMessage $DispTemp 11
+				} Else {
+					If($ShowAlreadySet -eq 1) {
+						$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+						If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
+						TBoxMessage $DispTemp 15
+					}
 				}
 			} ElseIf($ServiceCurrType -eq 'None') {
 				If($ShowNonInstalled -eq 1){ TBoxMessage "No service with name $ServiceName"  13 }
