@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.0.7 (07-14-2018)
+5.1.0 (07-29-2018)
 
 Black Viper services for 1803 support added
 Fixed issue in 'Services List' tab with sorting Description and Path
@@ -28,6 +28,12 @@ Internal Script Improvements (decreased size of script a little, slight speed im
 
 Fixed Issue with Symbols/Special Characters in filename and/or path
 Internal Script Improvements
+
+Added Elapsed Time Displayed at end of service change
+Reverted some changes due to some changes being slower rather than faster
+Fixed a bug were services would be stopped even on dryrun
+Fixed a bug were display will say service is already when service does not exist
+Donate display wont display on dryrun now
 
 -----------------------------------------------------------------------------------
 4.3.0 (05-26-2018)
