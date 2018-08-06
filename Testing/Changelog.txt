@@ -1,8 +1,13 @@
 -----------------------------------------------------------------------------------
-5.1.1 (07-30-2018)
+5.1.2 (08-06-2018)
 
 Fixed Issue with using using the 'Custom Service' option in service tab didnt work
 Fixed bug were for switching between Automatic and Automatic (Delayed) wouldnt work
+
+Fix bug were 'Current Setting' in 'Service List' wouldnt sort
+Script now lists numbers for 'services changes, already, skipped, and stopped' after running (non dry-run)
+Fixed issue were 2 settings were not being saved 'show console window, auto service update'
+Added 2 settings being save 'all or min, service configurations (other than custom), enable laptop tweak'
 
 -----------------------------------------------------------------------------------
 5.1.0 (07-29-2018)
@@ -35,11 +40,11 @@ Internal Script Improvements (decreased size of script a little, slight speed im
 Fixed Issue with Symbols/Special Characters in filename and/or path
 Internal Script Improvements
 
-Added Elapsed Time Displayed at end of service change
+Added Elapsed Time Displayed at end of service change (non dry-run)
 Reverted some changes due to some changes being slower rather than faster
 Fixed a bug were services would be stopped even on dryrun
 Fixed a bug were display will say service is already when service does not exist
-Donate display wont display on dryrun now
+Donate display wont display on dry-run now
 
 -----------------------------------------------------------------------------------
 4.3.0 (05-26-2018)
