@@ -6,8 +6,8 @@ Fixed bug were for switching between Automatic and Automatic (Delayed) wouldnt w
 
 Fix bug were 'Current Setting' in 'Service List' wouldnt sort
 Script now lists numbers for 'services changes, already, skipped, and stopped' after running (non dry-run)
-Fixed issue were 2 settings were not being saved 'show console window, auto service update'
-Added 2 settings being save 'all or min, service configurations (other than custom), enable laptop tweak'
+Fixed issue were 2 settings were not being saved 'show console window, auto service update' (thanks to zoulztealer for letting me know)
+Added 2 settings being save 'all or min, service configurations (other than custom), enable laptop tweak' (thanks to zoulztealer for letting me know)
 
 -----------------------------------------------------------------------------------
 5.1.0 (07-29-2018)
