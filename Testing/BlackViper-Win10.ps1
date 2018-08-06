@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '5.1.1'
-$Script_Date = 'July-30-2018'
+$Script_Version = '5.1.2'
+$Script_Date = 'Aug-06-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -254,6 +254,8 @@ Function AutoDelayTest([String]$Srv) {
 	If($tmp -ne $null){ Return $tmp } Else{ Return 0 }
 }
 
+Function AutoDelaySet([String]$Srv,[Int]$EnDi){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$Srv\" -Name 'DelayedAutostart' -Type DWord -Value $EnDi }
+
 Function DisplayOutMenu([String]$TxtToDisplay,[Int]$TxtColor,[Int]$BGColor,[Int]$NewLine,[Int]$LogOut) {
 	If($NewLine -eq 0) {
 		If($ScriptLog -eq 1 -And $LogOut -eq 1){ Write-Output $TxtToDisplay 4>&1 | Out-File -LiteralPath $LogFile -NoNewline -Append }
@@ -387,13 +389,13 @@ Function OpenSaveDiaglog([Int]$SorO) {
 	}
 }
 
-Function HideCustomSrvStuff {
-	$WPF_LoadServicesButton.IsEnabled = $True
-	$WPF_RadioAll.IsEnabled = $True
-	$WPF_RadioMin.IsEnabled = $True
-	ForEach($Var In $CNoteList){ $Var.Value.Visibility = 'Hidden' }
-	$WPF_LoadFileTxtBox.Visibility = 'Hidden'
-	$WPF_btnOpenFile.Visibility = 'Hidden'
+Function HideShowCustomSrvStuff {
+	If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount){ $Vis = 'Visible' ; $TF = $False } Else{ $Vis = 'Hidden' ; $TF = $True }
+	$WPF_RadioAll.IsEnabled = $TF
+	$WPF_RadioMin.IsEnabled = $TF
+	ForEach($Var In $CNoteList){ $Var.Value.Visibility = $Vis }
+	$WPF_LoadFileTxtBox.Visibility = $Vis
+	$WPF_btnOpenFile.Visibility = $Vis
 }
 
 Function SetServiceVersion {
@@ -417,6 +419,11 @@ Function SaveSetting {
 		Set-Variable -Name ($Var.Name.Split('_')[1]) -Value $SetValue -Scope Script
 	}
 	If($WPF_RadioAll.IsChecked){ $Script:All_or_Min = '-full' } Else{ $Script:All_or_Min = '-min' }
+	$Black_Viper = $WPF_ServiceConfig.SelectedIndex 
+	If($Black_Viper -eq 3){ $Black_Viper = 0 }
+	If($IsLaptop -eq '-Lap') {
+		If($LaptopTweaked -ne 1 -and $Black_Viper -ge 2){ $Script:Black_Viper = 0 }
+	}
 	If($WPF_EditionCheckCB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text }
 	$Script:LogName = $WPF_LogNameInput.Text
 	$Script:BackupServiceType = $WPF_BackupServiceType.SelectedIndex
@@ -442,11 +449,14 @@ Function SaveSetting {
 	$Settings += [PSCustomObject] @{ Var = 'ShowNonInstalled' ;Val = $ShowNonInstalled }
 	$Settings += [PSCustomObject] @{ Var = 'ShowAlreadySet' ;Val = $ShowAlreadySet }
 	$Settings += [PSCustomObject] @{ Var = 'StopDisabled' ;Val = $StopDisabled }
+	$Settings += [PSCustomObject] @{ Var = 'All_or_Min' ;Val = $All_or_Min }
+	$Settings += [PSCustomObject] @{ Var = 'Black_Viper' ;Val = $Black_Viper }
+	$Settings += [PSCustomObject] @{ Var = 'LaptopTweaked' ;Val = $LaptopTweaked }
 	If($ConsideredDonation -eq 'Yes'){ $Settings += [PSCustomObject] @{ Var = 'ConsideredDonation' ;Val='Yes' } }
 	$Settings | Export-Clixml -LiteralPath $SettingPath
 }
 
-Function ShowConsole([Int]$Choice){ [Console.Window]::ShowWindow($ConsolePtr, $Choice) }#0 = Hide, 5 = Show
+Function ShowConsoleWin([Int]$Choice){ [Console.Window]::ShowWindow($ConsolePtr, $Choice) }#0 = Hide, 5 = Show
 
 Function GuiStart {
 	#Needed to Hide Console window
@@ -579,11 +589,11 @@ Function GuiStart {
 					</ComboBox>
 					<TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="261,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="137" IsEnabled="False"/>
 					<CheckBox Name="ScriptVerCheck_CB" Content="Auto Script Update*" HorizontalAlignment="Left" Margin="239,95,0,0" VerticalAlignment="Top" Height="15" Width="126"/>
+					<CheckBox Name="ServiceVerCheck_CB" Content="Auto Service Update" HorizontalAlignment="Left" Margin="239,80,0,0" VerticalAlignment="Top" Height="15" Width="131"/>
 					<CheckBox Name="BatUpdateScriptFileName_CB" Content="Update Bat file with new Script file**" HorizontalAlignment="Left" Margin="239,110,0,0" VerticalAlignment="Top" Height="15" Width="214"/>
 					<Button Name="CheckUpdateSerButton" Content="Services" HorizontalAlignment="Left" Margin="494,84,0,0" VerticalAlignment="Top" Width="109"/>
 					<Button Name="CheckUpdateSrpButton" Content="Script*" HorizontalAlignment="Left" Margin="494,109,0,0" VerticalAlignment="Top" Width="109"/>
 					<Button Name="CheckUpdateBothButton" Content="Services &amp; Script*" HorizontalAlignment="Left" Margin="494,134,0,0" VerticalAlignment="Top" Width="109"/>
-					<CheckBox Name="ServiceUpdateCB" Content="Auto Service Update" HorizontalAlignment="Left" Margin="239,80,0,0" VerticalAlignment="Top" Height="15" Width="131"/>
 					<CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="239,125,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
 					<Label Content="*Will run and use current settings&#xA;**If update.bat isnt avilable&#xD;&#xA;--Update checks happen before &#xD;&#xA;	services are changed." HorizontalAlignment="Left" Margin="233,134,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="220"/>
 					<Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="234,55,0,0" FontWeight="Bold"/>
@@ -604,7 +614,7 @@ Function GuiStart {
 					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,148,0,0" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left" Width="235"/>
 					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="459,59,0,0" Stroke="Black" Width="1"/>
 					<Label Content="Check for Update Now for:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,55,0,0" FontWeight="Bold"/>
-					<CheckBox Name="ShowWindow" Content="Show Console Window" HorizontalAlignment="Left" Margin="7,199,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
+					<CheckBox Name="ShowConsole_CB" Content="Show Console Window" HorizontalAlignment="Left" Margin="7,199,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
 					<Label Content="*Wont remember Settings in&#xD;&#xA;'Service Options' or 'Services&#xD;&#xA;List' Tab" HorizontalAlignment="Left" Margin="464,157,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="177" Height="61"/>
 					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,218,0,0" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left" Width="465"/>
 					<CheckBox Name="LaptopTweaked_CB" Content="Enable Tweak Setting on Laptop" HorizontalAlignment="Left" Margin="7,225,0,0" VerticalAlignment="Top" Height="15" Width="193"/>
@@ -658,16 +668,8 @@ Function GuiStart {
 		SaveSetting
 	})
 
-	$WPF_ServiceConfig.add_SelectionChanged({
-		If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
-			$WPF_RadioAll.IsEnabled = $False
-			$WPF_RadioMin.IsEnabled = $False
-			ForEach($Var In $CNoteList){ $Var.Value.Visibility = 'Visible' }
-			$WPF_LoadFileTxtBox.Visibility = 'Visible'
-			$WPF_btnOpenFile.Visibility = 'Visible'
-		} Else {
-			HideCustomSrvStuff
-		}
+	$WPF_ServiceConfig.add_SelectionChanged({ 
+		HideShowCustomSrvStuff
 		RunDisableCheck
 	})
 
@@ -709,10 +711,8 @@ Function GuiStart {
 
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
 		If($WPF_dataGrid.SelectedItem) {
-			$TmpName = $WPF_dataGrid.SelectedItem.Name
-			$DataGridListCust = $DataGridListCust | ForEach-Object {
-				If($_.Name -eq $TmpName){ If($_.CurrType -eq $_.BVType){ $_.Matches = $True } Else{ $_.Matches = $False } $_ }
-			}
+			$CurrObj = $WPF_dataGrid.CurrentItem
+			If($CurrObj.CurrType -eq $CurrObj.BVType){ $CurrObj.Matches = $True } Else{ $CurrObj.Matches = $False }
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
 			$WPF_dataGrid.ItemsSource = $DataGridListCust
 			$WPF_dataGrid.Items.Refresh()
@@ -727,24 +727,29 @@ Function GuiStart {
 
 	$WPF_LaptopTweaked_CB.Add_Checked({
 		If($WPF_ServiceConfig.Items.Count -eq 3) {
+			If($WPF_ServiceConfig.SelectedIndex -eq 2){ $tmp = $True } Else{ $tmp = $False }
 			$WPF_ServiceConfig.Items.RemoveAt(2)
 			$WPF_ServiceConfig.Items.Add('Tweaked')
 			$WPF_ServiceConfig.Items.Add('Custom Setting *')
+			If($tmp){ $WPF_ServiceConfig.SelectedIndex = 3 }
 			$Script:LaptopTweaked = 1
 			$Script:BVCount++
+			HideShowCustomSrvStuff
 		}
 	})
 
 	$WPF_LaptopTweaked_CB.Add_UnChecked({
 		If($WPF_ServiceConfig.Items.Count -eq 4) {
+			If($WPF_ServiceConfig.SelectedIndex -eq 2){ $WPF_ServiceConfig.SelectedIndex = 0 }
 			$WPF_ServiceConfig.Items.RemoveAt(2)
 			$Script:LaptopTweaked = 0
 			$Script:BVCount--
+			HideShowCustomSrvStuff
 		}
 	})
 
-	$WPF_ShowWindow.Add_Checked({ ShowConsole 5 }) #5 = Show
-	$WPF_ShowWindow.Add_UnChecked({ ShowConsole 0 }) #0 = Hide
+	$WPF_ShowConsole_CB.Add_Checked({ ShowConsoleWin 5 }) #5 = Show
+	$WPF_ShowConsole_CB.Add_UnChecked({ ShowConsoleWin 0 }) #0 = Hide
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
 	$WPF_ScriptLog_CB.Add_UnChecked({ $WPF_LogNameInput.IsEnabled = $False })
 	$WPF_CustomBVCB.Add_Checked({ CustomBVCBFun $True })
@@ -798,24 +803,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
 	ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
+	If($LaptopTweaked -eq 1){ $WPF_LaptopTweaked_CB.IsChecked = $True }
 	If($EditionCheck -ne 0){ $WPF_EditionCheckCB.IsChecked = $True ;$WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheckCB.IsChecked = $False }
 	If($WinEdition -eq 'Home' -or $EditionCheck -eq 'Home'){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
 	$WPF_BackupServiceType.SelectedIndex = $BackupServiceType
-	If($Release_Type -ne 'Stable'){ $WPF_ShowWindow.Visibility = 'Hidden' }
+	If($Release_Type -ne 'Stable'){ $WPF_ShowConsole_CB.Visibility = 'Hidden' }
 
+	$WPF_ServiceConfig.SelectedIndex = $Black_Viper
 	$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
 	$WPF_LoadServicesButton.IsEnabled = SetServiceVersion
 	$WPF_Script_Ver_Txt.Text = "Script Version: $Script_Version ($Script_Date) -$Release_Type"
 	$WPF_Service_Ver_Txt.Text = "Service Version: $ServiceVersion ($ServiceDate)"
 	$Script:ServiceImport = 1
-	HideCustomSrvStuff
+	HideShowCustomSrvStuff
 	RunDisableCheck
 	Clear-Host
 	DisplayOutMenu 'Displaying GUI Now' 14 0 1 0
 	DisplayOutMenu "`nTo exit you can close the GUI or PowerShell Window." 14 0 1 0
-	If($Release_Type -eq 'Stable' -and $ShowConsole -eq 0){ ShowConsole 0 }
+	If($Release_Type -eq 'Stable' -and $ShowConsole -eq 0){ ShowConsoleWin 0 }
 	$Form.ShowDialog() | Out-Null
-	If($ShowConsole -eq 1){ $WPF_ShowWindow.IsChecked = $True }
+	If($ShowConsole -eq 1 -or $Release_Type -ne 'Stable'){ $WPF_ShowConsole_CB.IsChecked = $True }
 	$WPF_RunScriptButton.IsEnabled = $True
 }
 
@@ -924,8 +931,13 @@ Function GenerateServices {
 			If($SrvPath -Is [system.array]){ $SrvPath = $SrvPath[0] }
 			$ServiceTypeNum = $item.$BVService
 			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
-			If($ServiceCurrType -eq 'Automatic') {
-				If(AutoDelayTest $ServiceName -eq 1){ $ServiceCurrType = 'Automatic (Delayed)' } Else{ $ServiceCurrType = 'Automatic' }
+			If($ServiceCurrType -eq 'Disabled') {
+				$ServiceCurrType = $ServicesTypeFull[1]
+			} ElseIf($ServiceCurrType -eq 'Manual') {
+				$ServiceCurrType = $ServicesTypeFull[2]
+			} ElseIf($ServiceCurrType -eq 'Automatic') {
+				$ServiceCurrType = $ServicesTypeFull[3]
+				If(AutoDelayTest $ServiceName -eq 1){ $ServiceCurrType += ' (Delayed)' }
 			}
 			If($ServiceTypeNum -eq 0) {
 				$checkbox = $False
@@ -935,8 +947,7 @@ Function GenerateServices {
 			} Else {
 				$checkbox = $True
 			}
-			$ServiceType = $ServicesTypeList[$ServiceTypeNum]
-			If($ServiceTypeNum -eq 4){ $ServiceType += ' (Delayed)' }
+			$ServiceType = $ServicesTypeFull[$ServiceTypeNum]
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
 			If($ServiceType -eq  $ServiceCurrType){ $Match = $True } Else{ $Match = $False }
@@ -1191,9 +1202,9 @@ Function ServiceBAfun([String]$ServiceBA) {
 	} ElseIf($LogBeforeAfter -eq 2) {
 		If($ServiceBA -eq 'Services-Before'){ $TMPServices = $CurrServices } Else{ $TMPServices = Get-Service | Select-Object DisplayName, Name, StartType }
 		Write-Output "`n$ServiceBA -Start" 4>&1 | Out-File -LiteralPath $LogFile -Append
-		Write-Output '-------------------------------------' 4>&1 | Out-File -LiteralPath $LogFile -Append
+		Write-Output ''.PadRight(37,'-') 4>&1 | Out-File -LiteralPath $LogFile -Append
 		Write-Output $TMPServices 4>&1 | Out-File -LiteralPath $LogFile -Append
-		Write-Output '-------------------------------------' 4>&1 | Out-File -LiteralPath $LogFile -Append
+		Write-Output ''.PadRight(37,'-') 4>&1 | Out-File -LiteralPath $LogFile -Append
 		Write-Output "$ServiceBA -End`n" 4>&1 | Out-File -LiteralPath $LogFile -Append
 	}
 }
@@ -1221,9 +1232,8 @@ Function Save_Service([String]$SavePath) {
 }
 
 Function Save_ServiceBackup {
-	$ServiceSavePath = $filebase + $Env:computername
 	$SaveService = @()
-	$ServiceSavePath += '-Service-Backup.csv'
+	$ServiceSavePath = $filebase + $Env:computername + '-Service-Backup.csv'
 	If($AllService -eq $null){ GetAllServices }
 	$SaveService = GenerateSaveService
 	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -encoding 'unicode' -force -Delimiter ','
@@ -1384,6 +1394,10 @@ Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 }
 
 Function ServiceSet([String]$BVService,[String]$BVSet) {
+	$BVChanged = 0
+	$BVAlready = 0
+	$BVSkipped = 0
+	$BVStopped = 0
 	If($DryRun -ne 1){ DisplayOut 'Changing Service Please wait...' 14 0 ;$StopWatch.Start() } Else{ DisplayOut 'List of Service that would be changed on Non-Dry Run...' 14 0 }
 	DisplayOutMenu 'Service Setting: ' 14 0 0 1 ;DisplayOutMenu $BVSet 15 0 1 1
 	DisplayOut 'Service_Name - Current -> Change_To' 14 0
@@ -1400,43 +1414,51 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 				If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
 				DisplayOut $DispTemp  14 0
 			}
+			$BVSkipped++
 		} ElseIf($ServiceTypeNum -In 1..4) {
 			If($ServicesTypeList -Contains $ServiceCurrType) {
 				$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
 				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
 				If($ServiceTypeNum -eq 4) {
 					$DispTemp += ' (Delayed)'
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
+					If($DryRun -ne 1){ AutoDelaySet $ServiceName 1 }
 				}
 				If($StopDisabled -eq 1 -and $ServiceTypeNum -eq 1 -and $DryRun -ne 1) {
 					If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Running') {
 						Stop-Service $ServiceName ;$DispTemp += ', Stopping Service'
+						$BVStopped++
 					} Else {
 						$DispTemp += ', Already Stopped'
 					}
 				}
+				$BVChanged++
 				DisplayOut $DispTemp 11 0
 			} ElseIf($ServiceCurrType -eq 'Already') {
 				$ADT = AutoDelayTest $ServiceName
+				$DispTemp = "$ServiceCommName ($ServiceName) "
 				If($ADT -eq 1 -and $ServiceTypeNum -eq 3) {
-					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType (Delayed) -> $ServiceType"
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 0 }
+					$DispTemp += "- $ServiceType (Delayed) -> $ServiceType"
+					If($DryRun -ne 1){ AutoDelaySet $ServiceName 0 }
 					DisplayOut $DispTemp 11 0
+					$BVChanged++
 				} ElseIf($ADT -eq 0 -and $ServiceTypeNum -eq 4) {
-					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType -> $ServiceType (Delayed)"
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
+					$DispTemp += "- $ServiceType -> $ServiceType (Delayed)"
+					If($DryRun -ne 1){ AutoDelaySet $ServiceName 1 }
 					DisplayOut $DispTemp 11 0
+					$BVChanged++
 				} Else {
 					If($ShowAlreadySet -eq 1) {
-						$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+						$DispTemp += "is already $ServiceType"
 						If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
 						DisplayOut $DispTemp 15 0
 					}
+					$BVAlready++
 				}
 			} ElseIf($ServiceCurrType -eq 'None') {
 				If($ShowNonInstalled -eq 1){ DisplayOut "No service with name $ServiceName"  13 0 }
 			} ElseIf($ServiceCurrType -eq 'Xbox') {
 				DisplayOut "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2 0
+				$BVSkipped++
 			} ElseIf($ServiceCurrType -eq 'Denied') {
 				If($Release_Type -eq 'Testing'){ DisplayOut "$ServiceCommName ($ServiceName) can't be changed." 14 0 }
 			}
@@ -1451,7 +1473,11 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		$StopWatchTime = $StopWatch.Elapsed
 		$StopWatch.Reset()
 		DisplayOut 'Service Changed...' 14 0
-		DisplayOut "Elapsed Time: $StopWatchTime" 14 0
+		DisplayOutMenu 'Changed: ' 14 0 0 1 ;DisplayOutMenu $BVChanged 15 0 1 1
+		DisplayOutMenu 'Already: ' 14 0 0 1 ;DisplayOutMenu $BVAlready 15 0 1 1
+		DisplayOutMenu 'Skipped: ' 14 0 0 1 ;DisplayOutMenu $BVSkipped 15 0 1 1
+		If($StopDisabled -eq 1) {DisplayOutMenu 'Stopped: ' 14 ;DisplayOutMenu $BVStopped 15 0 1 1 }
+		DisplayOutMenu 'Elapsed Time: ' 14 0 0 1 ;DisplayOutMenu $StopWatchTime 15 0 1 1
 	} Else {
 		DisplayOut 'List of Service Done...' 14 0
 	}
@@ -1473,7 +1499,11 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 
 Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 	$WPF_ServiceListing.text = ''
-	If($DryRun -ne 1){ TBoxMessage 'Changing Service Please wait...' 14  ;$StopWatch.Start() } Else{ TBoxMessage 'List of Service that would be changed on Non-Dry Run...' 14 }
+	$BVChanged = 0
+	$BVAlready = 0
+	$BVSkipped = 0
+	$BVStopped = 0
+	If($DryRun -ne 1){ TBoxMessage 'Changing Service Please wait...' 14 ;$StopWatch.Start() } Else{ TBoxMessage 'List of Service that would be changed on Non-Dry Run...' 14 }
 	TBoxMessageNNL 'Service Setting: ' 14 ;TBoxMessage $BVSet 15
 	TBoxMessage 'Service_Name - Current -> Change_To' 14
 	TBoxMessage ''.PadRight(40,'-') 14
@@ -1489,6 +1519,7 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 				If($ServiceCommName -ne $null){ $DispTemp = "Skipping $ServiceCommName ($ServiceName)" } Else{ $DispTemp = "Skipping $ServiceName" }
 				TBoxMessage $DispTemp  14
 			}
+			$BVSkipped++
 		} ElseIf($ServiceTypeNum -In 1..4) {
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 			If($ServicesTypeList -Contains $ServiceCurrType) {
@@ -1496,37 +1527,44 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
 				If($ServiceTypeNum -eq 4) {
 					$DispTemp += ' (Delayed)'
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
+					If($DryRun -ne 1){ AutoDelaySet $ServiceName 1 }
 				}
 				If($StopDisabled -eq 1 -and $ServiceTypeNum -eq 1 -and $DryRun -ne 1) {
 					If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Running') {
 						Stop-Service $ServiceName ;$DispTemp += ', Stopping Service'
+						$BVStopped++
 					} Else {
 						$DispTemp += ', Already Stopped'
 					}
 				}
+				$BVChanged++
 				TBoxMessage $DispTemp 11
 			} ElseIf($ServiceCurrType -eq 'Already') {
 				$ADT = AutoDelayTest $ServiceName
+				$DispTemp = "$ServiceCommName ($ServiceName) "
 				If($ADT -eq 1 -and $ServiceTypeNum -eq 3) {
-					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType (Delayed) -> $ServiceType"
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 0 }
+					$DispTemp += "$ServiceType (Delayed) -> $ServiceType"
+					If($DryRun -ne 1){ AutoDelaySet $ServiceName 0 }
 					TBoxMessage $DispTemp 11
+					$BVChanged++
 				} ElseIf($ADT -eq 0 -and $ServiceTypeNum -eq 4) {
-					$DispTemp = "$ServiceCommName ($ServiceName) - $ServiceType -> $ServiceType (Delayed)"
-					If($DryRun -ne 1){ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Services\$ServiceName\" -Name 'DelayedAutostart' -Type DWord -Value 1 }
+					$DispTemp += "$ServiceType -> $ServiceType (Delayed)"
+					If($DryRun -ne 1){ AutoDelaySet $ServiceName 1 }
 					TBoxMessage $DispTemp 11
+					$BVChanged++
 				} Else {
 					If($ShowAlreadySet -eq 1) {
-						$DispTemp = "$ServiceCommName ($ServiceName) is already $ServiceType"
+						$DispTemp += "is already $ServiceType"
 						If($ServiceTypeNum -eq 4){ $DispTemp += ' (Delayed)' }
 						TBoxMessage $DispTemp 15
 					}
+					$BVAlready++
 				}
 			} ElseIf($ServiceCurrType -eq 'None') {
 				If($ShowNonInstalled -eq 1){ TBoxMessage "No service with name $ServiceName"  13 }
 			} ElseIf($ServiceCurrType -eq 'Xbox') {
 				TBoxMessage "$ServiceCommName ($ServiceName) is an Xbox Service and will be skipped" 2
+				$BVSkipped++
 			} ElseIf($ServiceCurrType -eq 'Denied') {
 				If($Release_Type -eq 'Testing'){ TBoxMessage "$ServiceCommName ($ServiceName) can't be changed." 14 }
 			}
@@ -1540,7 +1578,11 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 		$StopWatchTime = $StopWatch.Elapsed
 		$StopWatch.Reset()
 		TBoxMessage 'Service Changed...' 14
-		TBoxMessage "Elapsed Time: $StopWatchTime" 14
+		TBoxMessageNNL 'Changed: ' 14 ;TBoxMessage $BVChanged 15
+		TBoxMessageNNL 'Already: ' 14 ;TBoxMessage $BVAlready 15
+		TBoxMessageNNL 'Skipped: ' 14 ;TBoxMessage $BVSkipped 15
+		If($StopDisabled -eq 1) { TBoxMessageNNL 'Stopped: ' 14 ;TBoxMessage $BVStopped 15 }
+		TBoxMessageNNL 'Elapsed Time: ' 14 ;TBoxMessage $StopWatchTime 15
 	} Else {
 		TBoxMessage 'List of Service Done...' 14
 	}
@@ -1561,7 +1603,7 @@ Function ServiceSetGUI([String]$BVService,[String]$BVSet) {
 			If([Windows.Forms.MessageBox]::Show("Thanks for using my script.`nIf you like this script please consider giving me a donation.`n`nWould you Consider giving a Donation?",'Thank You','YesNo','Question') -eq 'Yes'){ ClickedDonate }
 		}
 	}
-	$Script:CurrServices = Get-Service | Select-Object DisplayName, Name, StartType, Status
+	$Script:CurrServices = Get-CimInstance Win32_service | Select-Object DisplayName, Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} }, @{ Name = 'Status' ;Expression = {$_.State} } 
 	RunDisableCheck
 	If($DevLog -eq 1 -and $error.count -gt $ErrCount){ Write-Output $error 4>&1 | Out-File -LiteralPath $LogFile -NoNewline -Append }
 }
@@ -1623,7 +1665,7 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 }
 
 Function LoadWebCSVGUI {
-	ShowConsole 5
+	ShowConsoleWin 5
 	If($ErrorChoice -eq 0) {
 		$Script:ErrorDi = 'Missing File BlackViper.csv -LoadCSV' ;$ErrMessage = "The File 'BlackViper.csv' is Missing.`nDo you want to download the file 'BlackViper.csv'?"
 	} ElseIf($ErrorChoice -eq 1) {
@@ -1861,7 +1903,12 @@ Function ShowHelp {
 Function ArgsAndVarSet {
 	If(Test-Path -LiteralPath $SettingPath -PathType Leaf){ Import-Clixml -LiteralPath $SettingPath  | ForEach-Object { Set-Variable $_.Var $_.Val -Scope Script } }
 	$Script:PCType = (Get-CimInstance -Class Win32_ComputerSystem).PCSystemType
-	If($PCType -ne 2){ $Script:IsLaptop = '-Desk' } Else{ $Script:IsLaptop = '-Lap' }
+	If($PCType -ne 2) {
+		$Script:IsLaptop = '-Desk'
+	} Else {
+		$Script:IsLaptop = '-Lap'
+		If($LaptopTweaked -ne 1 -and $Black_Viper -ge 2){ $Script:Black_Viper = 0 }
+	}
 	If($PassedArg.Length -gt 0){ GetArgs }
 
 	$Script:WinSku = (Get-CimInstance Win32_OperatingSystem).OperatingSystemSKU
