@@ -32,7 +32,7 @@ PPS. My Thanks goes out to all that have helped in any way.
 <br/>
 
 **_Need Files_** <br/>
-[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `104.0 KB`<br/>
+[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `105.0 KB`<br/>
 [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `6.84 KB` (Not the same as the one on BlackViper's Website)<br/>
 
 **Recommended Files** <br/>
@@ -99,6 +99,7 @@ Use one of the following Methods you can
 | -snis     | Shows not installed services (that can be changed)                             |  |
 | -sss      | Show Skipped Services                                                         |   |
 | -diag     | Shows some diagnostic information on error messages                            | **Stops automation** |
+| -diagf      | Forced diagnostic information, Script does nothing else                 |  No changes will be done     |
 | -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default) |
 | -baf      | File of all the services before and after the script                 | `Services-Before.log` and `Services-After.log`    |
 | -dry      | Runs script and shows what will be changed if ran normaly                     | **No Services are changes** |
@@ -153,6 +154,9 @@ This file will <br/>
 
 **Q:** The Run button is disabled what do i do? <br/>
 **A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).
+
+**Q:** I am getting 'Run is Disabled due to Edition check' can you help? <br/>
+**A:** Double check the requirements above, If you meet them. Please run the script with the switch '-diagf' or click the 'Show Diagnostic' in Script's GUI. With the Result given and post it as an issue or E-Mail me the information <br/>
 
 **Q:** The script wont run, can you help me? <br/>
 **A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.
