@@ -6,7 +6,7 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)<br/>
 
 **Current Version** <br/>
-**Script:** `5.2.0` (August 21, 2018) <br/>
+**Script:** `5.2.1` (August 26, 2018) <br/>
 **Service:** `4.0` (May 29, 2018) -April 2018 Update <br/>
 
 # Description
@@ -70,7 +70,7 @@ Select the options you want and then click run script<br/>
 
 # Advanced_Usage
 Use one of the following Methods you can 
-1. Run script or bat file with one (or more) of the switches below
+1. Run script file with one (or more) of the switches below
 2. Edit the script (bottom of file) to change the values
 3. Edit the bat file (top of file) to change the values to add the switch
 
@@ -111,8 +111,6 @@ Switch Examples: <br/>
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv` <br/>
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default` <br/>
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec` <br/>
-`_Win10-BlackViper.bat -Set Default` <br/>
-`_Win10-BlackViper.bat -auto -use -tweaked -sec` <br/>
 ******
 # Update.Bat
 This file is EXACTLY the same as the one in my other Repo
