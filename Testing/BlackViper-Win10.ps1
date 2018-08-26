@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '5.2.0'
-$Script_Date = 'Aug-21-2018'
+$Script_Version = '5.2.1'
+$Script_Date = 'Aug-26-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -536,7 +536,7 @@ Function GuiStart {
 			</TabItem>
 			<TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
-					<DataGrid Name="dataGrid" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,47,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+					<DataGrid Name="dataGrid" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,47,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
 						<DataGrid.RowStyle>
 							<Style TargetType="{x:Type DataGridRow}">
 								<Style.Triggers>
@@ -737,14 +737,16 @@ Function GuiStart {
 		}
 	})
 
+	$WPF_dataGrid.Add_PreviewMouseWheel({ $MouseScroll = $True })
+
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
-		If($WPF_dataGrid.SelectedItem) {
+		If($WPF_CustomBVCB.Checked -and !$MouseScroll -and $WPF_dataGrid.SelectedItem) {
 			$CurrObj = $WPF_dataGrid.CurrentItem
 			If($CurrObj.CurrType -eq $CurrObj.BVType){ $CurrObj.Matches = $True } Else{ $CurrObj.Matches = $False }
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
 			$WPF_dataGrid.ItemsSource = $DataGridListCust
-			$WPF_dataGrid.Items.Refresh()
 		}
+		$MouseScroll = $False
 	}
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::CheckedEvent,$DGclickEvent)
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::UnCheckedEvent,$DGclickEvent)
@@ -1510,7 +1512,7 @@ Function TBoxMessage([String]$msg,[Int]$clr) {
 Function TBoxMessageL([String]$msg1,[String]$msg2) {
 	$WPF_ServiceListing.Dispatcher.invoke(
 		[action]{
-			$Run = New-Object System.Windows.Documents.Run 
+			$Run = New-Object System.Windows.Documents.Run
 			$Run.Foreground = $colorsGUI[14]
 			$Run.Text = $msg1
 			$WPF_ServiceListing.Inlines.Add($Run)
