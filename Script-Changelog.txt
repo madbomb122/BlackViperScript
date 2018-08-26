@@ -1,4 +1,10 @@
 -----------------------------------------------------------------------------------
+5.2.1 (08-26-2018)
+
+Fixed Mouse Scroll Crash Issue on 'Service Table'
+Made the first 2 columns in 'Service Table' stay stay in place when you scroll horizontally
+
+-----------------------------------------------------------------------------------
 5.2.0 (08-21-2018)
 
 Fixed Issue with using using the 'Custom Service' option in service tab didnt work
