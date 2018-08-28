@@ -81,7 +81,7 @@ Select the options you want and then click run script
 
 ## Advanced Usage
 Use one of the following Methods you can 
-1. Run script file with one (or more) of the switches below
+1. Run script or bat file with one (or more) of the switches below
 2. Edit the script (bottom of file) to change the values
 3. Edit the bat file (top of file) to change the values to add the switch
 
@@ -122,6 +122,8 @@ Switch Examples:
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv`   
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default`   
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec`   
+`_Win10-BlackViper.bat -Set Default`   
+`_Win10-BlackViper.bat -auto -use -tweaked -sec`
 
 ******
 ## Update.Bat
