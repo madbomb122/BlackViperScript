@@ -1,8 +1,12 @@
 -----------------------------------------------------------------------------------
-5.2.1 (08-26-2018)
+5.2.2 (08-28-2018)
 
 Fixed Mouse Scroll Crash Issue on 'Service Table'
 Made the first 2 columns in 'Service Table' stay stay in place when you scroll horizontally
+
+Fixed Issue with msg1 showing in some output instead of proper output (thanks to zoulztealer for letting me know)
+Fixed an Issue with devlog
+Devlog Checkbox now disables all item it changes when it's enabled (and vice versa)
 
 -----------------------------------------------------------------------------------
 5.2.0 (08-21-2018)
