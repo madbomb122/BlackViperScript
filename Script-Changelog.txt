@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.2.3 (09-01-2018)
+5.2.4 (09-02-2018)
 
 Fixed Mouse Scroll Crash Issue on 'Service Table'
 Made the first 2 columns in 'Service Table' stay stay in place when you scroll horizontally
@@ -12,6 +12,9 @@ Internal Script Changes
 Dry Run/Dev Log now shows # for what will be Changed, Skipped, and Already (like in non Dry Run)
 Added in 'Service Table' State Column (Will say if service is Running or Stopped)
 Fixed bug were Already Disabled Services would not be Stopped (When 'Stop Disabled Services' is Enabled)
+
+Fixed some Display Issues (used old commands that didnt work)
+Fixed a Check for Update Issue
 
 -----------------------------------------------------------------------------------
 5.2.0 (08-21-2018)
