@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '5.2.3'
-$Script_Date = 'Sept-01-2018'
+$Script_Version = '5.2.4'
+$Script_Date = 'Sept-02-2018'
 $Release_Type = 'Stable'
 ##########
 
@@ -255,6 +255,7 @@ $Script:LaptopTweaked = 0
 $Script:ErrCount = $error.Count
 $Script:GuiSwitch = $False
 $Script:StopWatch = New-Object System.Diagnostics.Stopwatch
+$Script:ScriptUpdateing = $False
 
 ##########
 # Pre-Script -End
@@ -311,25 +312,25 @@ Function MenuBlankLine {
 
 Function DisplayOutLML {
 	Param (
-		[Alias ("T")] [String[]]$Text,
-		[Alias ("C")] [Int[]]$Color = 14,
+		[Alias ("T")] [String]$Text,
+		[Alias ("C")] [Int]$Color = 14,
 		[Alias ("L")] [Switch]$Log
 	)
-	DisplayOut '| ',$Text.PadRight(50),' |' -C 14,$Color,14 -L:$Log
+	DisplayOut '| ',"$Text".PadRight(50),' |' -C 14,$Color,14 -L:$Log
 }
 
 Function Error_Top_Display {
 	Clear-Host
 	DiagnosticCheck 0
-	MenuBlankLineLog -L
+	MenuLine -L
 	DisplayOutLML (''.PadRight(22)+'Error') -C 13 -L
-	MenuBlankLineLog -L
+	MenuLine -L
 	MenuBlankLine -L
 }
 
 Function Error_Bottom {
 	MenuBlankLine -L
-	MenuBlankLineLog -L
+	MenuLine -L
 	If($Diagnostic -eq 1){ DiagnosticCheck 0 }
 	AutomatedExitCheck 1
 }
@@ -638,10 +639,7 @@ Function GuiStart {
 								<DataGridTemplateColumn.CellTemplate><DataTemplate>
 									<ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
 								</DataGridTemplateColumn>
-							<DataGridTemplateColumn Header="State" Width="80" SortMemberPath="SrvState" CanUserSort="True">
-								<DataGridTemplateColumn.CellTemplate><DataTemplate>
-									<ComboBox ItemsSource="{Binding SrvStateListDG}" Text="{Binding Path=SrvState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
+							<DataGridTextColumn Header="State" Width="70" Binding="{Binding SrvState}" CanUserSort="True" IsReadOnly="True"/>
 							<DataGridTextColumn Header="Description" Width="120" Binding="{Binding SrvDesc}" CanUserSort="True" IsReadOnly="True"/>
 							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="True" IsReadOnly="True"/>
 						</DataGrid.Columns>
@@ -755,7 +753,7 @@ Function GuiStart {
 	[System.Collections.ArrayList]$Script:DataGridListBlank = @{}
 
 	$Form.add_closing({
-		If($RanScript -ne 1) {
+		If($RanScript -ne 1 -and !$ScriptUpdateing) {
 			If([windows.forms.messagebox]::show('Are you sure you want to exit?','Exit','YesNo') -eq 'No'){ $_.cancel = $True }
 		}
 		SaveSetting
@@ -1195,13 +1193,13 @@ Function UpdateCheckAuto {
 		DisplayOut '|',' 2. Change ','InternetCheck',' in Script file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 		DisplayOut '|',' 3. Change ','InternetCheck',' in bat file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 		MenuBlankLine -L
-		MenuBlankLineLog -L
+		MenuLine -L
 		If(!(Test-Path -LiteralPath $ServiceFilePath -PathType Leaf)) {
 			MenuBlankLine -L
 			DisplayOut '|',' The File ','BlackViper.csv',' is missing and the script  ','|' -C 14,2,15,2,14 -L
 			DisplayOutLML "can't run w/o it." -C 2 -L
 			MenuBlankLine -L
-			MenuBlankLineLog -L
+			MenuLine -L
 			AutomatedExitCheck 1
 		} Else {
 			AutomatedExitCheck 0
@@ -1230,7 +1228,7 @@ Function UpdateCheck([Int]$USwitch) {
 	} ElseIf($USwitch -eq 2) {
 		$SerCheck = 0 ;$SrpCheck = 1
 	} ElseIf($USwitch -eq 3) {
-		$SerCheck = 1 ;$SrpCheck = 3
+		$SerCheck = 1 ;$SrpCheck = 1
 	}
 
 	If($SerCheck -eq 1 -or $ServiceVerCheck -eq 1) {
@@ -1265,7 +1263,7 @@ Function UpdateCheck([Int]$USwitch) {
 		If($WebScriptVer -gt $Script_Version){
 			$Choice = 'Yes'
 			If($Switch -eq 1){ $Choice = [windows.forms.messagebox]::show("Update Script File from $Script_Version to $WebScriptVer ?",'Update Found','YesNo') | Out-Null }
-			If($Choice -eq 'Yes'){ ScriptUpdateFun } ElseIf($Message -eq ''){ $Switch = 0 }
+			If($Choice -eq 'Yes'){ ScriptUpdateFun ;$ScriptUpdateing = $True } ElseIf($Message -eq ''){ $Switch = 0 }
 		} ElseIf($Switch -eq 1) {
 			If($Message -eq ''){ $Message = 'No Script update Found.' } Else{ $Message = 'Congrats you have the latest Service and Script version.' }
 		}
@@ -1275,18 +1273,19 @@ Function UpdateCheck([Int]$USwitch) {
 
 Function UpdateDisplay([String]$FullVer,[String]$DFilename) {
 	Clear-Host
-	MenuBlankLineLog -L
+	MenuLine -L
+	MenuBlankLine -L
 	DisplayOutLML (''.PadRight(18)+'Update Found!') -C 13 -L
-	MenuBlankLineLog -L
 	MenuBlankLine -L
 	DisplayOut '|',' Downloading version ',"$FullVer".PadRight(31),'|' -C 14,15,11,14 -L
-	DisplayOut '|',' Will run ',$DFilename.PadRight(42),'|' -C 14,15,11,14 -L
+	DisplayOut '|',' Will run ',"$DFilename".PadRight(42),'|' -C 14,15,11,14 -L
 	DisplayOutLML 'after download is complete.' -C 15 -L
 	MenuBlankLine -L
-	MenuBlankLineLog -L
+	MenuLine -L
 }
 
 Function ScriptUpdateFun {
+	$Script:ScriptUpdateing = $True
 	$FullVer = "$WebScriptVer.$WebScriptMinorVer"
 	$UpdateFile = $filebase + 'Update.bat'
 	$UpArg = ''
@@ -1322,7 +1321,7 @@ Function ScriptUpdateFun {
 		$UpArg += '-u -bv '
 		If($Release_Type -ne 'Stable'){ $UpArg += '-test ' }
 		UpdateDisplay $FullVer $DFilename
-		cmd.exe /c "$UpdateFile $UpArg"
+		start-process "cmd.exe /c" "$UpdateFile $UpArg"
 	} Else {
 		$DFilename = 'BlackViper-Win10-Ver.' + $FullVer
 		If($Release_Type -ne 'Stable') {
@@ -1341,7 +1340,7 @@ Function ScriptUpdateFun {
 				MenuBlankLine -L
 				DisplayOutLML 'Updated bat file with new script file name.' 13 -L
 				MenuBlankLine -L
-				MenuBlankLineLog -L
+				MenuLine -L
 			}
 		}
 		Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$WebScriptFilePath`" $UpArg" -Verb RunAs
@@ -1614,7 +1613,6 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
 		If($ServiceName -Like '*_*'){ $ServiceName = (Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name).Name }
 		$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
-		$State = $item.SrvState
 		If($ServiceName -eq $null -or $null -eq $ServiceName) {
 			$ServiceTypeNum = 9
 		} ElseIf($ServiceTypeNum -eq 0) {
@@ -1766,10 +1764,9 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 	} Else {
 		$Script:ErrorDi = 'BlackViper.csv Not Valid for current Update' ;$Pick = ' needs to be Updated.'
 	}
-	$Pick = "$Pick".PadRight(28)
 	While($LoadWebCSV -ne 'Out') {
 		Error_Top_Display
-		DisplayOut '|',' The File ','BlackViper.csv',$Pick,'|' -C 14,2,15,2,14 -L
+		DisplayOut '|',' The File ','BlackViper.csv',"$Pick".PadRight(28),'|' -C 14,2,15,2,14 -L
 		MenuBlankLine
 		DisplayOut '|',' Do you want to download ','BlackViper.csv',' ?           ','|' -C 14,2,15,2,14 -L
 		MenuBlankLine
@@ -1840,7 +1837,7 @@ Function PreScriptCheck {
 		Error_Top_Display
 		DisplayOutLML " Script won't run due to the following problem(s)" 2 -L
 		MenuBlankLine -L
-		MenuBlankLineLog -L
+		MenukLine -L
 		If($EditionCheck -eq 'Fail') {
 			$EBCount++
 			MenuBlankLine -L
@@ -1861,7 +1858,7 @@ Function PreScriptCheck {
 			DisplayOut '|','  3. Change ','EditionCheck',' in script file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  4. Change ','Skip_EditionCheck',' in bat file'.PadRight(23),'|' -C 14,2,15,2,14 -L
 			MenuBlankLine -L
-			MenuBlankLineLog -L
+			MenuLine -L
 		}
 		If($BuildCheck -eq 'Fail') {
 			$EBCount++
@@ -1876,7 +1873,7 @@ Function PreScriptCheck {
 			DisplayOut '|','  1. Run Script or bat file with ','-sbc',' argument'.PadRight(15),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  2. Change ','BuildCheck',' in script file'.PadRight(30),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  3. Change ','Skip_BuildCheck',' in bat file'.PadRight(25),'|' -C 14,2,15,2,14 -L
-			MenuBlankLineLog -L
+			MenuLine -L
 		}
 		AutomatedExitCheck 1
 	}
