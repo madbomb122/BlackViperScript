@@ -1,8 +1,6 @@
 @Echo off
-:: Version 1.3.0
-:: December 14th, 2017
-
-SETLOCAL ENABLEDELAYEDEXPANSION
+:: Version 1.3.5
+:: September 2nd, 2017
 
 Set FileDir=%~dp0
 Set URL_Base=https://raw.githubusercontent.com/madbomb122/
@@ -17,6 +15,8 @@ Set CheckUpdateBoth=no
 Set BatDownload=no
 Set TestV=no
 Set MiscArg=
+
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 if [%1]==[] (
 	goto Check4Script
@@ -78,17 +78,17 @@ goto Next
 
 :BV
 	Set ScriptFileName=BlackViper-Win10.ps1
-	Set FilePath=%FileDir%%ScriptFileName%
+	Set FilePath=!FileDir!!ScriptFileName!
 	Set ScriptUrl=!URL_Base!BlackViperScript/master/
 	If %TestV%==yes Set ScriptUrl=!ScriptUrl!Testing/
-	Set ScriptUrl=!ScriptUrl!%ScriptFileName%
+	Set ScriptUrl=!ScriptUrl!!ScriptFileName!
 	Echo Downloading Black Viper Script
 	::Echo from !ScriptUrl!
-	Echo to %FilePath%
+	Echo to !FilePath!
 	Echo.
 	powershell -Command "Invoke-WebRequest !ScriptUrl! -OutFile !FilePath!"
 	If %UpdateArg%==no (
-		Set ServiceFilePath=%FileDir%BlackViper.csv
+		Set ServiceFilePath=!FileDir!BlackViper.csv
 		Set ServiceUrl=!URL_Base!BlackViperScript/master/BlackViper.csv
 		Echo Downloading Black Viper Service File
 		::Echo from !ServiceUrl!
@@ -96,7 +96,7 @@ goto Next
 		Echo.
 		powershell -Command "Invoke-WebRequest !ServiceUrl! -OutFile !ServiceFilePath!"
 		If %BatDownload%==yes (
-			Set BatFilePath=%FileDir%_Win10-BlackViper.bat
+			Set BatFilePath=!FileDir!_Win10-BlackViper.bat
 			Set BatUrl=!URL_Base!BlackViperScript/master/_Win10-BlackViper.bat
 			Echo Downloading Black Viper Script Bat File
 			::Echo from !BatUrl!
@@ -167,17 +167,17 @@ goto Next
 
 :W10
 	Set ScriptFileName=Win10-Menu.ps1
-	Set FilePath=%FileDir%%ScriptFileName%
+	Set FilePath=!FileDir!!ScriptFileName!
 	Set ScriptUrl=!URL_Base!Win10Script/master/
 	If %TestV%==yes Set ScriptUrl=!ScriptUrl!Testing/
-	Set ScriptUrl=!ScriptUrl!%ScriptFileName%
+	Set ScriptUrl=!ScriptUrl!!ScriptFileName!
 	Echo Downloading Windows 10 Script
 	::Echo from !ScriptUrl!
-	Echo to %FilePath%
+	Echo to !FilePath!
 	Echo.
 	powershell -Command "Invoke-WebRequest !ScriptUrl! -OutFile !FilePath!"
 	If %BatDownload%==yes (
-		Set BatFilePath=%FileDir%_Win10-Script-Run.bat
+		Set BatFilePath=!FileDir!_Win10-Script-Run.bat
 		Set BatUrl=!URL_Base!Win10Script/master/_Win10-Script-Run.bat
 		Echo Downloading Windows 10 Script Bat File
 		::Echo from !BatUrl!
@@ -260,7 +260,7 @@ goto Next
 	Echo -Both     Download BlackViper and Windows 10 Script
 	Echo -Test     Download the Test Version of Script
 	Echo -Run      Download then runs the script..Does not work with -Both
-	Echo -Bat      Download the bat file to run script easyer
+	Echo -Bat      Download the bat file to run script easier
 	goto:EOF
 
 :CheckRun
@@ -271,14 +271,14 @@ goto Next
 		goto W10LocalVer
 	)
 	If %UpdateArg%==yes (
-		PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '!FilePath!' !MiscArg!" -Verb RunAs
+		PowerShell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '!FilePath!' !MiscArg!" -Verb RunAs
 		Exit
 	)
 	If %RunArg%==yes (
 		If %DownloadBV-W10%==done (
 			Echo Cannot do a -Run with -Both
 		) else (
-			PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '!FilePath!'" -Verb RunAs
+			PowerShell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '!FilePath!'" -Verb RunAs
 		)
 		Exit
 	)
@@ -287,11 +287,11 @@ goto Next
 
 :Check4Script
 Set BVW10Script=0
-If Exist %FileDir%BlackViper-Win10.ps1 (
+If Exist !FileDir!BlackViper-Win10.ps1 (
 	Set BVScript=yes 
 	Set /a BVW10Script=!BVW10Script!+1
 )
-If Exist %FileDir%Win10-Menu.ps1 (
+If Exist !FileDir!Win10-Menu.ps1 (
 	Set W10Script=yes
 	Set /a BVW10Script=!BVW10Script!+1
 )
@@ -420,4 +420,4 @@ IF %ERRORLEVEL%==10 (
 	goto:EOF
 )
 
-ENDLOCAL DISABLEDELAYEDEXPANSION
+ENDLOCAL
