@@ -9,7 +9,7 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '5.2.3'
+$Script_Version = '5.2.4'
 $Script_Date = 'Sept-01-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
