@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.2.5 (09-02-2018)
+5.2.6 (09-03-2018)
 
 Fixed Mouse Scroll Crash Issue on 'Service Table'
 Made the first 2 columns in 'Service Table' stay stay in place when you scroll horizontally
@@ -15,8 +15,11 @@ Fixed bug were Already Disabled Services would not be Stopped (When 'Stop Disabl
 
 Fixed some Display Issues (used old commands that didnt work)
 Fixed a Check for Update Issue
+Fixed issue were old script window didnt close after update
 
-Ability to set Service state in 'Service Table' (when you run the script) -in Testing
+Ability to set Service state in 'Service Table' (when you run the script)
+
+Service State is loaded along with Service Configuration (Custom and Backup files Only)
 
 -----------------------------------------------------------------------------------
 5.2.0 (08-21-2018)
