@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.blackviper.com/
 #
-$Script_Version = '5.2.5'
-$Script_Date = 'Sept-02-2018'
+$Script_Version = '5.2.6'
+$Script_Date = 'Sept-03-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -175,12 +175,7 @@ $Service_Url = $URL_Base + 'BlackViper.csv'
 
 If([System.Environment]::Is64BitProcess){ $OSType = 64 }
 
-Function GetServiceEnd {
-	$ServiceEndL = Get-Service '*_*' | Select-Object Name | Foreach-Object { $_.Name.Split('_')[1] }
-	ForEach($End in $ServiceEndL){ If($Tmp1 -eq $End){ Return $Tmp1 } Else{ $Tmp1 = $End } }
-	Return $ServiceEndL[0]
-}
-$Script:ServiceEnd = GetServiceEnd
+$Script:ServiceEnd = Get-Service '*_*' | Select-Object Name | ForEach-Object { $_.Name.Split('_')[-1] } | Group-Object | Sort-Object Count -Descending | Select-Object -First 1 -ExpandProperty Name
 
 $colors = @(
 'black',      #0
@@ -272,7 +267,7 @@ Function ThanksDonate {
 }
 
 Function GetCurrServices{ $Script:CurrServices = Get-CimInstance Win32_service | Select-Object DisplayName, Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} }, @{ Name = 'Status' ;Expression = {$_.State} } }
-Function GetAllServices{ $Script:AllService = $CurrServices | Select-Object Name, StartType }
+Function GetAllServices{ $Script:AllService = $CurrServices | Select-Object Name, StartType, Status }
 Function OpenWebsite([String]$Url){ [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile([String]$Url,[String]$FilePath){ (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function ShowInvalid([Int]$InvalidA){ If($InvalidA -eq 1){ Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return 0 }
@@ -788,7 +783,7 @@ Function GuiStart {
 				$ServiceCBList = $WPF_dataGrid.Items.Where({$_.CheckboxChecked -eq $True})
 				ForEach($item In $ServiceCBList){
 					$BVTypeS = BVTypeNameToNumb $item.BVType
-					$Script:csvTemp += [PSCustomObject] @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS ;SrvState = $item.SrvState }
+					$Script:csvTemp += [PSCustomObject] @{ ServiceName = $item.ServiceName ;StartType = $BVTypeS ;Status = $item.SrvState }
 				}
 				[System.Collections.ArrayList]$Script:csv = $Script:csvTemp
 			}
@@ -1047,7 +1042,7 @@ Function GenerateServices {
 #	StartMode = StartType
 #	Get-CimInstance Win32_service | Select-Object DisplayName, Name, StartMode, Description, PathName
 
-	If($SrvCollected -ne 0){ $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName, State ;$Script:SrvCollected = 1 }
+	If($SrvCollected -ne 0){ $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName, @{ Name = 'Status' ;Expression = {$_.State} } ;$Script:SrvCollected = 1 }
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
 		If($Script:ServiceGen -eq 0){ $Script:ServiceImport = 1 }
@@ -1085,7 +1080,8 @@ Function GenerateServices {
 			$tmp = $ServiceInfo -match $ServiceName
 			$SrvDescription = $tmp.Description
 			If($SrvDescription -Is [system.array]){ $SrvDescription = $SrvDescription[0] }
-			$SrState = $tmp.State
+			$SrState = $item.Status
+			If($SrState -eq $null){ $SrState = $tmp.Status }
 			$SrvPath = $tmp.PathName
 			If($SrvPath -Is [system.array]){ $SrvPath = $SrvPath[0] }
 			$ServiceTypeNum = $item.$BVService
@@ -1133,7 +1129,7 @@ Function BVTypeNameToNumb([String]$Name) {
 	If($Name -eq 'Skip'){ Return 0 }
 	If($Name -eq 'Disabled'){ Return 1 }
 	If($Name -eq 'Manual'){ Return 2 }
-	If($Name -eq 'Automatic'){ Return 3 }
+	If($Name -eq 'Automatic' -or 'Auto' ){ Return 3 }
 	Return 4
 }
 
@@ -1276,7 +1272,7 @@ Function UpdateCheck([Int]$USwitch) {
 }
 
 Function UpdateDisplay([String]$FullVer,[String]$DFilename) {
-	Clear-Host
+	#Clear-Host
 	MenuLine -L
 	MenuBlankLine -L
 	DisplayOutLML (''.PadRight(18)+'Update Found!') -C 13 -L
@@ -1383,7 +1379,7 @@ Function Save_Service([String]$SavePath) {
 			$ServiceName = $item.ServiceName
 			$BVTypeS = BVTypeNameToNumb $item.BVType
 			If($ServiceName -Like "*_$ServiceEnd"){ $ServiceName = $ServiceName.Split('_')[0] + '_?????' }
-			$SaveService += [PSCustomObject] @{ ServiceName = $ServiceName ;StartType = $BVTypeS }
+			$SaveService += [PSCustomObject] @{ ServiceName = $ServiceName ;StartType = $BVTypeS ;Status = $item.SrvState }
 		}
 	} Else {
 		If($AllService -eq $null){ $ServiceSavePath += '-Service-Backup.csv' ;GetAllServices } Else{ $ServiceSavePath += '-Custom-Service.csv' }
@@ -1412,13 +1408,13 @@ Function GenerateSaveService {
 				$StartType = 1
 			} ElseIf($tmp -eq 'Manual') {
 				$StartType = 2
-			} ElseIf($tmp -eq 'Automatic') {
+			} ElseIf($tmp -eq 'Automatic' -or 'Auto') {
 				If(AutoDelayTest $ServiceName -eq 1){ $StartType = 4 } Else{ $StartType = 3 }
 			} Else {
 				$StartType = $tmp
 			}
 			If($ServiceName -Like "*_$ServiceEnd"){ $ServiceName = $ServiceName.Split('_')[0] + '_?????' }
-			$TMPServiceL += [PSCustomObject] @{ ServiceName = $ServiceName ;StartType = $StartType }
+			$TMPServiceL += [PSCustomObject] @{ ServiceName = $ServiceName ;StartType = $StartType ;Status = $Service.Status }
 		}
 	}
 	Return $TMPServiceL
@@ -1443,7 +1439,7 @@ Function GenerateRegistryRegular([String]$TempFP) {
 		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 		If(!($Skip_Services -Contains $ServiceName)) {
 			$tmp = $Service.StartType
-			If($tmp -eq 'Disabled'){ $ServiceTypeNum = 4 } ElseIf($tmp -eq 'Manual'){ $ServiceTypeNum = 3 } ElseIf($tmp -eq 'Automatic'){ $ServiceTypeNum = 2 }
+			If($tmp -eq 'Disabled'){ $ServiceTypeNum = 4 } ElseIf($tmp -eq 'Manual'){ $ServiceTypeNum = 3 } ElseIf($tmp -eq 'Automatic' -or 'Auto' ){ $ServiceTypeNum = 2 }
 			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
 			Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -LiteralPath $TempFP -Append
 			Write-Output $Num | Out-File -LiteralPath $TempFP -Append
@@ -1592,7 +1588,7 @@ Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	} ElseIf($Black_Viper -eq 3) {
 		$ServiceSetOpt = "Tweaked-Desk$FullMin" ;$SrvSetting = 'Tweaked'
 	}
-	Clear-Host
+	#Clear-Host
 	If($LogBeforeAfter -eq 2){ DiagnosticCheck 1 }
 	ServiceBAfun 'Services-Before'
 	ServiceSet $ServiceSetOpt $SrvSetting
@@ -1617,7 +1613,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
 		If($ServiceName -Like '*_*'){ $ServiceName = (Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name).Name }
 		$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
-		$State = $item.SrvState
+		$State = $item.Status
 		If($ServiceName -eq $null -or $null -eq $ServiceName) {
 			$ServiceTypeNum = 9
 		} ElseIf($ServiceTypeNum -eq 0) {
