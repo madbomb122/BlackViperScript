@@ -22,6 +22,7 @@ Ability to set Service state in 'Service Table' (when you run the script)
 Service State is loaded along with Service Configuration (Custom and Backup files Only)
 
 Fixed an accidental Disable Script Update
+Moved some items around in the Script Options tab
 Added Switches:
   -css             Change State of Service
   -sds             Stop disabled Service
