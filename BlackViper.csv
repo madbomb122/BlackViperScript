@@ -1,5 +1,5 @@
 ServiceName,Def-Home-Full,Def-Home-Min,Def-Pro-Full,Def-Pro-Min,Safe-Desk-Full,Safe-Desk-Min,Safe-Lap-Full,Safe-Lap-Min,Tweaked-Desk-Full,Tweaked-Desk-Min
-#ServiceVersion,4.0,May-29-2018,GernetatedByMadBomb122,0,0,0,0,0,0,0
+#ServiceVersion,4.1,Sept-05-2018,GeneratedByMadBomb122,0,0,0,0,0,0,0
 AxInstSV,2,0,2,0,2,0,2,0,2,0
 AJRouter,2,2,2,2,2,2,2,2,1,1
 AppReadiness,2,0,2,0,2,0,2,0,2,0
@@ -9,7 +9,7 @@ Appinfo,2,0,2,0,2,0,2,0,2,0
 ALG,2,2,2,2,1,1,1,1,1,1
 AppMgmt,0,0,2,2,2,2,2,2,1,1
 AssignedAccessManagerSvc,0,0,2,0,2,0,2,0,2,0
-aspnet_state,0,0,0,0,0,0,0,0,0,0
+aspnet_state,2,0,2,0,2,0,2,0,2,0
 tzautoupdate,1,0,1,0,1,0,1,0,1,0
 BthAvctpSvc,2,2,2,2,2,2,2,2,1,1
 BITS,4,0,4,0,4,0,4,0,4,0
