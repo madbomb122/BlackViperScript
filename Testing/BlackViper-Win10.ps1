@@ -10,7 +10,7 @@
 # Website: http://www.blackviper.com/
 #
 $Script_Version = '5.2.8'
-$Script_Date = 'Sept-06-2018'
+$Script_Date = 'Sept-07-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -1660,7 +1660,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 				$ServiceTypeNum = 9
 				$BVSkipped++
 			} ElseIf($ServiceCurrType -eq 'Denied') {
-				If($Release_Type -ne 'Stable'){ $DispTemp = " $ServiceCommName ($ServiceName) can't be changed." ;$DispTempC += 14 }
+				If($Release_Type -ne 'Stable'){ $DispTempT += " $ServiceCommName ($ServiceName) can't be changed." ;$DispTempC += 14 }
 				$ServiceTypeNum = 9
 			}
 			If($DryRun -ne 1) {
