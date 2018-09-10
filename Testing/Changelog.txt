@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.2.8 (09-07-2018)
+5.2.9 (09-10-2018)
 
 Fixed Mouse Scroll Crash Issue on 'Service Table'
 Made the first 2 columns in 'Service Table' stay stay in place when you scroll horizontally
@@ -31,6 +31,8 @@ Added ability to see Copyright/License Information from ToS, by inputting L
 Reorginized the list of switches displayed in '-help'/'-h'
 Added Switch:
   -copy            Shows Copyright/License Information, then exits script
+
+Various internal changes
 
 -----------------------------------------------------------------------------------
 5.2.0 (08-21-2018)
