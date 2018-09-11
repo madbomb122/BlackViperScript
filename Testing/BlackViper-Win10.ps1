@@ -383,6 +383,7 @@ Function TOSDisplay([Switch]$C) {
 }
 
 Function TOS {
+	$Invalid = $False			  
 	While($TOS -ne 'Out') {
 		TOSDisplay -c:$CopyR
 		$Invalid = ShowInvalid $Invalid
@@ -1066,17 +1067,15 @@ Function GenerateServices {
 
 	ForEach($item In $ServCB) {
 		$ServiceName = $item.ServiceName
-		If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
+		If($ServiceName -Like '*_*'){ $ServiceName = ($CurrServices.Where{$_.Name -like ($ServiceName.Split('_')[0] + '_*')}).Name }
 		If($CurrServices.Name -Contains $ServiceName) {
-			$tmp = $CurrServices -match $ServiceName
-			$SrvDescription = $tmp.Description
-			If($SrvDescription -Is [system.array]){ $SrvDescription = $SrvDescription[0] }
-			$SrState = $tmp.Status
-			If($SrState -Is [system.array]){ $SrState = $SrState[0] }
-			$SrvPath = $tmp.PathName
-			If($SrvPath -Is [system.array]){ $SrvPath = $SrvPath[0] }
-			$ServiceTypeNum = $item.$BVService
+			$tmp = ($CurrServices.Where{$_.Name -eq $ServiceName})
+			$ServiceCommName = $tmp.DisplayName
 			$ServiceCurrType = $tmp.StartType
+			$SrState = $tmp.Status
+			$SrvDescription = $tmp.Description
+			$SrvPath = $tmp.PathName
+			$ServiceTypeNum = $item.$BVService
 			If($ServiceCurrType -eq 'Disabled') {
 				$ServiceCurrType = $ServicesTypeFull[1]
 			} ElseIf($ServiceCurrType -eq 'Manual') {
@@ -1093,9 +1092,6 @@ Function GenerateServices {
 				$checkbox = $True
 			}
 			$ServiceType = $ServicesTypeFull[$ServiceTypeNum]
-			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			$ServiceCommName = $tmp.DisplayName
-			If($ServiceCommName -Is [system.array]){ $ServiceCommName = $ServiceCommName[0] }
 			If($ServiceType -eq  $ServiceCurrType){ $Match = $True } Else{ $Match = $False }
 			$Script:DataGridListOrig += [PSCustomObject] @{ CheckboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvStateListDG = $SrvStateList ;SrvState = $SrState ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
 			$Script:DataGridListCust += [PSCustomObject] @{ CheckboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvStateListDG = $SrvStateList ;SrvState = $SrState ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
@@ -1413,7 +1409,6 @@ Function GenerateRegistryRegular([String]$TempFP) {
 	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -LiteralPath $TempFP
 	ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
-		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
 		If(!($Skip_Services -Contains $ServiceName)) {
 			$tmp = $Service.StartType
 			If($tmp -eq 'Disabled'){ $ServiceTypeNum = 4 } ElseIf($tmp -eq 'Manual'){ $ServiceTypeNum = 3 } ElseIf($tmp -In 'Automatic','Auto' ){ $ServiceTypeNum = 2 }
@@ -1433,8 +1428,7 @@ Function GenerateRegistryCustom([String]$TempFP) {
 		$ServiceName = $item.ServiceName
 		$ServiceTypeNum = BVTypeNameToNumb $item.BVType
 		If($ServiceTypeNum -ne 0) {
-			If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
-			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+			If($ServiceName -Like '*_*'){ $ServiceName = ($CurrServices.Where{$_.Name -like ($ServiceName.Split('_')[0] + '_*')}).Name }
 			If(!($Skip_Services -Contains $ServiceName)) {
 				$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
 				Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -LiteralPath $TempFP -Append
@@ -1584,8 +1578,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		$ServiceTypeNum = $item.$BVService
 		$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 		$ServiceName = $item.ServiceName
-		If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
-		If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
+		If($ServiceName -Like '*_*'){ $ServiceName = ($CurrServices.Where{$_.Name -like ($ServiceName.Split('_')[0] + '_*')}).Name }
 		$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
 		$ServiceCurrType = ServiceCheck $ServiceName $ServiceType
 		$State = $item.Status
@@ -1754,6 +1747,7 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 	} Else {
 		$Script:ErrorDi = 'BlackViper.csv Not Valid for current Update' ;$Pick = ' needs to be Updated.'
 	}
+	$Invalid = $False
 	While($LoadWebCSV -ne 'Out') {
 		Error_Top
 		DisplayOut '|',' The File ','BlackViper.csv',"$Pick".PadRight(28),'|' -C 14,2,15,2,14 -L
