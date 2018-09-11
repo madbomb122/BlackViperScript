@@ -3,7 +3,7 @@ Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Working/Testing on (In Testing Script)
-Nothing ATM
+- [X] Ability to change service state (almost done)
 
 -------------------------------------------------------------------------------------------------------------
 # Codeing (Before Testing Phase)
@@ -11,4 +11,4 @@ Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
--[X] Ability to search service list table
+- [ ] Ability to search service list table
