@@ -9,7 +9,7 @@ To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122
 
 **Current Version**   
 **Script:** `5.2.4` (September 02, 2018)   
-**Service:** `4.1` (September 05, 2018) -April 2018 Update 
+**Service:** `4.1` (September 05, 2018) -April 2018 Update   
 **Update File:** `1.3.5` (September 02, 2018)   
 
 
@@ -38,11 +38,11 @@ PPS. My Thanks goes out to all that have helped in any way.
 **Make sure to LOOK at this**
 
 |            | Recommended Requirements         | AT YOUR OWN RISK* (See Note Below) |
-| :--------- | :--------------------------------| :--------------------------- |
-|**OS**      | Windows 10                       |                              |
-|**Bit**     | 64-bit (x64)                     | 32-bit (x86)                 |
-|**Edition** | Pro or Home                      | All Others                   |
-|**Build**   | Creator's Update                 | Pre-Creator's Update         |
+| :--------- | :--------------------------------| :--------------------------------- |
+|**OS**      | Windows 10                       |                                    |
+|**Bit**     | 64-bit (x64)                     | 32-bit (x86)                       |
+|**Edition** | Pro or Home                      | All Others                         |
+|**Build**   | Creator's Update or Newer        | Pre-Creator's Update               |
 
 
 **_Need Files_**   
@@ -167,6 +167,10 @@ This file will
          1. reddit /u/madbomb122 [https://www.reddit.com/user/madbomb122](https://www.reddit.com/user/madbomb122)  
          2. You can email me @ madbomb122@gmail.com.  
 **Note** Before contacting me, please make sure you have ALL the needed files and the size is right (Look above under requirements). 
+
+**Q:** Can I use a Backup File(s) on another computer?   
+**A:** You can use/load them on another computer, but be careful.   
+**Note** I would NOT use the reg file on another computer, since it may not all the same services.   
 
 **Q:** The Run button is disabled what do I do?   
 **A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).
