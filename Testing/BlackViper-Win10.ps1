@@ -276,7 +276,7 @@ Function AutomatedExitCheck([Int]$ExitBit) {
 	}
 }
 
-Function GetCurrServices{ $Script:CurrServices = Get-CimInstance Win32_service | Select-Object DisplayName, Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} }, @{ Name = 'Status' ;Expression = {$_.State} } }
+Function GetCurrServices{ $Script:CurrServices = Get-CimInstance Win32_service | Select-Object DisplayName, Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} }, @{ Name = 'Status' ;Expression = {$_.State} }, Description, PathName  }
 Function GetAllServices{ $Script:AllService = $CurrServices | Select-Object Name, StartType, Status }
 Function OpenWebsite([String]$Url){ [System.Diagnostics.Process]::Start($Url) }
 Function DownloadFile([String]$Url,[String]$FilePath){ (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
@@ -1034,7 +1034,6 @@ Function RunDisableCheck {
 }
 
 Function GenerateServices {
-	If($SrvCollected -ne 0){ $Script:ServiceInfo = Get-CimInstance Win32_service | Select-Object Name, Description, PathName, @{ Name = 'Status' ;Expression = {$_.State} } ;$Script:SrvCollected = 1 }
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
 	If($Black_Viper -eq $BVCount) {
 		If($Script:ServiceGen -eq 0){ $Script:ServiceImport = 1 }
@@ -1069,15 +1068,15 @@ Function GenerateServices {
 		$ServiceName = $item.ServiceName
 		If($ServiceName -Like '*_*'){ $ServiceName = Get-Service ($ServiceName.Split('_')[0] + '_*') | Select-Object Name }
 		If($CurrServices.Name -Contains $ServiceName) {
-			$tmp = $ServiceInfo -match $ServiceName
+			$tmp = $CurrServices -match $ServiceName
 			$SrvDescription = $tmp.Description
 			If($SrvDescription -Is [system.array]){ $SrvDescription = $SrvDescription[0] }
-			$SrState = $item.Status
-			If($SrState -eq $null){ $SrState = $tmp.Status }
+			$SrState = $tmp.Status
+			If($SrState -Is [system.array]){ $SrState = $SrState[0] }
 			$SrvPath = $tmp.PathName
 			If($SrvPath -Is [system.array]){ $SrvPath = $SrvPath[0] }
 			$ServiceTypeNum = $item.$BVService
-			$ServiceCurrType = ($CurrServices.Where{$_.Name -eq $ServiceName}).StartType
+			$ServiceCurrType = $tmp.StartType
 			If($ServiceCurrType -eq 'Disabled') {
 				$ServiceCurrType = $ServicesTypeFull[1]
 			} ElseIf($ServiceCurrType -eq 'Manual') {
@@ -1095,7 +1094,8 @@ Function GenerateServices {
 			}
 			$ServiceType = $ServicesTypeFull[$ServiceTypeNum]
 			If($ServiceName -Is [system.array]){ $ServiceName = $ServiceName[0] }
-			$ServiceCommName = ($CurrServices.Where{$_.Name -eq $ServiceName}).DisplayName
+			$ServiceCommName = $tmp.DisplayName
+			If($ServiceCommName -Is [system.array]){ $ServiceCommName = $ServiceCommName[0] }
 			If($ServiceType -eq  $ServiceCurrType){ $Match = $True } Else{ $Match = $False }
 			$Script:DataGridListOrig += [PSCustomObject] @{ CheckboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvStateListDG = $SrvStateList ;SrvState = $SrState ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
 			$Script:DataGridListCust += [PSCustomObject] @{ CheckboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvStateListDG = $SrvStateList ;SrvState = $SrState ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match }
