@@ -11,4 +11,4 @@ Nothing ATM
 
 -------------------------------------------------------------------------------------------------------------
 # Might add
--[ ] Ability to search service list table
+-[X] Ability to search service list table
