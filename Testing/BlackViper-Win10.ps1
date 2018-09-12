@@ -9,7 +9,7 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.2.10'
+$Script_Version = '5.2.11'
 $Script_Date = 'Sept-11-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
@@ -383,7 +383,7 @@ Function TOSDisplay([Switch]$C) {
 }
 
 Function TOS {
-	$Invalid = $False			  
+	$Invalid = $False
 	While($TOS -ne 'Out') {
 		TOSDisplay -c:$CopyR
 		$Invalid = ShowInvalid $Invalid
@@ -804,8 +804,9 @@ Function GuiStart {
 		}
 	})
 
+	$WPF_dataGrid.Add_PreviewMouseWheel({ $MouseScroll = $True })
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
-		If($WPF_CustomBVCB.Checked -and !$MouseScroll -and $WPF_dataGrid.SelectedItem) {
+		If($DataGridLCust -and !$MouseScroll -and $WPF_dataGrid.SelectedItem) {
 			$CurrObj = $WPF_dataGrid.CurrentItem
 			If($CurrObj.CurrType -eq $CurrObj.BVType){ $CurrObj.Matches = $True } Else{ $CurrObj.Matches = $False }
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
@@ -815,7 +816,6 @@ Function GuiStart {
 	}
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::CheckedEvent,$DGclickEvent)
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::UnCheckedEvent,$DGclickEvent)
-	$WPF_dataGrid.Add_PreviewMouseWheel({ $MouseScroll = $True })
 
 	$WPF_ServiceConfig.add_SelectionChanged({ HideShowCustomSrvStuff ;RunDisableCheck })
 	$WPF_EditionConfig.add_SelectionChanged({ RunDisableCheck })
@@ -1596,14 +1596,21 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		} ElseIf($ServiceTypeNum -In 1..4) {
 			If($ServicesTypeList -Contains $ServiceCurrType) {
 				$DispTemp = " $ServiceCommName ($ServiceName) - $ServiceCurrType -> $ServiceType"
-				If($DryRun -ne 1){ Set-Service $ServiceName -StartupType $ServiceType }
-				If($ServiceTypeNum -eq 4) {
-					$DispTemp += ' (Delayed)'
-					If($DryRun -ne 1){ AutoDelaySet $ServiceName 1 }
+				$Cha = $True
+				If($DryRun -ne 1) {
+					Try {
+						Set-Service $ServiceName -StartupType $ServiceType -ErrorAction Stop
+						If($ServiceTypeNum -eq 4){ AutoDelaySet $ServiceName 1 }
+						$DispTempC += 11
+						$BVChanged++
+					} Catch {
+						$DispTemp = "Unable to Change $ServiceCommName ($ServiceName)"
+						$DispTempC += 2
+						$Cha = $False
+					}
 				}
+				If($ServiceTypeNum -eq 4 -and $Cha){ $DispTemp += ' (Delayed)' }
 				$DispTempT += $DispTemp
-				$DispTempC += 11
-				$BVChanged++
 			} ElseIf($ServiceCurrType -eq 'Already') {
 				$ADT = AutoDelayTest $ServiceName
 				$DispTemp = " $ServiceCommName ($ServiceName) "
@@ -1634,35 +1641,45 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 				$ServiceTypeNum = 9
 			} ElseIf($ServiceCurrType -eq 'Xbox') {
 				$DispTempT += " $ServiceCommName ($ServiceName) is an Xbox Service and will be skipped"
-				$DispTempC += 2
+				$DispTempC += 14
 				$ServiceTypeNum = 9
 				$BVSkipped++
 			} ElseIf($ServiceCurrType -eq 'Denied') {
 				If($Release_Type -ne 'Stable'){ $DispTempT += " $ServiceCommName ($ServiceName) can't be changed." ;$DispTempC += 14 }
 				$ServiceTypeNum = 9
 			}
-			If($DryRun -ne 1) {
+			If($DryRun -ne 1 -and $ServiceName -ne $null) {
 				If(($StopDisabled -eq 1 -and $ServiceTypeNum -eq 1) -or $ChangeState -eq 1) {
 					If($State -eq 'Stopped') {
 						If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Running') {
-							$DispTempT += ' -Stopping Service'
-							$DispTempC += 13
-							Stop-Service $ServiceName
-							$BVStopped++
+							Try {
+								Stop-Service $ServiceName -ErrorAction Stop
+								$DispTempT += ' -Stopping Service'
+								$DispTempC += 13
+								$BVStopped++
+							} Catch {
+								$DispTempT += ' -Unable to Stop Service'
+								$DispTempC += 2
+							}
 						} Else {
 							$DispTempT += ' -Already Stopped'
 							$DispTempC += 11
 						}
-					}
-				} ElseIf($State -eq 'Running' -and $ChangeState -eq 1) {
-					If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Stopped') {
-						$DispTempT += ' -Starting Service'
-						$DispTempC += 11
-						Start-Service $ServiceName
-						$BVRunning++
-					} Else {
-						$DispTempT += ' -Already Started'
-						$DispTempC += 15
+					} ElseIf($State -eq 'Running' -and  $ChangeState -eq 1) {
+						If(($CurrServices.Where{$_.Name -eq $ServiceName}).Status -eq 'Stopped') {
+							Try {
+								Start-Service $ServiceName -ErrorAction Stop
+								$DispTempT += ' -Starting Service'
+								$DispTempC += 11
+								$BVRunning++
+							} Catch {
+								$DispTempT += ' -Unable to Start Service'
+								$DispTempC += 2
+							}
+						} Else {
+							$DispTempT += ' -Already Started'
+							$DispTempC += 15
+						}
 					}
 				}
 			}
