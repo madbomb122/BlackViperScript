@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.0'
-$Script_Date = 'Sept-14-2018'
+$Script_Version = '5.3.1'
+$Script_Date = 'Sept-15-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -223,6 +223,7 @@ $WinSkuList = @(48,49,98,100,101)
 $EBErrLst = @('Edition','Build','Edition & Build')
 $XboxServiceArr = @('XblAuthManager','XblGameSave','XboxNetApiSvc','XboxGipSvc','xbgm')
 $NetTCP = @('NetMsmqActivator','NetPipeActivator','NetTcpActivator')
+$FilterList = @('CheckboxChecked','CName','ServiceName','CurrType','BVType','SrvState','SrvDesc','SrvPath')
 $DevLogList = @('WPF_ScriptLog_CB','WPF_Diagnostic_CB','WPF_LogBeforeAfter_CB','WPF_DryRun_CB','WPF_ShowNonInstalled_CB','WPF_ShowAlreadySet_CB')
 
 $Script:FileBase = $PSScriptRoot + '\'
@@ -335,9 +336,9 @@ Function TOSBlankLine([Int]$BC){ DisplayOut $MBLine -C $BC }
 
 Function TOSDisplay([Switch]$C) {
 	If(!$C){ Clear-Host }
-	$BorderColor = 14
+	$BC = 14
 	If($Release_Type -ne 'Stable') {
-		$BorderColor = 15
+		$BC = 15
 		TOSLine 15
 		DisplayOut '|'.PadRight(22),'Caution!!!'.PadRight(31),'|' -C 15,13,15
 		TOSBlankLine 15
@@ -346,7 +347,7 @@ Function TOSDisplay([Switch]$C) {
 		TOSBlankLine 15
 	}
 	If($OSType -ne 64) {
-		$BorderColor = 15
+		$BC = 15
 		TOSLine 15
 		DisplayOut '|'.PadRight(22),'WARNING!!!'.PadRight(31),'|' -C 15,13,15
 		TOSBlankLine 15
@@ -354,20 +355,20 @@ Function TOSDisplay([Switch]$C) {
 		DisplayOut '|'.PadRight(16),'USE AT YOUR OWN RISK.'.PadRight(37),'|' -C 15,14,15
 		TOSBlankLine 15
 	}
-	TOSLine $BorderColor
-	DisplayOut '|'.PadRight(21),'Terms of Use'.PadRight(32),'|' -C $BorderColor,11,$BorderColor
-	TOSLine $BorderColor
-	TOSBlankLine $BorderColor
-	DisplayOut '|',' This program comes with ABSOLUTELY NO WARRANTY.    ','|' -C $BorderColor,2,$BorderColor
-	DisplayOut '|',' This is free software, and you are welcome to      ','|' -C $BorderColor,2,$BorderColor
-	DisplayOut '|',' redistribute it under certain conditions.'.PadRight(52),'|' -C $BorderColor,2,$BorderColor
-	TOSBlankLine $BorderColor
-	DisplayOut '|',' Read License file for full Terms.'.PadRight(52),'|' -C $BorderColor,2,$BorderColor
-	TOSBlankLine $BorderColor
-	DisplayOut '|',' Use the switch ','-copy',' to see License Information or ','|' -C $BorderColor,2,14,2,$BorderColor
-	DisplayOut '|',' enter ','L',' bellow.'.PadRight(44),'|' -C $BorderColor,2,14,2,$BorderColor
-	TOSBlankLine $BorderColor
-	TOSLine $BorderColor
+	TOSLine $BC
+	DisplayOut '|'.PadRight(21),'Terms of Use'.PadRight(32),'|' -C $BC,11,$BC
+	TOSLine $BC
+	TOSBlankLine $BC
+	DisplayOut '|',' This program comes with ABSOLUTELY NO WARRANTY.    ','|' -C $BC,2,$BC
+	DisplayOut '|',' This is free software, and you are welcome to      ','|' -C $BC,2,$BC
+	DisplayOut '|',' redistribute it under certain conditions.'.PadRight(52),'|' -C $BC,2,$BC
+	TOSBlankLine $BC
+	DisplayOut '|',' Read License file for full Terms.'.PadRight(52),'|' -C $BC,2,$BC
+	TOSBlankLine $BC
+	DisplayOut '|',' Use the switch ','-copy',' to see License Information or ','|' -C $BC,2,14,2,$BC
+	DisplayOut '|',' enter ','L',' bellow.'.PadRight(44),'|' -C $BC,2,14,2,$BC
+	TOSBlankLine $BC
+	TOSLine $BC
 	$CopyR = $False
 }
 
@@ -588,7 +589,7 @@ Function GuiStart {
 			</TabItem>
 			<TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
-					<DataGrid Name="dataGrid" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,47,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+					<DataGrid Name="dataGrid" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,66,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
 						<DataGrid.RowStyle>
 							<Style TargetType="{x:Type DataGridRow}"><Style.Triggers>
 								<Trigger Property="AlternationIndex" Value="0"><Setter Property="Background" Value="White"/></Trigger>
@@ -640,15 +641,24 @@ Function GuiStart {
 							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="True" IsReadOnly="True"/>
 						</DataGrid.Columns>
 					</DataGrid>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,46,-2,0" Stroke="Black" VerticalAlignment="Top"/>
+					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,66,-2,0" Stroke="Black" VerticalAlignment="Top"/>
 					<Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
 					<Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="2,1,0,0" VerticalAlignment="Top" Width="76"/>
 					<Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="81,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
 					<Button Name="SaveRegButton" Content="Save Registry" HorizontalAlignment="Left" Margin="164,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
-					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="-2,23,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="372,43,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 					<CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="248,4,0,0" VerticalAlignment="Top" Width="119" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/>
 					<TextBlock Name="TableLegend" HorizontalAlignment="Left" Margin="373,0,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="275" Height="46" FontWeight="Bold" Visibility="Hidden"><Run Background="LightGreen" Text=" Checked &amp; Service is Same as Current                  "/><LineBreak/><Run Background="LightCoral" Text=" Checked &amp; Service is NOT Same as Current          "/><LineBreak/><Run Background="#FFFFFF64" Text=" NOT Checked &amp; Service is NOT Same as Current "/></TextBlock>
 					<Rectangle Name="Div1" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="372,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
+					<TextBox Name="FilterTxt" HorizontalAlignment="Left" Height="20" Margin="41,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Visibility="Hidden" IsEnabled="False"/>
+					<ComboBox Name="FilterType" HorizontalAlignment="Left" Margin="248,30,0,0" VerticalAlignment="Top" Width="115" Height="25" Visibility="Hidden" IsEnabled="False">
+						<ComboBoxItem Content="Checked" HorizontalAlignment="Left" Width="115" Margin="0,0,-2,0"/>
+						<ComboBoxItem Content="Common Name" HorizontalAlignment="Left" Width="115" IsSelected="True"/>
+						<ComboBoxItem Content="Service Name" HorizontalAlignment="Left" Width="115"/>
+						<ComboBoxItem Content="Current Setting" HorizontalAlignment="Left" Width="115"/>
+					</ComboBox>
+					<Rectangle Name="Div2" Fill="#FFFFFFFF" Height="1" Margin="372,46,-2,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
+					<Label Name="FilterLabel" Content="Filter:" HorizontalAlignment="Left" Margin="5,28,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 				</Grid>
 			</TabItem>
 			<TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0">
@@ -791,21 +801,20 @@ Function GuiStart {
 		}
 	})
 
-	$WPF_dataGrid.Add_PreviewMouseWheel({ $MouseScroll = $True })
+	$WPF_dataGrid.Add_PreviewMouseWheel({ $DGUpdate = $False})
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
-		If($DataGridLCust -and !$MouseScroll -and $WPF_dataGrid.SelectedItem) {
+		If($DataGridLCust -and $DGUpdate -and $WPF_dataGrid.SelectedItem) {
 			$CurrObj = $WPF_dataGrid.CurrentItem
 			If($CurrObj.CurrType -eq $CurrObj.BVType){ $CurrObj.Matches = $True } Else{ $CurrObj.Matches = $False }
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
 			$WPF_dataGrid.ItemsSource = $DataGridListCust
 		}
-		$MouseScroll = $False
+		$DGUpdate = $True
 	}
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::CheckedEvent,$DGclickEvent)
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::UnCheckedEvent,$DGclickEvent)
-
-	$WPF_ServiceConfig.add_SelectionChanged({ HideShowCustomSrvStuff ;RunDisableCheck })
-	$WPF_EditionConfig.add_SelectionChanged({ RunDisableCheck })
+	$WPF_ServiceConfig.Add_SelectionChanged({ HideShowCustomSrvStuff ;RunDisableCheck })
+	$WPF_EditionConfig.Add_SelectionChanged({ RunDisableCheck })
 	$WPF_BuildCheck_CB.Add_Click({ RunDisableCheck })
 	$WPF_EditionCheckCB.Add_Click({ RunDisableCheck })
 
@@ -895,6 +904,15 @@ Function GuiStart {
 		[Windows.Forms.MessageBox]::Show('Diagnostic Information, has been copied to the clipboard.','Notice', 'OK') | Out-Null
 	})
 
+	$WPF_FilterTxt.Add_TextChanged({
+		$DGUpdate = $False
+		$TxtFilter = $WPF_FilterTxt.text
+		$Filter = $FilterList[$WPF_FilterType.SelectedIndex]
+		$TableFilter = $DataGridListCust.Where({$_.$Filter -Match $TxtFilter})
+		$WPF_dataGrid.ItemsSource = $TableFilter
+		$DGUpdate = $True
+	})
+
 	$WPF_ShowConsole_CB.Add_Checked({ ShowConsoleWin 5 }) #5 = Show
 	$WPF_ShowConsole_CB.Add_UnChecked({ ShowConsoleWin 0 }) #0 = Hide
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
@@ -956,6 +974,7 @@ Function GuiStart {
 	}
 
 	$Script:ServiceImport = 1
+	ChangeFilterTable -Re
 	HideShowCustomSrvStuff
 	RunDisableCheck
 	Clear-Host
@@ -966,6 +985,8 @@ Function GuiStart {
 
 Function CustomBVCBFun([Switch]$C) {
 	$WPF_ACUcheckboxChecked.IsEnabled = $C
+	$WPF_FilterTxt.IsEnabled = $C
+	$WPF_FilterType.IsEnabled = $C
 	$Script:DataGridLCust = $C
 	If($C) {
 		$WPF_SaveCustomSrvButton.Content = 'Save Selection'
@@ -996,6 +1017,7 @@ Function RunDisableCheck {
 		$Buttontxt += $EBErrLst[$EBFailCount -1]
 		$Buttontxt += ' Check'
 		$WPF_dataGrid.Columns[4].Header = 'Black Viper'
+		ChangeFilterTable
 		$WPF_RunScriptButton.IsEnabled = $False
 	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
 		$WPF_RunScriptButton.IsEnabled = $False
@@ -1013,6 +1035,7 @@ Function RunDisableCheck {
 			}
 		}
 		$WPF_dataGrid.Columns[4].Header = 'Custom Service'
+		ChangeFilterTable -C
 	} Else {
 		If($WPF_ServiceConfig.SelectedIndex -eq 0){ $WPF_dataGrid.Columns[4].Header = 'Win Default' } Else{ $WPF_dataGrid.Columns[4].Header = 'Black Viper' }
 		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = 'Run Script with Customize Service List' } Else{ $Buttontxt = 'Run Script' }
@@ -1020,6 +1043,21 @@ Function RunDisableCheck {
 		$WPF_LoadServicesButton.IsEnabled = $True
 	}
 	$WPF_RunScriptButton.Content = $Buttontxt
+}
+
+Function ChangeFilterTable([Switch]$C,[Switch]$Re) {
+	If(!$Re) {
+		$tmp = $WPF_FilterType.SelectedIndex
+		$WPF_FilterType.Items.RemoveAt(7)
+		$WPF_FilterType.Items.RemoveAt(6)
+		$WPF_FilterType.Items.RemoveAt(5)
+		$WPF_FilterType.Items.RemoveAt(4)
+	}
+	If($C){	$WPF_FilterType.Items.Add('Custom Service') } Else{ $WPF_FilterType.Items.Add('Black Viper') }
+	$WPF_FilterType.Items.Add('State')
+	$WPF_FilterType.Items.Add('Description')
+	$WPF_FilterType.Items.Add('Path')
+	If(!$Re){ $WPF_FilterType.SelectedIndex = $tmp }
 }
 
 Function GenerateServices {
@@ -1095,6 +1133,10 @@ Function GenerateServices {
 		$WPF_SaveRegButton.Visibility = 'Visible'
 		$WPF_TableLegend.Visibility = 'Visible'
 		$WPF_Div1.Visibility = 'Visible'
+		$WPF_Div2.Visibility = 'Visible'
+		$WPF_FilterTxt.Visibility = 'Visible'
+		$WPF_FilterType.Visibility = 'Visible'
+		$WPF_FilterLabel.Visibility = 'Visible'
 		$WPF_LoadServicesButton.Content = 'Reload'
 		$Script:ServicesGenerated = $True
 	}
