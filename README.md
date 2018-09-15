@@ -1,4 +1,4 @@
-**NOTICE 1: Script Update was broken in v5.2.4, Please re-download updated release.   
+**NOTICE 1: Script Update was broken in v5.2.4, Please re-download.   
 NOTICE 2: `Update.bat`, `_Win10-BlackViper.bat`, and `BlackViper.csv` have been updated since last script release.   
 Thank you**   
 
