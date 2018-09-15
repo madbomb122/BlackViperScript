@@ -1,4 +1,6 @@
-**NOTICE: Script Update was broken in v5.2.4, Please re-download updated release. `Update.bat`, `_Win10-BlackViper.bat`, and `BlackViper.csv` have been updated since last script release. Thank you**
+**NOTICE 1: Script Update was broken in v5.2.4, Please re-download updated release.   
+NOTICE 2: `Update.bat`, `_Win10-BlackViper.bat`, and `BlackViper.csv` have been updated since last script release.   
+Thank you**   
 
 [![Donate](https://img.shields.io/badge/Donate-Amazon-yellowgreen.svg?style=plastic)](https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/)
 [![GitHub Release](https://img.shields.io/github/release/madbomb122/BlackViperScript.svg?style=plastic)](https://github.com/madbomb122/BlackViperScript/releases)
