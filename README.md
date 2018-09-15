@@ -1,4 +1,4 @@
-**Please Help out by giving me your opinion on the Enhancement/Suggestion in the issue that I have open. [Linky](https://github.com/madbomb122/BlackViperScript/issues/25)**
+**Script Update was broken in v5.2.4, Please re-download updated release. `Update.bat`, `_Win10-BlackViper.bat`, and `BlackViper.csv` have been updated since last script release. Thank you**
 
 [![Donate](https://img.shields.io/badge/Donate-Amazon-yellowgreen.svg?style=plastic)](https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/)
 [![GitHub Release](https://img.shields.io/github/release/madbomb122/BlackViperScript.svg?style=plastic)](https://github.com/madbomb122/BlackViperScript/releases)
