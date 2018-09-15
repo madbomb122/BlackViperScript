@@ -1,5 +1,5 @@
 # Currently Testing (Read Notes)
-Ability to set Service state in 'Service Table' (when you run the script) 
+Nothin ATM
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
