@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.2.4 (09-02-2018)
+5.3.0 (09-14-2018)
 
 Fixed Mouse Scroll Crash Issue on 'Service Table'
 Made the first 2 columns in 'Service Table' stay stay in place when you scroll horizontally
@@ -15,6 +15,24 @@ Fixed bug were Already Disabled Services would not be Stopped (When 'Stop Disabl
 
 Fixed some Display Issues (used old commands that didnt work)
 Fixed a Check for Update Issue
+Fixed issue were old script window didnt close after update
+
+Ability to set Service state in 'Service Table' (when you run the script)
+
+Service State is loaded along with Service Configuration (Custom and Backup files Only)
+
+Fixed an accidental Disable Script Update in script
+Added ability to see Copyright/License Information from ToS, by inputting L
+Moved some items around in the Script Options tab
+Reorginized the list of switches displayed in '-help'/'-h'
+Added Switches:
+  -css             Change State of Service
+  -sds             Stop disabled Service
+  -copy            Shows Copyright/License Information, then exits script
+
+Various Internal changes and Improvements
+Script will now Display a message if service cant be changed in any way
+Script will update the 'update.bat' file when it checks for script update (if you have file and update is available)
 
 -----------------------------------------------------------------------------------
 5.2.0 (08-21-2018)
