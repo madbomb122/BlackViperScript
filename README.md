@@ -8,7 +8,7 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `5.2.4` (September 02, 2018)   
+**Script:** `5.3.0` (September 14, 2018)   
 **Service:** `4.2` (September 11, 2018) -April 2018 Update   
 **Update File:** `1.3.5` (September 02, 2018)   
 
@@ -47,11 +47,11 @@ PPS. My Thanks goes out to all that have helped in any way.
 
 **_Need Files_**   
 [BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `105.0 KB`  
-[BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `6.84 KB` (Not the same as the one on BlackViper's Website)  
+[BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `7.34 KB` (Not the same as the one on BlackViper's Website)  
 
 **Recommended Files**   
 [Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `11.7 KB`   
-[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `5.49 KB`   
+[_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `7.07 KB`   
 [README.md](https://github.com/madbomb122/BlackViperScript/raw/master/README.md) (This Readme)   
 
 **You CAN do a `save as` on the filenames above to save them to you computer, you CANNOT do a `save as` on github's file list**
@@ -89,36 +89,40 @@ Use one of the following Methods you can
 3. Edit the bat file (top of file) to change the values to add the switch
 
 
-|   Switch  | Description                                                                    | Notes                            |
-| :-------- | :------------------------------------------------------------------------------| :------------------------------- |
-| -atos     | Accepts the ToS                                                                |                                  |
-| -auto     | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                  |
-| -default  | Runs the script with Services to Default Configuration                         |                                  |
-| -safe     | Runs the script with Services to Black Viper's Safe Configuration              |                                  |
-| -tweaked  | Runs the script with Services to Black Viper's Tweaked Configuration           |                                  |
-| -all      | Every windows services will change                                             |                                  |
-| -min      | Just the services different from the default to safe/tweaked list              |                                  |
-| -bscc     | Backup Current Service Configuration (CSV file)                                | Filename will be `COMPUTERNAME-Service-Backup.csv`   |
-| -bscr     | Backup Current Service Configuration (REG file)                                | Filename will be `COMPUTERNAME-Service-Backup.reg`   |
-| -bscB     | Backup Current Service Configuration (CSV and REG file)                        | Filename will be `COMPUTERNAME-Service-Backup.FILETYPE`   |
-| -lcsc File.csv | Loads Custom Service Configuration                                        | `File.csv` Name of backup/custom file |
-| -sec      | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**         |
-| -secp     | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**         |
-| -sech     | Skips Edition Check (Home/Pro), Sets edition as Home                           | **USE AT YOUR OWN RISK**         |
-| -sbc      | Skips Build Check (Creator's Update)                                           | **USE AT YOUR OWN RISK**         |
-| -sxb      | Skips Change to All Xbox Services                                              | It keeps current setting         |
-| -sic      | Skips Internet Check (If checking for update)                                  | Tests by pinging github.com      |
-| -usc      | Checks for Update to Script file before running                                | Auto downloads and runs if found |
-| -use      | Checks for Update to Service file before running                               | Auto downloads and uses if found |
-| -snis     | Shows not installed services (that can be changed)                             |                                  |
-| -sss      | Show Skipped Services                                                          |                                  |
-| -diag     | Shows some diagnostic information on error messages                            | **Stops automation**             |
-| -diagf      | Forced diagnostic information, Script does nothing else                      |  No changes will be done         |
-| -log      | Makes a log file (Logs Notices, Errors, & Services changed)                    | Log file `Script.log` (default)  |
-| -baf      | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log`    |
-| -dry      | Runs script and shows what will be changed if ran normaly                      | **No Services are changes**      |
-| -devl     | Makes a log file with various Diagnostic information                           | **No Services are changes**      |
-| -help     | Lists of all the switches                                                      | Alt `-h`                         |
+|     Switch     |                                   Description                                  |                          Notes                          |
+| :------------- | :------------------------------------------------------------------------------| :-------------------------------------------------------|
+| -atos          | Accepts the ToS                                                                |                                                         |
+| -auto          | Runs the script to be Automated.. Closes on User input, Errors, End of Script) | Implies `-atos`                                         |
+| -default       | Runs the script with Services to Default Configuration                         |                                                         |
+| -safe          | Runs the script with Services to Black Viper's Safe Configuration              |                                                         |
+| -tweaked       | Runs the script with Services to Black Viper's Tweaked Configuration           |                                                         |
+| -lcsc File.csv | Loads Custom Service Configuration                                             | `File.csv` Name of backup/custom file                   |
+| -all           | Every Windows Services in loaded file will change                              |                                                         |
+| -min           | Just the services different from the default to safe/tweaked list              |                                                         |
+| -sxb           | Skips Change to All Xbox Services                                              |                                                         |
+| -usc           | Checks for Update to Script file before running                                | Auto downloads and runs if found                        |
+| -use           | Checks for Update to Service file before running                               | Auto downloads and uses if found                        |
+| -sic           | Skips Internet Check (If checking for update)                                  | Tests by pinging GitHub.com                             |
+| -log           | Makes a log file using default name `Script.log` (default)                     | Logs Notices, Errors, & Services changed                |
+| -log File.log  | Makes a log file named File.log                                                | Logs Notices, Errors, & Services changed                |
+| -baf           | File of all the services before and after the script                           | `Services-Before.log` and `Services-After.log`          |
+| -bscc          | Backup Current Service Configuration (CSV file)                                | Filename will be `COMPUTERNAME-Service-Backup.csv`      |
+| -bscr          | Backup Current Service Configuration (REG file)                                | Filename will be `COMPUTERNAME-Service-Backup.reg`      |
+| -bscb          | Backup Current Service Configuration (CSV and REG file)                        | Filename will be `COMPUTERNAME-Service-Backup.FILETYPE` |
+| -sas           | Show Already Set Services                                                      |                                                         |
+| -snis          | Shows NOT Installed Services                                                   |                                                         |
+| -sss           | Show Skipped Services                                                          |                                                         |
+| -dry           | Runs script and shows what will be changed if ran normaly                      | **No Services are changes**                             |
+| -css           | Change State of Service                                                        | From non BlackViper File Only                           |
+| -sds           | Stop Disabled Service                                                          |                                                         |
+| -secp          | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**                                |
+| -sech          | Skips Edition Check (Home/Pro), Sets edition as Home                           | **USE AT YOUR OWN RISK**                                |
+| -sbc           | Skips Build Check (Creator's Update or Newer)                                  | **USE AT YOUR OWN RISK**                                |
+| -diag          | Shows some diagnostic information on error messages                            | **Stops automation**                                    |
+| -diagf         | Forced diagnostic information, Script does nothing else                        | **No Services are changes**                             |
+| -devl          | Makes a log file with various Diagnostic information                           | **No Services are changes**                             |
+| -help          | Lists of all the switches, Then exits script                                   | Alt `-h`                                                |
+| -copy          | Shows Copyright/License Information, Then exits script                         |                                                         |
 
 
 Switch Examples:   
