@@ -9,7 +9,7 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.1'
+$Script_Version = '5.3.2'
 $Script_Date = 'Sept-16-2018'
 $Release_Type = 'Stable'
 ##########
@@ -499,6 +499,16 @@ Function SaveSetting {
 
 Function DevLogCBFunction([Switch]$C) {
 	If($C) {
+		$Script:ScriptLog = $Script_Log
+		$Script:LogName = $Log_Name
+		$Script:Diagnostic = $Diagn_ostic
+		$Script:Automated = $Auto_mated
+		$Script:LogBeforeAfter = $Log_Before_After
+		$Script:DryRun = $Dry_Run
+		$Script:ShowNonInstalled = $Show_Non_Installed
+		$Script:ShowSkipped = $Show_Skipped
+		$Script:ShowAlreadySet = $Show_Already_Set
+	} Else {
 		UpdateSetting
 		$Script:Script_Log = $ScriptLog
 		$Script:Log_Name = $LogName
@@ -510,16 +520,7 @@ Function DevLogCBFunction([Switch]$C) {
 		$Script:Show_Skipped = $ShowSkipped
 		$Script:Show_Already_Set = $ShowAlreadySet
 		DevLogSet
-	} Else {
-		$Script:ScriptLog = $Script_Log
-		$Script:LogName = $Log_Name
-		$Script:Diagnostic = $Diagn_ostic
-		$Script:Automated = $Auto_mated
-		$Script:LogBeforeAfter = $Log_Before_After
-		$Script:DryRun = $Dry_Run
-		$Script:ShowNonInstalled = $Show_Non_Installed
-		$Script:ShowSkipped = $Show_Skipped
-		$Script:ShowAlreadySet = $Show_Already_Set
+
 	}
 
 	ForEach($Var In $DevLogList) {
@@ -916,8 +917,8 @@ Function GuiStart {
 	$WPF_CheckUpdateSerButton.Add_Click({ UpdateCheckNow -Ser })
 	$WPF_CheckUpdateSrpButton.Add_Click({ UpdateCheckNow -Srp })
 	$WPF_CheckUpdateBothButton.Add_Click({ UpdateCheckNow -Ser -Srp })
-	$WPF_DevLogCB.Add_Checked({ DevLogCBFunction -C })
-	$WPF_DevLogCB.Add_UnChecked({ DevLogCBFunction })
+	$WPF_DevLogCB.Add_Checked({ DevLogCBFunction })
+	$WPF_DevLogCB.Add_UnChecked({ DevLogCBFunction -C })
 
 	$WPF_AboutButton.Add_Click({ [Windows.Forms.MessageBox]::Show("This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script.`n`nThis script was created by MadBomb122.",'About', 'OK') | Out-Null })
 	$WPF_CopyrightButton.Add_Click({ [Windows.Forms.MessageBox]::Show($Copyright,'Copyright', 'OK') | Out-Null })
@@ -1285,7 +1286,7 @@ Function ScriptUpdateFun {
 
 	If(Test-Path -LiteralPath $UpdateFile -PathType Leaf) {
 		$UpdateBatVer = Get-Content $UpdateFile | Select-Object -Skip 1 -First 1
-		$UpdateBatVer = $UpdateVer.Split(':: Version',[System.StringSplitOptions]::RemoveEmptyEntries)
+		$UpdateBatVer = $UpdateBatVer.Split(":: Version",[System.StringSplitOptions]::RemoveEmptyEntries)
 		$WebUpdateBatVer = $CSV_Ver[3].Version + "." + $CSV_Ver[3].MinorVersion
 		If($UpdateBatVer -lt $WebUpdateBatVer){
 			DownloadFile ($URL_Base + 'Update.bat') $UpdateFile
