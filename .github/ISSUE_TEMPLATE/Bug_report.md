@@ -4,7 +4,7 @@ about: Create a report to help us improve
 
 ---
 **Question**   
-Did you look at ReadMe,FAQ or issues to see if issue is already posted or fixed?
+Did you look at ReadMe, FAQ or Issues to see if issue is already Known or Fixed?
 
 **Describe the bug**   
 A clear and concise description of what the bug is.
@@ -22,7 +22,7 @@ A clear and concise description of what you expected to happen.
 **Screenshots**   
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**   
+**Computer Information (Please complete the following information):**   
  - OS Version: [e.g. Creator's Update]   
  - OS Build: [e.g. Home]   
  - Modded OS: [e.g. No] -If you are using an OS that has removed items using a program like Nlite   
