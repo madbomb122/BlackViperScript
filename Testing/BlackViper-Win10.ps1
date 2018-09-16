@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.1'
-$Script_Date = 'Sept-15-2018'
+$Script_Version = '5.3.2'
+$Script_Date = 'Sept-16-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -228,6 +228,7 @@ $DevLogList = @('WPF_ScriptLog_CB','WPF_Diagnostic_CB','WPF_LogBeforeAfter_CB','
 
 $Script:FileBase = $PSScriptRoot + '\'
 $Script:SettingPath = $FileBase + 'BVSetting.xml'
+$Script:ServiceFilePath = $FileBase + 'BlackViper.csv'
 
 $Script:Black_Viper = 0
 $Script:Automated = 0
@@ -260,7 +261,7 @@ Function ThanksDonate {
 Function AutomatedExitCheck([Int]$ExitBit) {
 	If($Automated -ne 1){ Read-Host -Prompt "`nPress Any key to Close..." }
 	If($ExitBit -eq 1) {
-		LogEnd 
+		LogEnd
 		If($GuiSwitch){ $Form.Close() } ;Exit
 	}
 }
@@ -406,7 +407,7 @@ Function OpenSaveDiaglog([Int]$SorO) {
 	If($SorO -ne 2){ $SOFileDialog.Filter = "CSV (*.csv)| *.csv" } Else{ $SOFileDialog.Filter = "Registration File (*.reg)| *.reg" }
 	$SOFileDialog.ShowDialog()
 	$SOFPath = $SOFileDialog.Filename
-	If(Test-Path -LiteralPath $SOFPath -PathType Leaf) {
+	If($SOFPath) {
 		If($SorO -eq 0) {
 			$Script:ServiceConfigFile = $SOFPath ;$WPF_LoadFileTxtBox.Text = $ServiceConfigFile ;RunDisableCheck
 		} ElseIf($SorO -eq 1) {
@@ -1234,7 +1235,7 @@ Function UpdateCheck {
 
 	If($SerCheck -or $ServiceVerCheck -eq 1) {
 		$WebVersion = $CSV_Ver[1].Version
-		If($ServiceVersion -eq 'Missing File'){ $ServVer = '0.0.0' } Else{ $ServVer = $ServiceVersion }
+		If($ServiceVersion -eq 'Missing File'){ $ServVer = '0.0' } Else{ $ServVer = $ServiceVersion }
 		If($LoadServiceConfig  -In 0,1 -And $WebVersion -gt $ServVer) {
 			$Choice = 'Yes'
 			If($NAuto) {
@@ -1242,7 +1243,7 @@ Function UpdateCheck {
 					$UpdateFound = 'Download Missing BlackViper.csv file?'
 					$UpdateTitle = 'Missing File'
 				} Else {
-					$UpdateFound = 'Update Service File from $WebVersion to $ServVer ?'
+					$UpdateFound = "Update Service File from $ServVer to $WebVersion ?"
 					$UpdateTitle = 'Update Found'
 				}
 				$Choice = [windows.forms.messagebox]::show($UpdateFound,$UpdateTitle,'YesNo')
@@ -1250,7 +1251,13 @@ Function UpdateCheck {
 			If($Choice -eq 'Yes') {
 				If($ScriptLog -eq 1){ Write-Output "Downloading update for 'BlackViper.csv'" | Out-File -LiteralPath $LogFile -Encoding Unicode -Append}
 				DownloadFile $Service_Url $ServiceFilePath
-				If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
+				$Message = "Service File Updated to $WebVersion"
+				If($LoadServiceConfig -ne 2){
+					[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath 
+					SetServiceVersion
+				} Else {
+					$WPF_Service_Ver_Txt.Text = "Service Version: $WebVersion"
+				}
 			} ElseIf(!$SrpCheck) {
 				$NAuto = $False
 			}
@@ -1390,7 +1397,7 @@ Function Save_Service([String]$SavePath) {
 			$SaveService += [PSCustomObject] @{ ServiceName = $ServiceName ;StartType = $BVTypeS ;Status = $item.SrvState }
 		}
 	} Else {
-		If($AllService -eq $null){ $ServiceSavePath += '-Service-Backup.csv' ;GetAllServices } Else{ $ServiceSavePath += '-Custom-Service.csv' }
+		$ServiceSavePath += '-Service-Backup.csv'
 		$SaveService = GenerateSaveService
 	}
 	If($SavePath -ne $null){ $ServiceSavePath = $SavePath}
@@ -1401,7 +1408,6 @@ Function Save_Service([String]$SavePath) {
 Function Save_ServiceBackup {
 	$SaveService = @()
 	$ServiceSavePath = $FileBase + $Env:computername + '-Service-Backup.csv'
-	If($AllService -eq $null){ GetAllServices }
 	$SaveService = GenerateSaveService
 	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -Encoding Unicode -Force -Delimiter ','
 }
@@ -1440,7 +1446,6 @@ Function RegistryServiceFile([String]$TempFP) {
 }
 
 Function GenerateRegistryRegular([String]$TempFP) {
-	If($AllService -eq $null){ GetAllServices }
 	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -LiteralPath $TempFP
 	ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
@@ -1752,7 +1757,8 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 	If($DryRun -ne 1) {
 		ThanksDonate
 		If($ConsideredDonation -ne 'Yes' -and $GuiSwitch) {
-			If([Windows.Forms.MessageBox]::Show("Thanks for using my script.`nIf you like this script please consider giving me a donation.`n`nWould you Consider giving a Donation?",'Thank You','YesNo','Question') -eq 'Yes'){ ClickedDonate }
+			$Choice = [Windows.Forms.MessageBox]::Show("Thanks for using my script.`nIf you like this script please consider giving me a donation.`n`nWould you Consider giving a Donation?",'Thank You','YesNo','Question')
+			If($Choice -eq 'Yes'){ ClickedDonate }
 		}
 	}
 	ServiceBAfun 'Services-After'
@@ -1831,7 +1837,8 @@ Function LoadWebCSVGUI {
 	} Else {
 		$Script:ErrorDi = 'BlackViper.csv Not Valid for current Update' ;$ErrMessage = "The File 'BlackViper.csv' needs to be Updated.`nDo you want to download the file 'BlackViper.csv'?"
 	}
-	If([windows.forms.messagebox]::show($ErrMessage,'Error','YesNo','Error') -eq 'Yes'){
+	$Choice = [windows.forms.messagebox]::show($ErrMessage,'Error','YesNo','Error')
+	If($Choice -eq 'Yes'){
 		DownloadFile $Service_Url $ServiceFilePath
 		If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
 		CheckBVcsv
@@ -1911,6 +1918,7 @@ Function PreScriptCheck {
 		}
 		AutomatedExitCheck 1
 	}
+
 	If($BackupServiceConfig -eq 1) {
 		If($BackupServiceType -eq 1) {
 			Save_ServiceBackup
@@ -1948,7 +1956,7 @@ Function PreScriptCheck {
 	}
 	If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
 	If($ScriptVerCheck -eq 1 -or $ServiceVerCheck -eq 1){ UpdateCheckAuto }
-	If($LoadServiceConfig -ne 2){ CheckBVcsv ;$csv.RemoveAt(0) }
+	If(!($LoadServiceConfig -In 1,2)){ CheckBVcsv ;$csv.RemoveAt(0) }
 }
 
 Function CheckBVcsv {
@@ -2100,6 +2108,7 @@ Function StartScript {
 
 	If($PassedArg.Length -gt 0){ GetArgs }
 	GetCurrServices
+	GetAllServices
 
 	$Skip_Services = @(
 	"PimIndexMaintenanceSvc_$ServiceEnd",
