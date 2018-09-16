@@ -3,6 +3,8 @@ name: Bug report
 about: Create a report to help us improve
 
 ---
+**Question**
+Did you look at ReadMe,FAQ or issues to see if issue is already posted or fixed?
 
 **Describe the bug**
 A clear and concise description of what the bug is.
