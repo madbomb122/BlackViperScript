@@ -9,7 +9,7 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.3'
+$Script_Version = '5.3.4'
 $Script_Date = 'Sept-16-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
@@ -652,15 +652,15 @@ Function GuiStart {
 					<CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="248,4,0,0" VerticalAlignment="Top" Width="119" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/>
 					<TextBlock Name="TableLegend" HorizontalAlignment="Left" Margin="373,0,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="275" Height="46" FontWeight="Bold" Visibility="Hidden"><Run Background="LightGreen" Text=" Checked &amp; Service is Same as Current                  "/><LineBreak/><Run Background="LightCoral" Text=" Checked &amp; Service is NOT Same as Current          "/><LineBreak/><Run Background="#FFFFFF64" Text=" NOT Checked &amp; Service is NOT Same as Current "/></TextBlock>
 					<Rectangle Name="Div1" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="372,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
-					<TextBox Name="FilterTxt" HorizontalAlignment="Left" Height="20" Margin="41,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Visibility="Hidden" IsEnabled="False"/>
-					<ComboBox Name="FilterType" HorizontalAlignment="Left" Margin="248,30,0,0" VerticalAlignment="Top" Width="115" Height="25" Visibility="Hidden" IsEnabled="False">
+					<TextBox Name="FilterTxt" HorizontalAlignment="Left" Height="20" Margin="43,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Visibility="Hidden"/>
+					<ComboBox Name="FilterType" HorizontalAlignment="Left" Margin="248,30,0,0" VerticalAlignment="Top" Width="115" Height="25" Visibility="Hidden">
 						<ComboBoxItem Content="Checked" HorizontalAlignment="Left" Width="115" Margin="0,0,-2,0"/>
 						<ComboBoxItem Content="Common Name" HorizontalAlignment="Left" Width="115" IsSelected="True"/>
 						<ComboBoxItem Content="Service Name" HorizontalAlignment="Left" Width="115"/>
 						<ComboBoxItem Content="Current Setting" HorizontalAlignment="Left" Width="115"/>
 					</ComboBox>
 					<Rectangle Name="Div2" Fill="#FFFFFFFF" Height="1" Margin="372,46,-2,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
-					<Label Name="FilterLabel" Content="Filter:" HorizontalAlignment="Left" Margin="5,28,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+					<Label Name="FilterLabel" Content="Search:" HorizontalAlignment="Left" Margin="-2,28,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 				</Grid>
 			</TabItem>
 			<TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0">
@@ -789,6 +789,7 @@ Function GuiStart {
 			$WPF_TabControl.Items[3].IsSelected = $True
 			If($WPF_CustomBVCB.IsChecked) {
 				$Script:LoadServiceConfig = 2
+				$WPF_FilterTxt.text = ''
 				[System.Collections.ArrayList]$Script:csv = @()
 				$ServiceCBList = $WPF_dataGrid.Items.Where({$_.CheckboxChecked -eq $True})
 				ForEach($item In $ServiceCBList){
@@ -905,15 +906,7 @@ Function GuiStart {
 		[Windows.Forms.MessageBox]::Show('Diagnostic Information, has been copied to the clipboard.','Notice', 'OK') | Out-Null
 	})
 
-	$WPF_FilterTxt.Add_TextChanged({
-		$DGUpdate = $False
-		$TxtFilter = $WPF_FilterTxt.text
-		$Filter = $FilterList[$WPF_FilterType.SelectedIndex]
-		$TableFilter = $DataGridListCust.Where({$_.$Filter -Match $TxtFilter})
-		$WPF_dataGrid.ItemsSource = $TableFilter
-		$DGUpdate = $True
-	})
-
+	$WPF_FilterTxt.Add_TextChanged({ DGFilter })
 	$WPF_ShowConsole_CB.Add_Checked({ ShowConsoleWin 5 }) #5 = Show
 	$WPF_ShowConsole_CB.Add_UnChecked({ ShowConsoleWin 0 }) #0 = Hide
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
@@ -986,8 +979,6 @@ Function GuiStart {
 
 Function CustomBVCBFun([Switch]$C) {
 	$WPF_ACUcheckboxChecked.IsEnabled = $C
-	$WPF_FilterTxt.IsEnabled = $C
-	$WPF_FilterType.IsEnabled = $C
 	$Script:DataGridLCust = $C
 	If($C) {
 		$WPF_SaveCustomSrvButton.Content = 'Save Selection'
@@ -997,6 +988,20 @@ Function CustomBVCBFun([Switch]$C) {
 		$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	}
 	RunDisableCheck
+	DGFilter
+}
+
+Function DGFilter {
+	$DGUpdate = $False
+	$TxtFilter = $WPF_FilterTxt.text
+	$Filter = $FilterList[$WPF_FilterType.SelectedIndex]
+	If($DataGridLCust) {
+		$TableFilter = $DataGridListCust.Where({$_.$Filter -Match $TxtFilter})
+	} Else {
+		$TableFilter = $DataGridListOrig.Where({$_.$Filter -Match $TxtFilter})
+	}
+	$WPF_dataGrid.ItemsSource = $TableFilter
+	$DGUpdate = $True
 }
 
 Function RunDisableCheck {
@@ -1253,7 +1258,7 @@ Function UpdateCheck {
 				DownloadFile $Service_Url $ServiceFilePath
 				$Message = "Service File Updated to $WebVersion"
 				If($LoadServiceConfig -ne 2){
-					[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath 
+					[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath
 					SetServiceVersion
 				} Else {
 					$WPF_Service_Ver_Txt.Text = "Service Version: $WebVersion"
