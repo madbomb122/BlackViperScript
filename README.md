@@ -1,7 +1,7 @@
 **NOTICE 1: Script Update was broken in v5.2.4, Please re-download script from [Here](https://github.com/madbomb122/BlackViperScript/releases).   
 NOTICE 2: `Update.bat`, `_Win10-BlackViper.bat`, and `BlackViper.csv` have been updated since v5.2.4.**  
 
-**Known Issue:*** Filepath with characters/symbols in it are causing problems with running script update, till issue is resolved remove the characters/symbols or change the path.  
+**Known Issue:** Filepath with characters/symbols in it are causing problems with running script update, till issue is resolved remove the characters/symbols or change the path.  
 **Thank you**   
 
 [![Donate](https://img.shields.io/badge/Donate-Amazon-yellowgreen.svg?style=plastic)](https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/)
