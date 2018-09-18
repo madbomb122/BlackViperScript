@@ -274,15 +274,17 @@ goto Next
 		goto W10LocalVer
 	)
 	If %UpdateArg%==yes (
-		powershell -Command "Start-Process '%FilePath%' !MiscArg!"
-		::PowerShell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%FilePath%' !MiscArg!" -Verb RunAs
+		Echo Made it to End
+		::::powershell -Command "Start-Process '%FilePath%' !MiscArg!"
+		::::PowerShell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%FilePath%' !MiscArg!" -Verb RunAs
 		Exit
 	)
 	If %RunArg%==yes (
 		If %DownloadBV-W10%==done (
 			Echo Cannot do a -Run with -Both
 		) else (
-			PowerShell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%FilePath%'" -Verb RunAs
+			Echo Made it to End
+			::::PowerShell.exe -NoProfile -ExecutionPolicy Bypass -Command "& '%FilePath%'" -Verb RunAs
 		)
 		Exit
 	)
