@@ -87,7 +87,7 @@ goto Next
 	Echo to %FilePath%
 	Echo.
 	::::powershell -Command "Invoke-WebRequest '%ScriptUrl%' -OutFile '%FilePath%'"
-	Echo Pre UpdateArg IF
+	Echo Before UpdateArg IF
 	If %UpdateArg%==no (
 		Echo UpdateArg IF
 		Set ServiceFilePath=%FileDir%BlackViper.csv
@@ -107,6 +107,7 @@ goto Next
 			::::powershell -Command "Invoke-WebRequest '%BatUrl%' -OutFile '%BatFilePath%'"
 		)
 	)
+	Echo After UpdateArg IF
 	Set DownloadBV=no
 	goto CheckRun
 
