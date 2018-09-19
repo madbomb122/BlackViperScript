@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.4'
-$Script_Date = 'Sept-16-2018'
+$Script_Version = '5.3.5'
+$Script_Date = 'Sept-19-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -1289,6 +1289,8 @@ Function UpdateDisplay([String]$FullVer,[String]$DFilename) {
 	MenuBlankLine -L
 	DisplayOutLML (''.PadRight(18)+'Update Found!') -C 13 -L
 	MenuBlankLine -L
+	DisplayOut '|',' Updating from version',"$Script_Version".PadRight(30),'|' -C 14,15,11,14 -L
+	MenuBlankLine -L
 	DisplayOut '|',' Downloading version ',"$FullVer".PadRight(31),'|' -C 14,15,11,14 -L
 	DisplayOut '|',' Will run ',"$DFilename".PadRight(42),'|' -C 14,15,11,14 -L
 	DisplayOutLML 'after download is complete.' -C 15 -L
@@ -1344,7 +1346,8 @@ Function ScriptUpdateFun {
 		$UpArg += '-u -bv '
 		If($Release_Type -ne 'Stable'){ $UpArg += '-test ' }
 		UpdateDisplay $FullVer $DFilename
-		Start-Process powershell.exe " $UpdateFile $UpArg"
+		Start-Process -FilePath $UpdateFile -ArgumentList $UpArg -Wait
+		#Start-Process powershell.exe " $UpdateFile $UpArg"
 	} Else {
 		$DFilename = 'BlackViper-Win10-Ver.' + $FullVer
 		If($Release_Type -ne 'Stable'){ $DFilename += '-Testing' ;$Script_Url = $URL_Base + 'Testing/' }
