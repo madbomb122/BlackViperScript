@@ -8,6 +8,7 @@ Fixed issue with 'Dev Log' checkbox (thanks to zoulztealer for letting me know)
 
 Added ability to Search the 'Service Table'
 
+Update.bat (if available will now update automaticly before script updates)
 Fixed issue with chars and spaces being in path when trying to do an update to script
 
 -----------------------------------------------------------------------------------
