@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.3.4 (09-16-2018)
+5.3.5 (09-19-2018)
 
 Fixed Save Settings button not working (thanks to harmonicx for letting me know)
 Fixed bug with running script with custom service file (thanks to harmonicx for letting me know)
@@ -7,6 +7,8 @@ Fixed bug with running script with custom service file (thanks to harmonicx for 
 Fixed issue with 'Dev Log' checkbox (thanks to zoulztealer for letting me know)
 
 Added ability to Search the 'Service Table'
+
+Fixed issue with chars and spaces being in path when trying to do an update to script
 
 -----------------------------------------------------------------------------------
 5.3.0 (09-14-2018)
