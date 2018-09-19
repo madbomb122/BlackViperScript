@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.2'
-$Script_Date = 'Sept-16-2018'
+$Script_Version = '5.3.5'
+$Script_Date = 'Sept-19-2018'
 $Release_Type = 'Stable'
 ##########
 
@@ -222,6 +222,7 @@ $WinSkuList = @(48,49,98,100,101)
 $EBErrLst = @('Edition','Build','Edition & Build')
 $XboxServiceArr = @('XblAuthManager','XblGameSave','XboxNetApiSvc','XboxGipSvc','xbgm')
 $NetTCP = @('NetMsmqActivator','NetPipeActivator','NetTcpActivator')
+$FilterList = @('CheckboxChecked','CName','ServiceName','CurrType','BVType','SrvState','SrvDesc','SrvPath')
 $DevLogList = @('WPF_ScriptLog_CB','WPF_Diagnostic_CB','WPF_LogBeforeAfter_CB','WPF_DryRun_CB','WPF_ShowNonInstalled_CB','WPF_ShowAlreadySet_CB')
 
 $Script:FileBase = $PSScriptRoot + '\'
@@ -589,7 +590,7 @@ Function GuiStart {
 			</TabItem>
 			<TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
-					<DataGrid Name="dataGrid" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,47,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+					<DataGrid Name="dataGrid" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,66,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
 						<DataGrid.RowStyle>
 							<Style TargetType="{x:Type DataGridRow}"><Style.Triggers>
 								<Trigger Property="AlternationIndex" Value="0"><Setter Property="Background" Value="White"/></Trigger>
@@ -641,15 +642,24 @@ Function GuiStart {
 							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="True" IsReadOnly="True"/>
 						</DataGrid.Columns>
 					</DataGrid>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,46,-2,0" Stroke="Black" VerticalAlignment="Top"/>
+					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,66,-2,0" Stroke="Black" VerticalAlignment="Top"/>
 					<Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
 					<Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="2,1,0,0" VerticalAlignment="Top" Width="76"/>
 					<Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="81,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
 					<Button Name="SaveRegButton" Content="Save Registry" HorizontalAlignment="Left" Margin="164,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
-					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="-2,23,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
+					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="372,43,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 					<CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="248,4,0,0" VerticalAlignment="Top" Width="119" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/>
 					<TextBlock Name="TableLegend" HorizontalAlignment="Left" Margin="373,0,-2,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="275" Height="46" FontWeight="Bold" Visibility="Hidden"><Run Background="LightGreen" Text=" Checked &amp; Service is Same as Current                  "/><LineBreak/><Run Background="LightCoral" Text=" Checked &amp; Service is NOT Same as Current          "/><LineBreak/><Run Background="#FFFFFF64" Text=" NOT Checked &amp; Service is NOT Same as Current "/></TextBlock>
 					<Rectangle Name="Div1" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="372,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
+					<TextBox Name="FilterTxt" HorizontalAlignment="Left" Height="20" Margin="43,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Visibility="Hidden"/>
+					<ComboBox Name="FilterType" HorizontalAlignment="Left" Margin="248,30,0,0" VerticalAlignment="Top" Width="115" Height="25" Visibility="Hidden">
+						<ComboBoxItem Content="Checked" HorizontalAlignment="Left" Width="115" Margin="0,0,-2,0"/>
+						<ComboBoxItem Content="Common Name" HorizontalAlignment="Left" Width="115" IsSelected="True"/>
+						<ComboBoxItem Content="Service Name" HorizontalAlignment="Left" Width="115"/>
+						<ComboBoxItem Content="Current Setting" HorizontalAlignment="Left" Width="115"/>
+					</ComboBox>
+					<Rectangle Name="Div2" Fill="#FFFFFFFF" Height="1" Margin="372,46,-2,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
+					<Label Name="FilterLabel" Content="Search:" HorizontalAlignment="Left" Margin="-2,28,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
 				</Grid>
 			</TabItem>
 			<TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0">
@@ -755,7 +765,6 @@ Function GuiStart {
 			If([windows.forms.messagebox]::show('Are you sure you want to exit?','Exit','YesNo') -eq 'No'){ $_.cancel = $True }
 		}
 		SaveSetting
-		LogEnd
 	})
 
 	$WPF_RunScriptButton.Add_Click({
@@ -779,6 +788,7 @@ Function GuiStart {
 			$WPF_TabControl.Items[3].IsSelected = $True
 			If($WPF_CustomBVCB.IsChecked) {
 				$Script:LoadServiceConfig = 2
+				$WPF_FilterTxt.text = ''
 				[System.Collections.ArrayList]$Script:csv = @()
 				$ServiceCBList = $WPF_dataGrid.Items.Where({$_.CheckboxChecked -eq $True})
 				ForEach($item In $ServiceCBList){
@@ -792,21 +802,20 @@ Function GuiStart {
 		}
 	})
 
-	$WPF_dataGrid.Add_PreviewMouseWheel({ $MouseScroll = $True })
+	$WPF_dataGrid.Add_PreviewMouseWheel({ $DGUpdate = $False})
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
-		If($DataGridLCust -and !$MouseScroll -and $WPF_dataGrid.SelectedItem) {
+		If($DataGridLCust -and $DGUpdate -and $WPF_dataGrid.SelectedItem) {
 			$CurrObj = $WPF_dataGrid.CurrentItem
 			If($CurrObj.CurrType -eq $CurrObj.BVType){ $CurrObj.Matches = $True } Else{ $CurrObj.Matches = $False }
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
 			$WPF_dataGrid.ItemsSource = $DataGridListCust
 		}
-		$MouseScroll = $False
+		$DGUpdate = $True
 	}
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::CheckedEvent,$DGclickEvent)
 	$WPF_dataGrid.AddHandler([System.Windows.Controls.CheckBox]::UnCheckedEvent,$DGclickEvent)
-
-	$WPF_ServiceConfig.add_SelectionChanged({ HideShowCustomSrvStuff ;RunDisableCheck })
-	$WPF_EditionConfig.add_SelectionChanged({ RunDisableCheck })
+	$WPF_ServiceConfig.Add_SelectionChanged({ HideShowCustomSrvStuff ;RunDisableCheck })
+	$WPF_EditionConfig.Add_SelectionChanged({ RunDisableCheck })
 	$WPF_BuildCheck_CB.Add_Click({ RunDisableCheck })
 	$WPF_EditionCheckCB.Add_Click({ RunDisableCheck })
 
@@ -896,6 +905,7 @@ Function GuiStart {
 		[Windows.Forms.MessageBox]::Show('Diagnostic Information, has been copied to the clipboard.','Notice', 'OK') | Out-Null
 	})
 
+	$WPF_FilterTxt.Add_TextChanged({ DGFilter })
 	$WPF_ShowConsole_CB.Add_Checked({ ShowConsoleWin 5 }) #5 = Show
 	$WPF_ShowConsole_CB.Add_UnChecked({ ShowConsoleWin 0 }) #0 = Hide
 	$WPF_ScriptLog_CB.Add_Checked({ $WPF_LogNameInput.IsEnabled = $True })
@@ -917,7 +927,7 @@ Function GuiStart {
 	$WPF_CheckUpdateSerButton.Add_Click({ UpdateCheckNow -Ser })
 	$WPF_CheckUpdateSrpButton.Add_Click({ UpdateCheckNow -Srp })
 	$WPF_CheckUpdateBothButton.Add_Click({ UpdateCheckNow -Ser -Srp })
-	$WPF_DevLogCB.Add_Checked({ DevLogCBFunction })
+	$WPF_DevLogCB.Add_Checked({ DevLogCBFunction})
 	$WPF_DevLogCB.Add_UnChecked({ DevLogCBFunction -C })
 
 	$WPF_AboutButton.Add_Click({ [Windows.Forms.MessageBox]::Show("This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script.`n`nThis script was created by MadBomb122.",'About', 'OK') | Out-Null })
@@ -957,6 +967,7 @@ Function GuiStart {
 	}
 
 	$Script:ServiceImport = 1
+	ChangeFilterTable -Re
 	HideShowCustomSrvStuff
 	RunDisableCheck
 	Clear-Host
@@ -976,6 +987,20 @@ Function CustomBVCBFun([Switch]$C) {
 		$WPF_dataGrid.ItemsSource = $DataGridListOrig
 	}
 	RunDisableCheck
+	DGFilter
+}
+
+Function DGFilter {
+	$DGUpdate = $False
+	$TxtFilter = $WPF_FilterTxt.text
+	$Filter = $FilterList[$WPF_FilterType.SelectedIndex]
+	If($DataGridLCust) {
+		$TableFilter = $DataGridListCust.Where({$_.$Filter -Match $TxtFilter})
+	} Else {
+		$TableFilter = $DataGridListOrig.Where({$_.$Filter -Match $TxtFilter})
+	}
+	$WPF_dataGrid.ItemsSource = $TableFilter
+	$DGUpdate = $True
 }
 
 Function RunDisableCheck {
@@ -997,6 +1022,7 @@ Function RunDisableCheck {
 		$Buttontxt += $EBErrLst[$EBFailCount -1]
 		$Buttontxt += ' Check'
 		$WPF_dataGrid.Columns[4].Header = 'Black Viper'
+		ChangeFilterTable
 		$WPF_RunScriptButton.IsEnabled = $False
 	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
 		$WPF_RunScriptButton.IsEnabled = $False
@@ -1014,6 +1040,7 @@ Function RunDisableCheck {
 			}
 		}
 		$WPF_dataGrid.Columns[4].Header = 'Custom Service'
+		ChangeFilterTable -C
 	} Else {
 		If($WPF_ServiceConfig.SelectedIndex -eq 0){ $WPF_dataGrid.Columns[4].Header = 'Win Default' } Else{ $WPF_dataGrid.Columns[4].Header = 'Black Viper' }
 		If($WPF_CustomBVCB.IsChecked){ $Buttontxt = 'Run Script with Customize Service List' } Else{ $Buttontxt = 'Run Script' }
@@ -1021,6 +1048,21 @@ Function RunDisableCheck {
 		$WPF_LoadServicesButton.IsEnabled = $True
 	}
 	$WPF_RunScriptButton.Content = $Buttontxt
+}
+
+Function ChangeFilterTable([Switch]$C,[Switch]$Re) {
+	If(!$Re) {
+		$tmp = $WPF_FilterType.SelectedIndex
+		$WPF_FilterType.Items.RemoveAt(7)
+		$WPF_FilterType.Items.RemoveAt(6)
+		$WPF_FilterType.Items.RemoveAt(5)
+		$WPF_FilterType.Items.RemoveAt(4)
+	}
+	If($C){	$WPF_FilterType.Items.Add('Custom Service') } Else{ $WPF_FilterType.Items.Add('Black Viper') }
+	$WPF_FilterType.Items.Add('State')
+	$WPF_FilterType.Items.Add('Description')
+	$WPF_FilterType.Items.Add('Path')
+	If(!$Re){ $WPF_FilterType.SelectedIndex = $tmp }
 }
 
 Function GenerateServices {
@@ -1096,6 +1138,10 @@ Function GenerateServices {
 		$WPF_SaveRegButton.Visibility = 'Visible'
 		$WPF_TableLegend.Visibility = 'Visible'
 		$WPF_Div1.Visibility = 'Visible'
+		$WPF_Div2.Visibility = 'Visible'
+		$WPF_FilterTxt.Visibility = 'Visible'
+		$WPF_FilterType.Visibility = 'Visible'
+		$WPF_FilterLabel.Visibility = 'Visible'
 		$WPF_LoadServicesButton.Content = 'Reload'
 		$Script:ServicesGenerated = $True
 	}
@@ -1211,7 +1257,7 @@ Function UpdateCheck {
 				DownloadFile $Service_Url $ServiceFilePath
 				$Message = "Service File Updated to $WebVersion"
 				If($LoadServiceConfig -ne 2){
-					[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath 
+					[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath
 					SetServiceVersion
 				} Else {
 					$WPF_Service_Ver_Txt.Text = "Service Version: $WebVersion"
@@ -1241,6 +1287,8 @@ Function UpdateDisplay([String]$FullVer,[String]$DFilename) {
 	MenuLine -L
 	MenuBlankLine -L
 	DisplayOutLML (''.PadRight(18)+'Update Found!') -C 13 -L
+	MenuBlankLine -L
+	DisplayOut '|',' Updating from version',"$Script_Version".PadRight(30),'|' -C 14,15,11,14 -L
 	MenuBlankLine -L
 	DisplayOut '|',' Downloading version ',"$FullVer".PadRight(31),'|' -C 14,15,11,14 -L
 	DisplayOut '|',' Will run ',"$DFilename".PadRight(42),'|' -C 14,15,11,14 -L
@@ -1297,7 +1345,8 @@ Function ScriptUpdateFun {
 		$UpArg += '-u -bv '
 		If($Release_Type -ne 'Stable'){ $UpArg += '-test ' }
 		UpdateDisplay $FullVer $DFilename
-		Start-Process powershell.exe " $UpdateFile $UpArg"
+		Start-Process -FilePath $UpdateFile -ArgumentList $UpArg -Wait
+		#Start-Process powershell.exe " $UpdateFile $UpArg"
 	} Else {
 		$DFilename = 'BlackViper-Win10-Ver.' + $FullVer
 		If($Release_Type -ne 'Stable'){ $DFilename += '-Testing' ;$Script_Url = $URL_Base + 'Testing/' }
@@ -1876,6 +1925,7 @@ Function PreScriptCheck {
 		}
 		AutomatedExitCheck 1
 	}
+
 	If($BackupServiceConfig -eq 1) {
 		If($BackupServiceType -eq 1) {
 			Save_ServiceBackup
