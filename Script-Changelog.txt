@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.3.5 (09-19-2018)
+5.3.6 (09-27-2018)
 
 Fixed Save Settings button not working (thanks to harmonicx for letting me know)
 Fixed bug with running script with custom service file (thanks to harmonicx for letting me know)
@@ -10,6 +10,10 @@ Added ability to Search the 'Service Table'
 
 Update.bat (if available will now update automaticly before script updates)
 Fixed issue with chars and spaces being in path when trying to do an update to script
+
+Internal Script Improvements
+Before and After will now log if service is running or stopped
+'Update.bat' file is no longer used
 
 -----------------------------------------------------------------------------------
 5.3.0 (09-14-2018)
