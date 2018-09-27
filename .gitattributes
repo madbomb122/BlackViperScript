@@ -3,3 +3,4 @@
 .gitattributes export-ignore
 todo.md export-ignore
 /.github/ export-ignore
+Update.bat export-ignore
