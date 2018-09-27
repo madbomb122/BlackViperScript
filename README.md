@@ -1,5 +1,7 @@
-**NOTICE 1: Script Update was broken in v5.2.4, Please re-download script from [Here](https://github.com/madbomb122/BlackViperScript/releases).   
-NOTICE 2: `Update.bat`, `_Win10-BlackViper.bat`, and `BlackViper.csv` have been updated since v5.2.4.**  
+**NOTICES**   
+1. `Update.bat` is no longer needed.   
+2. Script Update was broken in v5.2.4, Please re-download script from [Here](https://github.com/madbomb122/BlackViperScript/releases).   
+3. `_Win10-BlackViper.bat`, and `BlackViper.csv` have been updated since v5.2.4.
 
 **Thank you**   
 
@@ -11,7 +13,7 @@ NOTICE 2: `Update.bat`, `_Win10-BlackViper.bat`, and `BlackViper.csv` have been 
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `5.3.5` (September 19, 2018)   
+**Script:** `5.3.6` (September 27, 2018)   
 **Service:** `4.2` (September 11, 2018) -April 2018 Update   
 **Update File:** `1.3.6` (September 19, 2018)   
 
@@ -53,7 +55,6 @@ PPS. My Thanks goes out to all that have helped in any way.
 [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `7.34 KB` (Not the same as the one on BlackViper's Website)  
 
 **Recommended Files**   
-[Update.bat](https://github.com/madbomb122/BlackViperScript/raw/master/Update.bat) (Script will use to update script if available) -Size about `11.7 KB`   
 [_Win10-BlackViper.bat](https://github.com/madbomb122/BlackViperScript/raw/master/_Win10-BlackViper.bat) (To run script easier) -Size about `7.07 KB`   
 [README.md](https://github.com/madbomb122/BlackViperScript/raw/master/README.md) (This Readme)   
 
@@ -139,9 +140,8 @@ Switch Examples:
 ## Update.Bat
 This file is EXACTLY the same as the one in my other Repo
 
-This file will   
-1. Allow you to download my Black Viper Script or my Win 10 Script and the needed files (if any).   
-2. The script will use to Download updates (to replace the old file, instead of creating a new file, so you dont have to rename the file or edit the bat file). (If this script is present)   
+This file will Allow you to download and/or my Black Viper Script or my Win 10 Script and the needed files (if any).   
+  
 
 |   Switch  | Description                                                 |
 | :-------- | :-----------------------------------------------------------|
