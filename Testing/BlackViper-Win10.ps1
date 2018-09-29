@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.6'
-$Script_Date = 'Sept-27-2018'
+$Script_Version = '5.3.7'
+$Script_Date = 'Sept-29-2018'
 $Release_Type = 'Testing'
 #$Release_Type = 'Stable'
 ##########
@@ -88,7 +88,7 @@ $Copyright ='
 	One of the following Methods...
 		1. Edit values at bottom of the script then run script
 		2. Edit bat file and run
-		3. Run the script with one of these arguments/switches (space between multiple)
+		3. Run the script with one of these switches (space between multiple)
 		4. Run the script and pick options in GUI
 
   Switch          Description of Switch
@@ -971,7 +971,7 @@ Function GuiStart {
 
 	ForEach($Var In $VarList){ If($(Get-Variable -Name ($Var.Name.Split('_')[1]) -ValueOnly) -eq 1){ $Var.Value.IsChecked = $True } Else{ $Var.Value.IsChecked = $False } }
 	If($EditionCheck -ne 0){ $WPF_EditionCheckCB.IsChecked = $True ;$WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheckCB.IsChecked = $False }
-	If($WinEdition -eq 'Home' -or $EditionCheck -eq 'Home'){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
+	If('Home' -In $WinEdition,$EditionCheck){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
 
 	$WPF_BackupServiceType.SelectedIndex = $BackupServiceType
 	$WPF_ServiceConfig.SelectedIndex = $Black_Viper
@@ -1035,7 +1035,7 @@ Function RunDisableCheck {
 	}
 
 	$EBFailCount = 0
-	If(!($EditionCheck -eq 'Home' -or $EditionCheck -eq 'Pro' -or $WinSkuList -Contains $WinSku)){ $EBFailCount = 1 }
+	If(!($EditionCheck -In 'Home','Pro' -or $WinSkuList -Contains $WinSku)){ $EBFailCount = 1 }
 	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1){ $EBFailCount += 2 }
 
 	If($EBFailCount -ne 0) {
@@ -1048,12 +1048,20 @@ Function RunDisableCheck {
 	} ElseIf($WPF_ServiceConfig.SelectedIndex + 1 -eq $BVCount) {
 		$WPF_RunScriptButton.IsEnabled = $False
 		$WPF_LoadServicesButton.IsEnabled = $False
-		If(!($ServiceConfigFile) -or !(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf)) {
+		If(!$ServiceConfigFile -or !(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf)) {
 			$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
 		} Else {
 			[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $ServiceConfigFile
-			If($Tempcheck[0].StartType -eq $null -or $Tempcheck[0].ServiceName -eq $null) {
-				$Buttontxt = 'Run Disabled, Invalid Custom Service File.'
+			If($null -In $Tempcheck[0].StartType,$Tempcheck[0].ServiceName) {
+				$tmpG = $Tempcheck[0].'Def-Pro-Full'
+				If($tmpG -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
+					$Script:ServiceConfigFile = ''
+					$WPF_LoadFileTxtBox.Text = ''
+					$Buttontxt = "Run Disabled, No Custom Service List File Selected or Doesn't exist."
+					[Windows.Forms.MessageBox]::Show("Please don't load the 'BlackViper.csv' File... `nSelect another 'File' or Select a 'Serivce Configuration' above.",'Error', 'OK') | Out-Null
+				} Else {
+					$Buttontxt = 'Run Disabled, Invalid Custom Service File.'
+				}
 			} Else {
 				$WPF_RunScriptButton.IsEnabled = $True
 				$WPF_LoadServicesButton.IsEnabled = $True
@@ -1213,7 +1221,7 @@ Function UpdateCheckAuto {
 		DisplayOutLML 'Tested by pinging GitHub.com' -C 2 -L
 		MenuBlankLine -L
 		DisplayOutLML 'To skip use one of the following methods' -C 2 -L
-		DisplayOut '|',' 1. Run Script or bat file with ','-sic',' argument'.PadRight(16),'|' -C 14,2,15,2,14 -L
+		DisplayOut '|',' 1. Run Script or bat file with ','-sic',' switch'.PadRight(16),'|' -C 14,2,15,2,14 -L
 		DisplayOut '|',' 2. Change ','InternetCheck',' in Script file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 		DisplayOut '|',' 3. Change ','InternetCheck',' in bat file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 		MenuBlankLine -L
@@ -1396,7 +1404,7 @@ Function Save_ServiceBackup {
 Function GenerateSaveService {
 	$TMPServiceL = ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
-		If(!($Skip_Services -Contains $ServiceName)) {
+		If($Skip_Services -NotContains $ServiceName) {
 			$tmp = $Service.StartType
 			If($tmp -eq 'Disabled') {
 				$StartType = 1
@@ -1429,7 +1437,7 @@ Function GenerateRegistryRegular([String]$TempFP) {
 	Write-Output "Windows Registry Editor Version 5.00`n" | Out-File -LiteralPath $TempFP
 	ForEach($Service In $AllService) {
 		$ServiceName = $Service.Name
-		If(!($Skip_Services -Contains $ServiceName)) {
+		If($Skip_Services -NotContains $ServiceName) {
 			$tmp = $Service.StartType
 			If($tmp -eq 'Disabled'){ $ServiceTypeNum = 4 } ElseIf($tmp -eq 'Manual'){ $ServiceTypeNum = 3 } ElseIf($tmp -In 'Automatic','Auto' ){ $ServiceTypeNum = 2 }
 			$Num = '"Start"=dword:0000000' + $ServiceTypeNum
@@ -1449,7 +1457,7 @@ Function GenerateRegistryCustom([String]$TempFP) {
 		$ServiceTypeNum = $ServicesTypeFull.IndexOf($item.BVType)
 		If($ServiceTypeNum -ne 0) {
 			If($ServiceName -Like '*_*'){ $ServiceName = ($CurrServices.Where{$_.Name -like ($ServiceName.Split('_')[0] + '_*')}).Name }
-			If(!($Skip_Services -Contains $ServiceName)) {
+			If($Skip_Services -NotContains $ServiceName) {
 				$Num = '"Start"=dword:0000000' + $ServicesRegTypeList[$ServiceTypeNum]
 				Write-Output "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\$ServiceName]" | Out-File -LiteralPath $TempFP -Append
 				Write-Output $Num | Out-File -LiteralPath $TempFP -Append
@@ -1490,7 +1498,7 @@ Function CreateLog {
 }
 
 Function DiagnosticCheck([Int]$Bypass) {
-	If($Release_Type -ne 'Stable' -or $Bypass -eq 1 -or $Diagnostic -eq 1) {
+	If($Release_Type -ne 'Stable' -or 1 -In $Bypass,$Diagnostic) {
 		DisplayOut " ********START********" -C 11
 		DisplayOut ' Diagnostic Output, Some items may be blank' -C 14
 		DisplayOut "`n --------Script Info--------" -C 2
@@ -1713,7 +1721,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		$StopWatch.Reset()
 		DisplayOut ' Service Changed...' -C 14 -L -G:$GuiSwitch
 		DisplayOut ' Elapsed Time: ',$StopWatchTime -C 14,15 -L -G:$GuiSwitch
-		If($StopDisabled -eq 1 -or $ChangeState -eq 1){ DisplayOut ' Stopped: ',$BVStopped -C 14,15 -L -G:$GuiSwitch }
+		If(1 -In $StopDisabled,$ChangeState){ DisplayOut ' Stopped: ',$BVStopped -C 14,15 -L -G:$GuiSwitch }
 		If($ChangeState -eq 1){ DisplayOut ' Running: ',$BVRunning -C 14,15 -L -G:$GuiSwitch }
 	} Else {
 		DisplayOut ' List of Service Done...' -C 14 -L -G:$GuiSwitch
@@ -1874,8 +1882,8 @@ Function PreScriptCheck {
 			DisplayOutLML ' 2. The SKU # listed above' 2 -L
 			MenuBlankLine -L
 			DisplayOutLML 'To skip use one of the following methods' 2 -L
-			DisplayOut '|','  1. Run Script or bat file with ','-secp',' argument'.PadRight(14),'|' -C 14,2,15,2,14 -L
-			DisplayOut '|','  1. Run Script or bat file with ','-sech',' argument'.PadRight(14),'|' -C 14,2,15,2,14 -L
+			DisplayOut '|','  1. Run Script or bat file with ','-secp',' switch'.PadRight(14),'|' -C 14,2,15,2,14 -L
+			DisplayOut '|','  1. Run Script or bat file with ','-sech',' switch'.PadRight(14),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  3. Change ','EditionCheck',' in script file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  4. Change ','Skip_EditionCheck',' in bat file'.PadRight(23),'|' -C 14,2,15,2,14 -L
 			MenuBlankLine -L
@@ -1891,7 +1899,7 @@ Function PreScriptCheck {
 			DisplayOut '|',' You are using Version: ',"$Win10Ver".PadRight(28),'|' -C 14,2,15,14 -L
 			MenuBlankLine -L
 			DisplayOutLML 'To skip use one of the following methods' 2 -L
-			DisplayOut '|','  1. Run Script or bat file with ','-sbc',' argument'.PadRight(15),'|' -C 14,2,15,2,14 -L
+			DisplayOut '|','  1. Run Script or bat file with ','-sbc',' switch'.PadRight(15),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  2. Change ','BuildCheck',' in script file'.PadRight(30),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  3. Change ','Skip_BuildCheck',' in bat file'.PadRight(25),'|' -C 14,2,15,2,14 -L
 			MenuLine -L
@@ -1935,8 +1943,8 @@ Function PreScriptCheck {
 		}
 	}
 	If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
-	If($ScriptVerCheck -eq 1 -or $ServiceVerCheck -eq 1){ UpdateCheckAuto }
-	If(!($LoadServiceConfig -In 1,2)){ CheckBVcsv ;$csv.RemoveAt(0) }
+	If(1 -In $ScriptVerCheck,$ServiceVerCheck){ UpdateCheckAuto }
+	If($LoadServiceConfig -NotIn 1,2){ CheckBVcsv ;$csv.RemoveAt(0) }
 }
 
 Function CheckBVcsv {
@@ -1956,7 +1964,7 @@ Function CheckBVcsv {
 			$Script:ErrorDi = 'Missing File BlackViper.csv'
 			Error_Top
 			DisplayOut '|',' The File ','BlackViper.csv'," is missing and couldn't    ",'|' -C 14,2,15,2,14 -L
-			DisplayOutLML "be download for some reason." 2 -L
+			DisplayOutLML 'be download for some reason.' 2 -L
 			Error_Bottom
 		}
 	}
@@ -1967,6 +1975,31 @@ Function PassVal([String]$Pass){ Return $PassedArg[$PassedArg.IndexOf($Pass)+1] 
 Function GetArgs {
 	If($PassedArg -In '-help','-h'){ ShowHelp }
 	If($PassedArg -Contains '-copy'){ ShowCopyright ;Exit }
+	If($PassedArg -Contains '-lcsc') {
+		$Script:BV_ArgUsed = 3
+		$Script:LoadServiceConfig = 1
+		$tmp = PassVal '-lcsc'
+		If(!$tmp.StartsWith('-')) {
+			[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $tmp
+			If($null -In $Tempcheck[0].StartType,$Tempcheck[0].ServiceName) {
+				Error_Top
+				If($Tempcheck[0].'Def-Pro-Full' -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
+					DisplayOut '|'," Please don't load '",'BlackViper.csv',"' by using",' -lcsc ',' |' -C 14,2,15,2,15,14 -L
+					DisplayOutLML 'Instead use one of the following instead' -C 2 -L
+					$InSwitch = '   -Default   -Safe'
+					If($IsLaptop -ne '-Lap') { $InSwitch += '   -Tweaked' }
+					DisplayOutLML $InSwitch -C 15 -L
+					$Script:ErrorDi = "Can't use -lcsc with BlackViper.csv File"
+				} Else {
+					DisplayOut '|',' The File ',"$tmp".PadRight(41),' |' -C 14,2,15,14 -L
+					DisplayOutLML 'is Invalid or Corrupt.' 2 -L
+					$Script:ErrorDi = 'Invalid CSV File'
+				}
+				Error_Bottom
+			}
+			$Script:ServiceConfigFile = $tmp
+		}
+	}
 	If($PassedArg -Contains '-default'){ $Script:Black_Viper = 1 ;$Script:BV_ArgUsed = 2 }
 	If($PassedArg -Contains '-safe'){ $Script:Black_Viper = 2 ;$Script:BV_ArgUsed = 2}
 	If($PassedArg -Contains '-tweaked'){ If($IsLaptop -ne '-Lap'){ $Script:Black_Viper = 3 ;$Script:BV_ArgUsed = 2 } Else{ $Script:BV_ArgUsed = 1 } }
@@ -1975,18 +2008,12 @@ Function GetArgs {
 	If($PassedArg -Contains '-log') {
 		$Script:ScriptLog = 1
 		$tmp = PassVal '-log'
-		If(!($tmp.StartsWith('-'))){ $Script:LogName = $tmp }
+		If(!$tmp.StartsWith('-')){ $Script:LogName = $tmp }
 	}
 	If($PassedArg -Contains '-logc') { #To append to logfile (used for update)
 		$Script:ScriptLog = 2
 		$tmp = PassVal '-logc'
-		If(!($tmp.StartsWith('-'))){ $Script:LogName = $tmp }
-	} 
-	If($PassedArg -Contains '-lcsc') {
-		$Script:BV_ArgUsed = 3
-		$Script:LoadServiceConfig = 1
-		$tmp = PassVal '-lcsc'
-		If(!($tmp.StartsWith('-'))){ $Script:ServiceConfigFile = $tmp }
+		If(!$tmp.StartsWith('-')){ $Script:LogName = $tmp }
 	}
 	If($PassedArg -Contains '-bscc'){ $Script:BackupServiceConfig = 1 ;$Script:BackupServiceType = 1 }
 	If($PassedArg -Contains '-bscr'){ $Script:BackupServiceConfig = 1 ;$Script:BackupServiceType = 0 }
