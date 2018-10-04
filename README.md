@@ -13,7 +13,7 @@ Please Do not ask me when I will have the update for the October 2018 Update.
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `5.3.7` (September 29, 2018)   
+**Script:** `5.3.8` (October 04, 2018)   
 **Service:** `4.2` (September 11, 2018) -April 2018 Update   
 **Update File:** `1.3.6` (September 19, 2018)   
 
@@ -42,12 +42,13 @@ PPS. My Thanks goes out to all that have helped in any way.
 ## Requirements
 **Make sure to LOOK at this**
 
-|            | Recommended Requirements         | AT YOUR OWN RISK* (See Note Below) |
-| :--------- | :--------------------------------| :--------------------------------- |
-|**OS**      | Windows 10                       |                                    |
-|**Bit**     | 64-bit (x64)                     | 32-bit (x86)                       |
-|**Edition** | Pro or Home                      | All Others                         |
-|**Build**   | Creator's Update or Newer        | Pre-Creator's Update               |
+|             | Recommended Requirements         | AT YOUR OWN RISK* (See Note Below) |
+| :---------- | :--------------------------------| :--------------------------------- |
+|**OS**       | Windows 10                       |                                    |
+|**Bit**      | 64-bit (x64)                     | 32-bit (x86)                       |
+|**Edition**  | Pro or Home                      | All Others                         |
+|**Min Build**| Creator's Update                 | Pre-Creator's Update               |
+|**Max Build**| April 2018 Update                | Newer Than this                    |
 
 
 **_Need Files_**   
@@ -64,8 +65,8 @@ PPS. My Thanks goes out to all that have helped in any way.
 **AT YOUR OWN RISK**  
 **1. Run the script on x86 (32-bit) ,But shows a warning**  
 **2. Skip the check for**  
-**---A. Home/Pro** *(`$Script:Edition_Check` variable in script or use `-sec` switch)*  
-**---B. Creator's Update** *(`$Script:Build_Check` variable in script or use `-sbc` switch)*  
+**---A. Home/Pro** *(`$Edition_Check` variable in script or use `-sec` switch)*  
+**---B. Min Creator's Update** *(`$Build_Check` variable in script or use `-sbc` switch)*  
 
 ## How to Use
 Download/Save the release file in - [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
