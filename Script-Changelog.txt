@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.3.7 (09-29-2018)
+5.3.8 (10-04-2018)
 
 Fixed Save Settings button not working (thanks to harmonicx for letting me know)
 Fixed bug with running script with custom service file (thanks to harmonicx for letting me know)
@@ -15,8 +15,12 @@ Internal Script Improvements
 Before and After will now log if service is running or stopped
 'Update.bat' file is no longer used
 
-Script will now return to 'Default' service configuration when selecting 'blackviper.csv' file
+Script returns to 'Default' service configuration when loading 'blackviper.csv' using 'Custom Setting' Option 
 -lcsc switch now checks if CSV file is valid before continuing
+
+Script now shows Console Window after script is closed (If Console Window was Hidden)
+Added a check to make sure you are not using over the current supported version number
+Fixed bug with some save file options (thanks to bubbismith for letting me know)
 
 -----------------------------------------------------------------------------------
 5.3.0 (09-14-2018)
