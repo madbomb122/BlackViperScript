@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.3.7'
-$Script_Date = 'Sept-29-2018'
+$Script_Version = '5.3.8'
+$Script_Date = 'Oct-04-2018'
 $Release_Type = 'Stable'
 ##########
 
@@ -180,6 +180,7 @@ $WinEdition = $FullWinEdition.Split(' ')[-1]
 $BuildVer = [Environment]::OSVersion.Version.build
 
 $MinVer = 1703
+$MaxVer = 1803
 $Win10Ver = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name ReleaseID).ReleaseId
 # 1809 = October 2018 Update
 # 1803 = April 2018 Update
@@ -189,11 +190,14 @@ $Win10Ver = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\Current
 # 1511 = November Update (First Major Update)
 # 1507 = First Release
 
+$MaxBuildName = 'April 2018 Update'
+
 If([System.Environment]::Is64BitProcess){ $OSType = 64 } Else{ $OSType = 32 }
 
 $URL_Base = 'https://raw.GitHub.com/madbomb122/BlackViperScript/master/'
 $Version_Url = $URL_Base + 'Version/Version.csv'
 $Service_Url = $URL_Base + 'BlackViper.csv'
+$Message_Url = $URL_Base + 'Version/Message'
 
 $ServiceEnd = Get-Service '*_*' | Select-Object Name | ForEach-Object { $_.Name.Split('_')[-1] } | Group-Object | Sort-Object Count -Descending | Select-Object -First 1 -ExpandProperty Name
 
@@ -785,6 +789,7 @@ Function GuiStart {
 			If([windows.forms.messagebox]::show('Are you sure you want to exit?','Exit','YesNo') -eq 'No'){ $_.cancel = $True }
 		}
 		SaveSetting
+		ShowConsoleWin 5
 	})
 
 	$WPF_RunScriptButton.Add_Click({
@@ -887,6 +892,11 @@ Function GuiStart {
 		TBoxDiag ' Version: ',$Win10Ver -C 14,15
 		TBoxDiag ' PC Type: ',$PCType -C 14,15
 		TBoxDiag ' Desktop/Laptop: ',$IsLaptop.Substring(1) -C 14,15
+		TBoxDiag '' -C 14
+		TBoxDiag " --------Script Requirements--------" -C 2
+		TBoxDiag ' Edition: ','Home or Pro' -C 14,15
+		TBoxDiag ' Min Version: ',$MinVer -C 14,15
+		TBoxDiag ' Max Version: ',$MaxVer -C 14,15
 		TBoxDiag '' -C 14
 		TBoxDiag ' --------Current Settings--------' 2
 		TBoxDiag ' BlackViper: ',$WPF_ServiceConfig.Text -C 14,15
@@ -993,6 +1003,7 @@ Function GuiStart {
 	Clear-Host
 	DisplayOut 'Displaying GUI Now' -C 14
 	DisplayOut "`nTo exit you can close the GUI or PowerShell Window." -C 14
+
 	$Form.ShowDialog() | Out-Null
 }
 
@@ -1035,7 +1046,7 @@ Function RunDisableCheck {
 
 	$EBFailCount = 0
 	If(!($EditionCheck -In 'Home','Pro' -or $WinSkuList -Contains $WinSku)){ $EBFailCount = 1 }
-	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1){ $EBFailCount += 2 }
+	If($Win10Ver -NotIn $MinVer..$MaxVer -And $BuildCheck -ne 1){ $EBFailCount += 2 }
 
 	If($EBFailCount -ne 0) {
 		$Buttontxt = 'Run Disabled Due to '
@@ -1295,7 +1306,12 @@ Function UpdateCheck {
 		If($WebScriptVer -gt $Script_Version){
 			$Choice = 'Yes'
 			If($NAuto){ $Choice = [windows.forms.messagebox]::show("Update Script File from $Script_Version to $WebScriptVer ?",'Update Found','YesNo') }
-			If($Choice -eq 'Yes'){ ScriptUpdateFun $RT ;$Script:RanScript = $True } ElseIf($Message -eq ''){ $NAuto = $False }
+			If($Choice -eq 'Yes') {
+				$Script:RanScript = $True
+				ScriptUpdateFun $RT 
+			} ElseIf($Message -eq '') {
+				$NAuto = $False
+			}
 		} ElseIf($NAuto) {
 			If($Message -eq ''){ $Message = 'No Script update Found.' } Else{ $Message = 'Congrats you have the latest Service and Script version.' }
 		}
@@ -1389,7 +1405,7 @@ Function Save_Service([String]$SavePath) {
 	} Else {
 		$SaveService = GenerateSaveService
 	}
-	$SaveService | Export-Csv -LiteralPath $ServiceSavePath -Encoding Unicode -Force -Delimiter ','
+	$SaveService | Export-Csv -LiteralPath $SavePath -Encoding Unicode -Force -Delimiter ','
 	[Windows.Forms.MessageBox]::Show("File saved as '$SavePath'",'File Saved', 'OK') | Out-Null
 }
 
@@ -1514,6 +1530,10 @@ Function DiagnosticCheck([Int]$Bypass) {
 		DisplayOut ' Version: ',$Win10Ver -C 14,15
 		DisplayOut ' PC Type: ',$PCType -C 14,15
 		DisplayOut ' Desktop/Laptop: ',$IsLaptop.Substring(1) -C 14,15
+		DisplayOut "`n --------Script Requirements--------" -C 2
+		DisplayOut ' Edition: ','Home or Pro' -C 14,15
+		DisplayOut ' Min Version: ',$MinVer -C 14,15
+		DisplayOut ' Max Version: ',$MaxVer -C 14,15
 		DisplayOut "`n --------Misc Info--------" -C 2
 		DisplayOut ' Args: ',$PassedArg -C 14,15
 		DisplayOut ' Error: ',$ErrorDi -C 13,15
@@ -1852,7 +1872,7 @@ Function PreScriptCheck {
 		$EBCount++
 	}
 
-	If($Win10Ver -lt $MinVer -And $BuildCheck -ne 1) {
+	If($Win10Ver -NotIn $MinVer..$MaxVer -And $BuildCheck -ne 1) {
 		If($EditionCheck -eq 'Fail'){ $Script:ErrorDi += ' & ' }
 		$Script:ErrorDi += 'Build'
 		$BuildCheck = 'Fail'
@@ -1892,7 +1912,8 @@ Function PreScriptCheck {
 			$EBCount++
 			MenuBlankLine -L
 			DisplayOutLML "$EBCount. Not a valid Build for this Script." 2 -L
-			DisplayOutLML "Lowest Build Recommended - Creator's Update (1703)" 2 -L
+			DisplayOutLML "Min Version Recommended - Creator's Update (1703)" 2 -L
+			DisplayOutLML "Max Version Recommended - $MaxBuildName" 2 -L
 			MenuBlankLine -L
 			DisplayOut '|',' You are using Build: ',"$BuildVer".PadRight(30),'|' -C 14,2,15,14 -L
 			DisplayOut '|',' You are using Version: ',"$Win10Ver".PadRight(28),'|' -C 14,2,15,14 -L
