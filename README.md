@@ -13,7 +13,7 @@ Please Do not ask me when I will have the update for the October 2018 Update.
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `5.3.8` (October 04, 2018)   
+**Script:** `5.3.9` (October 10, 2018)   
 **Service:** `4.2` (September 11, 2018) -April 2018 Update   
 **Update File:** `1.3.6` (September 19, 2018)   
 
