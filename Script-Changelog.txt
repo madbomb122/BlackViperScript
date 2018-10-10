@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.3.8 (10-04-2018)
+5.3.9 (10-10-2018)
 
 Fixed Save Settings button not working (thanks to harmonicx for letting me know)
 Fixed bug with running script with custom service file (thanks to harmonicx for letting me know)
@@ -21,6 +21,9 @@ Script returns to 'Default' service configuration when loading 'blackviper.csv' 
 Script now shows Console Window after script is closed (If Console Window was Hidden)
 Added a check to make sure you are not using over the current supported version number
 Fixed bug with some save file options (thanks to bubbismith for letting me know)
+
+Improved Save for Setting File (made script and setting file smaller) -Old setting files will still load
+Internal Script Improvements
 
 -----------------------------------------------------------------------------------
 5.3.0 (09-14-2018)
