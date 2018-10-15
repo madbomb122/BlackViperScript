@@ -35,9 +35,9 @@ Black Viper's Service Configurations from http://www.blackviper.com/
 
 **Note: This Script is ment for Windows 10 Home x64 / Windows 10 Pro x64.. With Creator's Update or newer Installed**    
 
-PS. Don't forget to check out my other Repo https://github.com/madbomb122/Win10Script    
+PS. Don't forget to check out my other Repo [https://github.com/madbomb122/Win10Script](https://github.com/madbomb122/Win10Script)    
 
-PPS. My Thanks goes out to all that have helped in any way.
+PPS. My Thanks goes out to all that have helped in any way, and to the people on [/r/PowerShell](https://www.reddit.com/r/PowerShell) who have helped me solve various things.    
 
 ## Requirements
 **Make sure to LOOK at this**
