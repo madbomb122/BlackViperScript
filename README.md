@@ -52,7 +52,7 @@ PPS. My Thanks goes out to all that have helped in any way, and to the people on
 
 
 **_Need Files_**   
-[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `105.0 KB`  
+[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `102.0 KB`  
 [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `7.34 KB` (Not the same as the one on BlackViper's Website)  
 
 **Recommended Files**   
