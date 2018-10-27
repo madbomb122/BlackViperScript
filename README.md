@@ -1,7 +1,7 @@
 **NOTICES**   
 1. `Update.bat` is no longer needed.   
 
-Please Do not ask me when I will have the update for the October 2018 Update.
+Please Do not ask me when I will have the update for the October 2018 Update, I'm waiting for those changes to be available on Black Viper's Website.
 
 **Thank you**   
 
@@ -66,7 +66,7 @@ PPS. My Thanks goes out to all that have helped in any way, and to the people on
 **1. Run the script on x86 (32-bit) ,But shows a warning**  
 **2. Skip the check for**  
 **---A. Home/Pro** *(`$Edition_Check` variable in script or use `-sec` switch)*  
-**---B. Min Creator's Update** *(`$Build_Check` variable in script or use `-sbc` switch)*  
+**---B. Min/Max Build** *(`$Build_Check` variable in script or use `-sbc` switch)*  
 
 ## How to Use
 Download/Save the release file in - [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
@@ -122,7 +122,7 @@ Use one of the following Methods you can
 | -sds           | Stop Disabled Service                                                          |                                                         |
 | -secp          | Skips Edition Check (Home/Pro), Sets edition as Pro                            | **USE AT YOUR OWN RISK**                                |
 | -sech          | Skips Edition Check (Home/Pro), Sets edition as Home                           | **USE AT YOUR OWN RISK**                                |
-| -sbc           | Skips Build Check (Creator's Update or Newer)                                  | **USE AT YOUR OWN RISK**                                |
+| -sbc           | Skips Min/Max Build Check                                                      | **USE AT YOUR OWN RISK**                                |
 | -diag          | Shows some diagnostic information on error messages                            | **Stops automation**                                    |
 | -diagf         | Forced diagnostic information, Script does nothing else                        | **No Services are changes**                             |
 | -devl          | Makes a log file with various Diagnostic information                           | **No Services are changes**                             |
@@ -132,27 +132,10 @@ Use one of the following Methods you can
 
 Switch Examples:   
 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -lcsc MyComp-Service-Backup.csv`   
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -Set Default`   
-`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -sec`   
-`_Win10-BlackViper.bat -Set Default`   
-`_Win10-BlackViper.bat -auto -use -tweaked -sec`
-
-******
-## Update.Bat
-This file is EXACTLY the same as the one in my other Repo
-
-This file will Allow you to download and/or my Black Viper Script or my Win 10 Script and the needed files (if any).   
-  
-
-|   Switch  | Description                                                 |
-| :-------- | :-----------------------------------------------------------|
-| -Help     | Shows the list of switches                                  |
-| -BV       | Downloads My Black Viper Script                             |
-| -W10      | Downloads My Windows 10 Script                              |
-| -Both     | Downloads My Black Viper Script & My Windows 10 Script      |
-| -Test     | Downloads The Test Version of the Script                    |
-| -Run      | Run the Script after Downloading (Does not work with -both) |
-| -Bat      | Download the bat file to run script easier                  |
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -default`   
+`powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1 -auto -use -tweaked -secp`   
+`_Win10-BlackViper.bat -default`   
+`_Win10-BlackViper.bat -auto -use -tweaked -secp`
 
 ******
 
@@ -189,8 +172,8 @@ This file will Allow you to download and/or my Black Viper Script or my Win 10 S
 **Q:** The script wont run, can you help me?   
 **A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.
 
-**Q:** Please E-Mail me if you are getting an Edition error when running Home/Pro?   
-**A:** E-Mail me what your edition is and what edition it says you are using, so I can add it to the list, Until then use -secp (for Pro) or -sech (for Home), Thanks.
+**Q:** Please E-Mail me or Post an Issue, if you are getting an Edition error when running Home/Pro?   
+**A:** Please Provide the information the screen give, Until then use -secp (for Pro) or -sech (for Home), Thanks.
 
 **Q:** The script window closes or gives an error saying script is blocked, what do I do?   
 **A:** By default windows blocks ps1 scripts, you can use one of the following   
@@ -207,7 +190,7 @@ This file will Allow you to download and/or my Black Viper Script or my Win 10 S
 **A:** Post it as an issue using github's issues tab up top.
 
 **Q:** Can I run the script safely?   
-**A:** Yes/No, it's safe to change the services back to default. Using the Safe or Tweaked option may cause problems for a program(s) that is depended on one of those services.
+**A:** Yes/No, it's safe to change the services back to default. Using the Safe or Tweaked option may cause problems for program(s) that depends on one of those services.
 
 **Q:** Can I run the script repeatedly?   
 **A:** Yes, with same or different settings.
@@ -233,7 +216,7 @@ This file will Allow you to download and/or my Black Viper Script or my Win 10 S
 
 **Q:** What do the letters mean in the release tab after the version number?   
 **A:** The letter indicates that something other than the script was updated when the script version hasn't changed..    
-**Note:** `B = Bat file`, `S = Service file`, `U = Update Bat file`, `M = Misc or Multiple Changes`    
+**Note:** `B = Bat file`, `S = Service file`, `M = Misc or Multiple Changes`    
 
 **Q:** Can I download the csv file from Black Viper's website and use that?   
 **A:** No, my file is not the same.   
@@ -245,7 +228,7 @@ This file will Allow you to download and/or my Black Viper Script or my Win 10 S
 **Note:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)`   
 
 **Q:** How long are you going to maintain the script?   
-**A:** No Clue.
+**A:** No Clue.   
 
 **Q:** When do you update the services file 'BlackViper.csv'?   
 **A:** When I get told or see there has been an update to the services. Some updates may take a while if changes in the script it required, like from Window's Big Update Patches.
