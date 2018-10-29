@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.3.9 (10-10-2018)
+5.4.0 (10-29-2018)
 
 Fixed Save Settings button not working (thanks to harmonicx for letting me know)
 Fixed bug with running script with custom service file (thanks to harmonicx for letting me know)
@@ -24,6 +24,18 @@ Fixed bug with some save file options (thanks to bubbismith for letting me know)
 
 Improved Save for Setting File (made script and setting file smaller) -Old setting files will still load
 Internal Script Improvements
+
+Various Script Improvements
+'Show Skipped' now shows unchecked services as skipped when using 'Customize Service' Option
+Saving Custom CSV will now remeber the 'Setting/State' for unchecked services (and load in as unchecked)
+'Auto' is shown instead of 'Automatic' for services (Automatic Delayed too)
+Fixed bug in 'Service Table' for the 'Check/Uncheck All' when using the filter
+Log File Improvements
+ 1. Time now shows seconds
+ 2. Log line now add the time it was added
+Setting File should now ONLY save when
+ 1. There is no setting file
+ 2. A Setting that will be saved is diff from what is in setting file
 
 -----------------------------------------------------------------------------------
 5.3.0 (09-14-2018)
@@ -328,27 +340,19 @@ Some various script improvements
 Ability to Deselect services to be changed
 
 -----------------------------------------------------------------------------------
-2.7.0 (06-21-2017)
+2.1 (05-26-2017) to 2.7.0 (06-21-2017)
 
-Fixed a bug with Version check not working on test version
+Various in script improvements
+Fixed a check for what startup type `NetTcpPortSharing` should be (it depends on if other service exists)
 
-Adding Minor Version number
-Added Ability to load service configuration
-Added Ability to save current running service configuration
+Fixed bug in service update check
 
+Added a Dry Run mode (used to see what changes will be done)
 Added switch
- Switches         Description of Switch
-  -lcsc File.csv   Loads Custom Service Configuration, File.csv = Name of your backup/custom file
-  -bcsc            Backup Current Service Configuration
-
------------------------------------------------------------------------------------
-2.6 (06-17-2017)
-
-Added check for French edition for Pro edition (Professionnel)
-Added Another way to check for edition that shouldn't be a problem with other languages
-
------------------------------------------------------------------------------------
-2.5 (06-08-2017)
+ Switches       Description of Switch
+  -snis          Shows not installed services (that can be changed)
+  -dry           Runs script but shows what will be changed
+  -devl          Used to make a log file that is meant to be sent to me
 
 Added check for French edition for Home edition (Famille)
 Added/Changed Switch for -sec
@@ -356,82 +360,31 @@ Added/Changed Switch for -sec
   -secp          Skips Edition check by Setting Edition as Pro
   -sech          Skips Edition check by Setting Edition as Home
 
------------------------------------------------------------------------------------
-2.4 (06-06-2017)
-
 Fixed Tweaked option for laptop showing in Menu in script (Shouldn't be showing)
 
------------------------------------------------------------------------------------
-2.3 (06-02-2017)
+Added check for French edition for Pro edition (Professionnel)
+Added Another way to check for edition that shouldn't be a problem with other languages
 
-Added a Dry Run mode (used to see what changes will be done)
-
+Fixed a bug with Version check not working on test version
+Adding Minor Version number
+Added Ability to load service configuration
+Added Ability to save current running service configuration
 Added switch
- Switches       Description of Switch
-  -snis          Shows not installed services (that can be changed)
-  -dry           Runs script but shows what will be changed
-  -devl          Used to make a log file that is meant to be sent to me
+ Switches         Description of Switch
+  -lcsc File.csv   Loads Custom Service Configuration, File.csv = Name of your backup/custom file
+  -bcsc            Backup Current Service Configuration
 
 -----------------------------------------------------------------------------------
-2.2 (05-29-2017)
+1.1 (04-23-2017) to 2.0 (05-21-2017)
 
-Fixed bug in service update check
-
------------------------------------------------------------------------------------
-2.1 (05-26-2017)
-
-Various in script improvements
-Fixed a check for what startup type `NetTcpPortSharing` should be (it depends on if other service exists)
-
------------------------------------------------------------------------------------
-2.0 (05-21-2017)
-
-Fixed problem with the -atos switch (accept ToS) not setting properly
-Changed script to support new switch and added feature
-
-Added switch
- Switches       Description of Switch
-  -all           Every windows services will change
-  -min           Just the services different from the default to safe/tweaked list
-  -baf           File of all the services before and after the script `Services-Before.log` and `Services-After.log`
-
------------------------------------------------------------------------------------
-1.7 (05-17-2017)
-
-Fixed a bug with switch `-set safe` not setting correctly
-
------------------------------------------------------------------------------------
-1.6 (05-14-2017)
-
-Fixed a bug with logging that caused it to not continue to log after script update
-
------------------------------------------------------------------------------------
-1.5 (05-12-2017)
-
-Minor Fixes (didnt affect using script)
-Added ability to have a log file (Logs notices, Errors, & Services changed)
-Added Argument/Switch for log
-
- Switches       Description of Switch
-  -log           Saves a log file (Script.log by default)
-
------------------------------------------------------------------------------------
-1.4 (05-10-2017)
-
-Fixed error in script was causing safe and tweaked option to not change services
-
-Thanks to Scott C for notifying me about the bug
-
------------------------------------------------------------------------------------
-1.3 (05-06-2017)
-
-Fixed a messup on the new switch/arguments system
-
------------------------------------------------------------------------------------
-1.2 (05-05-2017)
+Various internal script changes
+Added another check for 'BlackViper.csv', in a certain case script would have ran w/o it
+Fixed download link to BlackViper.csv
+Fixed an issue with script failing edition check on non english versions of windows
+Fixed an issue with edition check showing blank error
+Thanks to Mehanik511 posting an issue, both edition problems were fixed
 
 Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
-
  Switches       Description of Switch
   -atos          (Accepts ToS)
   -auto          (Runs the script to be Automated.. Closes on User input, Errors, End of Script)
@@ -445,60 +398,45 @@ Added/Changed Arguments/Switches to accept multiple (Old Switches Work too)
   -use           (Checks for Update to Service file before running)
   -diag          (Shows diagnostic info)
 
------------------------------------------------------------------------------------
-1.1 (04-23-2017)
+Fixed a messup on the new switch/arguments system
 
-Various internal script changes
-Added another check for 'BlackViper.csv', in a certain case script would have ran w/o it
-Fixed download link to BlackViper.csv
-Fixed an issue with script failing edition check on non english versions of windows
-Fixed an issue with edition check showing blank error
+Fixed error in script was causing safe and tweaked option to not change services
+Thanks to Scott C for notifying me about the bug
 
-Thanks to Mehanik511 posting an issue, both edition problems were fixed
+Minor Fixes (didnt affect using script)
+Added ability to have a log file (Logs notices, Errors, & Services changed)
+Added Argument/Switch for log
+ Switches       Description of Switch
+  -log           Saves a log file (Script.log by default)
 
------------------------------------------------------------------------------------
-1.0 (04-14-2017)
+Fixed a bug with logging that caused it to not continue to log after script update
 
-Updated script to check for laptop/desktop
+Fixed a bug with switch `-set safe` not setting correctly
 
------------------------------------------------------------------------------------
-0.9 (04-02-2017) -Final Beta/Test Version
-
-Script checks for service file update by default
-Some display changes
-Changed the 'go to website' to open with default browser instead of IE
-added bypass for internet check (incase you have google.com and yahoo.com blocked)
-
------------------------------------------------------------------------------------
-0.8 (03-29-2017)
-
-Added Internet Check if script checks for update (pings google.com and yahoo.com)
-Added Copyright Display Option
-Goto Website Option
-Changed TOS Display look
+Fixed problem with the -atos switch (accept ToS) not setting properly
+Changed script to support new switch and added feature
+Added switch
+ Switches       Description of Switch
+  -all           Every windows services will change
+  -min           Just the services different from the default to safe/tweaked list
+  -baf           File of all the services before and after the script `Services-Before.log` and `Services-After.log`
 
 -----------------------------------------------------------------------------------
-0.7 (03-22-2017)
+0.0 (02-22-2017) to 1.0 (04-14-2017)
 
-Enabled Build Check (For creator's update)
-Added Display of Script Version/Date
-Added Display of Last update of Service File
+Initial Start of Script
 
-Removed Display of Websites
+Added ability to use switches to bypass menu to run one of the choices
 
-Various script improvements
+Bug fix (script didnt get the right type for current service setting)
 
------------------------------------------------------------------------------------
-0.6 (03-19-2017)
+Added per Black Viper's Request:
+Check for x64 bit (still runs on x32 but gives a warning)
 
-Added variable with ability to check for update to Script File (Skips by default)
-Note: If found will Auto download and runs that (file name will be "BlackViper-Win10-Ver.(version-here).ps1")
-
-Added variable with ability to check for update to Service File (Skips by default)
-Note: If found will Auto download and uses that for the configuration
-
------------------------------------------------------------------------------------
-0.5 (03-18-2017)
+Added Color to Script output
+Fixed bug that showed "Service is already" if service doesnt exist
+Changed script to load services from file 'BlackViper.csv' instead of from within script
+  ^If it isnt with script it will give you an option to download the file
 
 Added variable with ability to:
 Skip Edition check (USE AT YOUR OWN RISK)
@@ -506,48 +444,28 @@ Skip Build check (USE AT YOUR OWN RISK)
 Skip TOS (If you accept it)
 have Script close at end (before it paused so you can see results)
 show/hide display of Services change, already set, and not present
-
 Added per Black Viper's Request
 Build Check (For creator's update) -Disabled till creator's update is released
 
------------------------------------------------------------------------------------
-0.4 (03-14-2017)
+Added variable with ability to check for update to Script File (Skips by default)
+  Note: If found will Auto download and runs that (file name will be "BlackViper-Win10-Ver.(version-here).ps1")
+Added variable with ability to check for update to Service File (Skips by default)
+  Note: If found will Auto download and uses that for the configuration
 
-Added Color to Script output
-Fixed bug that showed "Service is already" if service doesnt exist
+Enabled Build Check (For creator's update)
+Added Display of Script Version/Date
+Added Display of Last update of Service File
+Various script improvements
 
-Changed script to load services from file 'BlackViper.csv' instead of from within script
-^If it isnt with script it will give you an option to download the file
+Added Internet Check if script checks for update (pings google.com and yahoo.com)
+Added Copyright Display Option
+Goto Website Option
+Changed TOS Display look
 
------------------------------------------------------------------------------------
-0.3 (03-13-2017)
+Script checks for service file update by default
+Some display changes
+Changed the 'go to website' to open with default browser instead of IE
+added bypass for internet check (incase you have google.com and yahoo.com blocked)
 
-Added per Black Viper's Request:
-Check for x64 bit (still runs on x32 but gives a warning) 
-
------------------------------------------------------------------------------------
-0.2 (03-04-2017)
-
-Bug fix (script didnt get the right type for current service setting)
-
------------------------------------------------------------------------------------
-0.1 (02-26-2017)
-
-Added ability to use switches to bypass menu to run one of the choices
-
-Choices are:
--set 1
--set default
-
--set 2
--set safe
-
--set 3
--set tweaked
-
------------------------------------------------------------------------------------
-0.0 (02-22-2017)
-
-Initial Start of Script
-
+Updated script to check for laptop/desktop
 -----------------------------------------------------------------------------------
