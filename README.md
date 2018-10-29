@@ -13,7 +13,7 @@ Please Do not ask me when I will have the update for the October 2018 Update, I'
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `5.3.9` (October 10, 2018)   
+**Script:** `5.4.0` (October 29, 2018)   
 **Service:** `4.2` (September 11, 2018) -April 2018 Update   
 **Update File:** `1.3.6` (September 19, 2018)   
 
@@ -52,7 +52,7 @@ PPS. My Thanks goes out to all that have helped in any way, and to the people on
 
 
 **_Need Files_**   
-[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `102.0 KB`  
+[BlackViper-Win10.ps1](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper-Win10.ps1) (Script) -Size about `106.0 KB`  
 [BlackViper.csv](https://github.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv) (Service Configurations) -Size about `7.34 KB` (Not the same as the one on BlackViper's Website)  
 
 **Recommended Files**   
