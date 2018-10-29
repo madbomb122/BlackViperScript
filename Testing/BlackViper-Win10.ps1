@@ -9,7 +9,7 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.4.0'
+$Script_Version = '5.4.1'
 $Script_Date = 'Oct-29-2018'
 #$Release_Type = 'Stable'
 ##########
@@ -202,7 +202,7 @@ $Version_Url = $URL_Base + 'Version/Version.csv'
 $Service_Url = $URL_Base + 'BlackViper.csv'
 $Message_Url = $URL_Base + 'Version/Message'
 
-(Get-Service *_*).ForEach{ If($_.ServiceType -eq 224){ $ServiceEnd = $_ -Replace '^.+?_', '_' ;Break} }
+$ServiceEnd = (Get-Service *_*).Where{$_.ServiceType -eq 224}.ForEach{$_ -Replace '^.+?_', '_'} | Select-Object -First 1
 
 $colors = @(
 'black',      #0
