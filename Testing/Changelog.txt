@@ -1,4 +1,9 @@
 -----------------------------------------------------------------------------------
+5.4.1 (10-29-2018)
+
+Reverted a change in previous update
+
+-----------------------------------------------------------------------------------
 5.4.0 (10-29-2018)
 
 Fixed Save Settings button not working (thanks to harmonicx for letting me know)
