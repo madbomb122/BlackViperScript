@@ -161,7 +161,7 @@ Switch Examples:
 
 **Q:** *BLAH* isn't working after I used your script.  
 **A:** Check over what services were changed and make sure it isn't tied to your issue.    
-**Example** `WlanSvc` is disabled when using safe/tweaked on desktops (but not laptops/tables). This service is needed for wireless on your computer to work.
+**Example** `WlanSvc` is disabled when using safe/tweaked on desktops (but not laptops/tables). This service is needed for wifi on your computer.
 
 **Q:** Can I use a Backup File(s) on another computer?   
 **A:** You can use/load them on another computer, but be careful.   
