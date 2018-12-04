@@ -148,7 +148,7 @@ Switch Examples:
 **Wishlist:** [https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/](https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/)  
 
 **Q:** Are You or Black Viper the developer?   
-**A:** [Black Viper](http://www.blackviper.com/) is the creator of the service configuration. I am the developer of the script and the blackviper.csv file the script uses. 
+**A:** [Black Viper](http://www.blackviper.com/) is the creator of the service configuration. I am the developer of the script and the blackviper.csv file the script uses.   
 
 **Q:** I have a suggestion/Issue for the script, how do I suggest it?   
 **A:** Do a pull request with the change or submit it as an issue with the suggestion.   
@@ -157,24 +157,27 @@ Switch Examples:
 **A:** You can also PM me on reddit or email me  
          1. reddit /u/madbomb122 [https://www.reddit.com/user/madbomb122](https://www.reddit.com/user/madbomb122)  
          2. You can email me @ madbomb122@gmail.com.  
-**Note** Before contacting me, please make sure you have ALL the needed files and the size is right (Look above under requirements). 
+**Note** Before contacting me, please make sure you have ALL the needed files and the size is right (Look above under requirements).   
+
+**Q:** Can I run the script on newer/older builds then indicated?   
+**A:** Yes/No, you will get a build check error.. It just wont change any new services (if any) and any default services settings changed from will set incorrectly.
 
 **Q:** *BLAH* isn't working after I used your script.  
-**A:** Check over what services were changed and make sure it isn't tied to your issue.    
-**Example** `WlanSvc` is disabled when using safe/tweaked on desktops (but not laptops/tables). This service is needed for wifi on your computer.
+**A:** Check over what services were changed and make sure it isn't tied to your issue.   
+**Example** `WlanSvc` is disabled when using safe/tweaked on desktops (but not laptops/tables). This service is needed for wifi on your computer.   
 
 **Q:** Can I use a Backup File(s) on another computer?   
 **A:** You can use/load them on another computer, but be careful.   
 **Note** I would NOT use the reg file on another computer, since it may not all the same services.   
 
 **Q:** The Run button is disabled what do I do?   
-**A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).
+**A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).   
 
 **Q:** I am getting 'Run is Disabled due to Edition check' can you help?   
 **A:** Double check the requirements above, If you meet them. Please run the script with the switch '-diagf' or click the 'Show Diagnostic' in Script's GUI. With the Result given and post it as an issue or E-Mail me the information   
 
 **Q:** The script wont run, can you help me?   
-**A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.
+**A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.   
 
 **Q:** Please E-Mail me or Post an Issue, if you are getting an Edition error when running Home/Pro?   
 **A:** Please Provide the information the screen give, Until then use -secp (for Pro) or -sech (for Home), Thanks.
