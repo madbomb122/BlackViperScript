@@ -160,7 +160,7 @@ Switch Examples:
 **Note** Before contacting me, please make sure you have ALL the needed files and the size is right (Look above under requirements).   
 
 **Q:** Can I run the script on newer/older builds then indicated?   
-**A:** Yes/No, you will get a build check error.. It just wont change any new services (if any) and any default services settings changed from will set incorrectly.
+**A:** Yes/No, you will get a build check error.. It just wont change any new services (if any) and any default services settings changed from will set incorrectly. So to be on the safe side encase you want to revert to the default make a backup of your services with the script.   
 
 **Q:** *BLAH* isn't working after I used your script.  
 **A:** Check over what services were changed and make sure it isn't tied to your issue.   
