@@ -1,7 +1,7 @@
 **NOTICES**   
 1. `Update.bat` is no longer needed.   
 
-Please Do not ask me when I will have the update for the October 2018 Update, I'm waiting for those changes to be available on Black Viper's Website.
+Please Do not ask me when I will have the update for newer updates/builds.
 
 **Thank you**   
 
