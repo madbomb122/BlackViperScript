@@ -1,7 +1,7 @@
 **NOTICES**   
-1. `Update.bat` is no longer needed.   
+1. BlackViper is no longer releasing service configurations.
+2. `Update.bat` is no longer needed.   
 
-Please Do not ask me when I will have the update for newer updates/builds.
 
 **Thank you**   
 
@@ -140,6 +140,9 @@ Switch Examples:
 ******
 
 ## FAQ
+**Q:** When do you update the services file 'BlackViper.csv'?   
+**A:** Due to BlackViper no longer releasing service configurations, the 'BlackViper.csv' will no longer be updated unless.. it is for a bug fix or someone else releases a good service configuration.
+
 **Q:** The script file looks all messy in notepad, How do I view it?   
 **A:** Try using wordpad or what I recommend, Notepad++ [https://notepad-plus-plus.org/](https://notepad-plus-plus.org/) 
 
@@ -236,6 +239,3 @@ Switch Examples:
 
 **Q:** How long are you going to maintain the script?   
 **A:** No Clue.   
-
-**Q:** When do you update the services file 'BlackViper.csv'?   
-**A:** When I get told or see there has been an update to the services. Some updates may take a while if changes in the script it required, like from Window's Big Update Patches.
