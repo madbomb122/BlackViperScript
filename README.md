@@ -1,7 +1,5 @@
 **NOTICES**   
 1. BlackViper is no longer releasing service configurations.
-2. `Update.bat` is no longer needed.   
-
 
 **Thank you**   
 
@@ -13,7 +11,7 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `5.4.2` (November 12, 2018)   
+**Script:** `5.4.3` (December 20, 2018)   
 **Service:** `4.2` (September 11, 2018) -April 2018 Update   
 **Update File:** `1.3.6` (September 19, 2018)   
 
@@ -141,7 +139,7 @@ Switch Examples:
 
 ## FAQ
 **Q:** When do you update the services file 'BlackViper.csv'?   
-**A:** Due to BlackViper no longer releasing service configurations, the 'BlackViper.csv' will no longer be updated unless.. it is for a bug fix or someone else releases a good service configuration.
+**A:** Due to BlackViper no longer releasing service configurations, the 'BlackViper.csv' will no longer be updated unless, it is for a bug fix or someone else releases a good service configuration. If you find a good configuration please contact me (Contact Info is bellow)
 
 **Q:** The script file looks all messy in notepad, How do I view it?   
 **A:** Try using wordpad or what I recommend, Notepad++ [https://notepad-plus-plus.org/](https://notepad-plus-plus.org/) 
