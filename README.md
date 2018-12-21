@@ -140,7 +140,7 @@ Switch Examples:
 ## FAQ
 **Q:** When do you update the services file 'BlackViper.csv'?   
 **A:** Due to BlackViper no longer releasing service configurations, the 'BlackViper.csv' will no longer be updated unless, it is for a bug fix or someone else releases a good service configuration.   
-**Note:**If you find a good configuration please contact me (Contact Info is bellow)   
+**Note:** If you find a good configuration please contact me (Contact Info is bellow)   
 
 **Q:** The script file looks all messy in notepad, How do I view it?   
 **A:** Try using wordpad or what I recommend, Notepad++ [https://notepad-plus-plus.org/](https://notepad-plus-plus.org/) 
