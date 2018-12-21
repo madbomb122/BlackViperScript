@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.4.2'
-$Script_Date = 'Nov-12-2018'
+$Script_Version = '5.4.3'
+$Script_Date = 'Dec-20-2018'
 $Release_Type = 'Stable'
 ##########
 
@@ -62,11 +62,12 @@ $Copyright ='
 <#--------------------------------------------------------------------------------
 
 .Prerequisite to run script
-	System: Windows 10 x64 (64-bit) (Can run on x32/32-bit AT YOUR OWN RISK)
-	Edition: Home or Pro            (Can run on other Edition AT YOUR OWN RISK)
-	Min Build: Creator's Update     (Can run on other Build AT YOUR OWN RISK)
-	Max Build: April 2018 Update    (Can run on other Build AT YOUR OWN RISK)
+	System*: Windows 10 x64 (64-bit)
+	Edition*: Home or Pro
+	Min Build*: Creator's Update
+	Max Build*: April 2018 Update
 	Files: This script and 'BlackViper.csv' (Service Configurations)
+  *Can run on x32/32-bit or other Edition, Build AT YOUR OWN RISK)
 
 .DESCRIPTION
 	Script that can set services based on Black Viper's Service Configurations
@@ -197,6 +198,8 @@ $MinVer = 1703 ;$MinVerName = 'Creators Update'
 $URL_Base = 'https://raw.GitHub.com/madbomb122/BlackViperScript/master/'
 $Version_Url = $URL_Base + 'Version/Version.csv'
 $Service_Url = $URL_Base + 'BlackViper.csv'
+$Donate_Url = 'https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/'
+$MySite = 'https://GitHub.com/madbomb122/BlackViperScript'
 
 $ServiceEnd = (Get-Service *_*).Where({$_.ServiceType -eq 224}, 'First') -Replace '^.+?_', '_'
 
@@ -232,7 +235,7 @@ $ServicesTypeList = @(
 'Skip',    #0 -Skip/Not Installed
 'Disabled',#1
 'Manual',  #2
-'Auto',    #3 -Auto
+'Auto',    #3
 'Auto')    #4 -Auto (Delayed)
 
 $ServicesTypeFull = @()
@@ -313,7 +316,7 @@ Function ThanksDonate {
 	DisplayOut 'If you like this script please consider giving me a donation,' -C 11
 	DisplayOut 'Min of `$1 from the adjustable Amazon Gift Card.' -C 11
 	DisplayOut "`nLink to donation:" -C 15
-	DisplayOut 'https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/' -C 2
+	DisplayOut $Donate_Url -C 2
 }
 
 Function AutomatedExitCheck([Int]$ExitBit) {
@@ -492,7 +495,7 @@ Function SetServiceVersion {
 	Return $False
 }
 
-Function ClickedDonate{ OpenWebsite 'https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/' ;$Script:ConsideredDonation = 'Yes' }
+Function ClickedDonate{ OpenWebsite $Donate_Url ;$Script:ConsideredDonation = 'Yes' }
 
 Function UpdateSetting {
 	$VarList.ForEach{
@@ -528,7 +531,7 @@ Function SaveSetting {
 	$Settings.StopDisabled = $StopDisabled
 	$Settings.ChangeState = $ChangeState
 	$Settings.ShowSkipped = $ShowSkipped
-	If($ConsideredDonation -eq 'Yes'){ $Settings.ConsideredDonation='Yes' }
+	If($ConsideredDonation -eq 'Yes'){ $Settings.ConsideredDonation = 'Yes' }
 	If($WPF_DevLogCB.IsChecked) {
 		$Settings.ScriptLog = $Script_Log
 		$Settings.LogName = $Log_Name
@@ -926,7 +929,7 @@ Function GuiStart {
 		TBoxDiag '' -C 14
 		TBoxDiag ' --------Current Settings--------' 2
 		TBoxDiag ' BlackViper: ',$WPF_ServiceConfig.Text -C 14,15
-		If($All_or_Min -eq '-full'){ $TmpAoM = 'All' } Else { $TmpAoM = 'Min' }
+		If($All_or_Min -eq '-full'){ $TmpAoM = 'All' } Else{ $TmpAoM = 'Min' }
 		TBoxDiag ' All/Min: ',$TmpAoM -C 14,15
 		TBoxDiag ' ToS: ',$AcceptToS -C 14,15
 		TBoxDiag ' Automated: ',$Automated -C 14,15
@@ -981,8 +984,8 @@ Function GuiStart {
 	$WPF_CheckUpdateBothButton.Add_Click{ UpdateCheckNow -Ser -Srp }
 	$WPF_BlackViperWSButton.Add_Click{ OpenWebsite 'http://www.blackviper.com/' }
 	$WPF_Madbomb122WSButton.Add_Click{ OpenWebsite 'https://GitHub.com/madbomb122/' }
-	$WPF_FeedbackButton.Add_Click{ OpenWebsite 'https://GitHub.com/madbomb122/BlackViperScript/issues' }
-	$WPF_FAQButton.Add_Click{ OpenWebsite 'https://GitHub.com/madbomb122/BlackViperScript/blob/master/README.md' }
+	$WPF_FeedbackButton.Add_Click{ OpenWebsite "$MySite/issues" }
+	$WPF_FAQButton.Add_Click{ OpenWebsite "$MySite/blob/master/README.md" }
 	$WPF_DonateButton.Add_Click{ ClickedDonate }
 	$WPF_CopyrightButton.Add_Click{ [Windows.Forms.Messagebox]::Show($Copyright,'Copyright', 'OK') | Out-Null }
 	$WPF_AboutButton.Add_Click{ [Windows.Forms.Messagebox]::Show("This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script.`n`nThis script was created by MadBomb122.",'About', 'OK') | Out-Null }
@@ -991,10 +994,7 @@ Function GuiStart {
 	If($All_or_Min -eq '-Full'){ $WPF_RadioAll.IsChecked = $True } Else{ $WPF_RadioMin.IsChecked = $True }
 
 	$WPF_LogNameInput.Text = $LogName
-	If($ScriptLog -eq 1) {
-		$WPF_ScriptLog_CB.IsChecked = $True
-		$WPF_LogNameInput.IsEnabled = $True
-	}
+	If($ScriptLog -eq 1){ $WPF_ScriptLog_CB.IsChecked = $True ;$WPF_LogNameInput.IsEnabled = $True }
 
 	If($IsLaptop -eq '-Lap') {
 		$WPF_ServiceConfig.Items.RemoveAt(2)
@@ -1548,7 +1548,7 @@ Function DiagnosticCheck([Int]$Bypass) {
 		DisplayOut ' Error: ',$ErrorDi -C 13,15 -L
 		DisplayOut "`n --------Settings--------" -C 2 -L
 		DisplayOut ' BlackViper: ',$Black_Viper -C 14,15 -L
-		If($All_or_Min -eq '-full'){ $TmpAoM = 'All' } Else { $TmpAoM = 'Min' }
+		If($All_or_Min -eq '-full'){ $TmpAoM = 'All' } Else{ $TmpAoM = 'Min' }
 		DisplayOut ' All/Min: ',$TmpAoM -C 14,15 -L
 		DisplayOut ' ToS: ',$AcceptToS -C 14,15 -L
 		DisplayOut ' Automated: ',$Automated -C 14,15 -L
@@ -1584,7 +1584,7 @@ Function DiagnosticCheck([Int]$Bypass) {
 
 Function TBoxService {
 	[Alias('T')] [String[]]$Text,
-	[Alias('C')] [Int[]]$Color = 14,
+	[Alias('C')] [Int[]]$Color,
 	$WPF_ServiceListing.Dispatcher.Invoke(
 		[action]{
 			For($i=0 ;$i -lt $Text.Length ;$i++) {
@@ -1831,7 +1831,7 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 			DownloadFile $Service_Url $BVServiceFilePath ;$LoadWebCSV = 'Out'
 		} ElseIf($LoadWebCSV -In 'n','no') {
 			DisplayOut 'For manual download save the following File: ' -C 2 -L
-			DisplayOut 'https://GitHub.com/madbomb122/BlackViperScript/raw/master/BlackViper.csv' -C 15 -L
+			DisplayOut $Service_Url -C 15 -L
 		} Else {
 			$Invalid = $True
 		}
@@ -1856,7 +1856,7 @@ Function LoadWebCSVGUI {
 		If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $BVServiceFilePath }
 		CheckBVcsv
 	} Else {
-		[Windows.Forms.Messagebox]::Show("To get The File 'BlackViper.csv' go to https://GitHub.com/madbomb122/BlackViperScript to save it.`nWithout the file the script won't run",'Information','OK','Information') | Out-Null
+		[Windows.Forms.Messagebox]::Show("To get The File 'BlackViper.csv' go to $MySite to save it.`nWithout the file the script won't run",'Information','OK','Information') | Out-Null
 		$Form.Close()
 		Exit
 	}
@@ -1985,7 +1985,7 @@ Function CheckBVcsv {
 		}
 	} ElseIf(!(Test-Path -LiteralPath $BVServiceFilePath -PathType Leaf)) {
 		If($GuiSwitch){
-			[Windows.Forms.Messagebox]::Show("The File 'BlackViper.csv' is missing and couldn't be downloaded.`nFor Manual download go to https://GitHub.com/madbomb122/BlackViperScript",'Information', 'OK','Information') | Out-Null
+			[Windows.Forms.Messagebox]::Show("The File 'BlackViper.csv' is missing and couldn't be downloaded.`nFor Manual download go to $MySite",'Information', 'OK','Information') | Out-Null
 		} Else{
 			$Script:ErrorDi = 'Missing File BlackViper.csv'
 			Error_Top
