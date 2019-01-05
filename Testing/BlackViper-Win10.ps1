@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.4.3'
-$Script_Date = 'Dec-20-2018'
+$Script_Version = '5.4.4'
+$Script_Date = 'Jan-05-2018'
 #$Release_Type = 'Stable'
 ##########
 
@@ -27,15 +27,14 @@ $Script_Date = 'Dec-20-2018'
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 <#------------------------------------------------------------------------------#>
-$Copyright ='                                                                        
- Copyright (c) 1999-2018 Charles "Black Viper" Sparks                   
-          - Services Configuration                                      
+$Copyright =' Copyright (c) 2019 Zero Rights Reserved                                
+          - Services Configuration by Charles "Black Viper" Sparks      
                                                                         
 ------------------------------------------------------------------------
                                                                         
  The MIT License (MIT) + an added Condition                             
                                                                         
- Copyright (c) 2017-2018 Madbomb122                                     
+ Copyright (c) 2017-2019 Madbomb122                                     
           - Black Viper Service Script                                  
                                                                         
  Permission is hereby granted, free of charge, to any person obtaining  
