@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-5.4.4 (01-05-2018)
+5.4.5 (01-16-2018)
 
 Reverted a change in previous update
 
@@ -9,6 +9,8 @@ Minor Internal Changes
 
 License/Copyright Date Update for my script
 License/Copyright Change for Service Configuration
+
+Added an Option to Search/Filter for 'Row Color' in the 'Service Table'
 
 -----------------------------------------------------------------------------------
 5.4.0 (10-29-2018)
