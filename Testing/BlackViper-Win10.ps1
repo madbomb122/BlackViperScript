@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '5.4.5'
-$Script_Date = 'Jan-16-2019'
+$Script_Version = '6.0.0'
+$Script_Date = 'Feb-12-2019'
 #$Release_Type = 'Stable'
 ##########
 
@@ -249,7 +249,6 @@ $ServicesRegTypeList = @(
 '2')#4 -Auto (Delayed)
 
 $SrvStateList = @('Running','Stopped')
-$EBErrLst = @('','Edition','Build','Edition & Build')
 $XboxServiceArr = @('XblAuthManager','XblGameSave','XboxNetApiSvc','XboxGipSvc','xbgm')
 $NetTCP = @('NetMsmqActivator','NetPipeActivator','NetTcpActivator')
 $FilterList = @('CheckboxChecked','CName','ServiceName','CurrType','BVType','SrvState','SrvDesc','SrvPath','RowColor')
@@ -263,6 +262,7 @@ $BVServiceFilePath = $ServiceFilePath
 $Black_Viper = 0
 $Automated = 0
 $All_or_Min = '-Min'
+$ServiceMaker = 'BV-'
 $RunScript = 2
 $ErrorDi = ''
 $LogStarted = 0
@@ -434,8 +434,7 @@ Function TOS {
 		$CR = $False
 		$Invalid = ShowInvalid $Invalid
 		$TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
-		$TOS = $TOS.ToLower()
-		If($TOS -In 'n','no') {
+		If($TOS.ToLower() -In 'n','no') {
 			Exit
 		} ElseIf($TOS -In 'y','yes') {
 			$TOS = 'Out'
@@ -485,8 +484,8 @@ Function HideShowCustomSrvStuff {
 Function SetServiceVersion {
 	If(Test-Path -LiteralPath $BVServiceFilePath -PathType Leaf) {
 		$TMP = Import-Csv -LiteralPath $BVServiceFilePath
-		$Script:ServiceVersion = $TMP[0].'Def-Home-Full'
-		$Script:ServiceDate = $TMP[0].'Def-Home-Min'
+		$Script:ServiceVersion = $TMP[0].'BV-Def-Home'
+		$Script:ServiceDate = $TMP[0].'BV-Def-Pro'
 		Return $True
 	}
 	$Script:ServiceVersion = 'Missing File'
@@ -625,9 +624,9 @@ Function GuiStart {
 	<Window.Effect><DropShadowEffect/></Window.Effect>
 	<Grid>
 		<Button Name="RunScriptButton" Content="Run Script" Margin="0,0,0,21" VerticalAlignment="Bottom" Height="20" FontWeight="Bold"/>
-		<TextBlock Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" VerticalAlignment="Bottom" Width="330" TextAlignment="Center"/>
+		<TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Text="Script Version: $Script_Version ($Script_Date) -$Release_Type" VerticalAlignment="Bottom" Width="330" TextAlignment="Center"/>
 		<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="330,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/>
-		<TextBlock Name="Service_Ver_Txt" HorizontalAlignment="Left" Height="20" VerticalAlignment="Bottom" Width="330" TextAlignment="Center" Margin="331,0,0,0"/>
+		<TextBox Name="Service_Ver_Txt" Height="20" VerticalAlignment="Bottom" TextAlignment="Center" Margin="331,0,0,0"/>
 		<TabControl Name="TabControl" Margin="0,22,0,42">
 			<TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0">
 				<Grid Background="#FFE5E5E5">
@@ -827,36 +826,14 @@ Function GuiStart {
 	}
 
 	$WPF_RunScriptButton.Add_Click{
-		SaveSetting
-		$Script:RunScript = 1
-		$Script:Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
-		If($Black_Viper -eq $BVCount) {
-			If(!(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf) -And $null -ne $ServiceConfigFile) {
-				[Windows.Forms.Messagebox]::Show("The File '$ServiceConfigFile' does not exist.",'Error', 'OK') | Out-Null
-				$Script:RunScript = 0
-			} Else {
-				$Script:LoadServiceConfig = 1
-				$Script:Black_Viper = 0
-			}
-		}
-		If($RunScript -eq 1) {
-			$Script:RanScript = $True
-			$WPF_RunScriptButton.IsEnabled = $False
-			$WPF_RunScriptButton.Content = 'Run Disabled while changing services.'
-			$WPF_TabControl.Items[3].Visibility = 'Visible'
-			$WPF_TabControl.Items[3].IsSelected = $True
-			If($WPF_CustomBVCB.IsChecked) {
-				$Script:LoadServiceConfig = 2
-				$WPF_FilterTxt.text = ''
-				$Script:csv = $WPF_dataGrid.Items.ForEach{
-					$STF = $ServicesTypeFull.IndexOf($_.BVType)
-					If(!$_.CheckboxChecked){ $STF *= -1 }
-					[PSCustomObject] @{ ServiceName = $_.ServiceName ;StartType = $STF ;Status = $_.SrvState }
-				}
-			}
-			Black_Viper_Set $Black_Viper $All_or_Min
-		} Else {
-			RunDisableCheck
+		If($EBFailCount -eq 0) {
+			RunScriptFun
+		} ElseIf($EBFailCount -eq 1) {
+			PopWindow -M "You are Running this script on $WinEdition..`nEdition Requirements: Windows 10 - Home or Pro (64-Bit).`n`nDo you still want to run this script?" -CB 'Skip Edition checks'
+		} ElseIf($EBFailCount -eq 2) {
+			PopWindow -M "You are Running this script on $Win10Ver..`n--Build Requirements--`n  Min Version: $MinVerName ($MinVer)`n  Max Version: $MaxVerName ($MaxVer).`n`nDo you still want to run this script?" -CB 'Skip All Build checks'
+		} ElseIf($EBFailCount -eq 3) {
+			PopWindow -M "You are Running this script on $WinEdition $Win10Ver..`n--Requirements--`n  Edition: Windows 10 - Home or Pro (64-Bit)`n  Min Version: $MinVerName ($MinVer)`n  Max Version: $MaxVerName ($MaxVer)`n`nDo you still want to run this script?" -CB 'Skip All Build & Edition checks'		
 		}
 	}
 
@@ -924,8 +901,8 @@ Function GuiStart {
 		TBoxDiag '' -C 14
 		TBoxDiag ' --------Script Requirements--------' -C 2
 		TBoxDiag ' Windows 10 - Home or Pro (64-Bit)' -C 14
-		TBoxDiag ' Min Version: ',"$MinVer ($MinVerName)" -C 14,15
-		TBoxDiag ' Max Version: ',"$MaxVer ($MaxVerName)" -C 14,15
+		TBoxDiag ' Min Version: ',"$MinVerName ($MinVer)" -C 14,15
+		TBoxDiag ' Max Version: ',"$MaxVerName ($MaxVer)" -C 14,15
 		TBoxDiag '' -C 14
 		TBoxDiag ' --------Current Settings--------' 2
 		TBoxDiag ' BlackViper: ',$WPF_ServiceConfig.Text -C 14,15
@@ -1012,14 +989,13 @@ Function GuiStart {
 	$WPF_ServiceConfig.SelectedIndex = $Black_Viper
 	$WPF_LoadFileTxtBox.Text = $ServiceConfigFile
 	$WPF_LoadServicesButton.IsEnabled = SetServiceVersion
-	$WPF_Script_Ver_Txt.Text = "Script Version: $Script_Version ($Script_Date) -$Release_Type"
 	$WPF_Service_Ver_Txt.Text = "Service Version: $ServiceVersion ($ServiceDate)"
 
 	If($Release_Type -ne 'Stable') {
 		If($ShowConsole -eq 1){ $WPF_ShowConsole_CB.IsChecked = $True }
 		$WPF_ShowConsole_CB.Visibility = 'Hidden'
-	} Else {
-		If($ShowConsole -eq 0){ ShowConsoleWin 0 }
+	} ElseIf($ShowConsole -eq 0) {
+		ShowConsoleWin 0
 	}
 
 	$Script:ServiceImport = 1
@@ -1032,15 +1008,90 @@ Function GuiStart {
 	$Form.ShowDialog() | Out-Null
 }
 
-Function RowColorRet([Bool]$Match,[Bool]$checkbox) {
-	If($Match -and $checkbox) {
-		Return 'Green'
-	} ElseIf(!$Match -and $checkbox) {
-		Return 'Red'
-	} ElseIf(!$Match -and !$checkbox) {
-		Return 'Yellow'
+Function RunScriptFun {
+	SaveSetting
+	$Script:RunScript = 1
+	$Script:Black_Viper = $WPF_ServiceConfig.SelectedIndex + 1
+	If($Black_Viper -eq $BVCount) {
+		If(!(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf) -And $null -ne $ServiceConfigFile) {
+			[Windows.Forms.Messagebox]::Show("The File '$ServiceConfigFile' does not exist.",'Error', 'OK') | Out-Null
+			$Script:RunScript = 0
+		} Else {
+			$Script:LoadServiceConfig = 1
+			$Script:Black_Viper = 0
+		}
+	}
+	If($RunScript -eq 1) {
+		$Script:RanScript = $True
+		$WPF_RunScriptButton.IsEnabled = $False
+		$WPF_RunScriptButton.Content = 'Run Disabled while changing services.'
+		$WPF_TabControl.Items[3].Visibility = 'Visible'
+		$WPF_TabControl.Items[3].IsSelected = $True
+		If($WPF_CustomBVCB.IsChecked) {
+			$Script:LoadServiceConfig = 2
+			$WPF_FilterTxt.text = ''
+			$Script:csv = $WPF_dataGrid.Items.ForEach{
+				$STF = $ServicesTypeFull.IndexOf($_.BVType)
+				If(!$_.CheckboxChecked){ $STF *= -1 }
+				[PSCustomObject] @{ ServiceName = $_.ServiceName ;StartType = $STF ;Status = $_.SrvState }
+			}
+		}
+		Black_Viper_Set $Black_Viper $All_or_Min
 	} Else {
-		Return 'None'
+		RunDisableCheck
+	}
+}
+
+Function PopWindow {
+	Param (
+		[Alias('M')] [String]$Message,
+		[Alias('CB')] [String]$ChkBox
+	)
+
+[xml]$XAMLPW = @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Title="Caution" Height="215" Width="285" BorderBrush="Black" Background="White" WindowStyle="ToolWindow">
+    <Grid Background="#FFE5E5E5">
+        <Button Name="Button0" Content="Yes" HorizontalAlignment="Left" Margin="10,151,0,0" VerticalAlignment="Top" Width="76"/>
+        <Button Name="Button1" Content="No" HorizontalAlignment="Left" Margin="95,151,0,0" VerticalAlignment="Top" Width="76"/>
+        <TextBlock Name="Tbox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="113" Width="247"><Run Text="TextBlock"/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/></TextBlock>
+        <CheckBox Name="Cbox" Content="CheckBox" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
+"@
+
+
+	[Void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+	$FormPW = [Windows.Markup.XamlReader]::Load( (New-Object System.Xml.XmlNodeReader $XAMLPW) )
+	$XAMLPW.SelectNodes('//*[@Name]').ForEach{Set-Variable -Name "WPFPW_$($_.Name)" -Value $FormPW.FindName($_.Name) -Scope Script}
+	$RunspacePW = [RunSpaceFactory]::CreateRunspace()
+	$PowerShellPW = [PowerShell]::Create()
+	$PowerShellPW.RunSpace = $RunspacePW
+	$RunspacePW.Open()
+	[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
+
+	$WPFPW_Tbox.Text = $Message
+	$WPFPW_Cbox.Content = $ChkBox
+
+	$WPFPW_Button0.Add_Click{ RunScriptFun ;$FormPW.Close() }
+	$WPFPW_Button1.Add_Click{ $FormPW.Close() }
+	$WPFPW_Cbox.Add_Checked{
+		If($EBFailCount -In 1..3){ $EditionCheck = 'Pro' }
+		If($EBFailCount -In 2..3){ $BuildCheck = 1 }
+	}
+	$WPFPW_Cbox.Add_UnChecked{
+		If($EBFailCount -In 1..3){ $EditionCheck = 0 }
+		If($EBFailCount -In 2..3){ $BuildCheck = 0 }
+	}
+
+	$FormPW.ShowDialog() | Out-Null
+}
+
+Function RowColorRet([Bool]$Match,[Bool]$checkbox) {
+	If(!$Match) {
+		If($checkbox){ Return 'Red' } Else{ Return 'Yellow' }
+	} Else {
+		If($checkbox){ Return 'Green' } Else{ Return 'None' }
 	}
 }
 
@@ -1068,23 +1119,21 @@ Function DGFilter {
 }
 
 Function RunDisableCheck {
+	$Script:EBFailCount = 0
 	If($WPF_BuildCheck_CB.IsChecked){ $Script:BuildCheck = 1 } Else{ $Script:BuildCheck = 0 }
 	If($WPF_EditionCheckCB.IsChecked) {
 		If($WPF_EditionConfig.SelectedIndex -eq 0){ $Script:EditionCheck = 'Home' } Else{ $Script:EditionCheck = 'Pro' }
 		$WPF_EditionConfig.IsEnabled = $True
 	} Else {
 		$Script:EditionCheck = 0
-		$WPF_EditionConfig.IsEnabled = $False
 	}
 
 	$EBFailCount = 0
-	If(!($EditionCheck -In 'Home','Pro' -or $WinSkuList -Contains $WinSku)){ $EBFailCount = 1 }
-	If($Win10Ver -NotIn $MinVer..$MaxVer -And $BuildCheck -ne 1){ $EBFailCount += 2 }
+	If(!($EditionCheck -In 'Home','Pro' -or $WinSkuList -Contains $WinSku)){ $Script:EBFailCount = 1 }
+	If($Win10Ver -NotIn $MinVer..$MaxVer -And $BuildCheck -ne 1){ $Script:EBFailCount += 2 }
 
 	If($EBFailCount -ne 0) {
-		$Buttontxt = 'Run Disabled Due to ' + $EBErrLst[$EBFailCount] + ' Check'
 		$TmpHead = 'Black Viper'
-		$WPF_RunScriptButton.IsEnabled = $False
 	} ElseIf(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
 		$WPF_RunScriptButton.IsEnabled = $False
 		$WPF_LoadServicesButton.IsEnabled = $False
@@ -1093,7 +1142,7 @@ Function RunDisableCheck {
 		} Else {
 			[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $ServiceConfigFile
 			If($null -In $Tempcheck[0].StartType,$Tempcheck[0].ServiceName) {
-				$tmpG = $Tempcheck[0].'Def-Pro-Full'
+				$tmpG = $Tempcheck[0].'BV-Safe-Desk'
 				If($tmpG -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
 					$Script:ServiceConfigFile = ''
 					$WPF_LoadFileTxtBox.Text = ''
@@ -1145,16 +1194,13 @@ Function GenerateServices {
 
 	If($LoadServiceConfig -eq 1) {
 		$BVS = 'StartType'
-		$FullMin = ''
 	} ElseIf($Black_Viper -eq 1) {
-		$BVS = 'Def-' +$WinEdition
+		$BVS = $ServiceMaker + 'Def-' +$WinEdition
 	} ElseIf($Black_Viper -eq 2) {
-		$BVS = 'Safe' + $IsLaptop
+		$BVS = $ServiceMaker + 'Safe' + $IsLaptop
 	} ElseIf($Black_Viper -eq 3) {
-		$BVS = 'Tweaked-Desk'
+		$BVS = $ServiceMaker + 'Tweaked-Desk'
 	}
-	$BVSAlt = $BVS + '-Full'
-	$BVS += $FullMin
 	If($WPF_XboxService_CB.IsChecked){ $Script:XboxService = 1 } Else{ $Script:XboxService = 0 }
 	If($ServiceImport -eq 1) {
 		[System.Collections.ArrayList] $Script:ServCB = Import-Csv -LiteralPath $ServiceFilePath
@@ -1179,14 +1225,12 @@ Function GenerateServices {
 			} ElseIf($ServiceCurrType -eq 'Auto') {
 				If(AutoDelayTest $ServiceName -eq 1){ $ServiceCurrType = $ServicesTypeFull[4] } Else{ $ServiceCurrType = $ServicesTypeFull[3] }
 			}
+			$checkbox = $True
 			If($ServiceTypeNum -In -4..0) {
-				$checkbox = $False
-				If($ServiceTypeNum -eq 0){ $ServiceTypeNum = $_.$BVSAlt } Else{ $ServiceTypeNum *= -1 }
-			} ElseIf($XboxService -eq 1 -and $XboxServiceArr -Contains $ServiceName) {
-				$checkbox = $False
-			} Else {
-				$checkbox = $True
+				If($FullMin -ne '-Full'){ $checkbox = $False }
+				$ServiceTypeNum *= -1
 			}
+			If($XboxService -eq 1 -and $XboxServiceArr -Contains $ServiceName){ $checkbox = $False }
 			$ServiceType = $ServicesTypeFull[$ServiceTypeNum]
 			If($ServiceType -eq  $ServiceCurrType){ $Match = $True } Else{ $Match = $False }
 			$RowColor = RowColorRet $Match $checkbox
@@ -1555,8 +1599,8 @@ Function DiagnosticCheck([Int]$Bypass) {
 		DisplayOut ' Desktop/Laptop: ',$IsLaptop.Substring(1) -C 14,15 -L
 		DisplayOut "`n --------Script Requirements--------" -C 2 -L
 		DisplayOut ' Windows 10 - Home or Pro (64-Bit)' -C 14 -L
-		DisplayOut ' Min Version: ',"$MinVer ($MinVerName)" -C 14,15 -L
-		DisplayOut ' Max Version: ',"$MaxVer ($MaxVerName)" -C 14,15 -L
+		DisplayOut ' Min Version: ',"$MinVerName ($MinVer)" -C 14,15 -L
+		DisplayOut ' Max Version: ',"$MaxVerName ($MaxVer)" -C 14,15 -L
 		DisplayOut "`n --------Misc Info--------" -C 2 -L
 		DisplayOut ' Args: ',$PassedArg -C 14,15 -L
 		DisplayOut ' Error: ',$ErrorDi -C 13,15 -L
@@ -1615,14 +1659,16 @@ Function TBoxService {
 Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	PreScriptCheck
 	If($LoadServiceConfig -In 1,2) {
+		$FullMin = ''
 		$ServiceSetOpt = 'StartType' ;$SrvSetting = 'Custom'
 	} ElseIf($Black_Viper -eq 1) {
-		$ServiceSetOpt = 'Def-' +$WinEdition + $FullMin ;$SrvSetting = 'Default'
+		$ServiceSetOpt = $ServiceMaker + 'Def-' +$WinEdition ;$SrvSetting = 'Default'
 	} ElseIf($Black_Viper -eq 2) {
-		$ServiceSetOpt = 'Safe' + $IsLaptop + $FullMin ;$SrvSetting = 'Safe'
+		$ServiceSetOpt = $ServiceMaker + 'Safe' + $IsLaptop ;$SrvSetting = 'Safe'
 	} ElseIf($Black_Viper -eq 3) {
-		$ServiceSetOpt = 'Tweaked-Desk' + $FullMin ;$SrvSetting = 'Tweaked'
+		$ServiceSetOpt = $ServiceMaker + 'Tweaked-Desk' ;$SrvSetting = 'Tweaked'
 	}
+	$SrvSetting += $FullMin
 	If($LogBeforeAfter -eq 2){ DiagnosticCheck 1 }
 	ServiceBAfun 'Services-Before'
 	ServiceSet $ServiceSetOpt $SrvSetting
@@ -1638,13 +1684,14 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 	$BVError = 0
 	$BVNotInstalled = 0
 	If($DryRun -ne 1){ $Txtd = "`n Changing Service Please wait...`n" ;$StopWatch.Start() } Else{ $Txtd = "`n List of Service that would be changed on Non-Dry Run/Dev Log...`n" }
-	DisplayOut $Txtd,' Service Setting: ',$BVSet -C 14,14,15 -L -G:$GuiSwitch
+	DisplayOut "$Txtd Service Setting: ",$BVSet -C 14,15 -L -G:$GuiSwitch
 	DisplayOut ' Service_Name - Current -> Change_To' -C 14 -L -G:$GuiSwitch
 	DisplayOut ''.PadRight(40,'-') -C 14 -L -G:$GuiSwitch
 	$csv.ForEach{
 		$DispTempT = @()
 		$DispTempC = @()
-		$ServiceTypeNum = $_.$BVService
+		[Int] $ServiceTypeNum = $_.$BVService
+		If($ServiceTypeNum -In -4..-1 -and $All_or_Min -eq '-full'){ $ServiceTypeNum *= -1 }
 		$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 		$ServiceName = QMarkServices $_.ServiceName
 		$ServiceCommName = SearchSrv $ServiceName 'DisplayName'
@@ -1747,7 +1794,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 				}
 			}
 		} Else {
-			DisplayOut " Error: $($item.ServiceName) does not have a valid Setting." -C 13 -L -G:$GuiSwitch
+			DisplayOut " Error: $($_.ServiceName) does not have a valid Setting." -C 13 -L -G:$GuiSwitch
 			$BVError++
 		}
 		If($DispTempT.count -ne 0){ DisplayOut $DispTempT -C $DispTempC -L -G:$GuiSwitch }
@@ -1840,8 +1887,7 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 		MenuLine
 		$Invalid = ShowInvalid $Invalid
 		$LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
-		$LoadWebCSV = $LoadWebCSV.ToLower()
-		If($LoadWebCSV -In 'y','yes') {
+		If($LoadWebCSV.ToLower() -In 'y','yes') {
 			DownloadFile $Service_Url $BVServiceFilePath ;$LoadWebCSV = 'Out'
 		} ElseIf($LoadWebCSV -In 'n','no') {
 			DisplayOut 'For manual download save the following File: ' -C 2 -L
@@ -1988,7 +2034,7 @@ Function PreScriptCheck {
 }
 
 Function CheckBVcsv {
-	$GenBy = $csv[0].'Def-Pro-Full'
+	$GenBy = $csv[0].'BV-Safe-Desk'
 	If($GenBy -NotIn 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
 		If($Automated -ne 1) {
 			If($GuiSwitch){ LoadWebCSVGUI 1 } Else{ LoadWebCSV 1 }
@@ -2023,7 +2069,7 @@ Function GetArgs {
 			[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $tmp
 			If($null -In $Tempcheck[0].StartType,$Tempcheck[0].ServiceName) {
 				Error_Top
-				If($Tempcheck[0].'Def-Pro-Full' -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
+				If($Tempcheck[0].'BV-Safe-Desk' -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
 					DisplayOut '|'," Please don't load '",'BlackViper.csv',"' by using",' -lcsc ',' |' -C 14,2,15,2,15,14 -L
 					DisplayOutLML 'Instead use one of the following instead' -C 2 -L
 					$InSwitch = '   -Default   -Safe'
@@ -2277,7 +2323,7 @@ $BackupServiceType = 1
 $ScriptVerCheck = 0
 # 0 = Skip Check for update of Script File
 # 1 = Check for update of Script File
-# Note: If found will Auto download and runs that, File name will be 'BlackViper-Win10.ps1'
+# Note: If found will Auto download and run
 
 $ServiceVerCheck = 0
 # 0 = Skip Check for update of Service File
