@@ -1,5 +1,5 @@
 # Currently Testing (Read Notes)
-Nothing
+A bunch of changes/improvements.. make sure to download 'BlackViper.csv' from here too.
 
 # About Testing Version
 If I am not working on a change or addition to the script, this will be the same exact copy as the non test.<br />
