@@ -10,7 +10,7 @@
 # Website: http://www.BlackViper.com/
 #
 $Script_Version = '6.0.0'
-$Script_Date = 'Feb-12-2019'
+$Script_Date = 'Feb-15-2019'
 #$Release_Type = 'Stable'
 ##########
 
@@ -313,7 +313,7 @@ $ArgList += [PSCustomObject] @{ Arg = '-logc' ;Var = @('ScriptLog=2','LogName=-'
 Function ThanksDonate {
 	DisplayOut "`nThanks for using my script." -C 11
 	DisplayOut 'If you like this script please consider giving me a donation,' -C 11
-	DisplayOut 'Min of `$1 from the adjustable Amazon Gift Card.' -C 11
+	DisplayOut 'Min of $1 from the adjustable Amazon Gift Card.' -C 11
 	DisplayOut "`nLink to donation:" -C 15
 	DisplayOut $Donate_Url -C 2
 }
@@ -1060,7 +1060,6 @@ Function PopWindow {
 </Window>
 "@
 
-
 	[Void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 	$FormPW = [Windows.Markup.XamlReader]::Load( (New-Object System.Xml.XmlNodeReader $XAMLPW) )
 	$XAMLPW.SelectNodes('//*[@Name]').ForEach{Set-Variable -Name "WPFPW_$($_.Name)" -Value $FormPW.FindName($_.Name) -Scope Script}
@@ -1076,12 +1075,12 @@ Function PopWindow {
 	$WPFPW_Button0.Add_Click{ RunScriptFun ;$FormPW.Close() }
 	$WPFPW_Button1.Add_Click{ $FormPW.Close() }
 	$WPFPW_Cbox.Add_Checked{
-		If($EBFailCount -In 1..3){ $EditionCheck = 'Pro' }
-		If($EBFailCount -In 2..3){ $BuildCheck = 1 }
+		If($EBFailCount -In 1,3){ $EditionCheck = 'Pro' }
+		If($EBFailCount -In 2,3){ $BuildCheck = 1 }
 	}
 	$WPFPW_Cbox.Add_UnChecked{
-		If($EBFailCount -In 1..3){ $EditionCheck = 0 }
-		If($EBFailCount -In 2..3){ $BuildCheck = 0 }
+		If($EBFailCount -In 1,3){ $EditionCheck = 0 }
+		If($EBFailCount -In 2,3){ $BuildCheck = 0 }
 	}
 
 	$FormPW.ShowDialog() | Out-Null
@@ -2109,48 +2108,48 @@ Function ShowHelp {
 	DisplayOut ''.PadRight(53,'-') -C 14
 	DisplayOut ' Switch ',"Description of Switch`n".PadLeft(31) -C 14,15
 	DisplayOut '-- Basic Switches --' -C 2
-	DisplayOut '  -atos ','           Accepts ToS' -C 14,15
-	DisplayOut '  -auto ','           Implies ','-atos','...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script' -C 14,15,14,15
+	DisplayOut '  -atos    ','        Accepts ToS' -C 14,15
+	DisplayOut '  -auto    ','        Implies ','-atos','...Runs the script to be Automated.. Closes on - User Input, Errors, or End of Script' -C 14,15,14,15
 	DisplayOut "`n--Service Configuration Switches--" -C 2
 	DisplayOut '  -default ','        Runs the script with Services to Default Configuration' -C 14,15
-	DisplayOut '  -safe ',"           Runs the script with Services to Black Viper's Safe Configuration" -C 14,15
+	DisplayOut '  -safe    ',"        Runs the script with Services to Black Viper's Safe Configuration" -C 14,15
 	DisplayOut '  -tweaked ',"        Runs the script with Services to Black Viper's Tweaked Configuration" -C 14,15
 	DisplayOut '  -lcsc ','File.csv ','  Loads Custom Service Configuration, ','File.csv',' = Name of your backup/custom file' -C 14,11,15,11,15
 	DisplayOut "`n--Service Choice Switches--" -C 2
-	DisplayOut '  -all ','            Every windows services will change' -C 14,15
-	DisplayOut '  -min ','            Just the services different from the default to safe/tweaked list' -C 14,15
-	DisplayOut '  -sxb ','            Skips changes to all XBox Services' -C 14,15
+	DisplayOut '  -all     ','        Every windows services will change' -C 14,15
+	DisplayOut '  -min     ','        Just the services different from the default to safe/tweaked list' -C 14,15
+	DisplayOut '  -sxb     ','        Skips changes to all XBox Services' -C 14,15
 	DisplayOut "`n--Update Switches--" -C 2
-	DisplayOut '  -usc ','            Checks for Update to Script file before running' -C 14,15
-	DisplayOut '  -use ','            Checks for Update to Service file before running' -C 14,15
-	DisplayOut '  -sic ',"            Skips Internet Check, if you can't ping GitHub.com for some reason" -C 14,15
+	DisplayOut '  -usc     ','        Checks for Update to Script file before running' -C 14,15
+	DisplayOut '  -use     ','        Checks for Update to Service file before running' -C 14,15
+	DisplayOut '  -sic     ',"        Skips Internet Check, if you can't ping GitHub.com for some reason" -C 14,15
 	DisplayOut "`n--Log Switches--" -C 2
-	DisplayOut '  -log ','            Makes a log file named using default name ','Script.log' -C 14,15,11
+	DisplayOut '  -log     ','        Makes a log file named using default name ','Script.log' -C 14,15,11
 	DisplayOut '  -log ','File.log ',' Makes a log file named ','File.log' -C 14,11,15,11
-	DisplayOut '  -baf ','            Log File of Services Configuration Before and After the script' -C 14,15
+	DisplayOut '  -baf     ','        Log File of Services Configuration Before and After the script' -C 14,15
 	DisplayOut "`n--Backup Service Configuration--" -C 2
-	DisplayOut '  -bscc ','           Backup Current Service Configuration, Csv File' -C 14,15
-	DisplayOut '  -bscr ','           Backup Current Service Configuration, Reg File' -C 14,15
-	DisplayOut '  -bscb ','           Backup Current Service Configuration, Csv and Reg File' -C 14,15
+	DisplayOut '  -bscc    ','        Backup Current Service Configuration, Csv File' -C 14,15
+	DisplayOut '  -bscr    ','        Backup Current Service Configuration, Reg File' -C 14,15
+	DisplayOut '  -bscb    ','        Backup Current Service Configuration, Csv and Reg File' -C 14,15
 	DisplayOut "`n--Display Switches--" -C 2
-	DisplayOut '  -sas  ','           Show Already Set Services' -C 14,15
-	DisplayOut '  -snis ','           Show Not Installed Services' -C 14,15
-	DisplayOut '  -sss  ','           Show Skipped Services' -C 14,15
+	DisplayOut '  -sas     ','        Show Already Set Services' -C 14,15
+	DisplayOut '  -snis    ','        Show Not Installed Services' -C 14,15
+	DisplayOut '  -sss     ','        Show Skipped Services' -C 14,15
 	DisplayOut "`n--Misc Switches--" -C 2
-	DisplayOut '  -dry  ','           Runs the Script and Shows what services will be changed' -C 14,15
-	DisplayOut '  -css  ','           Change State of Service' -C 14,15
-	DisplayOut '  -sds  ','           Stop Disabled Service' -C 14,15
+	DisplayOut '  -dry     ','        Runs the Script and Shows what services will be changed' -C 14,15
+	DisplayOut '  -css     ','        Change State of Service' -C 14,15
+	DisplayOut '  -sds     ','        Stop Disabled Service' -C 14,15
 	DisplayOut "`n--AT YOUR OWN RISK Switches--" -C 13
-	DisplayOut '  -secp ','           Skips Edition Check by Setting Edition as Pro' -C 14,15
-	DisplayOut '  -sech ','           Skips Edition Check by Setting Edition as Home' -C 14,15
-	DisplayOut '  -sbc  ','           Skips Build Check' -C 14,15
+	DisplayOut '  -secp    ','        Skips Edition Check by Setting Edition as Pro' -C 14,15
+	DisplayOut '  -sech    ','        Skips Edition Check by Setting Edition as Home' -C 14,15
+	DisplayOut '  -sbc     ','        Skips Build Check' -C 14,15
 	DisplayOut "`n--Dev Switches--" -C 2
-	DisplayOut '  -devl ','           Makes a log file with various Diagnostic information, Nothing is Changed ' -C 14,15
-	DisplayOut '  -diag ','           Shows diagnostic information, Stops ','-auto' -C 14,15,14
-	DisplayOut '  -diagf ','          Forced diagnostic information, Script does nothing else' -C 14,15
+	DisplayOut '  -devl    ','        Makes a log file with various Diagnostic information, Nothing is Changed ' -C 14,15
+	DisplayOut '  -diag    ','        Shows diagnostic information, Stops ','-auto' -C 14,15,14
+	DisplayOut '  -diagf   ','        Forced diagnostic information, Script does nothing else' -C 14,15
 	DisplayOut "`n--Help--" -C 2
-	DisplayOut '  -help ','           Shows list of switches, then exits script.. alt ','-h' -C 14,15,14
-	DisplayOut '  -copy ','           Shows Copyright/License Information, then exits script' -C 14,15
+	DisplayOut '  -help    ','        Shows list of switches, then exits script.. alt ','-h' -C 14,15,14
+	DisplayOut '  -copy    ','        Shows Copyright/License Information, then exits script' -C 14,15
 	AutomatedExitCheck 1
 	Exit
 }
