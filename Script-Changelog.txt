@@ -1,4 +1,15 @@
 -----------------------------------------------------------------------------------
+6.0.0 (02-25-2019)
+
+Fixed a bug were 'Skip Xbox Services' wouldn't deselect some xbox services in some cases
+Impovement to 'blackviper.csv' file (made it smaller)
+Change to script to interpret new 'blackviper.csv' file
+Preped Script for any non-blackviper service config that may come out
+Changed how script deals with Edition and Build check errors in GUI (next 2 line)
+  ^ There is now a popup window that lets you know about error and ASKS if you want 
+  ^ to run script still and a checkbox that lets you set the ability to skip that check
+
+-----------------------------------------------------------------------------------
 5.4.5 (01-16-2019)
 
 Reverted a change in previous update
