@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
-6.0.0 (02-24-2019)
+6.0.0 (02-25-2019)
 
 Fixed a bug were 'Skip Xbox Services' wouldn't deselect some xbox services in some cases
 Impovement to 'blackviper.csv' file (made it smaller)
