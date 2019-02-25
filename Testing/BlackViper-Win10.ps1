@@ -981,8 +981,7 @@ Function GuiStart {
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
 	$VarList.ForEach{ If($(Get-Variable -Name ($_.Name.Split('_')[1]) -ValueOnly) -eq 1){ $_.Value.IsChecked = $True } Else{ $_.Value.IsChecked = $False } }
-	If($EditionCheck -ne 0){ $WPF_EditionCheckCB.IsChecked = $True ;$WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheckCB.IsChecked = $False }
-	If('Home' -In $WinEdition,$EditionCheck){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
+	EditionBuildCBSet
 
 	$WPF_BackupServiceType.SelectedIndex = $BackupServiceType
 	$WPF_ServiceConfig.SelectedIndex = $Black_Viper
@@ -1070,19 +1069,27 @@ Function PopWindow {
 
 	$WPFPW_Tbox.Text = $Message
 	$WPFPW_Cbox.Content = $ChkBox
+	$tmpEB = $EBFailCount
 
-	$WPFPW_Button0.Add_Click{ RunScriptFun ;$FormPW.Close() }
+	$WPFPW_Button0.Add_Click{ $FormPW.Close() ;RunScriptFun }
 	$WPFPW_Button1.Add_Click{ $FormPW.Close() }
 	$WPFPW_Cbox.Add_Checked{
-		If($EBFailCount -In 1,3){ $Script:EditionCheck = 'Pro' }
-		If($EBFailCount -In 2,3){ $Script:BuildCheck = 1 }
+		If($EBFailCount -In 1,3){ $Script:EditionCheck = 'Pro' ;EditionBuildCBSet }
+		If($EBFailCount -In 2,3){ $Script:BuildCheck = 1 ;$WPF_BuildCheck_CB.IsChecked = $True }
+		EditionBuildCBSet
+		$EBFailCount = 0
 	}
 	$WPFPW_Cbox.Add_UnChecked{
-		If($EBFailCount -In 1,3){ $Script:EditionCheck = 0 }
-		If($EBFailCount -In 2,3){ $Script:BuildCheck = 0 }
+		If($EBFailCount -In 1,3){ $Script:EditionCheck = 0 ;EditionBuildCBSet }
+		If($EBFailCount -In 2,3){ $Script:BuildCheck = 0 ;$WPF_BuildCheck_CB.IsChecked = $False }
+		$EBFailCount = $tmpEB 
 	}
-
 	$FormPW.ShowDialog() | Out-Null
+}
+
+Function EditionBuildCBSet {
+	If($EditionCheck -ne 0){ $WPF_EditionCheckCB.IsChecked = $True ;$WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheckCB.IsChecked = $False }
+	If('Home' -In $WinEdition,$EditionCheck){ $WPF_EditionConfig.SelectedIndex = 0 } Else{ $WPF_EditionConfig.SelectedIndex = 1 }
 }
 
 Function RowColorRet([Bool]$Match,[Bool]$checkbox) {
@@ -1949,8 +1956,6 @@ Function PreScriptCheck {
 		$EBCount=0
 		Error_Top
 		DisplayOutLML " Script won't run due to the following problem(s)" 2 -L
-		MenuBlankLine -L
-		MenukLine -L
 		If($EditionCheck -eq 'Fail') {
 			$EBCount++
 			MenuBlankLine -L
