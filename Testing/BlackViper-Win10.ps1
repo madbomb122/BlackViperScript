@@ -10,7 +10,7 @@
 # Website: http://www.BlackViper.com/
 #
 $Script_Version = '6.0.0'
-$Script_Date = 'Feb-24-2019'
+$Script_Date = 'Feb-25-2019'
 #$Release_Type = 'Stable'
 ##########
 
@@ -832,7 +832,7 @@ Function GuiStart {
 		} ElseIf($EBFailCount -eq 2) {
 			PopWindow -M "You are Running this script on $Win10Ver..`n--Build Requirements--`n  Min Version: $MinVerName ($MinVer)`n  Max Version: $MaxVerName ($MaxVer).`n`nDo you still want to run this script?" -CB 'Skip All Build checks'
 		} ElseIf($EBFailCount -eq 3) {
-			PopWindow -M "You are Running this script on $WinEdition $Win10Ver..`n--Requirements--`n  Edition: Windows 10 - Home or Pro (64-Bit)`n  Min Version: $MinVerName ($MinVer)`n  Max Version: $MaxVerName ($MaxVer)`n`nDo you still want to run this script?" -CB 'Skip All Build & Edition checks'		
+			PopWindow -M "You are Running this script on $WinEdition $Win10Ver..`n--Requirements--`n  Edition: Windows 10 - Home or Pro (64-Bit)`n  Min Version: $MinVerName ($MinVer)`n  Max Version: $MaxVerName ($MaxVer)`n`nDo you still want to run this script?" -CB 'Skip All Build & Edition checks'
 		}
 	}
 
@@ -1050,12 +1050,12 @@ Function PopWindow {
 [xml]$XAMLPW = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   Title="Caution" Height="215" Width="285" BorderBrush="Black" Background="White" WindowStyle="ToolWindow">
-    <Grid Background="#FFE5E5E5">
-        <Button Name="Button0" Content="Yes" HorizontalAlignment="Left" Margin="10,151,0,0" VerticalAlignment="Top" Width="76"/>
-        <Button Name="Button1" Content="No" HorizontalAlignment="Left" Margin="95,151,0,0" VerticalAlignment="Top" Width="76"/>
-        <TextBlock Name="Tbox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="113" Width="247"><Run Text="TextBlock"/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/><LineBreak/><Run/></TextBlock>
-        <CheckBox Name="Cbox" Content="CheckBox" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top"/>
-    </Grid>
+	<Grid Background="#FFE5E5E5">
+		<Button Name="Button0" Content="Yes" HorizontalAlignment="Left" Margin="10,151,0,0" VerticalAlignment="Top" Width="76"/>
+		<Button Name="Button1" Content="No" HorizontalAlignment="Left" Margin="95,151,0,0" VerticalAlignment="Top" Width="76"/>
+		<TextBlock Name="Tbox" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="113" Width="247"/>
+		<CheckBox Name="Cbox" Content="CheckBox" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top"/>
+	</Grid>
 </Window>
 "@
 
@@ -1074,12 +1074,12 @@ Function PopWindow {
 	$WPFPW_Button0.Add_Click{ RunScriptFun ;$FormPW.Close() }
 	$WPFPW_Button1.Add_Click{ $FormPW.Close() }
 	$WPFPW_Cbox.Add_Checked{
-		If($EBFailCount -In 1,3){ $EditionCheck = 'Pro' }
-		If($EBFailCount -In 2,3){ $BuildCheck = 1 }
+		If($EBFailCount -In 1,3){ $Script:EditionCheck = 'Pro' }
+		If($EBFailCount -In 2,3){ $Script:BuildCheck = 1 }
 	}
 	$WPFPW_Cbox.Add_UnChecked{
-		If($EBFailCount -In 1,3){ $EditionCheck = 0 }
-		If($EBFailCount -In 2,3){ $BuildCheck = 0 }
+		If($EBFailCount -In 1,3){ $Script:EditionCheck = 0 }
+		If($EBFailCount -In 2,3){ $Script:BuildCheck = 0 }
 	}
 
 	$FormPW.ShowDialog() | Out-Null
