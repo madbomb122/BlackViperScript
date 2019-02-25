@@ -10,4 +10,4 @@ Only Differances between script are:
 4. Error display may show various info for diagnostic purposes
 
 **Note: Use the copy here if you dont mind possible bugs or problems.**<br />
-**Note: Dont forget to download the file `BlackViper.csv` and `Update.bat` from the base folder**
+**Note: Dont forget to download the file `BlackViper.csv` from the base folder**
