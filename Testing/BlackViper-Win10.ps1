@@ -10,7 +10,7 @@
 # Website: http://www.BlackViper.com/
 #
 $Script_Version = '6.0.0'
-$Script_Date = 'Feb-15-2019'
+$Script_Date = 'Feb-24-2019'
 #$Release_Type = 'Stable'
 ##########
 
@@ -271,7 +271,6 @@ $RanScript = $False
 $LaptopTweaked = 0
 $ErrCount = $Error.Count
 $GuiSwitch = $False
-$StopWatch = New-Object System.Diagnostics.Stopwatch
 
 [System.Collections.ArrayList]$ArgList = @{}
 $ArgList += [PSCustomObject] @{ Arg = '-all' ;Var = 'All_or_Min=-Full';Match = 1 ;Gui = $True }
@@ -1674,6 +1673,7 @@ Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 }
 
 Function ServiceSet([String]$BVService,[String]$BVSet) {
+	$StopWatch = New-Object System.Diagnostics.Stopwatch
 	If($GuiSwitch){ $WPF_ServiceListing.text = '' }
 	$BVChanged = 0
 	$BVAlready = 0
