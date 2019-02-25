@@ -11,8 +11,8 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `5.4.5` (January 16, 2019)   
-**Service:** `4.2` (September 11, 2018) -April 2018 Update   
+**Script:** `6.0.0` (Febuary 25, 2019)   
+**Service:** `5.0` (Febuary 25, 2019) -April 2018 Update   
 
 
 ## Contents
@@ -171,12 +171,6 @@ Switch Examples:
 **A:** You can use/load them on another computer, but be careful.   
 **Note** I would NOT use the reg file on another computer, since it may not all the same services.   
 
-**Q:** The Run button is disabled what do I do?   
-**A:** Look in the script option and skip the appropriate check (Build for Build, Edition for Edition).   
-
-**Q:** I am getting 'Run is Disabled due to Edition check' can you help?   
-**A:** Double check the requirements above, If you meet them. Please run the script with the switch '-diagf' or click the 'Show Diagnostic' in Script's GUI. With the Result given and post it as an issue or E-Mail me the information   
-
 **Q:** The script wont run, can you help me?   
 **A:** Yes, but first if you are using automation.. turn off automation and see if it gives and error that you can correct.   
 
@@ -187,9 +181,6 @@ Switch Examples:
 **A:** By default windows blocks ps1 scripts, you can use one of the following   
          1. Use the bat file to run the script (recommended)   
          2. On an admin powershell console `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted`   	 
-
-**Q:** Who do I contact about the Service Configurations or an issue with the configuration?   
-**A:** Any "technical" issues (or why something is set one way or another) can be directed to Black Viper himself.
 
 **Q:** Why does you script not change the service *BLAH*?   
 **A:** You didnt select the All option, it's not a default windows service, cant be changed, or some other good reason.
@@ -233,7 +224,8 @@ Switch Examples:
 **A:** Yes, to add/remove edit the file `BlackViper.csv` or use the gui and uncheck the services you dont want changed   
 ---to remove a service remove the line or put something to change service name, other than symbols (# is fine)   
 ---to add put it in the proper format   
-**Note:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)`   
+**Note 1:** Number meaning `0 -Not Installed/Skip`, `1 -Disable`, `2 -Manual`, `3 -Automatic`, `4 -Auto (Delayed)`   
+**Note 2:** Negative Numbers are the same as above but wont be used unless you select it or use the `All` Setting   
 
 **Q:** How long are you going to maintain the script?   
 **A:** No Clue.   
