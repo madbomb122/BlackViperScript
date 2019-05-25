@@ -1,4 +1,9 @@
 -----------------------------------------------------------------------------------
+6.1.0 (05-25-2019)
+
+Fixed a bug were custom service selection would not be used
+
+-----------------------------------------------------------------------------------
 6.0.0 (02-25-2019)
 
 Fixed a bug were 'Skip Xbox Services' wouldn't deselect some xbox services in some cases
