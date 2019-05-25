@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '6.0.0'
-$Script_Date = 'Feb-25-2019'
+$Script_Version = '6.1.0'
+$Script_Date = 'May-25-2019'
 #$Release_Type = 'Stable'
 ##########
 
@@ -433,7 +433,7 @@ Function TOS {
 		$CR = $False
 		$Invalid = ShowInvalid $Invalid
 		$TOS = Read-Host "`nDo you Accept? (Y)es/(N)o"
-		If($TOS.ToLower() -In 'n','no') {
+		If($TOS -In 'n','no') {
 			Exit
 		} ElseIf($TOS -In 'y','yes') {
 			$TOS = 'Out'
@@ -1033,6 +1033,8 @@ Function RunScriptFun {
 				If(!$_.CheckboxChecked){ $STF *= -1 }
 				[PSCustomObject] @{ ServiceName = $_.ServiceName ;StartType = $STF ;Status = $_.SrvState }
 			}
+		} Else {
+			$Script:LoadServiceConfig = 0
 		}
 		Black_Viper_Set $Black_Viper $All_or_Min
 	} Else {
@@ -1082,7 +1084,7 @@ Function PopWindow {
 	$WPFPW_Cbox.Add_UnChecked{
 		If($EBFailCount -In 1,3){ $Script:EditionCheck = 0 ;EditionBuildCBSet }
 		If($EBFailCount -In 2,3){ $Script:BuildCheck = 0 ;$WPF_BuildCheck_CB.IsChecked = $False }
-		$EBFailCount = $tmpEB 
+		$EBFailCount = $tmpEB
 	}
 	$FormPW.ShowDialog() | Out-Null
 }
@@ -1353,7 +1355,7 @@ Function UpdateCheck {
 	} Catch {
 		$CSV_Ver = $False
 		$Message = 'Error: Unable to check for update, try again later.'
-		If($ScriptLog -eq 1){ Write-Output "$(GetTime): $Message" | Out-File -LiteralPath $LogFile -Encoding Unicode -Append}
+		If($ScriptLog -eq 1){ Write-Output "$(GetTime): $Message" | Out-File -LiteralPath $LogFile -Encoding Unicode -Append }
 	}
 
 	If(($SerCheck -or $ServiceVerCheck -eq 1) -and !$CSV_Ver) {
@@ -1673,13 +1675,14 @@ Function Black_Viper_Set([Int]$BVOpt,[String]$FullMin) {
 	} ElseIf($Black_Viper -eq 3) {
 		$ServiceSetOpt = $ServiceMaker + 'Tweaked-Desk' ;$SrvSetting = 'Tweaked'
 	}
+	If($FullMin -eq '-Full'){ $Negative = $True }Else{ $Negative = $False }
 	$SrvSetting += $FullMin
 	If($LogBeforeAfter -eq 2){ DiagnosticCheck 1 }
 	ServiceBAfun 'Services-Before'
-	ServiceSet $ServiceSetOpt $SrvSetting
+	ServiceSet $ServiceSetOpt $SrvSetting $Negative
 }
 
-Function ServiceSet([String]$BVService,[String]$BVSet) {
+Function ServiceSet([String]$BVService,[String]$BVSet,[Bool]$BVNeg) {
 	$StopWatch = New-Object System.Diagnostics.Stopwatch
 	If($GuiSwitch){ $WPF_ServiceListing.text = '' }
 	$BVChanged = 0
@@ -1697,7 +1700,7 @@ Function ServiceSet([String]$BVService,[String]$BVSet) {
 		$DispTempT = @()
 		$DispTempC = @()
 		[Int] $ServiceTypeNum = $_.$BVService
-		If($ServiceTypeNum -In -4..-1 -and $All_or_Min -eq '-full'){ $ServiceTypeNum *= -1 }
+		If($ServiceTypeNum -In -4..-1 -and $BVNeg){ $ServiceTypeNum *= -1 }
 		$ServiceType = $ServicesTypeList[$ServiceTypeNum]
 		$ServiceName = QMarkServices $_.ServiceName
 		$ServiceCommName = SearchSrv $ServiceName 'DisplayName'
@@ -1893,7 +1896,7 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 		MenuLine
 		$Invalid = ShowInvalid $Invalid
 		$LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
-		If($LoadWebCSV.ToLower() -In 'y','yes') {
+		If($LoadWebCSV -In 'y','yes') {
 			DownloadFile $Service_Url $BVServiceFilePath ;$LoadWebCSV = 'Out'
 		} ElseIf($LoadWebCSV -In 'n','no') {
 			DisplayOut 'For manual download save the following File: ' -C 2 -L
