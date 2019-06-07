@@ -1,7 +1,12 @@
 -----------------------------------------------------------------------------------
-6.1.0 (05-25-2019)
+6.1.1 (06-07-2019)
 
 Fixed a bug were custom service selection would not be used
+
+Fixed bug with '-lcsc' if no file was specified
+The Switch '-lcsc' will now skip build/edition check
+Fixed a bug when using '-lcsc' from bat file the file wasnt found
+Fixed a bug were custom service file wouldn't be used/run
 
 -----------------------------------------------------------------------------------
 6.0.0 (02-25-2019)
