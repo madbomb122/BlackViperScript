@@ -11,7 +11,7 @@
 To Download go to -> [Black Viper Script -Release](https://github.com/madbomb122/BlackViperScript/releases)  
 
 **Current Version**   
-**Script:** `6.1.0` (May 25, 2019)   
+**Script:** `6.1.1` (June 07, 2019)   
 **Service:** `5.0` (Febuary 25, 2019) -April 2018 Update   
 
 
@@ -98,7 +98,7 @@ Use one of the following Methods you can
 | -default       | Runs the script with Services to Default Configuration                         |                                                         |
 | -safe          | Runs the script with Services to Black Viper's Safe Configuration              |                                                         |
 | -tweaked       | Runs the script with Services to Black Viper's Tweaked Configuration           |                                                         |
-| -lcsc File.csv | Loads Custom Service Configuration                                             | `File.csv` Name of backup/custom file                   |
+| -lcsc File.csv | Loads Custom Service Configuration                                             | `File.csv` Name of backup/custom file, Implies `-secp -sbc`   |
 | -all           | Every Windows Services in loaded file will change                              |                                                         |
 | -min           | Just the services different from the default to safe/tweaked list              |                                                         |
 | -sxb           | Skips Change to All Xbox Services                                              |                                                         |
