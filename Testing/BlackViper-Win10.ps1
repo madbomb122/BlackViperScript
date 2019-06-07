@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '6.1.0'
-$Script_Date = 'May-25-2019'
+$Script_Version = '6.1.1'
+$Script_Date = 'June-07-2019'
 #$Release_Type = 'Stable'
 ##########
 
@@ -1033,7 +1033,7 @@ Function RunScriptFun {
 				If(!$_.CheckboxChecked){ $STF *= -1 }
 				[PSCustomObject] @{ ServiceName = $_.ServiceName ;StartType = $STF ;Status = $_.SrvState }
 			}
-		} Else {
+		} ElseIf($Script:LoadServiceConfig -NotIn 1,2) {
 			$Script:LoadServiceConfig = 0
 		}
 		Black_Viper_Set $Black_Viper $All_or_Min
@@ -2009,20 +2009,7 @@ Function PreScriptCheck {
 			Save_ServiceBackup ;RegistryServiceFileBackup
 		}
 	}
-	If($LoadServiceConfig -eq 1) {
-		$ServiceFilePath = $ServiceConfigFile
-		If(!(Test-Path -LiteralPath $ServiceFilePath -PathType Leaf)) {
-			$Script:ErrorDi = 'Missing File $ServiceConfigFile'
-			Error_Top
-			$SrvConFileLen = $ServiceFilePath.length
-			If($SrvConFileLen -gt 42){ $SrvConFileLen = 42 }
-			DisplayOut '|',' The File ',$ServiceFilePath,' is missing.'.PadRight(42-$SrvConFileLen),'|' -C 14,2,15,2,14 -L
-			Error_Bottom
-		}
-		$ServiceVerCheck = 0
-	} ElseIf($LoadServiceConfig -eq 2) {
-		# This is supposed to be EMPTY
-	} Else {
+	If($LoadServiceConfig -NotIn 1,2) {
 		$ServiceFilePath = $BVServiceFilePath
 		If(!(Test-Path -LiteralPath $BVServiceFilePath -PathType Leaf)) {
 			If($ServiceVerCheck -eq 0) {
@@ -2035,7 +2022,11 @@ Function PreScriptCheck {
 			$ServiceVerCheck = 0
 		}
 	}
-	If($LoadServiceConfig -ne 2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath }
+	If($LoadServiceConfig -eq 1) {
+		[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceConfigFile
+	} ElseIf($LoadServiceConfig -ne 2) {
+		[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath
+	}
 	If(1 -In $ScriptVerCheck,$ServiceVerCheck){ UpdateCheckAuto }
 	If($LoadServiceConfig -NotIn 1,2){ CheckBVcsv ;$csv.RemoveAt(0) }
 }
@@ -2069,28 +2060,46 @@ Function GetArgs {
 	If($PassedArg -In '-help','-h'){ ShowHelp }
 	If($PassedArg -Contains '-copy'){ ShowCopyright ;Exit }
 	If($PassedArg -Contains '-lcsc') {
+		$tmp = PassVal '-lcsc'
 		$Script:BV_ArgUsed = 3
 		$Script:LoadServiceConfig = 1
-		$tmp = PassVal '-lcsc'
-		If(!$tmp.StartsWith('-')) {
-			[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $tmp
-			If($null -In $Tempcheck[0].StartType,$Tempcheck[0].ServiceName) {
+		If($tmp -ne $null -and !$tmp.StartsWith('-')) {
+			$Script:EditionCheck = 'Pro'
+			$Script:BuildCheck = 1
+			Set-Location $FileBase
+			If(!(Test-Path -LiteralPath $tmp -PathType Leaf)) {
+				$Script:ErrorDi = "Missing File $tmp"
 				Error_Top
-				If($Tempcheck[0].'BV-Safe-Desk' -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
-					DisplayOut '|'," Please don't load '",'BlackViper.csv',"' by using",' -lcsc ',' |' -C 14,2,15,2,15,14 -L
-					DisplayOutLML 'Instead use one of the following instead' -C 2 -L
-					$InSwitch = '   -Default   -Safe'
-					If($IsLaptop -ne '-Lap') { $InSwitch += '   -Tweaked' }
-					DisplayOutLML $InSwitch -C 15 -L
-					$Script:ErrorDi = "Can't use -lcsc with BlackViper.csv File"
-				} Else {
-					DisplayOut '|',' The File ',"$tmp".PadRight(41),' |' -C 14,2,15,14 -L
-					DisplayOutLML 'is Invalid or Corrupt.' 2 -L
-					$Script:ErrorDi = 'Invalid CSV File'
-				}
+				$SrvConFileLen = $tmp.length
+				If($SrvConFileLen -gt 42){ $SrvConFileLen = 42 }
+				DisplayOut '|',' The File ',$tmp,' is missing.'.PadRight(42-$SrvConFileLen),'|' -C 14,2,15,2,14 -L
 				Error_Bottom
+			} Else {
+				[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $tmp
+				If($null -In $Tempcheck[0].StartType,$Tempcheck[0].ServiceName) {
+					Error_Top
+					If($Tempcheck[0].'BV-Safe-Desk' -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
+						DisplayOut '|'," Please don't load '",'BlackViper.csv',"' by using",' -lcsc ',' |' -C 14,2,15,2,15,14 -L
+						DisplayOutLML 'Instead use one of the following instead' -C 2 -L
+						$InSwitch = '   -Default   -Safe'
+						If($IsLaptop -ne '-Lap') { $InSwitch += '   -Tweaked' }
+						DisplayOutLML $InSwitch -C 15 -L
+						$Script:ErrorDi = "Can't use -lcsc with BlackViper.csv File"
+					} Else {
+						DisplayOut '|',' The File ',"$tmp".PadRight(41),' |' -C 14,2,15,14 -L
+						DisplayOutLML 'is Invalid or Corrupt.' 2 -L
+						$Script:ErrorDi = 'Invalid CSV File'
+					}
+					Error_Bottom
+				}
+				$Script:ServiceConfigFile = $tmp
+				$Script:ServiceFilePath = $tmp
 			}
-			$Script:ServiceConfigFile = $tmp
+		} Else {
+			$Script:ErrorDi = "No File Specified."
+			Error_Top
+			DisplayOut '|'," No File Specified with",' -lcsc ','switch.              ',' |' -C 14,2,15,2,14 -L
+			Error_Bottom
 		}
 	}
 	$ArgList.ForEach{
