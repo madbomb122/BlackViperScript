@@ -1,5 +1,9 @@
 -----------------------------------------------------------------------------------
-6.1.1 (06-07-2019)
+6.1.2 (09-20-2019)
+
+Slight Changes in script
+Improvement to script
+Fixed Sorting bug in Service List
 
 Fixed a bug were custom service selection would not be used
 
