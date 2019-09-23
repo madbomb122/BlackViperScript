@@ -1,5 +1,9 @@
 -----------------------------------------------------------------------------------
-6.1.2 (09-20-2019)
+6.1.3 (09-23-2019)
+
+Fixed a bug were All/Min was not being loaded from setting file
+Fixed a bug were setting custom services from 'Service List' would not be used
+Fixed Sorting bug in Service List not keeping after more then 1 changes
 
 Slight Changes in script
 Improvement to script
