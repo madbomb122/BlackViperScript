@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '6.1.2'
-$Script_Date = 'Sept-20-2019'
+$Script_Version = '6.1.3'
+$Script_Date = 'Sept-23-2019'
 #$Release_Type = 'Stable'
 ##########
 
@@ -501,40 +501,45 @@ Function SaveSetting {
 	$Black_Viper = $WPF_ServiceConfig.SelectedIndex
 	If(($Black_Viper+1) -eq $BVCount -or ($IsLaptop -eq '-Lap' -and $LaptopTweaked -ne 1 -and $Black_Viper -ge 2)){ $Black_Viper = 0 }
 
-	$Settings = @{}
-	$Settings.AcceptToS = $AcceptToS
-	$Settings.EditionCheck = $EditionCheck
-	$Settings.BuildCheck = $BuildCheck
-	$Settings.LaptopTweaked = $LaptopTweaked
-	$Settings.Black_Viper = $Black_Viper
-	$Settings.All_or_Min = $All_or_Min
-	$Settings.BackupServiceConfig = $BackupServiceConfig
-	$Settings.BackupServiceType = $BackupServiceType
-	$Settings.InternetCheck = $InternetCheck
-	$Settings.ScriptVerCheck = $ScriptVerCheck
-	$Settings.ServiceVerCheck = $ServiceVerCheck
-	$Settings.ShowConsole = $ShowConsole
-	$Settings.XboxService = $XboxService
-	$Settings.StopDisabled = $StopDisabled
-	$Settings.ChangeState = $ChangeState
-	$Settings.ShowSkipped = $ShowSkipped
+	$Settings = @{
+		AcceptToS = $AcceptToS
+		EditionCheck = $EditionCheck
+		BuildCheck = $BuildCheck
+		LaptopTweaked = $LaptopTweaked
+		Black_Viper = $Black_Viper
+		All_or_Min = $All_or_Min
+		BackupServiceConfig = $BackupServiceConfig
+		BackupServiceType = $BackupServiceType
+		InternetCheck = $InternetCheck
+		ScriptVerCheck = $ScriptVerCheck
+		ServiceVerCheck = $ServiceVerCheck
+		ShowConsole = $ShowConsole
+		XboxService = $XboxService
+		StopDisabled = $StopDisabled
+		ChangeState = $ChangeState
+		ShowSkipped = $ShowSkipped
+	}
 	If($ConsideredDonation -eq 'Yes'){ $Settings.ConsideredDonation = 'Yes' }
 	If($WPF_DevLogCB.IsChecked) {
-		$Settings.ScriptLog = $Script_Log
-		$Settings.LogName = $Log_Name
-		$Settings.Diagnostic = $Diagn_ostic
-		$Settings.LogBeforeAfter = $Log_Before_After
-		$Settings.DryRun = $Dry_Run
-		$Settings.ShowNonInstalled = $Show_Non_Installed
-		$Settings.ShowAlreadySet = $Show_Already_Set
+		$Settings | ForEach-Object{
+			$_.ScriptLog = $Script_Log
+			$_.LogName = $Log_Name
+			$_.Diagnostic = $Diagn_ostic
+			$_.LogBeforeAfter = $Log_Before_After
+			$_.DryRun = $Dry_Run
+			$_.ShowNonInstalled = $Show_Non_Installed
+			$_.ShowAlreadySet = $Show_Already_Set
+		}
 	} Else {
-		$Settings.ScriptLog = $ScriptLog
-		$Settings.LogName = $LogName
-		$Settings.Diagnostic = $Diagnostic
-		$Settings.LogBeforeAfter = $LogBeforeAfter
-		$Settings.DryRun = $DryRun
-		$Settings.ShowNonInstalled = $ShowNonInstalled
-		$Settings.ShowAlreadySet = $ShowAlreadySet
+		$Settings | ForEach-Object{
+			$_.ScriptLog = $ScriptLog
+			$_.LogName = $LogName
+			$_.Diagnostic = $Diagnostic
+			$_.LogBeforeAfter = $LogBeforeAfter
+			$_.DryRun = $DryRun
+			$_.ShowNonInstalled = $ShowNonInstalled
+			$_.ShowAlreadySet = $ShowAlreadySet
+		}
 	}
 
 	If(Test-Path -LiteralPath $SettingPath -PathType Leaf) {
@@ -828,16 +833,23 @@ Function GuiStart {
 
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
 		If($DataGridLCust -and $DGUpdate -and $WPF_dataGrid.SelectedItem) {
+			If($null -ne $($WPF_dataGrid.Items.SortDescriptions.PropertyName)) {
+				$Script:SortCol = $WPF_dataGrid.Items.SortDescriptions.PropertyName
+				$Script:SortDir = $WPF_dataGrid.Items.SortDescriptions.Direction
+			}
 			$CurrObj = $WPF_dataGrid.CurrentItem
-			$SortDir = $WPF_dataGrid.Items.SortDescriptions.Direction
-			$SortCol = $WPF_dataGrid.Items.SortDescriptions.PropertyName
 			$CurrObj.Matches = If($CurrObj.CurrType -eq $CurrObj.BVType){ $True } Else{ $False }
 			$CurrObj.RowColor = RowColorRet $CurrObj.Matches $CurrObj.CheckboxChecked
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
-			If($SortDir -eq 'Descending') {
-				$WPF_dataGrid.ItemsSource = $DataGridListCust | Sort-Object -Property $SortCol -Descending
+			If($null -ne $SortCol) {
+				If($SortDir -eq 'Descending') {
+					$DataGridListCust = $DataGridListCust | Sort-Object -Property $SortCol -Descending
+				} Else {
+					$DataGridListCust = $DataGridListCust | Sort-Object -Property $SortCol
+				}
+				$WPF_dataGrid.ItemsSource = $DataGridListCust
 			} Else {
-				$WPF_dataGrid.ItemsSource = $DataGridListCust | Sort-Object -Property $SortCol
+				$WPF_dataGrid.ItemsSource = $DataGridListCust
 			}
 		}
 		$Script:DGUpdate = $True
@@ -962,7 +974,7 @@ Function GuiStart {
 	$WPF_AboutButton.Add_Click{ [Windows.Forms.Messagebox]::Show("This script lets you set Windows 10's services based on Black Viper's Service Configurations, your own Service Configuration (If in a proper format), or a backup of your Service Configurations made by this script.`n`nThis script was created by MadBomb122.",'About', 'OK') | Out-Null }
 
 	$Script:RunScript = 0
-	$WPF_RadioAll.IsChecked = If($All_or_Min -eq '-Full'){ $True } Else{ $True }
+	If($All_or_Min -eq '-Full'){ $WPF_RadioAll.IsChecked = $True } Else{ $WPF_RadioMin.IsChecked = $True }
 
 	$WPF_LogNameInput.Text = $LogName
 	If($ScriptLog -eq 1){ $WPF_ScriptLog_CB.IsChecked = $True ;$WPF_LogNameInput.IsEnabled = $True }
@@ -1207,7 +1219,6 @@ Function GenerateServices {
 		$Script:ServiceImport = 0
 	}
 	[System.Collections.ArrayList]$Script:DataGridListOrig = @{}
-
 	$Script:DataGridListCust = $ServCB.ForEach{
 		$ServiceName = QMarkServices $_.ServiceName
 		If($CurrServices.Name -Contains $ServiceName) {
@@ -2010,10 +2021,10 @@ Function PreScriptCheck {
 			$ServiceVerCheck = 0
 		}
 	}
-	[System.Collections.ArrayList]$Script:csv = If($LoadServiceConfig -eq 1) {
-		Import-Csv -LiteralPath $ServiceConfigFile
+	If($LoadServiceConfig -eq 1) {
+		[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceConfigFile
 	} ElseIf($LoadServiceConfig -ne 2) {
-		Import-Csv -LiteralPath $ServiceFilePath
+		[System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $ServiceFilePath
 	}
 	If(1 -In $ScriptVerCheck,$ServiceVerCheck){ UpdateCheckAuto }
 	If($LoadServiceConfig -NotIn 1,2){ CheckBVcsv ;$csv.RemoveAt(0) }
