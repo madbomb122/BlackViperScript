@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '6.1.3'
-$Script_Date = 'Sept-23-2019'
+$Script_Version = '6.2.0'
+$Script_Date = 'Nov-27-2019'
 $Release_Type = 'Stable'
 ##########
 
@@ -27,14 +27,14 @@ $Release_Type = 'Stable'
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 <#------------------------------------------------------------------------------#>
-$Copyright =' Copyright (c) 2019 Zero Rights Reserved                                
+$Copyright = ' Copyright (c) 2019 Zero Rights Reserved                                
           - Services Configuration by Charles "Black Viper" Sparks      
                                                                         
 ------------------------------------------------------------------------
                                                                         
  The MIT License (MIT) + an added Condition                             
                                                                         
- Copyright (c) 2017-2019 Madbomb122                                     
+ Copyright (c) 2017-2020 Madbomb122                                     
           - Black Viper Service Script                                  
                                                                         
  Permission is hereby granted, free of charge, to any person obtaining  
@@ -185,20 +185,21 @@ $WinEdition = $FullWinEdition.Split(' ')[-1]
 $BuildVer = $CimOS.BuildNumber
 
 $Win10Ver = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name ReleaseID).ReleaseId
-$MaxVer = 1803 ;$MaxVerName = 'April 2018 Update'
-# 1809 = October 2018 Update
-# 1803 = April 2018 Update
-# 1709 = Fall Creators Update
-$MinVer = 1703 ;$MinVerName = 'Creators Update'
-# 1607 = Anniversary Update
-# 1511 = November Update (First Major Update)
-# 1507 = First Release
+# 1909, November 2019 Update
+# 1903, May 2019 Update
+# 1809, October 2018 Update
+$MaxVer,$MaxVerName = 1803, 'April 2018 Update'
+# 1709, Fall Creators Update
+$MinVer,$MinVerName = 1703, 'Creators Update'
+# 1607, Anniversary Update
+# 1511, November Update (First Major Update)
+# 1507, First Release
 
-$URL_Base = 'https://raw.GitHub.com/madbomb122/BlackViperScript/master/'
+$MySite = 'https://GitHub.com/madbomb122/BlackViperScript'
+$URL_Base = $MySite.Replace('GitHub','raw.GitHub')+'/master/'
 $Version_Url = $URL_Base + 'Version/Version.csv'
 $Service_Url = $URL_Base + 'BlackViper.csv'
 $Donate_Url = 'https://www.amazon.com/gp/registry/wishlist/YBAYWBJES5DE/'
-$MySite = 'https://GitHub.com/madbomb122/BlackViperScript'
 
 $ServiceEnd = (Get-Service *_*).Where({$_.ServiceType -eq 224}, 'First') -Replace '^.+?_', '_'
 
@@ -230,13 +231,7 @@ $ServicesTypeList = @(
 
 $ServicesTypeFull = $ServicesTypeList[0..4]
 $ServicesTypeFull[4] = 'Auto (Delayed)'
-
-$ServicesRegTypeList = @(
-'', #0 -None
-'4',#1 -Disable
-'3',#2 -Manual
-'2',#3 -Auto
-'2')#4 -Auto (Delayed)
+$ServicesRegTypeList = @('','4','3','2','2') #Order is same as ServicesTypeFull
 
 $SrvStateList = @('Running','Stopped')
 $XboxServiceArr = @('XblAuthManager','XblGameSave','XboxNetApiSvc','XboxGipSvc','xbgm')
@@ -244,7 +239,7 @@ $NetTCP = @('NetMsmqActivator','NetPipeActivator','NetTcpActivator')
 $FilterList = @('CheckboxChecked','CName','ServiceName','CurrType','BVType','SrvState','SrvDesc','SrvPath','RowColor')
 $DevLogList = @('WPF_ScriptLog_CB','WPF_Diagnostic_CB','WPF_LogBeforeAfter_CB','WPF_DryRun_CB','WPF_ShowNonInstalled_CB','WPF_ShowAlreadySet_CB')
 
-$FileBase = $PSScriptRoot + '\'
+$FileBase = $(If($psISE -ne $Null){ Split-Path $psISE.CurrentFile.FullPath -Parent } Else{ $PSScriptRoot }) + '\'
 $SettingPath = $FileBase + 'BVSetting.xml'
 $ServiceFilePath = $FileBase + 'BlackViper.csv'
 $BVServiceFilePath = $ServiceFilePath
@@ -299,14 +294,6 @@ $ArgList[28] = @{ Arg = '-logc' ;Var = @('ScriptLog=2','LogName=-') ;Match = -1 
 # Multi Use Functions -Start
 ##########
 
-Function ThanksDonate {
-	DisplayOut "`nThanks for using my script." -C 11
-	DisplayOut 'If you like this script please consider giving me a donation,' -C 11
-	DisplayOut 'Min of $1 from the adjustable Amazon Gift Card.' -C 11
-	DisplayOut "`nLink to donation:" -C 15
-	DisplayOut $Donate_Url -C 2
-}
-
 Function AutomatedExitCheck([Int]$ExitBit) {
 	If($Automated -ne 1){ Read-Host -Prompt "`nPress Any key to Close..." }
 	If($ExitBit -eq 1){ LogEnd ;CloseExit }
@@ -315,7 +302,6 @@ Function AutomatedExitCheck([Int]$ExitBit) {
 Function LogEnd{ If(0 -NotIn $ScriptLog,$LogStarted){ Write-Output "--End of Log ($(Get-Date -Format 'MM/dd/yyyy hh:mm:ss tt'))--" | Out-File -LiteralPath $LogFile -Encoding Unicode -NoNewline -Append } }
 Function GetTime{ Return Get-Date -Format 'hh:mm:ss tt' }
 Function CloseExit{ If($GuiSwitch){ $Form.Close() } ;Exit }
-Function GetAllServices{ GetCurrServices ;$Script:AllService = $CurrServices | Select-Object Name, StartType, Status }
 Function GetCurrServices{ $Script:CurrServices = Get-CimInstance Win32_service | Select-Object DisplayName, Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} }, @{ Name = 'Status' ;Expression = {$_.State} }, Description, PathName }
 Function OpenWebsite([String]$Url){ [System.Diagnostics.Process]::Start($Url) }
 Function ShowInvalid([Bool]$InvalidA){ If($InvalidA){ Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return $False }
@@ -333,7 +319,7 @@ Function DisplayOut {
 		[Alias('G')] [Switch]$Gui
 	)
 	If($Gui){ TBoxService @args }
-	For($i=0 ;$i -lt $Text.Length ;$i++){ Write-Host $Text[$i] -ForegroundColor $colors[$Color[$i]] -BackgroundColor 'Black' -NoNewLine } ;Write-Host
+	For($i = 0 ;$i -lt $Text.Length ;$i++){ Write-Host $Text[$i] -ForegroundColor $colors[$Color[$i]] -BackgroundColor 'Black' -NoNewLine } ;Write-Host
 	If($Log -and $ScriptLog -eq 1){ Write-Output "$(GetTime): $($Text -Join ' ')" | Out-File -LiteralPath $LogFile -Encoding Unicode -Append }
 }
 
@@ -462,10 +448,10 @@ Function OpenSaveDiaglog([Int]$SorO) {
 }
 
 Function HideShowCustomSrvStuff {
-	$Vis,$TF = If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount){ 'Visible',$False } Else{ 'Hidden',$True }
+	$Vis,$TF,$WPF_CustomNoteGrid.Visibility = If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount){ 'Visible',$False,'Visible' } Else{ 'Hidden',$True,'Collapsed' }
 	$WPF_RadioAll.IsEnabled = $TF
 	$WPF_RadioMin.IsEnabled = $TF
-	$CNoteList.ForEach{ $_.Value.Visibility = $Vis }
+	$WPF_CustomNote.Visibility = $Vis
 	$WPF_LoadFileTxtBox.Visibility = $Vis
 	$WPF_btnOpenFile.Visibility = $Vis
 }
@@ -490,7 +476,7 @@ Function UpdateSetting {
 		Set-Variable -Name ($_.Name.Split('_')[1]) -Value $SetValue -Scope Script
 	}
 	$Script:All_or_Min = If($WPF_RadioAll.IsChecked){ '-Full' } Else{ '-Min' }
-	If($WPF_EditionCheckCB.IsChecked){ $Script:EditionCheck = $WPF_EditionConfig.Text }
+	UpdateEdition
 	$Script:LogName = $WPF_LogNameInput.Text
 	$Script:BackupServiceType = $WPF_BackupServiceType.SelectedIndex
 }
@@ -558,39 +544,6 @@ Function SaveSetting {
 	If($SaveSettingFile){ $Settings | Export-Clixml -LiteralPath $SettingPath }
 }
 
-Function DevLogCBFunction([Bool]$C) {
-	If(!$C) {
-		$Script:ScriptLog = $Script_Log
-		$Script:LogName = $Log_Name
-		$Script:Diagnostic = $Diagn_ostic
-		$Script:Automated = $Auto_mated
-		$Script:LogBeforeAfter = $Log_Before_After
-		$Script:DryRun = $Dry_Run
-		$Script:ShowNonInstalled = $Show_Non_Installed
-		$Script:ShowSkipped = $Show_Skipped
-		$Script:ShowAlreadySet = $Show_Already_Set
-	} Else {
-		UpdateSetting
-		$Script:Script_Log = $ScriptLog
-		$Script:Log_Name = $LogName
-		$Script:Diagn_ostic = $Diagnostic
-		$Script:Auto_mated = $Automated
-		$Script:Log_Before_After = $LogBeforeAfter
-		$Script:Dry_Run = $DryRun
-		$Script:Show_Non_Installed = $ShowNonInstalled
-		$Script:Show_Skipped = $ShowSkipped
-		$Script:Show_Already_Set = $ShowAlreadySet
-		DevLogSet
-	}
-	$DevLogList.ForEach{
-		$TmpWPF = Get-Variable -Name $_ -ValueOnly
-		$TmpWPF.IsChecked = If((Get-Variable -Name ($_.Split('_')[1]) -ValueOnly) -eq 0){ $False } Else{ $True }
-		$TmpWPF.IsEnabled = !$C
-	}
-	$WPF_LogNameInput.IsEnabled = If($ScriptLog -eq 0 -or $C){ $False } Else{ $True }
-	$WPF_LogNameInput.Text = $LogName
-}
-
 Function ShowConsoleWin([Int]$Choice){ [Console.Window]::ShowWindow($ConsolePtr, $Choice) }#0 = Hide, 5 = Show
 
 Function GuiStart {
@@ -602,199 +555,432 @@ Function GuiStart {
 	DisplayOut 'Preparing GUI, Please wait...' -C 15
 	$Script:GuiSwitch = $True
 
-[xml]$XAML = @"
+[xml]$XAML =@"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  Title="Black Viper Service Configuration Script By: MadBomb122" Height="390" Width="690" BorderBrush="Black" Background="White">
+  Title="Black Viper Service Configuration Script By: MadBomb122" Height="540" Width="720" BorderBrush="Black" Background="White">
 	<Window.Resources>
 		<Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">
 			<Setter Property="SnapsToDevicePixels" Value="True"/>
 			<Setter Property="Margin" Value="0,0,0,0"/>
 			<Setter Property="Template">
-				<Setter.Value><ControlTemplate TargetType="{x:Type Separator}"><Border Height="24" SnapsToDevicePixels="True" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/></ControlTemplate></Setter.Value>
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Separator}">
+						<Border Height="24" SnapsToDevicePixels="True" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/>
+					</ControlTemplate>
+				</Setter.Value>
 			</Setter>
 		</Style>
-		<Style TargetType="{x:Type ToolTip}"><Setter Property="Background" Value="#FFFFFFBF"/></Style>
+		<Style TargetType="{x:Type ToolTip}">
+			<Setter Property="Background" Value="#FFFFFFBF"/>
+		</Style>
 	</Window.Resources>
-	<Window.Effect><DropShadowEffect/></Window.Effect>
+	<Window.Effect>
+		<DropShadowEffect/>
+	</Window.Effect>
 	<Grid>
-		<Button Name="RunScriptButton" Content="Run Script" Margin="0,0,0,21" VerticalAlignment="Bottom" Height="20" FontWeight="Bold"/>
-		<TextBox Name="Script_Ver_Txt" HorizontalAlignment="Left" Height="20" Text="Script Version: $Script_Version ($Script_Date) -$Release_Type" VerticalAlignment="Bottom" Width="330" TextAlignment="Center"/>
-		<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="330,0,0,0" Stroke="Black" Width="1" Height="20" VerticalAlignment="Bottom"/>
-		<TextBox Name="Service_Ver_Txt" Height="20" VerticalAlignment="Bottom" TextAlignment="Center" Margin="331,0,0,0"/>
-		<TabControl Name="TabControl" Margin="0,22,0,42">
-			<TabItem Name="Services_Tab" Header="Services Options" Margin="-2,0,2,0">
-				<Grid Background="#FFE5E5E5">
-					<Label Content="Service Configurations:" HorizontalAlignment="Left" Margin="2,63,0,0" VerticalAlignment="Top" Height="27" Width="146" FontWeight="Bold"/>
-					<ComboBox Name="ServiceConfig" HorizontalAlignment="Left" Margin="139,66,0,0" VerticalAlignment="Top" Width="118" Height="23">
-						<ComboBoxItem Content="Default" HorizontalAlignment="Left" Width="116" IsSelected="True"/>
-						<ComboBoxItem Content="Safe" HorizontalAlignment="Left" Width="116"/>
-						<ComboBoxItem Content="Tweaked" HorizontalAlignment="Left" Width="116"/>
-						<ComboBoxItem Content="Custom Setting *" HorizontalAlignment="Left" Width="116"/>
-					</ComboBox>
-					<RadioButton Name="RadioAll" Content="All -Change All Services" HorizontalAlignment="Left" Margin="5,26,0,0" VerticalAlignment="Top" IsChecked="True"/>
-					<RadioButton Name="RadioMin" Content="Min -Change Services that are Different from Default to Safe/Tweaked" HorizontalAlignment="Left" Margin="5,41,0,0" VerticalAlignment="Top"/>
-					<Label Content="Black Viper Configuration Options (BV Services Only)" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,3,0,0" FontWeight="Bold"/>
-					<Label Name="CustomNote1" Content="*Note: Configure Below" HorizontalAlignment="Left" Margin="262,63,0,0" VerticalAlignment="Top" Width="148" Height="27" FontWeight="Bold"/>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,112,-6,0" Stroke="Black" VerticalAlignment="Top"/>
-					<Button Name="btnOpenFile" Content="Browse File" HorizontalAlignment="Left" Margin="5,141,0,0" VerticalAlignment="Top" Width="66" Height="22"/>
-					<TextBlock Name="LoadFileTxtBox" HorizontalAlignment="Left" Height="50" Margin="5,171,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Background="#FFECECEC"/>
-					<Label Name="CustomNote3" Content="Config File: Browse for file" HorizontalAlignment="Left" Margin="76,139,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-					<Label Name="CustomNote2" Content="Custom Configuration" HorizontalAlignment="Left" Margin="164,116,0,0" VerticalAlignment="Top" Width="135" Height="26" FontWeight="Bold"/>
-				</Grid>
-			</TabItem>
-			<TabItem Name="ServicesCB_Tab" Header="Services List" Margin="-2,0,2,0">
-				<Grid Background="#FFE5E5E5">
-					<DataGrid Name="dataGrid" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" Margin="-2,66,-2,-2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
-						<DataGrid.RowStyle>
-							<Style TargetType="{x:Type DataGridRow}"><Style.Triggers>
-								<Trigger Property="AlternationIndex" Value="0"><Setter Property="Background" Value="White"/></Trigger>
-								<Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="#FFD8D8D8"/></Trigger>
-								<Trigger Property="IsMouseOver" Value="True">
-									<Setter Property="ToolTip"><Setter.Value><TextBlock Text="{Binding SrvDesc}" TextWrapping="Wrap" Width="400" Background="#FFFFFFBF" Foreground="Black"/></Setter.Value></Setter>
-									<Setter Property="ToolTipService.ShowDuration" Value="360000000"/>
-								</Trigger>
-								<MultiDataTrigger>
-									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding checkboxChecked}" Value="True"/>
-										<Condition Binding="{Binding Matches}" Value="False"/>
-									</MultiDataTrigger.Conditions>
-									<Setter Property="Background" Value="#F08080"/>
-								</MultiDataTrigger>
-								<MultiDataTrigger>
-									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding checkboxChecked}" Value="False"/>
-										<Condition Binding="{Binding Matches}" Value="False"/>
-									</MultiDataTrigger.Conditions>
-									<Setter Property="Background" Value="#FFFFFF64"/>
-								</MultiDataTrigger>
-								<MultiDataTrigger>
-									<MultiDataTrigger.Conditions>
-										<Condition Binding="{Binding checkboxChecked}" Value="True"/>
-										<Condition Binding="{Binding Matches}" Value="True"/>
-									</MultiDataTrigger.Conditions>
-									<Setter Property="Background" Value="LightGreen"/>
-								</MultiDataTrigger>
-							</Style.Triggers></Style>
-						</DataGrid.RowStyle>
-						<DataGrid.Columns>
-							<DataGridTemplateColumn SortMemberPath="checkboxChecked" CanUserSort="True">
-								<DataGridTemplateColumn.Header><CheckBox Name="ACUcheckboxChecked" IsEnabled="False"/></DataGridTemplateColumn.Header>
-								<DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
-							</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}" CanUserSort="True" IsReadOnly="True"/>
-							<DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}" IsReadOnly="True"/>
-							<DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}" IsReadOnly="True"/>
-							<DataGridTemplateColumn Header="Black Viper" Width="105" SortMemberPath="BVType" CanUserSort="True">
-								<DataGridTemplateColumn.CellTemplate><DataTemplate>
-									<ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
-							<DataGridTemplateColumn Header="State" Width="80" SortMemberPath="SrvState" CanUserSort="True">
-								<DataGridTemplateColumn.CellTemplate><DataTemplate>
-									<ComboBox ItemsSource="{Binding SrvStateListDG}" Text="{Binding Path=SrvState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/></DataTemplate></DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
-							<DataGridTextColumn Header="Description" Width="120" Binding="{Binding SrvDesc}" CanUserSort="True" IsReadOnly="True"/>
-							<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="True" IsReadOnly="True"/>
-						</DataGrid.Columns>
-					</DataGrid>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-2,66,-2,0" Stroke="Black" VerticalAlignment="Top"/>
-					<Label Name="ServiceClickLabel" Content="&lt;-- Click to load Service List" HorizontalAlignment="Left" Margin="75,-3,0,0" VerticalAlignment="Top"/>
-					<Button Name="LoadServicesButton" Content="Load Services" HorizontalAlignment="Left" Margin="2,1,0,0" VerticalAlignment="Top" Width="76"/>
-					<Button Name="SaveCustomSrvButton" Content="Save Current" HorizontalAlignment="Left" Margin="81,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
-					<Button Name="SaveRegButton" Content="Save Registry" HorizontalAlignment="Left" Margin="164,1,0,0" VerticalAlignment="Top" Width="80" Visibility="Hidden"/>
-					<Label Name="ServiceNote" Content="Uncheck what you &quot;Don't want to be changed&quot;" HorizontalAlignment="Left" Margin="372,43,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
-					<CheckBox Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Left" Margin="248,4,0,0" VerticalAlignment="Top" Width="119" RenderTransformOrigin="0.696,0.4" Visibility="Hidden"/>
-					<TextBlock Name="TableLegend" HorizontalAlignment="Left" Margin="373,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Height="46" FontWeight="Bold" Visibility="Hidden"><Run Background="LightGreen" Text=" G= Checked &amp; Service is Same as Current                  "/><LineBreak/><Run Background="LightCoral" Text=" R= Checked &amp; Service is NOT Same as Current          "/><LineBreak/><Run Background="#FFFFFF64" Text=" Y= NOT Checked &amp; Service is NOT Same as Current  "/></TextBlock>
-					<Rectangle Name="Div1" Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="372,-2,0,0" Stroke="Black" Width="1" Height="48" VerticalAlignment="Top" Visibility="Hidden"/>
-					<TextBox Name="FilterTxt" HorizontalAlignment="Left" Height="20" Margin="43,32,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="203" Visibility="Hidden"/>
-					<ComboBox Name="FilterType" HorizontalAlignment="Left" Margin="248,30,0,0" VerticalAlignment="Top" Width="115" Height="25" Visibility="Hidden">
-						<ComboBoxItem Content="Checked" HorizontalAlignment="Left" Width="115" Margin="0,0,-2,0"/>
-						<ComboBoxItem Content="Common Name" HorizontalAlignment="Left" Width="115" IsSelected="True"/>
-						<ComboBoxItem Content="Service Name" HorizontalAlignment="Left" Width="115"/>
-						<ComboBoxItem Content="Current Setting" HorizontalAlignment="Left" Width="115"/>
-					</ComboBox>
-					<Rectangle Name="Div2" Fill="#FFFFFFFF" Height="1" Margin="372,46,-2,0" Stroke="Black" VerticalAlignment="Top" Visibility="Hidden"/>
-					<Label Name="FilterLabel" Content="Search:" HorizontalAlignment="Left" Margin="-2,28,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
-				</Grid>
-			</TabItem>
-			<TabItem Name="Options_tab" Header="Script Options" Margin="-2,0,2,0">
-				<Grid Background="#FFE5E5E5">
-					<Label Content="Display Options" HorizontalAlignment="Left" Margin="2,-2,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-					<CheckBox Name="ShowAlreadySet_CB" Content="Show Already Set Services" HorizontalAlignment="Left" Margin="7,20,0,0" VerticalAlignment="Top" Height="15" Width="158" IsChecked="True"/>
-					<CheckBox Name="ShowNonInstalled_CB" Content="Show Not Installed Services" HorizontalAlignment="Left" Margin="7,35,0,0" VerticalAlignment="Top" Height="15" Width="166"/>
-					<CheckBox Name="ShowSkipped_CB" Content="Show Skipped Services" HorizontalAlignment="Left" Margin="7,50,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
-					<Label Content="SKIP CHECK AT YOUR OWN RISK!" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="233,-2,0,0" FontWeight="Bold"/>
-					<CheckBox Name="BuildCheck_CB" Content="Skip Build Check" HorizontalAlignment="Left" Margin="236,22,0,0" VerticalAlignment="Top" Height="15" Width="110"/>
-					<CheckBox Name="EditionCheckCB" Content="Skip Edition Check Set as :" HorizontalAlignment="Left" Margin="236,37,0,0" VerticalAlignment="Top" Height="15" Width="160"/>
-					<ComboBox Name="EditionConfig" HorizontalAlignment="Left" Margin="395,34,0,0" VerticalAlignment="Top" Width="60" Height="23">
-						<ComboBoxItem Content="Home" HorizontalAlignment="Left" Width="58"/>
-						<ComboBoxItem Content="Pro" HorizontalAlignment="Left" Width="58" IsSelected="True"/>
-					</ComboBox>
-					<Label Content="Log Options" HorizontalAlignment="Left" Margin="461,-2,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-					<CheckBox Name="LogBeforeAfter_CB" Content="Services Before and After" HorizontalAlignment="Left" Margin="466,22,0,0" VerticalAlignment="Top" Height="16" Width="158"/>
-					<CheckBox Name="ScriptLog_CB" Content="Script Log :" HorizontalAlignment="Left" Margin="466,37,0,0" VerticalAlignment="Top" Height="18" Width="83"/>
-					<TextBox Name="LogNameInput" HorizontalAlignment="Left" Height="20" Margin="546,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="99" IsEnabled="False"/>
-					<Label Content="Misc Options" HorizontalAlignment="Left" Margin="2,66,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-					<CheckBox Name="Dryrun_CB" Content="Dryrun -Shows what will be changed" HorizontalAlignment="Left" Margin="7,89,0,0" VerticalAlignment="Top" Height="15" Width="213"/>
-					<CheckBox Name="XboxService_CB" Content="Skip All Xbox Services" HorizontalAlignment="Left" Margin="7,104,0,0" VerticalAlignment="Top" Height="15" Width="137"/>
-					<CheckBox Name="ChangeState_CB" Content="Allow Change of Service State" HorizontalAlignment="Left" Margin="7,119,0,0" VerticalAlignment="Top" Height="15" Width="181"/>
-					<CheckBox Name="StopDisabled_CB" Content="Stop Disabled Services" HorizontalAlignment="Left" Margin="7,134,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
-					<CheckBox Name="BackupServiceConfig_CB" Content="Backup Current Service as :" HorizontalAlignment="Left" Margin="7,149,0,0" VerticalAlignment="Top" Height="15" Width="162"/>
-					<ComboBox Name="BackupServiceType" HorizontalAlignment="Left" Margin="171,145,0,0" VerticalAlignment="Top" Width="52" Height="23">
-						<ComboBoxItem Content=".reg" HorizontalAlignment="Left" Width="50"/>
-						<ComboBoxItem Content=".csv" HorizontalAlignment="Left" Width="50" IsSelected="True"/>
-						<ComboBoxItem Content="Both" HorizontalAlignment="Left" Width="50"/>
-					</ComboBox>
-					<Label Content="Dev Options" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,168,0,0" FontWeight="Bold"/>
-					<CheckBox Name="Diagnostic_CB" Content="Diagnostic Output (On Error)" HorizontalAlignment="Left" Margin="7,190,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-					<CheckBox Name="DevLogCB" Content="Dev Log" HorizontalAlignment="Left" Margin="7,205,0,0" VerticalAlignment="Top" Height="15" Width="174"/>
-					<CheckBox Name="ShowConsole_CB" Content="Show Console Window" HorizontalAlignment="Left" Margin="7,220,0,0" VerticalAlignment="Top" Height="15" Width="144"/>
-					<Button Name="ShowDiagButton" Content="Show Diagnostic" HorizontalAlignment="Left" Margin="48,237,0,0" VerticalAlignment="Top" Width="101" Background="#FF98D5FF"/>
-					<Label Content="Update Items" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="231,66,0,0" FontWeight="Bold"/>
-					<CheckBox Name="ServiceVerCheck_CB" Content="Auto Service Update" HorizontalAlignment="Left" Margin="236,91,0,0" VerticalAlignment="Top" Height="15" Width="131"/>
-					<CheckBox Name="ScriptVerCheck_CB" Content="Auto Script Update*" HorizontalAlignment="Left" Margin="236,106,0,0" VerticalAlignment="Top" Height="15" Width="126"/>
-					<CheckBox Name="InternetCheck_CB" Content="Skip Internet Check" HorizontalAlignment="Left" Margin="236,121,0,0" VerticalAlignment="Top" Height="15" Width="124"/>
-					<Label Content="*Will run and use current settings&#xA;&#xD;&#xA;Note: Update checks happen before &#xA;          services are changed." HorizontalAlignment="Left" Margin="233,137,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="220"/>
-					<Label Content="Check for Update Now for:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,66,0,0" FontWeight="Bold"/>
-					<Button Name="CheckUpdateSerButton" Content="Services" HorizontalAlignment="Left" Margin="494,90,0,0" VerticalAlignment="Top" Width="109"/>
-					<Button Name="CheckUpdateSrpButton" Content="Script*" HorizontalAlignment="Left" Margin="494,115,0,0" VerticalAlignment="Top" Width="109"/>
-					<Button Name="CheckUpdateBothButton" Content="Services &amp; Script*" HorizontalAlignment="Left" Margin="494,140,0,0" VerticalAlignment="Top" Width="109"/>
-					<Label Content="*Wont remember Settings in&#xD;&#xA;   'Services List' Tab" HorizontalAlignment="Left" Margin="464,159,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="174" Height="46"/>
-					<CheckBox Name="LaptopTweaked_CB" Content="Enable Tweak Setting on non-Desktop**" HorizontalAlignment="Left" Margin="235,216,0,0" VerticalAlignment="Top" Height="15" Width="236"/>
-					<Label Name="LaptopTweaked_txt" Content="**CAUTION: Use this with EXTREME CAUTION" HorizontalAlignment="Left" Margin="259,226,0,0" VerticalAlignment="Top" FontWeight="Bold" Width="268"/>
-					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="229,0,0,0" Stroke="Black" Width="1"/>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,172,0,0" Stroke="Black" VerticalAlignment="Top" HorizontalAlignment="Left" Width="235"/>
-					<Rectangle Fill="#FFFFFFFF" HorizontalAlignment="Left" Margin="459,0,0,0" Stroke="Black" Width="1" Height="212" VerticalAlignment="Top"/>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="230,212,0,0" Stroke="Black" VerticalAlignment="Top"/>
-					<Rectangle Fill="#FFFFFFFF" Height="1" Margin="-6,69,0,0" Stroke="Black" VerticalAlignment="Top"/>
-				</Grid>
-			</TabItem>
-			<TabItem Name="ServiceChanges" Header="Service Changes" Margin="-2,0,2,0" Visibility="Hidden">
-				<Grid Background="#FFE5E5E5">
-					<ScrollViewer VerticalScrollBarVisibility="Visible"><TextBlock Name="ServiceListing" TextTrimming="CharacterEllipsis" Background="White"/></ScrollViewer>
-				</Grid>
-			</TabItem>
-			<TabItem Name="DiagnosticTab" Header="Diagnostic" Margin="-2,0,2,0" Visibility="Hidden">
-				<Grid Background="#FFE5E5E5">
-					<ScrollViewer VerticalScrollBarVisibility="Visible"><TextBlock Name="DiagnosticOutput" TextTrimming="CharacterEllipsis" Background="White"/></ScrollViewer>
-				</Grid>
-			</TabItem>
-		</TabControl>
-		<Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,41" Stroke="Black" VerticalAlignment="Bottom"/>
-		<Rectangle Fill="#FFFFFFFF" Height="1" Margin="0,0,0,20" Stroke="Black" VerticalAlignment="Bottom"/>
-		<Menu Height="22" VerticalAlignment="Top">
-			<MenuItem Header="Help" Height="22" Width="34" Padding="3,0,0,0">
-				<MenuItem Name="FeedbackButton" Header="Feedback/Bug Report" Height="22" Background="#FFF0F0F0" Padding="-20,0,-40,0"/>
-				<MenuItem Name="FAQButton" Header="FAQ" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
-				<MenuItem Name="AboutButton" Header="About" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
-				<MenuItem Name="CopyrightButton" Header="Copyright" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
-				<Separator Height="2" Margin="-30,0,0,0"/>
-				<MenuItem Name="ContactButton" Header="Contact Me" Height="22" Padding="-20,0,0,0" Background="#FFF0F0F0"/>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="24"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="48"/>
+		</Grid.RowDefinitions>
+		<Menu Grid.Row="0" IsMainMenu="True">
+			<MenuItem Header="Help">
+				<MenuItem Name="FeedbackButton" Header="Feedback/Bug Report"/>
+				<MenuItem Name="FAQButton" Header="FAQ"/>
+				<MenuItem Name="AboutButton" Header="About"/>
+				<MenuItem Name="CopyrightButton" Header="Copyright"/>
+				<MenuItem Name="ContactButton" Header="Contact Me"/>
 			</MenuItem>
-			<Separator Width="2" Style="{DynamicResource SeparatorStyle1}"/>
-			<MenuItem Name="DonateButton" Header="Donate to Me" Height="24" Width="88" Background="Orange" FontWeight="Bold" Margin="-1,-1,0,0"/>
-			<MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Height="24" Width="142" Background="Gold" FontWeight="Bold"/>
-			<MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Height="24" Width="130" Background="#FF3FDA62" FontWeight="Bold"/>
+			<MenuItem Name="DonateButton" Header="Donate to Me" Background="Orange" FontWeight="Bold"/>
+			<MenuItem Name="Madbomb122WSButton" Header="Madbomb122's GitHub" Background="Gold" FontWeight="Bold"/>
+			<MenuItem Name="BlackViperWSButton" Header="BlackViper's Website" Background="ForestGreen" FontWeight="Bold"/>
 		</Menu>
+		<Grid Grid.Row="1">
+			<TabControl BorderBrush="Gainsboro" Grid.Row="1" Name="TabControl">
+				<TabControl.Resources>
+					<Style TargetType="TabItem">
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="TabItem">
+									<Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4,4,0,0" Margin="2,0">
+										<ContentPresenter x:Name="ContentSite"  VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="10,2"/>
+									</Border>
+									<ControlTemplate.Triggers>
+										<Trigger Property="IsSelected" Value="True">
+											<Setter TargetName="Border" Property="Background" Value="LightSkyBlue" />
+										</Trigger>
+										<Trigger Property="IsSelected" Value="False">
+											<Setter TargetName="Border" Property="Background" Value="GhostWhite" />
+										</Trigger>
+									</ControlTemplate.Triggers>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+					</Style>
+				</TabControl.Resources>
+				<TabItem Name="Services_Tab" Header="Services Options">
+					<Grid Background="#FFE5E5E5">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="1.5*"/>
+							<RowDefinition Height="0.5*"/>
+						</Grid.RowDefinitions>
+						<GroupBox Grid.Row="0" FontWeight="Bold" Header="Service Configuration" Grid.RowSpan="2">
+							<Grid Grid.Row="0" Margin="5">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="47*"/>
+									<RowDefinition Height="33*"/>
+									<RowDefinition Height="33*"/>
+									<RowDefinition Height="82*"/>
+									<RowDefinition Height="80*"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="3.5*"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<RadioButton Grid.Row="1" Grid.Column="1" Name="RadioAll" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="True" Content="All -Change All Services" Margin="5"/>
+								<RadioButton Grid.Row="2" Grid.Column="1" Name="RadioMin" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Min -Change Services that are Different from Default to Safe/Tweaked" Margin="5"/>
+								<Grid Grid.Row="3" Grid.Column="1">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="145*"/>
+										<ColumnDefinition Width="127*"/>
+										<ColumnDefinition Width="165*"/>
+									</Grid.ColumnDefinitions>
+									<TextBlock Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5">Service Configurations:</TextBlock>
+									<ComboBox Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ServiceConfig" Margin="5">
+										<ComboBoxItem Content="Default" IsSelected="True"/>
+										<ComboBoxItem Content="Safe"/>
+										<ComboBoxItem Content="Tweaked"/>
+										<ComboBoxItem Content="Custom Setting *"/>
+									</ComboBox>
+									<TextBlock Name="CustomNote" Grid.Column="2" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5">Configure Below</TextBlock>
+								</Grid>
+							</Grid>
+						</GroupBox>
+						<GroupBox Name="CustomNoteGrid" FontWeight="Bold" Header="Custom Configuration" Grid.Row="1">
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="4*"/>
+								</Grid.ColumnDefinitions>
+								<Button Grid.Column="0" Name="btnOpenFile" Margin="5" Content="Browse"/>
+								<TextBlock Grid.Column="1" Name="LoadFileTxtBox"/>
+							</Grid>
+						</GroupBox>
+					</Grid>
+				</TabItem>
+				<TabItem Name="ServicesDG_Tab" Header="Services List">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="75"/>
+							<RowDefinition Height="*"/>
+						</Grid.RowDefinitions>
+						<Grid Grid.Row="0">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="3*"/>
+								<ColumnDefinition Width="3*"/>
+								<ColumnDefinition Width="3*"/>
+								<ColumnDefinition Width="4*"/>
+								<ColumnDefinition Width="9.4*"/>
+							</Grid.ColumnDefinitions>
+							<Button Grid.Column="0" Grid.Row="0" Name="LoadServicesButton" Content="Reload Services" VerticalAlignment="Center"/>
+							<Button Grid.Column="1" Grid.Row="0" Name="SaveCustomSrvButton" Content="Save Current" VerticalAlignment="Center"/>
+							<Button Grid.Column="2" Grid.Row="0" Name="SaveRegButton" Content="Save Registry" VerticalAlignment="Center" />
+							<CheckBox Grid.Column="3" Grid.Row="0" Name="CustomBVCB" Content="Customize Service" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							<TextBlock Grid.Column="4" Grid.RowSpan="2" Name="TableLegend" FontWeight="Bold" TextAlignment="Left" Margin="2">
+							<Run Background="LightGreen" Text="Service is within selected configuration compliance"/><LineBreak/>
+							<Run Background="LightCoral" Text="Service is NOT in selected configuration compliance"/><LineBreak/>
+							<Run Background="Yellow" Text="Service is not covered in the selected configuration"/><LineBreak/>
+							<Run Text="You may uncheck services you don't want changed"/></TextBlock>
+							<TextBox Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Name="FilterTxt" TextWrapping="Wrap" Margin="8"/>
+							<ComboBox Grid.Column="3" Grid.Row="1" Name="FilterType" VerticalAlignment="Top" Margin="8">
+								<ComboBoxItem Content="Checked"/>
+								<ComboBoxItem Content="Common Name" IsSelected="True"/>
+								<ComboBoxItem Content="Service Name"/>
+								<ComboBoxItem Content="Current Setting"/>
+							</ComboBox>
+						</Grid>
+						<DataGrid Grid.Row="1" Name="dataGrid" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+							<DataGrid.RowStyle>
+								<Style TargetType="{ x:Type DataGridRow }">
+									<Style.Triggers>
+										<Trigger Property="AlternationIndex" Value="0">
+											<Setter Property="Background" Value="White"/>
+										</Trigger>
+										<Trigger Property="AlternationIndex" Value="1">
+											<Setter Property="Background" Value="#FFD8D8D8"/>
+										</Trigger>
+										<Trigger Property="IsMouseOver" Value="True">
+											<Setter Property="ToolTip">
+												<Setter.Value>
+													<TextBlock Text="{ Binding SrvDesc }" TextWrapping="Wrap" Width="400" Background="#FFFFFFBF" Foreground="Black"/>
+												</Setter.Value>
+											</Setter>
+											<Setter Property="ToolTipService.ShowDuration" Value="360000000"/>
+										</Trigger>
+										<MultiDataTrigger>
+											<MultiDataTrigger.Conditions>
+												<Condition Binding="{ Binding checkboxChecked }" Value="True"/>
+												<Condition Binding="{ Binding Matches }" Value="False"/>
+											</MultiDataTrigger.Conditions>
+											<Setter Property="Background" Value="#F08080"/>
+										</MultiDataTrigger>
+										<MultiDataTrigger>
+											<MultiDataTrigger.Conditions>
+												<Condition Binding="{ Binding checkboxChecked }" Value="False"/>
+												<Condition Binding="{ Binding Matches }" Value="False"/>
+											</MultiDataTrigger.Conditions>
+											<Setter Property="Background" Value="#FFFFFF64"/>
+										</MultiDataTrigger>
+										<MultiDataTrigger>
+											<MultiDataTrigger.Conditions>
+												<Condition Binding="{ Binding checkboxChecked }" Value="True"/>
+												<Condition Binding="{ Binding Matches }" Value="True"/>
+											</MultiDataTrigger.Conditions>
+											<Setter Property="Background" Value="LightGreen"/>
+										</MultiDataTrigger>
+									</Style.Triggers>
+								</Style>
+							</DataGrid.RowStyle>
+							<DataGrid.Columns>
+								<DataGridTemplateColumn SortMemberPath="checkboxChecked" CanUserSort="True">
+									<DataGridTemplateColumn.Header>
+										<CheckBox Name="ACUcheckboxChecked" IsEnabled="False"/>
+									</DataGridTemplateColumn.Header>
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<CheckBox IsChecked="{Binding checkboxChecked,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTextColumn Header="Common Name" Width="121" Binding="{Binding CName}" CanUserSort="True" IsReadOnly="True"/>
+								<DataGridTextColumn Header="Service Name" Width="120" Binding="{Binding ServiceName}" IsReadOnly="True"/>
+								<DataGridTextColumn Header="Current Setting" Width="95" Binding="{Binding CurrType}" IsReadOnly="True"/>
+								<DataGridTemplateColumn Header="Black Viper" Width="105" SortMemberPath="BVType" CanUserSort="True">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<ComboBox ItemsSource="{Binding ServiceTypeListDG}" Text="{Binding Path=BVType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTemplateColumn Header="State" Width="80" SortMemberPath="SrvState" CanUserSort="True">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<ComboBox ItemsSource="{Binding SrvStateListDG}" Text="{Binding Path=SrvState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=CustomBVCB, Path=IsChecked}"/>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTextColumn Header="Description" Width="120" Binding="{Binding SrvDesc}" CanUserSort="True" IsReadOnly="True"/>
+								<DataGridTextColumn Header="Path" Width="120" Binding="{Binding SrvPath}" CanUserSort="True" IsReadOnly="True"/>
+							</DataGrid.Columns>
+						</DataGrid>
+					</Grid>
+				</TabItem>
+				<TabItem Name="Options_tab" Header="Script Options">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<Grid Grid.Column="0">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="3*"/>
+								<RowDefinition Height="4*"/>
+								<RowDefinition Height="4*"/>
+							</Grid.RowDefinitions>
+							<GroupBox Grid.Row="0" Content="Display Options" FontWeight="Bold" Margin="5"/>
+							<Grid Grid.Row="0">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="10"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="10"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<CheckBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ShowAlreadySet_CB" Content="Show Already Set Services" IsChecked="True"/>
+								<CheckBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ShowNonInstalled_CB" Content="Show Not Installed Services"/>
+								<CheckBox Grid.Row="3" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ShowSkipped_CB" Content="Show Skipped Services"/>
+							</Grid>
+							<GroupBox Grid.Row="1" Content="Miscellaneous" FontWeight="Bold" Margin="5"/>
+							<Grid Grid.Row="1">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="10"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="10"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<CheckBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="Dryrun_CB" Content="Dryrun / What if"/>
+								<CheckBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="XboxService_CB" Content="Skip All Xbox Services"/>
+								<CheckBox Grid.Row="3" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ChangeState_CB" Content="Allow Change of Service State"/>
+								<CheckBox Grid.Row="4" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="StopDisabled_CB" Content="Stop Disabled Services"/>
+							</Grid>
+							<GroupBox Grid.Row="2" Content="Development" FontWeight="Bold" Margin="5"/>
+							<Grid Grid.Row="2">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="*"/>
+									<RowDefinition Height="10"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="10"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="10"/>
+								</Grid.ColumnDefinitions>
+								<CheckBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="Diagnostic_CB" Content="Diagnostic Output (On Error)"/>
+								<CheckBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="DevLogCB" Content="Enable Development Logging"/>
+								<CheckBox Grid.Row="3" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ShowConsole_CB" Content="Show Console Window"/>
+								<Button Grid.Row="4" Grid.Column="1" Margin="5" Content="Show Diagnostic" Name="ShowDiagButton"/>
+							</Grid>
+						</Grid>
+						<Grid Grid.Column="1">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="2*"/>
+							</Grid.RowDefinitions>
+							<GroupBox Grid.Row="0" Content="Build Checks" FontWeight="Bold" Margin="5"/>
+							<Grid Grid.Row="0">
+								<Grid.RowDefinitions>
+									<RowDefinition/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="10"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="10*"/>
+								</Grid.ColumnDefinitions>
+								<TextBlock Grid.Row="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Grid.Column="2">Enabling these carries some risk</TextBlock>
+								<CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="BuildCheck_CB" Content="Skip Build/Version Check"/>
+								<CheckBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="EditionCheckCB" AutomationProperties.HelpText="Override Edition Check"/>
+								<ComboBox Grid.Row="3" Grid.Column="2" Margin="5" HorizontalAlignment="Left" Name="EditionConfig">
+									<ComboBoxItem Content="Override Edition Check" IsSelected="True"/>
+									<ComboBoxItem Content="Home"/>
+									<ComboBoxItem Content="Pro"/>
+								</ComboBox>
+							</Grid>
+							<GroupBox Grid.Row="1" Content="Logging" FontWeight="Bold" Margin="5"/>
+							<Grid Grid.Row="1">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="8*"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="10"/>
+									<ColumnDefinition Width="2*"/>
+									<ColumnDefinition Width="10*"/>
+								</Grid.ColumnDefinitions>
+								<CheckBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="LogBeforeAfter_CB" Content="Log Services Before &amp; After" Grid.ColumnSpan="2"/>
+								<CheckBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ScriptLog_CB" Content="Script Log" Grid.ColumnSpan="2"/>
+								<TextBox Grid.Row="3" Grid.Column="2" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="LogNameInput" TextAlignment="Left" Text="$FullPath\Script.log" Grid.ColumnSpan="2" MinWidth="100"/>
+								<CheckBox Grid.Row="4" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="BackupServiceConfig_CB" Content="Backup Current Service" Grid.ColumnSpan="2"/>
+								<ComboBox Grid.Row="5" Grid.Column="2" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="BackupServiceType">
+									<ComboBoxItem Content=".reg" HorizontalAlignment="Left"/>
+									<ComboBoxItem Content=".csv" HorizontalAlignment="Left" IsSelected="True"/>
+									<ComboBoxItem Content="Both" HorizontalAlignment="Left"/>
+								</ComboBox>
+							</Grid>
+						</Grid>
+						<Grid Grid.Column="2">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="106*"/>
+								<RowDefinition Height="31*"/>
+							</Grid.RowDefinitions>
+							<GroupBox Grid.Row="0" Content="Update Items" FontWeight="Bold" Margin="5"/>
+							<Grid Grid.Row="0">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="3*"/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="5*"/>
+									<RowDefinition Height="1*"/>
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="10"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="10"/>
+								</Grid.ColumnDefinitions>
+								<Button Grid.Row="1" Grid.Column="1" Margin="5" Name="UpdateServiceButton" Content="Check Service Configuration"/>
+								<Button Grid.Row="2" Grid.Column="1" Margin="5" Name="UpdateScriptButton" Content="Check Service Utility Script"/>
+								<Button Grid.Row="3" Grid.Column="1" Margin="5" Name="UpdateBothButton" Content="Check Update Both"/>
+								<CheckBox Grid.Row="4" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ServiceVerCheck_CB" Content="Auto Service Update"/>
+								<CheckBox Grid.Row="5" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="ScriptVerCheck_CB" Content="Auto Script Update"/>
+								<CheckBox Grid.Row="6" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="InternetCheck_CB" Content="Skip Internet Check"/>
+								<TextBlock Grid.Row="7" Grid.Column="1" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextAlignment="Center" FontWeight="Bold">
+									<Run Text="Will run and use current settings whether disabled or enabled...."/>
+								</TextBlock>
+							</Grid>
+							<GroupBox Name="LaptopTweakBox" Grid.Row="1" Content="Various" FontWeight="Bold" Margin="5"/>
+							<Grid Name="LaptopTweakGrid" Grid.Row="1">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="10"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="2*"/>
+									<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+								<CheckBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center" Name="LaptopTweaked_CB" Content="*** Enable Laptop Tweaks ***"/>
+								<TextBlock Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextAlignment="Center" FontWeight="Bold" Text="***Not Recommended***"/>
+							</Grid>
+						</Grid>
+					</Grid>
+				</TabItem>
+				<TabItem Name="ServiceChanges" Header="Service Changes">
+					<ScrollViewer VerticalScrollBarVisibility="Visible">
+						<TextBlock Name="ServiceListing" TextTrimming="CharacterEllipsis" Background="White"/>
+					</ScrollViewer>
+				</TabItem>
+				<TabItem Name="DiagnosticTab" Header="Diagnostic" Visibility="Hidden">
+					<ScrollViewer VerticalScrollBarVisibility="Visible">
+						<TextBlock Name="DiagnosticOutput" TextTrimming="CharacterEllipsis" Background="White"/>
+					</ScrollViewer>
+				</TabItem>
+			</TabControl>
+		</Grid>
+		<Grid Grid.Row="2">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<Button Grid.Row="0" Grid.ColumnSpan="2" Name="RunScriptButton" Content="Run Script" FontWeight="Bold"/>
+			<TextBox Grid.Row="1" Grid.Column="0" Name="Script_Ver_Txt" TextAlignment="Center">Script Version: $Script_Version ($Script_Date) [$Release_Type]</TextBox>
+			<TextBox Grid.Row="1" Grid.Column="1" Name="Service_Ver_Txt" TextAlignment="Center"/>
+		</Grid>
 	</Grid>
 </Window>
 "@
@@ -809,7 +995,6 @@ Function GuiStart {
 	[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
 
 	[System.Collections.ArrayList]$Script:VarList = Get-Variable 'WPF_*_CB'
-	[System.Collections.ArrayList]$Script:CNoteList = Get-Variable 'WPF_CustomNote*'
 	$Script:DataGridListBlank = @{}
 
 	$Form.add_closing{
@@ -831,6 +1016,69 @@ Function GuiStart {
 		}
 	}
 
+	$WPF_ACUcheckboxChecked.Add_Click{
+		$tmp = $WPF_ACUcheckboxChecked.IsChecked
+		If($WPF_FilterTxt.Text -ne '') {
+			$Script:DGUpdate = $False
+			$TxtFilter = $WPF_FilterTxt.Text
+			$Filter = $FilterList[$WPF_FilterType.SelectedIndex]
+			$TableFilter = $DataGridListCust.Where{ $_.$Filter -Match $TxtFilter }
+			$TableFilter.ForEach{ $_.CheckboxChecked = $tmp }
+			$WPF_dataGrid.ItemsSource = $TableFilter
+			$Script:DGUpdate = $True
+		} Else {
+			$DataGridListCust.ForEach{ $_.CheckboxChecked = $tmp }
+		}
+		$WPF_dataGrid.Items.Refresh()
+	}
+
+	$WPF_CustomBVCB.Add_Click{
+		$tmp = $WPF_CustomBVCB.IsChecked
+		$WPF_ACUcheckboxChecked.IsEnabled = $tmp
+		$Script:DataGridLCust = $tmp
+		$WPF_SaveCustomSrvButton.Content,$WPF_dataGrid.ItemsSource = If($tmp) {
+			'Save Selection',$DataGridListCust
+		} Else {
+			'Save Current',$DataGridListOrig
+		}
+		RunDisableCheck
+		DGFilter
+	}
+
+	$WPF_DevLogCB.Add_Click{
+		$tmp = $WPF_DevLogCB.IsChecked
+		If(!$tmp) {
+			$Script:ScriptLog = $Script_Log
+			$Script:LogName = $Log_Name
+			$Script:Diagnostic = $Diagn_ostic
+			$Script:Automated = $Auto_mated
+			$Script:LogBeforeAfter = $Log_Before_After
+			$Script:DryRun = $Dry_Run
+			$Script:ShowNonInstalled = $Show_Non_Installed
+			$Script:ShowSkipped = $Show_Skipped
+			$Script:ShowAlreadySet = $Show_Already_Set
+		} Else {
+			UpdateSetting
+			$Script:Script_Log = $ScriptLog
+			$Script:Log_Name = $LogName
+			$Script:Diagn_ostic = $Diagnostic
+			$Script:Auto_mated = $Automated
+			$Script:Log_Before_After = $LogBeforeAfter
+			$Script:Dry_Run = $DryRun
+			$Script:Show_Non_Installed = $ShowNonInstalled
+			$Script:Show_Skipped = $ShowSkipped
+			$Script:Show_Already_Set = $ShowAlreadySet
+			DevLogSet
+		}
+		$DevLogList.ForEach{
+			$TmpWPF = Get-Variable -Name $_ -ValueOnly
+			$TmpWPF.IsChecked = If((Get-Variable -Name ($_.Split('_')[1]) -ValueOnly) -eq 0){ $False } Else{ $True }
+			$TmpWPF.IsEnabled = !$tmp
+		}
+		$WPF_LogNameInput.IsEnabled = If($ScriptLog -eq 0 -or $tmp){ $False } Else{ $True }
+		$WPF_LogNameInput.Text = $LogName
+	}
+
 	[System.Windows.RoutedEventHandler]$DGclickEvent = {
 		If($DataGridLCust -and $DGUpdate -and $WPF_dataGrid.SelectedItem) {
 			If($null -ne $($WPF_dataGrid.Items.SortDescriptions.PropertyName)) {
@@ -842,14 +1090,27 @@ Function GuiStart {
 			$CurrObj.RowColor = RowColorRet $CurrObj.Matches $CurrObj.CheckboxChecked
 			$WPF_dataGrid.ItemsSource = $DataGridListBlank
 			If($null -ne $SortCol) {
-				If($SortDir -eq 'Descending') {
-					$DataGridListCust = $DataGridListCust | Sort-Object -Property $SortCol -Descending
+				If($WPF_FilterTxt.Text -eq '') {
+					If($SortDir -eq 'Descending') {
+						$DataGridListCust = $DataGridListCust | Sort-Object -Property $SortCol -Descending
+					} Else {
+						$DataGridListCust = $DataGridListCust | Sort-Object -Property $SortCol
+					}
+					$WPF_dataGrid.ItemsSource = $DataGridListCust
 				} Else {
-					$DataGridListCust = $DataGridListCust | Sort-Object -Property $SortCol
+					If($SortDir -eq 'Descending') {
+						$DataGridListFilter = $DataGridListFilter | Sort-Object -Property $SortCol -Descending
+					} Else {
+						$DataGridListFilter = $DataGridListFilter | Sort-Object -Property $SortCol
+					}
+					$WPF_dataGrid.ItemsSource = $DataGridListFilter
 				}
-				$WPF_dataGrid.ItemsSource = $DataGridListCust
 			} Else {
-				$WPF_dataGrid.ItemsSource = $DataGridListCust
+				If($WPF_FilterTxt.Text -eq ''){
+					$WPF_dataGrid.ItemsSource = $DataGridListCust
+				} Else {
+					$WPF_dataGrid.ItemsSource = $DataGridListFilter
+				}
 			}
 		}
 		$Script:DGUpdate = $True
@@ -946,6 +1207,7 @@ Function GuiStart {
 		[Windows.Forms.Messagebox]::Show('Diagnostic Information, has been copied to the clipboard.','Notice', 'OK') | Out-Null
 	}
 
+	$WPF_TabControl.Add_SelectionChanged{ If(!$ServicesGenerated -and $WPF_ServicesDG_Tab.IsSelected){ $Script:ServicesGenerated = $True ;GenerateServices } }
 	$WPF_ServiceConfig.Add_SelectionChanged{ HideShowCustomSrvStuff ;RunDisableCheck }
 	$WPF_EditionConfig.Add_SelectionChanged{ RunDisableCheck }
 	$WPF_FilterTxt.Add_TextChanged{ DGFilter }
@@ -954,17 +1216,14 @@ Function GuiStart {
 	$WPF_BuildCheck_CB.Add_Click{ RunDisableCheck }
 	$WPF_EditionCheckCB.Add_Click{ RunDisableCheck }
 	$WPF_ScriptLog_CB.Add_Click{ $WPF_LogNameInput.IsEnabled = $WPF_ScriptLog_CB.IsChecked }
-	$WPF_ACUcheckboxChecked.Add_Click{ DGUCheckAll $WPF_ACUcheckboxChecked.IsChecked }
-	$WPF_CustomBVCB.Add_Click{ CustomBVCBFun $WPF_CustomBVCB.IsChecked }
-	$WPF_DevLogCB.Add_Click{ DevLogCBFunction $WPF_DevLogCB.IsChecked }
 	$WPF_btnOpenFile.Add_Click{ OpenSaveDiaglog 0 }
 	$WPF_SaveCustomSrvButton.Add_Click{ OpenSaveDiaglog 1 }
 	$WPF_SaveRegButton.Add_Click{ OpenSaveDiaglog 2 }
 	$WPF_ContactButton.Add_Click{ OpenWebsite 'mailto:madbomb122@gmail.com' }
 	$WPF_LoadServicesButton.Add_Click{ GenerateServices }
-	$WPF_CheckUpdateSerButton.Add_Click{ UpdateCheckNow -Ser }
-	$WPF_CheckUpdateSrpButton.Add_Click{ UpdateCheckNow -Srp }
-	$WPF_CheckUpdateBothButton.Add_Click{ UpdateCheckNow -Ser -Srp }
+	$WPF_UpdateServiceButton.Add_Click{ UpdateCheckNow -Ser }
+	$WPF_UpdateScriptButton.Add_Click{ UpdateCheckNow -Srp }
+	$WPF_UpdateBothButton.Add_Click{ UpdateCheckNow -Ser -Srp }
 	$WPF_BlackViperWSButton.Add_Click{ OpenWebsite 'http://www.blackviper.com/' }
 	$WPF_Madbomb122WSButton.Add_Click{ OpenWebsite 'https://GitHub.com/madbomb122/' }
 	$WPF_FeedbackButton.Add_Click{ OpenWebsite "$MySite/issues" }
@@ -982,8 +1241,8 @@ Function GuiStart {
 	If($IsLaptop -eq '-Lap') {
 		$WPF_ServiceConfig.Items.RemoveAt(2)
 	} Else {
-		$WPF_LaptopTweaked_CB.Visibility = 'Hidden'
-		$WPF_LaptopTweaked_txt.Visibility = 'Hidden'
+		$WPF_LaptopTweakGrid.Visibility = 'Collapsed'
+		$WPF_LaptopTweakBox.Visibility = 'Hidden'
 	}
 	$Script:BVCount = $WPF_ServiceConfig.Items.Count
 
@@ -1006,7 +1265,7 @@ Function GuiStart {
 	$Script:ServiceImport = 1
 	HideShowCustomSrvStuff
 	RunDisableCheck
-	Clear-Host
+	If($Release_Type -eq 'Stable'){ Clear-Host }
 	DisplayOut 'Displaying GUI Now' -C 14
 	DisplayOut "`nTo exit you can close the GUI or PowerShell Window." -C 14
 
@@ -1030,6 +1289,8 @@ Function RunScriptFun {
 		$Script:RanScript = $True
 		$WPF_RunScriptButton.IsEnabled = $False
 		$WPF_RunScriptButton.Content = 'Run Disabled while changing services.'
+		$a = new-object -comobject wscript.shell
+		$a.popup('Script will Run in 1 Second.',1,'This is to prevent clicking Run again.',0) | Out-Null
 		$WPF_TabControl.Items[3].Visibility = 'Visible'
 		$WPF_TabControl.Items[3].IsSelected = $True
 		If($WPF_CustomBVCB.IsChecked) {
@@ -1097,8 +1358,16 @@ Function PopWindow {
 }
 
 Function EditionBuildCBSet {
-	If($EditionCheck -ne 0){ $WPF_EditionCheckCB.IsChecked = $True ;$WPF_EditionConfig.IsEnabled = $True } Else{ $WPF_EditionCheckCB.IsChecked = $False }
-	$WPF_EditionConfig.SelectedIndex = If('Home' -In $WinEdition,$EditionCheck){ 0 } Else{ 1 }
+	$WPF_EditionCheckCB.IsChecked = If($EditionCheck -ne 0){ $True } Else{ $False }
+	$WPF_EditionConfig.SelectedIndex = If('Home' -In $WinEdition,$EditionCheck){ 1 } ElseIf('Pro' -In $WinEdition,$EditionCheck){ 2 } Else{ 0 }
+}
+
+Function UpdateEdition {
+	If($WPF_EditionCheckCB.IsChecked) {
+		$Script:EditionCheck = If($WPF_EditionConfig.SelectedIndex -ne 0){ $WPF_EditionConfig.Text } Else{ 0}
+	} Else {
+		$Script:EditionCheck = 0
+	}
 }
 
 Function RowColorRet([Bool]$Match,[Bool]$checkbox) {
@@ -1109,36 +1378,19 @@ Function RowColorRet([Bool]$Match,[Bool]$checkbox) {
 	}
 }
 
-Function CustomBVCBFun([Bool]$C) {
-	$WPF_ACUcheckboxChecked.IsEnabled = $C
-	$Script:DataGridLCust = $C
-	$WPF_SaveCustomSrvButton.Content,$WPF_dataGrid.ItemsSource = If($C) {
-		'Save Selection',$DataGridListCust
-	} Else {
-		'Save Current',$DataGridListOrig
-	}
-	RunDisableCheck
-	DGFilter
-}
-
 Function DGFilter {
 	$Script:DGUpdate = $False
 	$TxtFilter = $WPF_FilterTxt.Text
 	$Filter = $FilterList[$WPF_FilterType.SelectedIndex]
 	$TableFilter = If($DataGridLCust){ $DataGridListCust } Else{ $DataGridListOrig }
-	$WPF_dataGrid.ItemsSource = $TableFilter.Where{ $_.$Filter -Match $TxtFilter }
+	$WPF_dataGrid.ItemsSource = $Script:DataGridListFilter = $TableFilter.Where{ $_.$Filter -Match $TxtFilter }
 	$Script:DGUpdate = $True
 }
 
 Function RunDisableCheck {
 	$Script:EBFailCount = 0
 	$Script:BuildCheck = If($WPF_BuildCheck_CB.IsChecked){ 1 } Else{ 0 }
-	If($WPF_EditionCheckCB.IsChecked) {
-		$Script:EditionCheck = If($WPF_EditionConfig.SelectedIndex -eq 0){ 'Home' } Else{ 'Pro' }
-		$WPF_EditionConfig.IsEnabled = $True
-	} Else {
-		$Script:EditionCheck = 0
-	}
+	UpdateEdition
 
 	$EBFailCount = 0
 	If(!($EditionCheck -In 'Home','Pro' -or $WinSkuList -Contains $WinSku)){ $Script:EBFailCount = 1 }
@@ -1149,8 +1401,8 @@ Function RunDisableCheck {
 	} ElseIf(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
 		$WPF_RunScriptButton.IsEnabled = $False
 		$WPF_LoadServicesButton.IsEnabled = $False
-		If(!$ServiceConfigFile -or !(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf)) {
-			$Buttontxt = 'Run Disabled, No Custom Service List File Selected or Does not exist.'
+		$Buttontxt = If(!$ServiceConfigFile -or !(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf)) {
+			'Run Disabled, No Custom Service List File Selected or Does not exist.'
 		} Else {
 			[System.Collections.ArrayList]$Tempcheck = Import-Csv -LiteralPath $ServiceConfigFile
 			If($null -In $Tempcheck[0].StartType,$Tempcheck[0].ServiceName) {
@@ -1158,15 +1410,15 @@ Function RunDisableCheck {
 				If($tmpG -In 'GernetatedByMadBomb122','GeneratedByMadBomb122') {
 					$Script:ServiceConfigFile = ''
 					$WPF_LoadFileTxtBox.Text = ''
-					$Buttontxt = 'Run Disabled, No Custom Service List File Selected or Does not exist.'
+					'Run Disabled, No Custom Service List File Selected or Does not exist.'
 					[Windows.Forms.Messagebox]::Show("Please don't load the 'BlackViper.csv' File... `nSelect another 'File' or Select a 'Serivce Configuration' above.",'Error', 'OK') | Out-Null
 				} Else {
-					$Buttontxt = 'Run Disabled, Invalid Custom Service File.'
+					'Run Disabled, Invalid Custom Service File.'
 				}
 			} Else {
 				$WPF_RunScriptButton.IsEnabled = $True
 				$WPF_LoadServicesButton.IsEnabled = $True
-				$Buttontxt = 'Run Script with Custom Service List'
+				'Run Script with Custom Service List'
 			}
 		}
 		$TmpHead = 'Custom Service'
@@ -1178,7 +1430,7 @@ Function RunDisableCheck {
 	}
 
 	$tmp = $WPF_FilterType.SelectedIndex
-	For($i=($WPF_FilterType.Items.Count - 1) ;$i -ge 4 ;$i--){ $WPF_FilterType.Items.RemoveAt($i) }
+	For($i = ($WPF_FilterType.Items.Count - 1) ;$i -ge 4 ;$i--){ $WPF_FilterType.Items.RemoveAt($i) }
 	[Void] $WPF_FilterType.Items.Add($TmpHead)
 	[Void] $WPF_FilterType.Items.Add('State')
 	[Void] $WPF_FilterType.Items.Add('Description')
@@ -1243,51 +1495,20 @@ Function GenerateServices {
 			}
 			If($XboxService -eq 1 -and $XboxServiceArr -Contains $ServiceName){ $checkbox = $False }
 			$ServiceType = $ServicesTypeFull[$ServiceTypeNum]
-			$Match = If($ServiceType -eq  $ServiceCurrType){ $True } Else{ $False }
+			$Match = If($ServiceType -eq $ServiceCurrType){ $True } Else{ $False }
 			$RowColor = RowColorRet $Match $checkbox
 			[PSCustomObject] @{ CheckboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvStateListDG = $SrvStateList ;SrvState = $SrState ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match ;RowColor = $RowColor }
 			$Script:DataGridListOrig += [PSCustomObject] @{ CheckboxChecked = $checkbox ;CName = $ServiceCommName ;ServiceName = $ServiceName ;CurrType = $ServiceCurrType ;BVType = $ServiceType ;StartType = $ServiceTypeNum ;ServiceTypeListDG = $ServicesTypeFull ;SrvStateListDG = $SrvStateList ;SrvState = $SrState ;SrvDesc = $SrvDescription ;SrvPath = $SrvPath ;Matches = $Match ;RowColor = $RowColor }
 		}
 	}
 	$WPF_dataGrid.ItemsSource = If($WPF_CustomBVCB.IsChecked){ $DataGridListCust } Else{ $DataGridListOrig }
-
-	If(!$ServicesGenerated) {
-		$WPF_ServiceClickLabel.Visibility = 'Hidden'
-		$WPF_ServiceNote.Visibility = 'Visible'
-		$WPF_CustomBVCB.Visibility = 'Visible'
-		$WPF_SaveCustomSrvButton.Visibility = 'Visible'
-		$WPF_SaveRegButton.Visibility = 'Visible'
-		$WPF_TableLegend.Visibility = 'Visible'
-		$WPF_Div1.Visibility = 'Visible'
-		$WPF_Div2.Visibility = 'Visible'
-		$WPF_FilterTxt.Visibility = 'Visible'
-		$WPF_FilterType.Visibility = 'Visible'
-		$WPF_FilterLabel.Visibility = 'Visible'
-		$WPF_LoadServicesButton.Content = 'Reload'
-		$Script:ServicesGenerated = $True
-	}
-}
-
-Function DGUCheckAll([Bool]$C) {
-	If($WPF_FilterTxt.Text -ne '') {
-		$Script:DGUpdate = $False
-		$TxtFilter = $WPF_FilterTxt.Text
-		$Filter = $FilterList[$WPF_FilterType.SelectedIndex]
-		$TableFilter = $DataGridListCust.Where{ $_.$Filter -Match $TxtFilter }
-		$TableFilter.ForEach{ $_.CheckboxChecked = $C }
-		$WPF_dataGrid.ItemsSource = $TableFilter
-		$Script:DGUpdate = $True
-	} Else {
-		$DataGridListCust.ForEach{ $_.CheckboxChecked = $C }
-	}
-	$WPF_dataGrid.Items.Refresh()
 }
 
 Function TBoxDiag {
 	Param( [Alias('T')] [String[]]$Text, [Alias('C')] [Int[]]$Color )
 	$WPF_DiagnosticOutput.Dispatcher.Invoke(
 		[action]{
-			For($i=0 ;$i -lt $Text.Length ;$i++) {
+			For($i = 0 ;$i -lt $Text.Length ;$i++) {
 				$Run = New-Object System.Windows.Documents.Run
 				$Run.Foreground = $colorsGUI[($Color[$i])]
 				$Run.Text = $Text[$i]
@@ -1306,7 +1527,7 @@ Function TBoxDiag {
 # Update Functions -Start
 ##########
 
-Function InternetCheck { If($InternetCheck -eq 1 -or (Test-Connection www.GitHub.com -Count 1 -Quiet)){ Return $True } Return $False }
+Function InternetCheck{ If($InternetCheck -eq 1 -or (Test-Connection www.GitHub.com -Count 1 -Quiet)){ Return $True } Return $False }
 
 Function UpdateCheckAuto {
 	If(InternetCheck) {
@@ -1365,17 +1586,18 @@ Function UpdateCheck {
 	If(($SerCheck -or $ServiceVerCheck -eq 1) -and !$CSV_Ver) {
 		$WebVersion = $CSV_Ver[1].Version
 		$ServVer = If($ServiceVersion -eq 'Missing File'){ '0.0' } Else{ $ServiceVersion }
-		If($LoadServiceConfig  -In 0,1 -And $WebVersion -gt $ServVer) {
-			$Choice = 'Yes'
+		If($LoadServiceConfig -In 0,1 -And $WebVersion -gt $ServVer) {
+			$Choice = 6
 			If($NAuto) {
 				$UpdateFound,$UpdateTitle = If($ServiceVersion -eq 'Missing File') {
 					'Download Missing BlackViper.csv file?','Missing File'
 				} Else {
 					"Update Service File from $ServVer to $WebVersion ?",'Update Found'
 				}
-				$Choice = [Windows.Forms.Messagebox]::Show($UpdateFound,$UpdateTitle,'YesNo')
+				$a = new-object -comobject wscript.shell
+				$Choice = $a.popup($UpdateFound,20,$UpdateTitle,4)
 			}
-			If($Choice -eq 'Yes') {
+			If($Choice -eq 6) {
 				If($ScriptLog -eq 1){ Write-Output "$(GetTime): Downloading update for 'BlackViper.csv'" | Out-File -LiteralPath $LogFile -Encoding Unicode -Append}
 				DownloadFile $Service_Url $BVServiceFilePath
 				$Message = "Service File Updated to $WebVersion"
@@ -1396,9 +1618,12 @@ Function UpdateCheck {
 		$CSVLine,$RT = If($Release_Type -eq 'Stable'){ 0,'' } Else{ 2,'Testing/' }
 		$WebScriptVer = $CSV_Ver[$CSVLine].Version + "." + $CSV_Ver[$CSVLine].MinorVersion
 		If($WebScriptVer -gt $Script_Version) {
-			$Choice = 'Yes'
-			If($NAuto){ $Choice = [Windows.Forms.Messagebox]::Show("Update Script File from $Script_Version to $WebScriptVer ?",'Update Found','YesNo') }
-			If($Choice -eq 'Yes') {
+			$Choice = 6
+			If($NAuto){
+				$a = new-object -comobject wscript.shell
+				$Choice = $a.popup("Update Script File from $Script_Version to $WebScriptVer ?",20,'Update Found',4)
+			}
+			If($Choice -eq 6) {
 				$Script:RanScript = $True
 				ScriptUpdateFun $RT
 			} ElseIf($Message -eq '') {
@@ -1428,7 +1653,7 @@ Function ScriptUpdateFun([String]$RT) {
 	$ArgList.ForEach{
 		$TruCount = 0
 		If($GuiSwitch -and !$_.Gui){ $TC = -1 } Else{ $tmp = $_.Var.Split('=') ;$Count = $_.Match ;$TC = $Count*2 }
-		For($i=0 ;$i -lt $TC ;$i+=2) {
+		For($i = 0 ;$i -lt $TC ;$i += 2) {
 			$var = Get-Variable -Name $tmp[$i] -ValueOnly
 			If($var -eq $tmp[$i+1]){ $TruCount++ }
 		}
@@ -1652,7 +1877,7 @@ Function TBoxService {
 	[Alias('C')] [Int[]]$Color,
 	$WPF_ServiceListing.Dispatcher.Invoke(
 		[action]{
-			For($i=0 ;$i -lt $Text.Length ;$i++) {
+			For($i = 0 ;$i -lt $Text.Length ;$i++) {
 				$Run = New-Object System.Windows.Documents.Run
 				$Run.Foreground = $colorsGUI[($Color[$i])]
 				$Run.Text = $Text[$i]
@@ -1837,10 +2062,15 @@ Function ServiceSet([String]$BVService,[String]$BVSet,[Bool]$BVNeg) {
 		}
 	}
 	If($DryRun -ne 1) {
-		ThanksDonate
+		DisplayOut "`nThanks for using my script." -C 11
+		DisplayOut 'If you like this script please consider giving me a donation,' -C 11
+		DisplayOut 'Min of $1 from the adjustable Amazon Gift Card.' -C 11
+		DisplayOut "`nLink to donation:" -C 15
+		DisplayOut $Donate_Url -C 2
 		If($ConsideredDonation -ne 'Yes' -and $GuiSwitch) {
-			$Choice = [Windows.Forms.Messagebox]::Show("Thanks for using my script.`nIf you like this script please consider giving me a donation, Min of `$1 from the adjustable Amazon Gift Card.`n`nWould you Consider giving a Donation?",'Thank You','YesNo','Question')
-			If($Choice -eq 'Yes'){ ClickedDonate }
+			$a = new-object -comobject wscript.shell
+			$Choice = $a.popup("Thanks for using my script.`nIf you like this script please consider giving me a donation, Min of `$1 from the adjustable Amazon Gift Card.`n`nWould you Consider giving a Donation?",20,'Thank You',36)
+			If($Choice -eq 6){ ClickedDonate }
 		}
 	}
 	ServiceBAfun 'Services-After'
@@ -1918,8 +2148,9 @@ Function LoadWebCSVGUI {
 	} Else {
 		'BlackViper.csv Not Valid for current Update',"The File 'BlackViper.csv' needs to be Updated.`nDo you want to download the file 'BlackViper.csv'?"
 	}
-	$Choice = [Windows.Forms.Messagebox]::Show($ErrMessage,'Error','YesNo','Error')
-	If($Choice -eq 'Yes'){
+	$a = new-object -comobject wscript.shell
+	$Choice = $a.popup($ErrMessage,20,'Error',20)
+	If($Choice -eq 6){
 		DownloadFile $Service_Url $BVServiceFilePath
 		If($ErrorChoice -In 1..2){ [System.Collections.ArrayList]$Script:csv = Import-Csv -LiteralPath $BVServiceFilePath }
 		CheckBVcsv
@@ -1955,7 +2186,7 @@ Function PreScriptCheck {
 
 	If($EBCount -ne 0) {
 		$Script:ErrorDi += ' Check Failed'
-		$EBCount=0
+		$EBCount = 0
 		Error_Top
 		DisplayOutLML " Script won't run due to the following problem(s)" 2 -L
 		If($EditionCheck -eq 'Fail') {
@@ -2054,12 +2285,11 @@ Function CheckBVcsv {
 	If($GuiSwitch){ $WPF_LoadServicesButton.IsEnabled = SetServiceVersion } Else{ SetServiceVersion | Out-Null }
 }
 
-Function PassVal([String]$Pass){ Return $PassedArg[$PassedArg.IndexOf($Pass)+1] }
 Function GetArgs {
 	If($PassedArg -In '-help','-h'){ ShowHelp }
 	If($PassedArg -Contains '-copy'){ ShowCopyright ;Exit }
 	If($PassedArg -Contains '-lcsc') {
-		$tmp = PassVal '-lcsc'
+		$tmp = $PassedArg[$PassedArg.IndexOf('-lcsc')+1]
 		$Script:BV_ArgUsed = 3
 		$Script:LoadServiceConfig = 1
 		If($tmp -ne $null -and !$tmp.StartsWith('-')) {
@@ -2105,10 +2335,10 @@ Function GetArgs {
 		If($_.Arg -In $PassedArg) {
 			$tmp = $_.Var.Split('=')
 			$tc = $tmp.count
-			For($i=0 ;$i -lt $tc ;$i+=2) {
+			For($i = 0 ;$i -lt $tc ;$i += 2) {
 				$t1 = $tmp[$i+1] ;$t = $tmp[$i]
 				If($t1 -eq '-') {
-					$tmpV = PassVal $_.Arg
+					$tmpV = $PassedArg[$PassedArg.IndexOf($_.Arg)+1]
 					If(!$tmpV.StartsWith('-')){ $t1 = $tmpV } Else{ $t = $False }
 				}
 				If($t){ Set-Variable $t $t1 -Scope Script }
@@ -2173,7 +2403,7 @@ Function ShowHelp {
 Function StartScript {
 	If(Test-Path -LiteralPath $SettingPath -PathType Leaf) {
 		$Tmp = (Import-Clixml -LiteralPath $SettingPath | ConvertTo-Xml).Objects.Object.Property."#text"
-		While($Tmp){ $Key, $Val, $Tmp = $Tmp ;Set-Variable $Key $Val -Scope Script }
+		While($Tmp){ $Key,$Val,$Tmp = $Tmp ;Set-Variable $Key $Val -Scope Script }
 	}
 
 	$Script:IsLaptop = If($PCType -eq 1) {
@@ -2184,7 +2414,8 @@ Function StartScript {
 	}
 
 	If($PassedArg.Length -gt 0){ GetArgs }
-	GetAllServices
+	GetCurrServices
+	$Script:AllService = $CurrServices | Select-Object Name, StartType, Status
 
 	[System.Collections.ArrayList]$Skip_Services = @(
 	"BcastDVRUserService$ServiceEnd",
