@@ -1,4 +1,9 @@
 -----------------------------------------------------------------------------------
+6.2.1 (12-05-2019)
+
+Fixed a bug where an error would show when clicking yes to the skip build and/or edition check popup
+
+-----------------------------------------------------------------------------------
 6.2.0 (11-27-2019)
 
 How the GUI's looks has been updated, thanks to 'https://github.com/mcc85s/'
