@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '6.2.0'
-$Script_Date = 'Nov-27-2019'
+$Script_Version = '6.2.1'
+$Script_Date = 'Dec-05-2019'
 $Release_Type = 'Stable'
 ##########
 
@@ -1341,7 +1341,7 @@ Function PopWindow {
 	$WPFPW_Cbox.Content = $ChkBox
 	$tmpEB = $EBFailCount
 
-	$WPFPW_Button0.Add_Click{ $FormPW.Close() ;RunScriptFun }
+	$WPFPW_Button0.Add_Click{ $FormPW.Close() ;$Script:TempBypass = 1 ;RunScriptFun }
 	$WPFPW_Button1.Add_Click{ $FormPW.Close() }
 	$WPFPW_Cbox.Add_Checked{
 		If($EBFailCount -In 1,3){ $Script:EditionCheck = 'Pro' ;EditionBuildCBSet }
@@ -2183,6 +2183,8 @@ Function PreScriptCheck {
 		$BuildCheck = 'Fail'
 		$EBCount++
 	}
+
+	If($TempBypass -eq 1){ $EBCount = 0 }
 
 	If($EBCount -ne 0) {
 		$Script:ErrorDi += ' Check Failed'
