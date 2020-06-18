@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '6.2.1'
-$Script_Date = 'Dec-05-2019'
+$Script_Version = '6.2.2'
+$Script_Date = 'Jun-18-2020'
 #$Release_Type = 'Stable'
 ##########
 
@@ -148,7 +148,6 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File BlackViper-Win10.ps1
   -copy            Shows Copyright/License Information, then exits script
 
 ------------------------------------------------------------------------------#>
-
 ##########
 # Pre-Script/Needed Variable -Start
 ##########
@@ -158,7 +157,6 @@ If($WindowVersion -ne 10) {
 	Write-Host 'Sorry, this Script supports Windows 10 ONLY.' -ForegroundColor 'cyan' -BackgroundColor 'black'
 	If($Automated -ne 1){ Read-Host -Prompt "`nPress Any key to Close..." } ;Exit
 }
-
 If($Release_Type -eq 'Stable'){ $ErrorActionPreference = 'SilentlyContinue' } Else{ $Release_Type = 'Testing' }
 
 $PassedArg = $args
@@ -303,7 +301,7 @@ Function LogEnd{ If(0 -NotIn $ScriptLog,$LogStarted){ Write-Output "--End of Log
 Function GetTime{ Return Get-Date -Format 'hh:mm:ss tt' }
 Function CloseExit{ If($GuiSwitch){ $Form.Close() } ;Exit }
 Function GetCurrServices{ $Script:CurrServices = Get-CimInstance Win32_service | Select-Object DisplayName, Name, @{ Name = 'StartType' ;Expression = {$_.StartMode} }, @{ Name = 'Status' ;Expression = {$_.State} }, Description, PathName }
-Function OpenWebsite([String]$Url){ [System.Diagnostics.Process]::Start($Url) }
+Function OpenWebsite([String]$Url){ Start $Url }
 Function ShowInvalid([Bool]$InvalidA){ If($InvalidA){ Write-Host "`nInvalid Input" -ForegroundColor Red -BackgroundColor Black -NoNewline } Return $False }
 Function DownloadFile([String]$Url,[String]$FilePath){ (New-Object System.Net.WebClient).DownloadFile($Url, $FilePath) }
 Function QMarkServices([String]$Srv){ If($Srv -Match '_\?+$'){ Return ($Srv -Replace '_\?+$',$ServiceEnd) } Return $Srv }
@@ -324,32 +322,33 @@ Function DisplayOut {
 }
 
 Function DisplayOutLML {
-	Param (
-		[Alias('T')] [String]$Text,
-		[Alias('C')] [Int]$Color,
-		[Alias('L')] [Switch]$Log
-	)
+	Param (	[Alias('T')] [String]$Text, [Alias('C')] [Int[]]$Color, [Alias('L')] [Switch]$Log )
 	DisplayOut '| ',"$Text".PadRight(50),' |' -C 14,$Color,14 -L:$Log
 }
 
-$MLine = '|'.PadRight(53,'-') + '|'
-$MBLine = '|'.PadRight(53) + '|'
-
-Function MenuLine([Switch]$L){ DisplayOut $MLine -C 14 -L:$L }
-Function MenuBlankLine([Switch]$L){ DisplayOut $MBLine -C 14 -L:$L }
+Function DisplayMisc {
+	Param (	[Switch]$Menu, [Switch]$Line, [String]$Misc )
+	$txt = If($Line){ '|'.PadRight(53,'-') + '|' } Else{ '|'.PadRight(53) + '|' } #Line or Blank Spaces
+	$Splat = If($Menu) {
+		@{ Text = $txt ;Color = 14 ;Log = [bool]$Misc }
+	} Else { #For ToS
+		@{ Text = $txt ;Color = [int]$Misc ;Log = $False }
+	}
+	DisplayOut @Splat
+}
 
 Function Error_Top {
 	Clear-Host
 	DiagnosticCheck 0
-	MenuLine -L
+	DisplayMisc -Menu -Line -Misc $True
 	DisplayOutLML (''.PadRight(22)+'Error') -C 13 -L
-	MenuLine -L
-	MenuBlankLine -L
+	DisplayMisc -Menu -Line -Misc $True
+	DisplayMisc -Menu -Misc $True
 }
 
 Function Error_Bottom {
-	MenuBlankLine -L
-	MenuLine -L
+	DisplayMisc -Misc $True
+	DisplayMisc -Line -Misc $True
 	If($Diagnostic -eq 1){ DiagnosticCheck 0 }
 	AutomatedExitCheck 1
 }
@@ -360,8 +359,6 @@ Function Error_Bottom {
 # TOS -Start
 ##########
 
-Function TOSLine([Int]$BC){ DisplayOut $MLine -C $BC}
-Function TOSBlankLine([Int]$BC){ DisplayOut $MBLine -C $BC }
 Function ShowCopyright { Clear-Host ;DisplayOut $Copyright -C 14 }
 
 Function TOSDisplay([Switch]$C) {
@@ -369,36 +366,36 @@ Function TOSDisplay([Switch]$C) {
 	$BC = 14
 	If($Release_Type -ne 'Stable') {
 		$BC = 15
-		TOSLine 15
+		DisplayMisc -Line -Misc 15
 		DisplayOut '|'.PadRight(22),'Caution!!!'.PadRight(31),'|' -C 15,13,15
-		TOSBlankLine 15
+		DisplayMisc -Misc 15
 		DisplayOut '|','         This script is still being tested.         ','|' -C 15,14,15
 		DisplayOut '|'.PadRight(17),'USE AT YOUR OWN RISK.'.PadRight(36),'|' -C 15,14,15
-		TOSBlankLine 15
+		DisplayMisc -Misc 15
 	}
 	If($OSBit -ne '64-bit') {
 		$BC = 15
-		TOSLine 15
+		DisplayMisc -Line -Misc 15
 		DisplayOut '|'.PadRight(22),'WARNING!!!'.PadRight(31),'|' -C 15,13,15
-		TOSBlankLine 15
-		DisplayOut '|','        These settings are ment for x64 Bit.        ','|' -C 15,14,15
+		DisplayMisc -Misc 15
+		DisplayOut '|','        These settings are meant for x64 Bit.       ','|' -C 15,14,15
 		DisplayOut '|'.PadRight(17),'USE AT YOUR OWN RISK.'.PadRight(36),'|' -C 15,14,15
-		TOSBlankLine 15
+		DisplayMisc -Misc 15
 	}
-	TOSLine $BC
+	DisplayMisc -Line -Misc $BC
 	DisplayOut '|'.PadRight(21),'Terms of Use'.PadRight(32),'|' -C $BC,11,$BC
-	TOSLine $BC
-	TOSBlankLine $BC
+	DisplayMisc -Line -Misc $BC
+	DisplayMisc -Misc $BC
 	DisplayOut '|',' This program comes with ABSOLUTELY NO WARRANTY.    ','|' -C $BC,2,$BC
 	DisplayOut '|',' This is free software, and you are welcome to      ','|' -C $BC,2,$BC
 	DisplayOut '|',' redistribute it under certain conditions.          ','|' -C $BC,2,$BC
-	TOSBlankLine $BC
+	DisplayMisc -Misc $BC
 	DisplayOut '|',' Read License file for full Terms.'.PadRight(52),'|' -C $BC,2,$BC
-	TOSBlankLine $BC
+	DisplayMisc -Misc $BC
 	DisplayOut '|',' Use the switch ','-copy',' to see License Information or ','|' -C $BC,2,14,2,$BC
 	DisplayOut '|',' enter ','L',' bellow.'.PadRight(44),'|' -C $BC,2,14,2,$BC
-	TOSBlankLine $BC
-	TOSLine $BC
+	DisplayMisc -Misc $BC
+	DisplayMisc -Line -Misc $BC
 }
 
 Function TOS {
@@ -449,12 +446,8 @@ Function OpenSaveDiaglog([Int]$SorO) {
 
 Function HideShowCustomSrvStuff {
 	$Vis,$TF,$WPF_CustomNoteGrid.Visibility = If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount){ 'Visible',$False,'Visible' } Else{ 'Hidden',$True,'Collapsed' }
-	$WPF_RadioAll.IsEnabled = $TF
-	$WPF_RadioMin.IsEnabled = $TF
-	$WPF_CustomNote.Visibility = $Vis
-	$WPF_LoadFileTxtBox.Visibility = $Vis
-	$WPF_btnOpenFile.Visibility = $Vis
-}
+	$WPF_RadioAll, $WPF_RadioMin | Where { $_.IsEnabled = $TF }
+	$WPF_CustomNote, $WPF_LoadFileTxtBox, $WPF_btnOpenFile | Where { $_.Visibility = $Vis }	
 
 Function SetServiceVersion {
 	If(Test-Path -LiteralPath $BVServiceFilePath -PathType Leaf) {
@@ -570,13 +563,9 @@ Function GuiStart {
 				</Setter.Value>
 			</Setter>
 		</Style>
-		<Style TargetType="{x:Type ToolTip}">
-			<Setter Property="Background" Value="#FFFFFFBF"/>
-		</Style>
+		<Style TargetType="{x:Type ToolTip}"><Setter Property="Background" Value="#FFFFFFBF"/></Style>
 	</Window.Resources>
-	<Window.Effect>
-		<DropShadowEffect/>
-	</Window.Effect>
+	<Window.Effect><DropShadowEffect/></Window.Effect>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="24"/>
@@ -1399,8 +1388,7 @@ Function RunDisableCheck {
 	If($EBFailCount -ne 0) {
 		$TmpHead = 'Black Viper'
 	} ElseIf(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount) {
-		$WPF_RunScriptButton.IsEnabled = $False
-		$WPF_LoadServicesButton.IsEnabled = $False
+		$WPF_RunScriptButton, $WPF_LoadServicesButton | Where { $_.IsEnabled = $False }
 		$Buttontxt = If(!$ServiceConfigFile -or !(Test-Path -LiteralPath $ServiceConfigFile -PathType Leaf)) {
 			'Run Disabled, No Custom Service List File Selected or Does not exist.'
 		} Else {
@@ -1416,8 +1404,7 @@ Function RunDisableCheck {
 					'Run Disabled, Invalid Custom Service File.'
 				}
 			} Else {
-				$WPF_RunScriptButton.IsEnabled = $True
-				$WPF_LoadServicesButton.IsEnabled = $True
+				$WPF_RunScriptButton, $WPF_LoadServicesButton | Where { $_.IsEnabled = $True }
 				'Run Script with Custom Service List'
 			}
 		}
@@ -1425,8 +1412,7 @@ Function RunDisableCheck {
 	} Else {
 		$TmpHead = If($WPF_ServiceConfig.SelectedIndex -eq 0){ 'Win Default' } Else{ 'Black Viper' }
 		$Buttontxt = If($WPF_CustomBVCB.IsChecked){ 'Run Script with Customize Service List' } Else{ 'Run Script' }
-		$WPF_RunScriptButton.IsEnabled = $True
-		$WPF_LoadServicesButton.IsEnabled = $True
+		$WPF_RunScriptButton, $WPF_LoadServicesButton | Where { $_.IsEnabled = $True }
 	}
 
 	$tmp = $WPF_FilterType.SelectedIndex
@@ -1538,19 +1524,19 @@ Function UpdateCheckAuto {
 		DisplayOutLML 'No Internet connection detected or GitHub.com' -C 2 -L
 		DisplayOutLML 'is currently down.' -C 2 -L
 		DisplayOutLML 'Tested by pinging GitHub.com' -C 2 -L
-		MenuBlankLine -L
+		DisplayMisc -Misc $True
 		DisplayOutLML 'To skip use one of the following methods' -C 2 -L
 		DisplayOut '|',' 1. Run Script or bat file with ','-sic',' switch'.PadRight(16),'|' -C 14,2,15,2,14 -L
 		DisplayOut '|',' 2. Change ','InternetCheck',' in Script file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 		DisplayOut '|',' 3. Change ','InternetCheck',' in bat file'.PadRight(28),'|' -C 14,2,15,2,14 -L
-		MenuBlankLine -L
-		MenuLine -L
+		DisplayMisc -Misc $True
+		DisplayMisc -Line -Misc $True
 		If(!(Test-Path -LiteralPath $BVServiceFilePath -PathType Leaf)) {
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOut '|',' The File ','BlackViper.csv',' is missing and the script  ','|' -C 14,2,15,2,14 -L
 			DisplayOutLML "can't run w/o it." -C 2 -L
-			MenuBlankLine -L
-			MenuLine -L
+			DisplayMisc -Misc $True
+			DisplayMisc -Line -Misc $True
 			AutomatedExitCheck 1
 		} Else {
 			AutomatedExitCheck 0
@@ -1662,16 +1648,16 @@ Function ScriptUpdateFun([String]$RT) {
 	If($ScriptLog -eq 1){ $UpArg += "-logc $LogName " }
 
 	Clear-Host
-	MenuLine -L
-	MenuBlankLine -L
+	DisplayMisc -Line -Misc $True
+	DisplayMisc -Misc $True
 	DisplayOutLML (''.PadRight(18)+'Update Found!') -C 13 -L
-	MenuBlankLine -L
+	DisplayMisc -Misc $True
 	DisplayOut '|',' Updating from version ',"$Script_Version".PadRight(30),'|' -C 14,15,11,14 -L
-	MenuBlankLine -L
+	DisplayMisc -Misc $True
 	DisplayOut '|',' Downloading version ',"$FullVer".PadRight(31),'|' -C 14,15,11,14 -L
 	DisplayOutLML 'Will run after download is complete.' -C 15 -L
-	MenuBlankLine -L
-	MenuLine -L
+	DisplayMisc -Misc $True
+	DisplayMisc -Line -Misc $True
 
 	DownloadFile $Script_Url $ScrpFilePath
 	Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$ScrpFilePath`" $UpArg" -Verb RunAs
@@ -2119,10 +2105,10 @@ Function LoadWebCSV([Int]$ErrorChoice) {
 	While($LoadWebCSV -ne 'Out') {
 		Error_Top
 		DisplayOut '|',' The File ','BlackViper.csv',"$Pick".PadRight(28),'|' -C 14,2,15,2,14 -L
-		MenuBlankLine
+		DisplayMisc -Misc $False
 		DisplayOut '|',' Do you want to download ','BlackViper.csv',' ?           ','|' -C 14,2,15,2,14 -L
-		MenuBlankLine
-		MenuLine
+		DisplayMisc -Misc $False
+		DisplayMisc -Line -Misc $False
 		$Invalid = ShowInvalid $Invalid
 		$LoadWebCSV = Read-Host "`nDownload? (Y)es/(N)o"
 		If($LoadWebCSV -In 'y','yes') {
@@ -2193,41 +2179,41 @@ Function PreScriptCheck {
 		DisplayOutLML " Script won't run due to the following problem(s)" 2 -L
 		If($EditionCheck -eq 'Fail') {
 			$EBCount++
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOutLML "$EBCount. Not a valid Windows Edition for this Script." 2 -L
 			DisplayOutLML 'Windows 10 Home and Pro Only' 2 -L
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOut '|',' You are using ',"$FullWinEdition".PadRight(37),'|' -C 14,2,15,14 -L
 			DisplayOut '|',' SKU #: ',"$WinSku".PadRight(44),'|' -C 14,2,15,14 -L
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOutLML 'If you are using Home or Pro...' 2 -L
 			DisplayOutLML 'Please contact me or sumbit issue with:' 2 -L
 			DisplayOutLML ' 1. The Edition listed above' 2 -L
 			DisplayOutLML ' 2. The SKU # listed above' 2 -L
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOutLML 'To skip use one of the following methods' 2 -L
 			DisplayOut '|','  1. Run Script or bat file with ','-secp',' switch'.PadRight(14),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  2. Run Script or bat file with ','-sech',' switch'.PadRight(14),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  3. Change ','EditionCheck',' in script file'.PadRight(28),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  4. Change ','Skip_EditionCheck',' in bat file'.PadRight(23),'|' -C 14,2,15,2,14 -L
-			MenuBlankLine -L
-			MenuLine -L
+			DisplayMisc -Misc $True
+			DisplayMisc -Line -Misc $True
 		}
 		If($BuildCheck -eq 'Fail') {
 			$EBCount++
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOutLML "$EBCount. Not a valid Build for this Script." 2 -L
 			DisplayOutLML "Min Version Recommended - Creator's Update (1703)" 2 -L
 			DisplayOutLML "Max Version Recommended - $MaxVerName" 2 -L
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOut '|',' You are using Build: ',"$BuildVer".PadRight(30),'|' -C 14,2,15,14 -L
 			DisplayOut '|',' You are using Version: ',"$Win10Ver".PadRight(28),'|' -C 14,2,15,14 -L
-			MenuBlankLine -L
+			DisplayMisc -Misc $True
 			DisplayOutLML 'To skip use one of the following methods' 2 -L
 			DisplayOut '|','  1. Run Script or bat file with ','-sbc',' switch'.PadRight(15),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  2. Change ','BuildCheck',' in script file'.PadRight(30),'|' -C 14,2,15,2,14 -L
 			DisplayOut '|','  3. Change ','Skip_BuildCheck',' in bat file'.PadRight(25),'|' -C 14,2,15,2,14 -L
-			MenuLine -L
+			DisplayMisc -Line -Misc $True
 		}
 		AutomatedExitCheck 1
 	}
