@@ -1,5 +1,7 @@
 -----------------------------------------------------------------------------------
-6.2.1 (12-05-2019)
+6.2.2 (06-18-2020)
+
+Some Internal Script Changes
 
 Fixed a bug where an error would show when clicking yes to the skip build and/or edition check popup
 
