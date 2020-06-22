@@ -1,5 +1,7 @@
 -----------------------------------------------------------------------------------
-6.2.2 (06-18-2020)
+6.2.3 (06-22-2020)
+
+Fixed a missing bracket thanks to 'guppyfaced'
 
 Some Internal Script Changes
 
