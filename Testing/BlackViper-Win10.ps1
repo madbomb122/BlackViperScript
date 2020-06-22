@@ -9,8 +9,8 @@
 #  Author: Charles "Black Viper" Sparks
 # Website: http://www.BlackViper.com/
 #
-$Script_Version = '6.2.2'
-$Script_Date = 'Jun-18-2020'
+$Script_Version = '6.2.3'
+$Script_Date = 'Jun-22-2020'
 #$Release_Type = 'Stable'
 ##########
 
@@ -448,6 +448,7 @@ Function HideShowCustomSrvStuff {
 	$Vis,$TF,$WPF_CustomNoteGrid.Visibility = If(($WPF_ServiceConfig.SelectedIndex+1) -eq $BVCount){ 'Visible',$False,'Visible' } Else{ 'Hidden',$True,'Collapsed' }
 	$WPF_RadioAll, $WPF_RadioMin | Where { $_.IsEnabled = $TF }
 	$WPF_CustomNote, $WPF_LoadFileTxtBox, $WPF_btnOpenFile | Where { $_.Visibility = $Vis }	
+}
 
 Function SetServiceVersion {
 	If(Test-Path -LiteralPath $BVServiceFilePath -PathType Leaf) {
