@@ -228,4 +228,4 @@ Switch Examples:
 **Note 2:** Negative Numbers are the same as above but wont be used unless you select it or use the `All` Setting   
 
 **Q:** How long are you going to maintain the script?   
-**A:** No Clue.   
+**A:** I will no long be maintaining this script, I have made a new version of this script with support for win 7 to 11. [https://github.com/madbomb122/WinServiceConfigurator](https://github.com/madbomb122/WinServiceConfigurator)
